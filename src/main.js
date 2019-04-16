@@ -38,6 +38,7 @@ import Searchpanel from '@/components/search-panel'
 import { getFormat } from '@/utils/misc'
 import util from '@utils/util'
 import {asyncRouterMap, constantRouterMap} from '@/config/router.config'
+import vcolorpicker from 'vcolorpicker'
 
 // 核心插件
 Vue.use(admin)
@@ -47,6 +48,7 @@ Vue.use(Card)
 Vue.use(Tag)
 Vue.use(Collapse)
 Vue.use(CollapseItem)
+Vue.use(vcolorpicker)
 //统一错误处理
 Vue.use(msgHandler)
 Vue.config.productionTip = false

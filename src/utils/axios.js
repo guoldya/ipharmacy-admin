@@ -47,5 +47,6 @@ const VueAxios = {
 export {
     VueAxios,
     // eslint-disable-next-line no-undef
-    instance as axios
+    //TODO:注释掉问题代码  ES6导出模块无法找到  源模块  不明白为啥子这样写
+    //instance as axios
 }
