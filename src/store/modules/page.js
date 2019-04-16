@@ -376,7 +376,7 @@ export default {
      */
     currentSet (state, fullPath) {
       if(state.curRoute.meta.detail){
-        let route = hasChild(asyncRouterMap)?asyncRouterMap[0].children:{}
+        let route = hasChild(asyncRouterMap[0])?asyncRouterMap[0].children:{}
         let parent = getParentRouterObjByName(route, state.curRoute.name);
         parent.children.forEach(i=>{
           if(i.meta.index){

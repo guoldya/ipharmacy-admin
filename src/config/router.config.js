@@ -53,24 +53,24 @@ export const asyncRouterMap = [
             path: '/dashboard/multistage',
             name: 'multistage-router',
             component: RouteView,
-            meta: { title: '多级',multistage:true},
-            children:[
+            meta: { title: '多级', multistage: true },
+            children: [
               {
                 path: '/dashboard/multistage/index',
                 name: 'mulindex',
                 // hidden:true,
                 component: () => import('@/views/dashboard/multistage'),
-                meta: { title: '多级首页', index:true }
+                meta: { title: '多级首页', index: true }
               },
               {
                 path: '/dashboard/multistage/detaill/:id',
                 name: 'muldetaill',
-                hidden:true,
+                hidden: true,
                 component: () => import('@/views/dashboard/muldetaill'),
-                meta: { title: '多级详情', detail:true }
-              },
+                meta: { title: '多级详情', detail: true }
+              }
             ]
-          },
+          }
         ]
       },
 
@@ -235,8 +235,6 @@ export const asyncRouterMap = [
       // },
 
 
-
-
       // Exception
       // {
       //   path: '/exception',
@@ -333,24 +331,52 @@ export const asyncRouterMap = [
         path: '/auditWorkstation',
         name: 'auditWorkstation',
         component: PageView,
-        redirect: '/auditWorkstation/problemLevel',
-        meta: { title: '审方工作站', icon: 'check-circle-o', permission: ['result'] },
+        meta: { title: '审方工作站',keepAlive: false, icon: 'diff' },
         children: [
           {
             path: '/auditWorkstation/problemLevel',
             name: 'problemLevel',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/auditWorkstation/problemLevel/index'),
-            meta: { title: '问题等级设置', hiddenHeaderContent: true, permission: ['result'] }
+            component: RouteView,
+            meta: { title: '问题等级设置', multistage: true },
+            children: [
+              {
+                path: '/auditWorkstation/problemLevel/index',
+                name: 'problemLevel',
+                component: () => import( '@/views/auditWorkstation/problemLevel/index.vue'),
+                meta: { title: '问题等级设置', index: true,keepAlive: false, }
+              },
+              {
+                path: '/auditWorkstation/problemLevel/detail',
+                name: 'problemLevelDetail',
+                hidden: true,
+                component: () => import( '@/views/auditWorkstation/problemLevel/detail.vue'),
+                meta: { title: '问题等级详情', detail: true }
+              }
+            ]
           },
-          // {
-          //   path: '/test/gridLayOut',
-          //   name: 'gridLayOut',
-          //   component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
-          //   meta: { title: '拖拽测试', hiddenHeaderContent: true, permission: ['result'] }
-          // },
+          {
+            path: '/auditWorkstation/presOutpatient',
+            name: 'presOutpatient',
+            component: RouteView,
+            meta: { title: '审方中心(门诊)', multistage: true },
+            children: [
+              {
+                path: '/auditWorkstation/presOutpatient/index',
+                name: 'presOutpatient',
+                component: () => import( '@/views/auditWorkstation/presOutpatient/index.vue'),
+                meta: { title: '审方中心(门诊)', index: true ,},
+              },
+              {
+                path: '/auditWorkstation/presOutpatient/detail',
+                name: 'presOutpatientDetail',
+                hidden: true,
+                component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
+                meta: { title: '审方中心详情', detail:true }
+              },
+            ]
+          },
         ]
       },
-
 
       // test
       {
@@ -371,29 +397,29 @@ export const asyncRouterMap = [
             name: 'gridLayOut',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
             meta: { title: '拖拽测试', hiddenHeaderContent: true, permission: ['result'] }
-          },{
+          }, {
             path: '/test/combineTest',
             name: 'combineTest',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTest'),
             meta: { title: '合并测试', permission: ['result'] }
-          },{
+          }, {
             path: '/test/combineTwo',
             name: 'combineTwo',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
             meta: { title: '合并测试2', permission: ['result'] }
-          },{
+          }, {
             path: '/test/combineThree',
             name: 'combineThree',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineThree'),
             meta: { title: '合并测试3', permission: ['result'] }
-          },{
+          }, {
             path: '/test/picCropper',
             name: 'picCropper',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/picCropper'),
             meta: { title: '图片剪裁', permission: ['result'] }
           }
         ]
-      },
+      }
     ]
   },
   {
@@ -458,7 +484,7 @@ export const constantRouterMap = [
   {
     path: '/404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
-  },
+  }
 
 ]
 
