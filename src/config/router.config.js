@@ -473,6 +473,19 @@ export const constantRouterMap = [
       }
     ]
   },
+
+  {
+    path: '/g6',
+    component: BlankLayout,
+    redirect: '/g6/flowChartEditor',
+    children: [
+      {
+        path: 'flowChartEditor',
+        name: 'flowChartEditor',
+        component: () => import('@/views/flowChartEditor/flowChartEditor')
+      }
+    ]
+  },
   {
     path: '/500',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/500')

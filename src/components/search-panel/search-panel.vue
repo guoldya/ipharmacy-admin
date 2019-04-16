@@ -14,7 +14,7 @@
                             </a-form-item>
                             <a-form-item :label="item.name" v-if="item.type=='select'">
                                 <a-select v-decorator="[item.dataField]">
-                                    <a-select-option :value='op[item.keyExpr]' v-for="(op,index) in item.dataSource">
+                                    <a-select-option :value='op[item.keyExpr]' v-for="(op,index) in item.dataSource" :key="index">
                                         {{op[item.valueExpr]}}
                                     </a-select-option>
                                 </a-select>
