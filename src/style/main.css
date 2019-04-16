@@ -1,0 +1,11 @@
+.ant-table td {
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+.margin-top-10{
+    margin-top: 10px;
+}
+.ant-card-wider-padding .ant-card-body{
+    padding: 16px;
+}
