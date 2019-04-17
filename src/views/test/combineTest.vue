@@ -234,7 +234,7 @@
     margin-bottom: 8px;
     margin-top: 8px
   }
-  /*/deep/.el-table .cell{*/
-  /*line-height: 30px;*/
-  /*}*/
+  /deep/.el-table .cell{
+  line-height: 30px;
+  }
 </style>
