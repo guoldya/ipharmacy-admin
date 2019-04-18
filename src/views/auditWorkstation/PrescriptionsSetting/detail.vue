@@ -94,7 +94,9 @@
             </a-select>
           </a-col>
           <a-col :span="3">
+            <!--文本输入框-->
             <a-input v-if="cd.val==1" class="width-100 marLeft10" v-model="cd.value"></a-input>
+            <!--下拉框-->
             <a-select v-else-if="cd.val==2" class="width-100 marLeft10" v-model="cd.value">
               <a-select-option
                 v-for="item in classData"
@@ -104,7 +106,7 @@
                 {{item.text}}
               </a-select-option>
             </a-select>
-            <a-date-picker class="width-100 marLeft10" v-else-if="cd.val==3" v-model="cd.value"></a-date-picker>
+            <a-date-picker class="width-100 marLeft10"  v-else-if="cd.val==3" v-model="cd.value"></a-date-picker>
             <div v-else-if="cd.val==4" class="width-100 marLeft10">
               <a-input-number v-model="cd.value"  style="width:40%" ></a-input-number>
               <span>~</span>
