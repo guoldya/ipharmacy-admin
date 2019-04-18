@@ -24,6 +24,20 @@
               <a-select-option value="药品说明书">药品说明书</a-select-option>
             </a-select>
           </a-form-item>
+          
+          <a-form-item label="级别" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select size="small" v-model="selectNode.level">
+              <a-select-option value="0">一级</a-select-option>
+              <a-select-option value="1">二级</a-select-option>
+              <a-select-option value="2">三级</a-select-option>
+              <a-select-option value="3">四级</a-select-option>
+              <a-select-option value="4">五级</a-select-option>
+              <a-select-option value="5">六级</a-select-option>
+              <a-select-option value="6">七级</a-select-option>
+              <a-select-option value="7">八级</a-select-option>
+            </a-select>
+          </a-form-item>
+
 
           <a-form-item label="消息" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-textarea size="small" placeholder="small size" v-model="selectNode.messageLabel" :rows="4"/>

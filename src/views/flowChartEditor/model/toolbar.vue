@@ -24,7 +24,7 @@
       <i data-command="multiSelect" class="command iconfont icon-select" title="多选"></i>
       <!-- <i data-command="addGroup" class="command iconfont icon-group" title="成组"></i>
       <i data-command="unGroup" class="command iconfont icon-ungroup" title="解组"></i> -->
-      <a href="https://www.yuque.com/antv/g6-editor">G6-Editor 文档</a>
+      <!-- <a href="https://www.yuque.com/antv/g6-editor">G6-Editor 文档</a> -->
       <!-- <a href="javascript:void(0); " @click="saveFlow">保存节点信息</a> -->
     </div>
 </template>

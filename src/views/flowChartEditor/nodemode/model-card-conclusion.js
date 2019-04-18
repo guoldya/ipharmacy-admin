@@ -5,6 +5,7 @@ const { Flow } = G6Editor;
 Flow.registerNode(
     'model-card-conclusion',
     {
+      level:'0',
       basisLabel: '医院规定',
       messageLabel:
         '本药仅门诊科室使用！本药仅。',

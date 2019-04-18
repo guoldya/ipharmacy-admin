@@ -14,6 +14,7 @@ Flow.registerNode('model-card', {
       const str2 = model.messageLabel != null ? model.messageLabel : shapeObj.messageLabel
       const str3 = model.suggestLabel != null ? model.suggestLabel : shapeObj.suggestLabel
       const colorLevel = model.colorLevel != null ? model.colorLevel : shapeObj.colorLevel
+      const level= model.level != null ? model.level : shapeObj.level
       const width = 290
       const height = textOrheight(str1, str2, str3)
       const x = -width / 2
@@ -61,10 +62,11 @@ Flow.registerNode('model-card', {
         }
       })
       //console.log(temp);
-      //图标提示 ①②③④⑤⑥⑦⑧⑨⑩
+      const leveltext=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩']
+      //图标提示 
       group.addShape('text', {
         attrs: {
-          text: '①',
+          text: leveltext[level],
           x: x,
           y: y + (height / 2 - (borderRadius + levelborderwidth) / 2),
           textAlign: 'start',

@@ -72,6 +72,7 @@ export default {
         messageLabel: null,
         suggestLabel: null,
         colorLevel: '#ffffff',
+        level:'0',
         ///-------结论节点特有属性---------
 
         ///-------------属性节点特定属性-----------------
@@ -127,6 +128,11 @@ export default {
     selectNodecolorLevel() {
       return this.selectNode.colorLevel
     },
+    selectNodeLevel() {
+      return this.selectNode.level
+    },
+
+    
     selectNodelabel() {
       return this.selectNode.label
     },
@@ -142,6 +148,11 @@ export default {
   },
 
   watch: {
+    selectNodeLevel(newValue, oldValue) {
+      if (newValue != oldValue) {
+        this.flow.update(this.selectNode.id, { level: newValue })
+      }
+    },
     selectNodeprototypes(newValue, oldValue) {
       if (newValue != oldValue) {
         this.flow.update(this.selectNode.id, { prototypes: newValue })
@@ -301,6 +312,7 @@ export default {
                   _this.selectNode.colorLevel = model.colorLevel != null ? model.colorLevel : shape.colorLevel
                   _this.selectNode.messageLabel = model.messageLabel != null ? model.messageLabel : shape.messageLabel
                   _this.selectNode.suggestLabel = model.suggestLabel != null ? model.suggestLabel : shape.suggestLabel
+                  _this.selectNode.level = model.level != null ? model.level : shape.level
                   break
                 case 'model-rect-attribute':
                   _this.selectNode.colorLevel = model.color != null ? model.color : shape.color
@@ -314,6 +326,7 @@ export default {
 
             break
           case 'edge':
+            //选中后设置颜色 和连接线的宽度
             _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
             setTimeout(() => {
               _this.selectEdge.id = ev.item.model.id
