@@ -1,19 +1,19 @@
 <template>
     <div class="search-form">
         <a-card>
-            <a-col :span="21">
-                <a-form :form="form" >
+            <a-col :lg="20" :sm="18">
+                <a-form :form="form">
                     <a-row :gutter="21">
                         <a-col v-for="(item,index) in list" :span="6" :key="index"
                                :style="{display:index<count ?'block':'none'}">
                             <a-form-item :label="item.name" v-if="!item.type || item.type=='text'" v-bind="formItemLayout">
-                                <a-input v-decorator="[item.dataField]"></a-input>
+                                <a-input v-decorator="[item.dataField]" placeholder="请输入..."></a-input>
                             </a-form-item>
                             <a-form-item :label="item.name" v-if="item.type=='range-picker'" v-bind="formItemLayout">
                                 <a-range-picker v-decorator="[item.dataField]"/>
                             </a-form-item>
                             <a-form-item :label="item.name" v-if="item.type=='select'" v-bind="formItemLayout">
-                                <a-select v-decorator="[item.dataField]">
+                                <a-select v-decorator="[item.dataField]" placeholder="请选择...">
                                     <a-select-option :value='op[item.keyExpr]' v-for="(op,index) in item.dataSource" :key="index">
                                         {{op[item.valueExpr]}}
                                     </a-select-option>
@@ -22,13 +22,13 @@
                         </a-col>
                     </a-row>
                     <a-row style="text-align: center" v-if="this.list.length>4">
-                        <a :style="{ marginLeft: '8px', fontSize: '12px' }" @click="toggle">
+                        <a class="expendBtn" :style="{ marginLeft: '8px', fontSize: '12px' }" @click="toggle">
                             <a-icon :type="expand ? 'up' : 'down'"/>
                         </a>
                     </a-row>
                 </a-form>
             </a-col>
-            <a-col :span="3" style="text-align: right">
+            <a-col :lg="4" :sm="6" style="text-align: right;padding-top: 3px">
                 <slot name="control"></slot>
             </a-col>
         </a-card>
@@ -64,10 +64,16 @@
                 value: '',
                 expand: false,
                 form: this.$form.createForm(this),
-              formItemLayout: {
-                labelCol: {span: 5},
-                wrapperCol: {span: 7},
-              },
+                formItemLayout: {
+                    labelCol: {
+                        lg: { span: 6 },
+                        sm: { span: 7 },
+                    },
+                    wrapperCol: {
+                        lg: { span: 10 },
+                        sm: { span: 17 },
+                    },
+                },
             }
         },
         computed: {
@@ -94,7 +100,7 @@
     }
 
     .search-form .ant-card-body {
-        padding: 15px;
+        padding: 15px 15px 0 15px;
     }
 
     .search-form .ant-form-item {
@@ -117,5 +123,18 @@
         min-height: 200px;
         text-align: center;
         padding-top: 80px;
+    }
+    .expendBtn{
+        cursor: pointer;
+        border: 1px solid #e9e9e9;
+        color: #96A1A7;
+        border-radius: 2px;
+        width: 48px;
+        text-align: center;
+        line-height: 14px;
+        position: absolute;
+        left: 50%;
+        bottom: -16px;
+        margin-left: -1px;
     }
 </style>

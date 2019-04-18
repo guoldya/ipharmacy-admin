@@ -141,3 +141,7 @@
 .width-100{
   width: 100%;
 }
+
+.el-table--mini, .el-table--small, .el-table__expand-icon{
+  font-size: 14px !important;
+}

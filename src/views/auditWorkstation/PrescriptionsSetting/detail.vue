@@ -97,7 +97,7 @@
             <!--文本输入框-->
             <a-input v-if="cd.val==1" class="width-100 marLeft10" v-model="cd.value"></a-input>
             <!--下拉框-->
-            <a-select v-else-if="cd.val==2" class="width-100 marLeft10" v-model="cd.value">
+            <a-select  :mode="selectMode" maxTagPlaceholder="..." :maxTagCount="2" v-else-if="cd.val==2" class="width-100 marLeft10" v-model="cd.list">
               <a-select-option
                 v-for="item in classData"
                 :value='item.id'
@@ -106,14 +106,18 @@
                 {{item.text}}
               </a-select-option>
             </a-select>
+            <!--日期框-->
             <a-date-picker class="width-100 marLeft10"  v-else-if="cd.val==3" v-model="cd.value"></a-date-picker>
+            <!--日期范围-->
+            <a-range-picker class="width-100 marLeft10"  v-else-if="cd.val==6" v-model="cd.list" />
+            <!--数字范围-->
             <div v-else-if="cd.val==4" class="width-100 marLeft10">
-              <a-input-number v-model="cd.value"  style="width:40%" ></a-input-number>
+              <a-input-number v-model="cd.value"  style="width:44%" ></a-input-number>
               <span>~</span>
-              <a-input-number v-model="cd.valueTwo" style="width:40%"></a-input-number>
+              <a-input-number v-model="cd.valueTwo" style="width:44%"></a-input-number>
             </div>
-
-            <a-input v-else class="width-100 marLeft10" v-model="cd.value"></a-input>
+            <!--默认为输入框-->
+            <!--<a-input v-else class="width-100 marLeft10" v-model="cd.value"></a-input>-->
           </a-col>
           <a-col :span="1">
             <a-icon class="iconStyle" @click="deleteCondition(index)" type="minus-circle" theme="filled"/>
@@ -148,7 +152,8 @@
         loading: false,
         classData: this.enum.clientClass,
         levelData: this.enum.clientLevel,
-        conditionList: []
+        conditionList: [],
+        selectMode:'tags',
       }
     },
     beforeCreate() {
@@ -209,25 +214,12 @@
       },
       //添加条件
       addCondition() {
-        this.conditionList.push({ val: null, calculate: null, value: null, valueTwo: null, list: [] })
-        console.log(this.conditionList)
+        this.conditionList.push({ val: '1', calculate: null, value: null, valueTwo: null, list: [] })
       },
       deleteCondition(index) {
-        console.log(index)
-        //this.conditionList.remove(index)
-        // let data = this.conditionList.filter(item => item[index])
-        this.conditionList.splice(index, 1)
-        // this.conditionList.push('');
-        // this.conditionList.pop();
-        console.log(this.conditionList, 'new')
+        this.conditionList.splice(index, 1);
+        console.log(this.conditionList);
       },
-      //选择条件
-      selectVal(value, option) {
-        this.conditionList[option.data.key].val = value
-      },
-      selectCalculate(value, option) {
-        this.conditionList[option.data.key].calculate = value
-      }
     }
   }
 </script>
@@ -241,6 +233,6 @@
 
   .btnStyle {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 20px;
   }
 </style>

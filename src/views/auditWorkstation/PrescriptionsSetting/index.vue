@@ -1,5 +1,11 @@
 <template>
     <a-card>
+      <Searchpanel ref="searchPanel" :list="list">
+        <div slot="control">
+          <a-button type="primary" @click="search">查询</a-button>
+          <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
+        </div>
+      </Searchpanel>
     <a-spin :spinning="loading" tip="加载中...">
       <a-button class="margin-top-10" type="primary" @click="add">新增</a-button>
       <el-table
@@ -82,9 +88,9 @@
         mockData:[],
         columns: [
           {title: '方案名称',dataIndex: 'id'},
-          {title: '方案类型',dataIndex: 'levelType'},
+          {title: '方案类型',dataIndex: 'levelType',align: 'center',width:100},
           { title: '分配', dataIndex: 'roleNum', align: 'center',width:100 },
-          {title: '方案范围',dataIndex: 'problemLevel'},
+          {title: '方案范围',dataIndex: 'problemLevel',align: 'center',width:100},
           {title: '方案描述',dataIndex: 'createTime'},
           {title: '操作',width: '150px',dataIndex: 'action',align:'center'}
         ],
@@ -98,10 +104,36 @@
         loadData:[],
       }
     },
+    computed: {
+      list() {
+        return [
+          {
+            name: '方案名称',
+            dataField: 'clientId',
+            type: 'text',
+            keyExpr: 'clientId',
+            valueExpr: 'clientName',
+          },
+          { name: '方案类型', dataField: 'drugName', type: 'select' },
+        ]
+      }
+    },
     mounted(){
       this.getData();
     },
     methods:{
+      //搜索
+      search() {
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        params.pageSize = 10
+        params.offset = 0
+        this.fetchYJSMapData(params)
+      },
+      //重置
+      resetForm() {
+        this.$refs.searchPanel.form.resetFields()
+        this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+      },
       getData(){
         this.loadData = [{id:1,levelType:'系统',status:1,problemLevel:'0级',createTime:'无',colors:'red',roleNum:5,editTime:'无'},
           {id:2,levelType:'系统',status:1,problemLevel:'0级',createTime:'无',colors:'yellow',roleNum:4,editTime:'无'}];

@@ -1,5 +1,11 @@
 <template>
-    <div>
+    <a-card>
+      <Searchpanel ref="searchPanel" :list="list">
+        <div slot="control">
+          <a-button type="primary" @click="search">查询</a-button>
+          <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
+        </div>
+      </Searchpanel>
       <a-spin :spinning="loading" tip="加载中...">
         <el-table
           :data="loadData" border
@@ -34,7 +40,7 @@
         >
         </a-pagination>
       </a-spin>
-    </div>
+    </a-card>
 </template>
 
 <script>
@@ -48,9 +54,9 @@
         pageSize:10,
         columns: [
           {title: '编号',dataIndex: 'id',width:80},
-          {title: '等级类型',dataIndex: 'levelType'},
-          {title: '问题等级',dataIndex: 'problemLevel',width:100},
-          {title: '处理类型',dataIndex: 'createTime'},
+          {title: '等级类型',dataIndex: 'levelType',align:'center',width:150},
+          {title: '问题等级',dataIndex: 'problemLevel',align:'center',width:150},
+          {title: '处理类型',dataIndex: 'createTime',align:'center',width:150},
           {title: '显示颜色',dataIndex: 'colors',width:100},
           {title: '等级说明',dataIndex: 'editTime'},
           {title: '操作',width: '150px',dataIndex: 'action',align:'center'}
@@ -59,10 +65,36 @@
         loadData:[],
       }
     },
+    computed: {
+      list() {
+        return [
+          {
+            name: '方案名称',
+            dataField: 'clientId',
+            type: 'text',
+            keyExpr: 'clientId',
+            valueExpr: 'clientName',
+          },
+          { name: '方案类型', dataField: 'drugName', type: 'select' },
+        ]
+      }
+    },
     mounted(){
       this.getData();
     },
     methods:{
+      //搜索
+      search() {
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        params.pageSize = 10
+        params.offset = 0
+        this.fetchYJSMapData(params)
+      },
+      //重置
+      resetForm() {
+        this.$refs.searchPanel.form.resetFields()
+        this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+      },
       getData(){
         this.loadData = [{id:1,levelType:'系统',status:1,problemLevel:'0级',createTime:'无',colors:'red',editTime:'无'},
           {id:2,levelType:'系统',status:1,problemLevel:'0级',createTime:'无',colors:'yellow',editTime:'无'}];

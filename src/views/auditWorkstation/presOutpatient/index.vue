@@ -58,12 +58,12 @@
             :align="item.align"
             :formatter="item.formatter"
           >
-            <template slot-scope="props">
-                  <span v-if="item.prop == 'status'">
-                        <a-badge v-if="props.row.status == 0" status="default" text="待审核"/>
-                        <a-badge v-else-if="props.row.status == 1" status="warning" text="打回修改"/>
-                    <a-badge v-else-if="props.row.status == 2" status="error" text="拒绝建议"/>
-                    <a-badge v-else-if="props.row.status == 3" status="success" text="通过审核"/>
+            <template  slot-scope="props">
+                  <span v-if="item.prop == 'status'" >
+                    <a-badge v-if="props.row.status == 0"   status="default" text="待审核"/>
+                    <a-badge v-else-if="props.row.status == 1" status="warning" text="打回修改"/>
+                    <a-badge v-else-if="props.row.status == 2"  status="error"  text="拒绝建议"/>
+                    <a-badge v-else-if="props.row.status == 3" status="success"  text="通过审核"/>
                   </span>
               <span v-else-if="item.prop == 'prescriptionInfo'">
                         {{props.row.time}}&nbsp&nbsp{{props.row.openName}}&nbsp&nbsp{{props.row.deptName}}

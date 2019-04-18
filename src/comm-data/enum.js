@@ -15,6 +15,7 @@ const Enum={
     {id:'3',text:'日期'},
     {id:'4',text:'范围'},
     {id:'5',text:'存在'},
+    {id:'6',text:'日期范围'},
   ],
 };
 export default Enum;
