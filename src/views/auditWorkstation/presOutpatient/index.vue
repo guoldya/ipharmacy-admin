@@ -17,10 +17,10 @@
           <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
         </div>
       </Searchpanel>
-      <a-button class="margin-top-10" type="primary" @click="pass">通过</a-button>
+      <a-button class="margin-top-10" :type="buttonType" @click="buttonClick">{{buttonText}}</a-button>
+      <a-button class="margin-left-5" type="primary" @click="pass">通过</a-button>
       <a-button class="margin-left-5" @click="rejected">驳回</a-button>
-      <a-button class="margin-left-5">开始审方</a-button>
-      <a-button class="margin-left-5">停止审方</a-button>
+
       <a-button class="margin-left-5">审方设置</a-button>
       <a-spin tip="加载中..." :spinning="loading">
         <el-table
@@ -165,6 +165,8 @@
         current: 1,
         countText: [],
         selections:[],
+        buttonText:'开始审方',
+        buttonType:'primary',
       }
     },
     computed: {
@@ -297,6 +299,15 @@
           console.log(1);
         }
       },
+      buttonClick(){
+        if (this.buttonText=='开始审方'){
+          this.buttonText = '停止审方'
+          this.buttonType = 'default'
+        }else {
+          this.buttonText = '开始审方'
+          this.buttonType = 'primary'
+        }
+      }
 
 
     }
