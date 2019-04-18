@@ -43,13 +43,17 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-input v-decorator="['roleId',]"/>
+        <a-col :span='22' :style="{height: '30px',textAlign:'right', backgroundColor: listData.colors,display: 'inline-block'}">
+        </a-col>
+        <a-col :span="2">
+          <colorPicker @change="handlesColor" style="margin-left: 15px" v-model="colors"/></a-col>
+        <!--<a-input v-decorator="['roleId',]"> </a-input>-->
       </a-form-item>
       <a-form-item
         :wrapper-col="{ span: 24, offset: 10 }"
       >
         <a-button type="primary" @click="handleSubmit">保存</a-button>
-        <a-button class="margin-left-20">取消</a-button>
+        <a-button class="margin-left-20" @click="backTo">取消</a-button>
       </a-form-item>
     </a-form>
   </a-card>
@@ -63,10 +67,8 @@
     data() {
       return {
         formData: {
-          roleId: '<后台自动生成>',
+          roleId: '',
           roleName: '',
-          // status: '1',
-          // isOp: '1'
         },
         labelCol: {
           xs: { span: 8 },
@@ -77,13 +79,17 @@
           sm: { span: 8 }
         },
         form: this.$form.createForm(this),
-        // checkNum: 0,
-        roleCode: '<系统自动生成>',
-        loadData: []
+        roleCode: '',
+        loadData: [],
+        colors:this.$route.params.colors,
+        listData:{},
       }
     },
     computed: {},
     mounted() {
+      let _this = this;
+      _this.listData = this.$route.params;
+      console.log(_this.listData);
     },
     methods: {
       handleSubmit(e) {
@@ -111,6 +117,10 @@
       },
       confirm(e) {
 
+      },
+      handlesColor(data){
+        console.log(data);
+        this.listData.colors = data;
       }
     }
   }
@@ -122,5 +132,9 @@
 
   .spanBtn {
     color: #1694fb
+  }
+  .m-colorPicker/deep/ .colorBtn{
+    height: 30px;
+    width: 30px;
   }
 </style>

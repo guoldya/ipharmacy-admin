@@ -2,17 +2,17 @@
     <div class="search-form">
         <a-card>
             <a-col :span="21">
-                <a-form :form="form">
+                <a-form :form="form" >
                     <a-row :gutter="21">
                         <a-col v-for="(item,index) in list" :span="6" :key="index"
                                :style="{display:index<count ?'block':'none'}">
-                            <a-form-item :label="item.name" v-if="!item.type || item.type=='text'">
+                            <a-form-item :label="item.name" v-if="!item.type || item.type=='text'" v-bind="formItemLayout">
                                 <a-input v-decorator="[item.dataField]"></a-input>
                             </a-form-item>
-                            <a-form-item :label="item.name" v-if="item.type=='range-picker'">
+                            <a-form-item :label="item.name" v-if="item.type=='range-picker'" v-bind="formItemLayout">
                                 <a-range-picker v-decorator="[item.dataField]"/>
                             </a-form-item>
-                            <a-form-item :label="item.name" v-if="item.type=='select'">
+                            <a-form-item :label="item.name" v-if="item.type=='select'" v-bind="formItemLayout">
                                 <a-select v-decorator="[item.dataField]">
                                     <a-select-option :value='op[item.keyExpr]' v-for="(op,index) in item.dataSource" :key="index">
                                         {{op[item.valueExpr]}}
@@ -63,7 +63,11 @@
             return {
                 value: '',
                 expand: false,
-                form: this.$form.createForm(this)
+                form: this.$form.createForm(this),
+              formItemLayout: {
+                labelCol: {span: 5},
+                wrapperCol: {span: 7},
+              },
             }
         },
         computed: {
