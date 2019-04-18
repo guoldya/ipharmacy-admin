@@ -117,6 +117,7 @@
           <a-col :span="12" style="opacity: 0.6">2018年05月03日</a-col>
         </a-row>
         <p style="font-size: 22px;font-weight: bold;padding-top: 15px;">R:</p>
+        <a-icon type="dingding-o" />
         <div v-for="(op,index) in columns">
           <a-row style="margin-bottom: 15px;line-height: 30px;">
             <a-col :offset="1" :span="20">{{index+1}}.异烟肼片 0.1GM*100 <span style="font-size: 18px;font-weight: bold">7粒</span> </a-col>
