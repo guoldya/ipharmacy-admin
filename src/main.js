@@ -35,8 +35,8 @@ import Enum from '@/comm-data/enum.js'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'flex.css'// flex 布局库
 import '@/style/main.css'//引入自定义样式
-
-
+import { Icon } from 'ant-design-vue'
+import opcol from '@/my-components/opcol/opcol.vue'
 
 
 
@@ -68,6 +68,16 @@ Vue.prototype.$notification = notification
 Vue.component('Searchpanel', Searchpanel);
 Vue.component('grid-layout', GridLayout);
 Vue.component('grid-item', GridItem);
+Vue.component('opcol', opcol)
+
+
+/**
+ * 引入自定义font图表
+ */
+const MyIcon = Icon.createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js', // 在 iconfont.cn 上生成
+});
+
 
 new Vue({
   router,
@@ -88,5 +98,9 @@ new Vue({
     // 获取并记录用户 UA
     this.$store.commit('ua/get')
     this.$store.commit('SET_NAME',{name:this.userName});
+  },
+  template: '<my-icon type="icon-example" />',
+  components: {
+    'my-icon': MyIcon,
   }
 }).$mount('#app')
