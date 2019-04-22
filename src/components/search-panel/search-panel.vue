@@ -66,11 +66,11 @@
                 form: this.$form.createForm(this),
                 formItemLayout: {
                     labelCol: {
-                        lg: { span: 6 },
+                        lg: { span: 8 },
                         sm: { span: 7 },
                     },
                     wrapperCol: {
-                        lg: { span: 10 },
+                        lg: { span: 16 },
                         sm: { span: 17 },
                     },
                 },
@@ -136,5 +136,9 @@
         left: 50%;
         bottom: -16px;
         margin-left: -1px;
+    }
+    .search-form .ant-form-item
+    {
+      margin-bottom: 0px;
     }
 </style>

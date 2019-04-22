@@ -43,10 +43,10 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-col :span='22' :style="{height: '30px',textAlign:'right', backgroundColor: listData.colors,display: 'inline-block'}">
-        </a-col>
+        <!--<a-col :span='22' :style="{height: '30px',textAlign:'right', backgroundColor: listData.colors,display: 'inline-block'}">-->
+        <!--</a-col>-->
         <a-col :span="2">
-          <colorPicker @change="handlesColor" style="margin-left: 15px" v-model="colors"/></a-col>
+          <colorPicker @change="handlesColor" style="margin-left: 15px;z-index: 3" v-model="colors"/></a-col>
         <!--<a-input v-decorator="['roleId',]"> </a-input>-->
       </a-form-item>
       <a-form-item

@@ -119,7 +119,7 @@
   color: white !important;
 }
 .highlight {
-  background-color: yellow;
+  /*background-color: yellow;*/
 }
 .search-item-title{
   display: block;
@@ -142,6 +142,41 @@
   width: 100%;
 }
 
-.el-table--mini, .el-table--small, .el-table__expand-icon{
+.ant-badge-status-text{
   font-size: 14px !important;
+}
+
+.page-header[data-v-6740ec88]{
+padding: 0 0;
+}
+.content[data-v-6ade0bd9] {
+  margin: 5px 5px 0;
+}
+/**/
+/*.el-table .cell{*/
+  /*line-height: 16px !important;*/
+/*}*/
+.el-table{
+  font-size: 14px;
+}
+.el-table td, .el-table th {
+  padding: 5px 0;
+}
+
+.ant-btn-sm{
+  font-size: 14px;
+}
+.ant-form label
+{
+  font-size: 14px;
+}
+/*调色盘宽度*/
+.m-colorPicker .box[data-v-11842410]{
+ width: 212px;
+}
+/*表头样式*/
+.el-table th>.cell{
+  color: rgba(0, 0, 0, 0.85);
+  font-family: "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 14px;
 }

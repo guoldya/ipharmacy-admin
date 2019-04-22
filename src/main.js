@@ -19,7 +19,7 @@ import 'babel-polyfill' // polyfill
 import $ from 'jquery'
 window.$=$
 //组件相关
-import { Table, TableColumn,Card,Tag,Collapse,CollapseItem } from 'element-ui'
+import { Table, TableColumn,Card,Tag,Collapse,CollapseItem,Scrollbar,Tooltip} from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局
 import vcolorpicker from 'vcolorpicker'
 
@@ -49,6 +49,8 @@ Vue.use(Tag)
 Vue.use(Collapse)
 Vue.use(CollapseItem)
 Vue.use(vcolorpicker)
+Vue.use(Scrollbar)
+Vue.use(Tooltip)
 Vue.use(msgHandler)//统一错误处理
 Vue.use(VueAxios, router)
 
@@ -74,7 +76,7 @@ Vue.component('opcol', opcol)
 /**
  * 引入自定义font图表
  */
-const MyIcon = Icon.createFromIconfontCN({
+const myIcon = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js', // 在 iconfont.cn 上生成
 });
 
@@ -99,8 +101,7 @@ new Vue({
     this.$store.commit('ua/get')
     this.$store.commit('SET_NAME',{name:this.userName});
   },
-  template: '<my-icon type="icon-example" />',
   components: {
-    'my-icon': MyIcon,
+    'my-icon': myIcon,
   }
 }).$mount('#app')

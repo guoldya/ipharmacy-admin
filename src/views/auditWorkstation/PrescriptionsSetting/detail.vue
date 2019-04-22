@@ -1,6 +1,12 @@
 <template>
   <div>
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false">
+      <div class="cardHead">
+        <a href="#" @click.prevent="cancle">
+          <a-icon type="left"></a-icon>
+          返回
+        </a>
+      </div>
       <a-form :form="form" id="form" @submit="handleSubmit">
         <a-form-item
           label="方案名称"
@@ -58,11 +64,11 @@
           />
         </a-form-item>
         <a-form-item
-          :wrapperCol="{ span: 8}"
+          :wrapperCol="{ span: 7}"
           style="text-align: right"
         >
-          <a-button style="margin-left: 5px" type="primary" @click="addCondition()">
-            <a-icon type="plus-circle" theme="filled"/>
+          <a-button type="primary"  @click="addCondition()">
+            <a-icon type="plus-circle" theme="filled" />
             添加条件
           </a-button>
         </a-form-item>
@@ -71,9 +77,8 @@
         <a-row>
           <a-col :span="7"></a-col>
           <a-col :span="4">
-            <a-select class="width-100" v-model="cd.val">
+            <a-select  class="width-100" v-model="cd.val">
               <a-select-option
-                size="large"
                 v-for="item in levelData"
                 :value='item.id'
                 :key="index"
@@ -125,7 +130,7 @@
         </a-row>
       </div>
       <a-row class="btnStyle">
-        <a-button @click="cancle">取消</a-button>
+        <a-button @click="cancle" >取消</a-button>
         <a-button htmlType="submit" type="primary" style="margin-left: 8px" :loading="loading">提交</a-button>
       </a-row>
     </a-card>

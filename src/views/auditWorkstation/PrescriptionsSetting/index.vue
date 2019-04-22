@@ -2,8 +2,8 @@
     <a-card>
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
-          <a-button type="primary" @click="search">查询</a-button>
-          <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
+          <a-button type="primary" @click="search" >查询</a-button>
+          <a-button style="margin-left: 5px" @click="resetForm" >重置</a-button>
         </div>
       </Searchpanel>
     <a-spin :spinning="loading" tip="加载中...">
@@ -11,13 +11,23 @@
       <el-table
         class="margin-top-10"
         :data="loadData" border
+        :header-cell-style="{background:'#fafafa'}"
         :highlight-current-row="true">
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
           <template slot-scope="props">
                   <span v-if="item.dataIndex == 'action'">
-                            <opcol :items="items" :more="true" :data="props.row"></opcol>
+                            <!--<opcol :items="items" :more="true" :data="props.row"></opcol>-->
+                    <a @click="edits(props.row)">编辑</a>
+                      <a-divider type="vertical" />
+                      <a  @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>
+                        <a-divider type="vertical" />
+                       <a @click="edits(props.row)">删除</a>
                   </span>
+            <span v-else-if="item.dataIndex == 'status'">
+                <a-badge :status="props.row.status == 0? 'default':'processing'"
+                         :text="props.row.status==0?'停用':'启用'"/>
+              </span>
             <span v-else-if="item.dataIndex == 'roleNum'">
                                     <a-badge :showZero="true" :count="props.row.roleNum" @click="checkRol(props)"
                                              :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
@@ -88,17 +98,18 @@
         mockData:[],
         columns: [
           {title: '方案名称',dataIndex: 'id'},
-          {title: '方案类型',dataIndex: 'levelType',align: 'center',width:100},
-          { title: '分配', dataIndex: 'roleNum', align: 'center',width:100 },
-          {title: '方案范围',dataIndex: 'problemLevel',align: 'center',width:100},
+          {title: '方案类型',dataIndex: 'levelType',align: 'center',width:80},
+          {title: '方案范围',dataIndex: 'problemLevel',align: 'center',width:80},
           {title: '方案描述',dataIndex: 'createTime'},
+          { title: '分配', dataIndex: 'roleNum', align: 'center',width:80 },
+          {title: '状态',dataIndex: 'status',width:80,align:'center'},
           {title: '操作',width: '150px',dataIndex: 'action',align:'center'}
         ],
         items:[
           {text:'编辑',showtip:false,click:this.edits},
-          {text:'删除',color:'#E6A23C',showtip:true,tip:'确认删除吗？',click:this.delRow},
+          {text:'删除',showtip:true,tip:'确认删除吗？',click:this.delRow},
           {text:'启用',color:'#2D8cF0',showtip:true,tip:'确认启用吗？',click:this.changeStatus},
-          {text:'停用',color:'#E6A23C',showtip:true,tip:'确认停用吗？',click:this.changeStatus},
+          {text:'停用',showtip:true,tip:'确认停用吗？',click:this.changeStatus},
         ],
         colors:'#ffffff',
         loadData:[],
@@ -135,8 +146,8 @@
         this.fetchYJSMapData({ pageSize: 10, offset: 0 })
       },
       getData(){
-        this.loadData = [{id:1,levelType:'系统',status:1,problemLevel:'0级',createTime:'无',colors:'red',roleNum:5,editTime:'无'},
-          {id:2,levelType:'系统',status:1,problemLevel:'0级',createTime:'无',colors:'yellow',roleNum:4,editTime:'无'}];
+        this.loadData = [{id:1,levelType:'药师审方',status:1,problemLevel:'门诊',createTime:'无',colors:'red',roleNum:5,editTime:'无'},
+          {id:2,levelType:'药师审方',status:1,problemLevel:'门诊',createTime:'无',colors:'yellow',roleNum:4,editTime:'无'}];
       },
       pageChangeSize(){
 
@@ -146,7 +157,10 @@
       },
       //新增
       add(){
-
+        this.$router.push({
+          name: 'PrescriptionsDetail',
+          // params:data,
+        })
       },
       //停用
       ban(data){

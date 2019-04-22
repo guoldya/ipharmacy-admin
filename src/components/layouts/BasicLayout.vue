@@ -3,7 +3,7 @@
     <div class="tags-nav" v-if="multipage">
       <contextmenu :itemList="curtagName === homepath ? contextmenuListIndex : contextmenuList"  :visible.sync="menuVisible" @select="onMenuSelect" />
       <a-tabs
-        style="margin-top: -22px; margin-bottom: 8px"
+        style="margin-top: -22px; margin-bottom: 4px; margin-left:-20px;"
         :active-key="current"
         hideAdd
         type="editable-card"

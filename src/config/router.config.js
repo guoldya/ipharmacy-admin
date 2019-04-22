@@ -350,7 +350,7 @@ export const asyncRouterMap = [
                 name: 'problemLevelDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/problemLevel/detail.vue'),
-                meta: { title: '问题等级详情',hiddenHeaderContent: true, detail: true }
+                meta: { title: '问题等级详情', detail: true }
               }
             ]
           },
@@ -371,7 +371,7 @@ export const asyncRouterMap = [
                 name: 'PrescriptionsDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/detail.vue'),
-                meta: { title: '审方设置详情', hiddenHeaderContent: true,detail: true }
+                meta: { title: '审方设置详情', detail: true }
               }
             ]
           },
@@ -392,7 +392,7 @@ export const asyncRouterMap = [
                 name: 'presOutpatientDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-                meta: { title: '审方中心详情',hiddenHeaderContent: true, detail:true }
+                meta: { title: '审方中心详情', detail:true }
               },
             ]
           },
