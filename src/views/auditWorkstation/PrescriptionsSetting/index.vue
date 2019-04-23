@@ -11,7 +11,6 @@
       <el-table
         class="margin-top-10"
         :data="loadData" border
-        :header-cell-style="{background:'#fafafa'}"
         :highlight-current-row="true">
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
@@ -41,6 +40,7 @@
 
       <a-pagination
         showSizeChanger
+        showQuickJumper
         :total="total"
         class="pnstyle"
         :defaultPageSize="pageSize"
@@ -97,13 +97,13 @@
         targetKeys: [],
         mockData:[],
         columns: [
-          {title: '方案名称',dataIndex: 'id'},
+          {title: '方案名称',dataIndex: 'id',width:200},
           {title: '方案类型',dataIndex: 'levelType',align: 'center',width:80},
           {title: '方案范围',dataIndex: 'problemLevel',align: 'center',width:80},
           {title: '方案描述',dataIndex: 'createTime'},
           { title: '分配', dataIndex: 'roleNum', align: 'center',width:80 },
           {title: '状态',dataIndex: 'status',width:80,align:'center'},
-          {title: '操作',width: '150px',dataIndex: 'action',align:'center'}
+          {title: '操作',dataIndex: 'action',align:'center',width:140,}
         ],
         items:[
           {text:'编辑',showtip:false,click:this.edits},

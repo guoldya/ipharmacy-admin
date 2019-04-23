@@ -11,8 +11,7 @@
         class="margin-top-10"
         :data="loadData" border
         :highlight-current-row="true"
-       style="width: 100%"
-        :header-cell-style="{background:'#fafafa'}"
+        style="width: 100%"
       >
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
@@ -36,6 +35,7 @@
 
       <a-pagination
         showSizeChanger
+        showQuickJumper
         :total="total"
         class="pnstyle"
         :defaultPageSize="pageSize"
@@ -137,7 +137,7 @@
 
         this.$router.push({
           name: 'problemLevelDetail',
-          params: data
+          query: data
         })
       },
 

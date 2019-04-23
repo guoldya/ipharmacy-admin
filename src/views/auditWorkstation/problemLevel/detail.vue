@@ -43,11 +43,9 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <!--<a-col :span='22' :style="{height: '30px',textAlign:'right', backgroundColor: listData.colors,display: 'inline-block'}">-->
-        <!--</a-col>-->
         <a-col :span="2">
-          <colorPicker @change="handlesColor" style="margin-left: 15px;z-index: 3" v-model="colors"/></a-col>
-        <!--<a-input v-decorator="['roleId',]"> </a-input>-->
+          <colorPicker @change="handlesColor" class="colorPick" v-model="colors"/>
+        </a-col>
       </a-form-item>
       <a-form-item
         :wrapper-col="{ span: 24, offset: 10 }"
@@ -81,15 +79,20 @@
         form: this.$form.createForm(this),
         roleCode: '',
         loadData: [],
-        colors:this.$route.params.colors,
+        colors:'#000',
         listData:{},
       }
     },
     computed: {},
     mounted() {
       let _this = this;
-      _this.listData = this.$route.params;
-      console.log(_this.listData);
+      if (this.$route.query){
+        _this.listData = this.$route.query;
+        if (this.$route.query.colors) {
+          _this.colors = this.$route.query.colors;
+        }
+        console.log(_this.listData);
+      }
     },
     methods: {
       handleSubmit(e) {
@@ -119,8 +122,10 @@
 
       },
       handlesColor(data){
-        console.log(data);
-        this.listData.colors = data;
+        if (data) {
+          console.log(data);
+          this.listData.colors = data;
+        }
       }
     }
   }
@@ -133,8 +138,13 @@
   .spanBtn {
     color: #1694fb
   }
-  .m-colorPicker/deep/ .colorBtn{
-    height: 30px;
-    width: 30px;
+  .m-colorPicker .colorBtn[data-v-11842410] {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+  }
+  .colorPick{
+    margin-left: 15px;
+    z-index: 3;
   }
 </style>

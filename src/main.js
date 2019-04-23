@@ -26,6 +26,7 @@ import vcolorpicker from 'vcolorpicker'
 //业务相关组件
 import msgHandler from '@/comm-msg/msg-handler.js'
 import Searchpanel from '@/components/search-panel'
+
 import util from '@utils/util'
 import { getFormat } from '@/utils/misc'
 import {asyncRouterMap} from '@/config/router.config'
@@ -68,7 +69,6 @@ Vue.prototype.$notification = notification
  * @description 全局注册应用配置
  */
 Vue.component('Searchpanel', Searchpanel);
-Vue.component('grid-layout', GridLayout);
 Vue.component('grid-item', GridItem);
 Vue.component('opcol', opcol)
 

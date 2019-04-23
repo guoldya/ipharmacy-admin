@@ -1,16 +1,7 @@
 <template>
   <div>
     <a-card>
-      <a-row :gutter="20">
-        <a-col :span="3"></a-col>
-        <div v-for="op in countText">
-          <a-col class="countFor" :style="{color:op.colors}" :span="6">
-            <countTo class="countStyle" :end="op.count"></countTo>
-            <span>{{op.text}}</span>
-          </a-col>
-        </div>
-        <a-col :span="3"></a-col>
-      </a-row>
+      <countText :countList="countText"></countText>
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
           <a-button type="primary" @click="search">查询</a-button>
@@ -36,19 +27,21 @@
           style="width: 100%"
           @select="selectBox"
           @select-all="selectAll"
-          :header-cell-style="{background:'#fafafa'}"
         >
+          <!--多选框checkbox-->
           <el-table-column
             type="selection"
             width="55"
+            align="center"
             :show-overflow-tooltip="true">
           </el-table-column>
+          <!--状态列-->
           <el-table-column
             prop="status"
             label="状态"
             align="center"
             width="100"
-            :filters="[{ text: '待审核', value: '0' }, { text: '打回修改', value: '1' },{ text: '拒绝建议', value: '2' },{ text: '通过审核', value: '3' }]"
+            :filters="this.enum.patientStatus"
             :filter-method="filterTag"
             filter-placement="bottom"
             :show-overflow-tooltip="true"
@@ -60,6 +53,7 @@
               <a-badge v-else-if="props.row.status == 3" status="success" text="通过审核"/>
             </template>
           </el-table-column>
+          <!--处方、处方数、患者列-->
           <el-table-column
             :prop="item.prop"
             :label="item.title"
@@ -74,52 +68,26 @@
                         <a href="">{{props.row[item.prop]}}&nbsp;<a-icon type="message"/></a>
                   </span>
               <span v-else-if="item.prop == 'prescriptionNum'">
-                 <!--<a-badge  :showZero="true" :count="props.row.prescriptionNum"-->
-                <!--:numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>-->
-                    <a-popover  trigger="hover">
-                      <template slot="content">
-                        <el-table
-                          class="margin-top-10"
-                          border
-                          style="width: 100%"
-                          :data="adviceData"
-                          :cell-style="cellStyle"
-                          :header-cell-style="{background:'#fafafa'}">
-          <el-table-column
-            :prop="item.prop"
-            :label="item.title"
-            :key="index"
-            v-for="(item,index) in columns2"
-            :width="item.width"
-            :align="item.align"
-            :formatter="item.formatter"
-            :show-overflow-tooltip="true"
-          >
-            <template slot-scope="props">
-              <span>
-                {{props.row[item.prop]}}
-                  </span>
-            </template>
-          </el-table-column>
-        </el-table>
-                      </template>
-                      <a-badge  :showZero="true" :count="props.row.prescriptionNum"
-                                :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
-                    </a-popover>
-                  </span>
+                <a-popover @mouseenter="mouseHover(props.row)" trigger="hover">
+                  <template slot="content">
+                    <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
+                  </template>
+                  <a-badge :showZero="true" :count="props.row.prescriptionNum"
+                           :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
+                </a-popover>
+              </span>
               <span v-else>
                 {{props.row[item.prop]}}
-                  </span>
+              </span>
             </template>
-
-
           </el-table-column>
+          <!--问题tags列-->
           <el-table-column
             prop="problem"
             label="问题"
             align="center"
             width="80"
-            :filters="[{ text: '1级', value: '1' }, { text: '2级', value: '2' },{ text: '3级', value: '3' },{ text: '4级', value: '4' },{ text: '5级', value: '5' }]"
+            :filters="this.enum.patientProblem"
             :filter-method="filterTag"
             filter-placement="bottom"
             :show-overflow-tooltip="true"
@@ -128,6 +96,7 @@
               <a-tag :color="props.row.colors"> {{props.row.problem}}级</a-tag>
             </template>
           </el-table-column>
+          <!--问题详情列-->
           <el-table-column
             prop="text"
             label=""
@@ -141,16 +110,19 @@
               </el-tooltip>
             </template>
           </el-table-column>
+          <!--操作列-->
           <el-table-column
             prop="action"
             label="操作"
-            width="150"
+            width="140"
             align="center"
           >
             <template slot-scope="props">
               <a @click="looks(props.row)">查看</a>
               <a-divider type="vertical"/>
-              <a @click="passSingle(props.row)">通过</a>
+              <a-popconfirm title="确定通过?" @confirm="passSingle(props.row)" okText="通过" cancelText="取消">
+                <a href="javascript:;">通过</a>
+              </a-popconfirm>
               <a-divider type="vertical"/>
               <a @click="rejectedSingle(props.row)">驳回</a>
             </template>
@@ -171,108 +143,47 @@
         </a-pagination>
       </a-spin>
       <a-modal
-        title="药嘱明细"
+        title="驳回理由"
         :visible="Modal.visible"
         @ok="handleOk"
         :confirmLoading="Modal.confirmLoading"
         @cancel="handleCancel"
-        :width="700"
       >
-        <a-row class="modalRow">
-          <a-col :span="12">费别：<span class="opacity8">医保</span></a-col>
-          <a-col :span="12">临床诊断：<span class="opacity8">胃炎</span></a-col>
-        </a-row>
-        <el-table
-          class="margin-top-10"
-          border
-          style="width: 100%"
-          :data="adviceData"
-          :cell-style="cellStyle"
-          :header-cell-style="{background:'#fafafa'}">
-          <el-table-column
-            :prop="item.prop"
-            :label="item.title"
-            :key="index"
-            v-for="(item,index) in columns2"
-            :width="item.width"
-            :align="item.align"
-            :formatter="item.formatter"
-            :show-overflow-tooltip="true"
-          >
-            <template slot-scope="props">
-              <span>
-                {{props.row[item.prop]}}
-                  </span>
-            </template>
-          </el-table-column>
-        </el-table>
-
-        <template slot="footer">
-          &nbsp;
-        </template>
+        <a-form :form="form">
+          <a-form-item>
+            <a-textarea v-decorator="[ 'refuseMemo' ]"/>
+          </a-form-item>
+        </a-form>
       </a-modal>
-      <a-drawer
-        title="药嘱明细"
-        placement="right"
-        :closable="false"
-        @close="onClose"
-        :width="800"
-        :visible="visible"
-        align="center"
-      >
-        <!--<a-row class="drawerRow" >-->
-        <!--<a-col :span="12">姓名：<span class="opacity8" >张三</span></a-col>-->
-        <!--<a-col :span="12">性别：<span class="opacity8" >男</span></a-col>-->
-        <!--</a-row>-->
-        <!--<a-row class="drawerRow">-->
-        <!--<a-col :span="12">年龄：<span class="opacity8" >55岁</span></a-col>-->
-        <!--<a-col :span="12">科室：<span class="opacity8" >消化内科</span></a-col>-->
-        <!--</a-row>-->
-        <a-row class="drawerRow">
-          <a-col :span="12">费别：<span class="opacity8">医保</span></a-col>
-          <a-col :span="12">临床诊断：<span class="opacity8">胃炎</span></a-col>
-        </a-row>
-        <!--<a-row class="drawerRow">-->
-        <!--&lt;!&ndash;<a-col :span="12">门诊号：<span class="opacity8" >8008208820</span></a-col>&ndash;&gt;-->
-        <!--<a-col :span="12">临床诊断：<span class="opacity8" >胃炎</span></a-col>-->
-        <!--</a-row>-->
-        <!--<a-row class="drawerRow">-->
-        <!--<a-col :span="12" class="opacity8" >2018年05月03日</a-col>-->
-        <!--</a-row>-->
-        <!--<my-icon class="myIcon" type="anticonchufang"/>：-->
-        <div class="prescription" v-for="(op,index) in columns">
-          <a-row>
-            <a-col :offset="1" :span="20">{{index+1}}.异烟肼片 0.1GM*100 <span
-              style="font-size: 16px;font-weight: bold">7粒</span></a-col>
-            <a-col :offset="3" :span="20">用法：<span class="opacity8" style="font-size: 16px;">0.33g 每天三次 口服</span>
-            </a-col>
-          </a-row>
-        </div>
-
-      </a-drawer>
-
-
     </a-card>
   </div>
 </template>
 <script>
   import {} from '@/api/login'
-  import countTo from '@/components/count-to'
   import { Icon } from 'ant-design-vue'
-
+  import countText from '@/components/count-text'
+  import prescriptionTabs from '@/components/prescription-tabs';
   const myIcon = Icon.createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js' // 在 iconfont.cn 上生成
   })
   export default {
     components: {
-      countTo,
-      myIcon
+      myIcon,
+      countText,
+      prescriptionTabs
     },
     data() {
       return {
-        clientData: [],
-        count: 30,
-        visible: false,
+        //页头数据
+        countText: [],
+        //按钮初始化
+        buttonText: '开始审方',
+        buttonType: 'primary',
+        disable: true,
+        //初始化多选项
+        checkSelect: 0,
+        selections: [],
+        //table数据加载
         loading: false,
         dataSource: [{
           status: 1,
@@ -306,38 +217,27 @@
           { title: '处方', prop: 'time', width: 150 },
           { title: '', prop: 'openName', width: 90 },
           { title: '', prop: 'deptName', width: 80 },
-          { title: '处方数', prop: 'prescriptionNum', width: 80, align: 'center' },
+          { title: '处方数', prop: 'prescriptionNum', width: 70, align: 'center' },
           { title: '患者', prop: 'patientNum', width: 150 },
           { title: '', prop: 'patientName', width: 80 },
           { title: '', prop: 'patientSex', width: 50 },
           { title: '', prop: 'patientAge', width: 60 }
         ],
-        //医嘱数据
-        adviceData: [{ name: '异烟肼片', spec: '0.1GM*100粒/瓶', total: '7粒', single: '0.33g', freq: '每天三次', way: '口服' },
-          { name: '银参通络胶囊', spec: '0.46g*24粒/盒 ', total: '20粒', single: '0.46g', freq: '每天三次', way: '口服' },
-          { name: '益肾灵胶囊', spec: '0.1GM*100粒/瓶', total: '72粒', single: '0.33g', freq: '每天三次', way: '口服' },
-          { name: '银杏叶丸', spec: '0.2g*12颗/瓶 ', total: '40颗', single: '0.33g', freq: '每天三次', way: '口服' },
-          { name: '云南白药胶囊', spec: '0.18g*24片/盒 ', total: '24片', single: '0.18g', freq: '每天三次', way: '口服' }],
-        columns2: [
-          { title: '名称', prop: 'name',width: 130  },
-          { title: '规格', prop: 'spec', width: 140 },
-          { title: '总量', prop: 'total', width: 60 },
-          { title: '单量', prop: 'single', width: 60 },
-          { title: '频次', prop: 'freq', width: 80, align: 'center' },
-          { title: '服药方式', prop: 'way', width: 80 }
-        ],
+        //页码初始化
         total: 2,
         current: 1,
-        countText: [],
-        selections: [],
-        buttonText: '开始审方',
-        buttonType: 'primary',
-        disable: true,
-        checkSelect: 0,
+
+
+
+
         Modal: {
           visible: false,
           confirmLoading: false
-        }
+        },
+        form: this.$form.createForm(this),
+        //处方单tabsData
+        tabsData:{},
+
       }
     },
     computed: {
@@ -361,15 +261,20 @@
             keyExpr: 'id',
             valueExpr: 'text',
             dataSource: this.enum.drugSource
+          },
+          {
+            type: 'checkbox',
+            name: '已分配科室',
+            dataField: 'check'
           }
         ]
       }
     },
     mounted() {
+      //获取后台数据
       this.fetchYJSMapData()
-      this.fetchClientListData()
-      this.getCountText()
-      this.dealData()
+      //获取头部数据
+      this.getCountText();
     },
     methods: {
       //搜索
@@ -384,12 +289,14 @@
         this.$refs.searchPanel.form.resetFields()
         this.fetchYJSMapData({ pageSize: 10, offset: 0 })
       },
+      //翻页事件
       customerPageChange(page, pageSize) {
         let params = {}
         params.pageSize = pageSize
         params.offset = (page - 1) * pageSize
         this.fetchYJSMapData(params)
       },
+      //更改一页多少数据
       clientSizeChange(current, size) {
         this.current = 1
         let params = {}
@@ -397,9 +304,7 @@
         params.offset = 0
         this.fetchYJSMapData(params)
       },
-
-      //获取数据
-
+      //处理数据
       dealData() {
         let data = this.dataSource
         for (let key in data) {
@@ -416,15 +321,8 @@
           }
         }
         this.dataSource = data
-        console.log(this.dataSource)
       },
-      drugMap() {
-        this.Modal.visible = true
-        // this.visible = true
-      },
-      onClose() {
-        this.visible = false
-      },
+      //TODO:后台暂未获取数据
       fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
         params.statusYjs = '1'
         params.drugSource = '1'
@@ -442,28 +340,18 @@
         //   this.loading = false;
         //   this.error(err)
         // })
+        this.dealData()
       },
-      fetchClientListData(params = {}) {
-        // clientListData(params).then(res => {
-        //   if (res.code == '200') {
-        //     this.clientData = res.rows;
-        //   } else {
-        //     this.warn(res.msg)
-        //   }
-        // }).catch(err => {
-        //   this.error(err)
-        // })
-      },
-
+      //TODO：数据暂未获取
       getCountText() {
         this.countText = [{ count: 1, text: '新审核处方', colors: '#32c5d2' },
           { count: 3, text: '待确认处方', colors: '#f3c200' },
           { count: 12, text: '已通过处方', colors: '#3598dc' }
         ]
       },
-
       //多选框点击事件
       selectBox(selection, row) {
+        //点击后获取这条数据
         this.selections = selection
         this.checkSelect = selection.length
       },
@@ -472,36 +360,12 @@
         this.selections = selection
         this.checkSelect = selection.length
       },
-      //清空
+      //清空多选
       clearSelect() {
         this.$refs.multipleTable.clearSelection()
         this.checkSelect = 0
       },
-      //通过按钮事件
-      pass() {
-        if ($.trim(this.selections).length <= 0) {
-          this.warn('请选择处方')
-          return
-        } else {
-          console.log(1)
-        }
-      },
-      //单个通过
-      passSingle(data) {
-
-      },
-      //单个驳回
-      rejectedSingle(data) {
-
-      },
-      rejected() {
-        if ($.trim(this.selections).length <= 0) {
-          this.warn('请选择处方')
-          return
-        } else {
-          console.log(1)
-        }
-      },
+      //开始审方
       buttonClick() {
         if (this.buttonText == '开始审方') {
           this.buttonText = '停止审方'
@@ -513,15 +377,41 @@
           this.disable = true
         }
       },
-
-      //弹窗取消
+      //批量通过
+      pass() {
+        if ($.trim(this.selections).length <= 0) {
+          this.warn('请选择处方')
+          return
+        } else {
+          console.log(1)
+        }
+      },
+      //批量驳回
+      rejected() {
+        if ($.trim(this.selections).length <= 0) {
+          this.warn('请选择处方')
+          return
+        } else {
+          console.log(1)
+        }
+      },
+      //单个通过
+      passSingle(data) {
+        console.log(data)
+        console.log(1)
+      },
+      //单个驳回
+      rejectedSingle(data) {
+        this.Modal.visible = true
+      },
+      //弹窗提交
       handleOk() {
         this.Modal.visible = false
       },
+      //弹窗取消
       handleCancel() {
         this.Modal.visible = false
       },
-
       //筛选
       filterTag(row, column) {
         console.log(column)
@@ -532,17 +422,116 @@
       looks(data) {
 
       },
-
+      //处方单网格样式
+      //TODO:处方单显示数据颜色暂未控制
       cellStyle(row) {
-        if (row.rowIndex == 0 && row.columnIndex == 0) {
+        if (row.rowIndex == 0 && row.columnIndex == 2) {
           return 'color: red; opacity: 0.6;'
         } else if (row.rowIndex == 0 && row.columnIndex == 4) {
           return 'color: red; opacity: 0.6;'
-        } else if (row.rowIndex == 4 && row.columnIndex == 0) {
+        } else if (row.rowIndex == 4 && row.columnIndex == 2) {
           return 'color: red; opacity: 0.6;'
         } else if (row.rowIndex == 4 && row.columnIndex == 5) {
           return 'color: red; opacity: 0.6;'
         }
+      },
+      //TODO:处方单数据暂未处理
+      mouseHover(data) {
+        let tabsOne = {};
+        let tabsTwo = {};
+        let columns2= [
+          { title: '序号', prop: 'num', width: 50, align: 'right' },
+          { title: '', prop: 'mark', width: 20, align: 'left' },
+          { title: '名称', prop: 'name' },
+          { title: '规格', prop: 'spec', width: 130 },
+          { title: '总量', prop: 'total', width: 60 },
+          { title: '单量', prop: 'single', width: 60 },
+          { title: '频次', prop: 'freq', width: 80, align: 'center' },
+          { title: '服药方式', prop: 'way', width: 80, align: 'center' }
+        ];
+        if (data.patientName == '张力') {
+          let adviceData = [{
+            num: 1,
+            mark: '┎',
+            name: '5%葡萄糖氯化钠注射液',
+            spec: '500ml/袋',
+            total: '1袋',
+            single: '500ml',
+            freq: '每天一次',
+            way: '静滴'
+          },
+            {
+              num: 2,
+              mark: '┃',
+              name: '西咪替丁注射液',
+              spec: '2ml:0.2g',
+              total: '2支',
+              single: '0.4g',
+              freq: '每天一次',
+              way: '静滴'
+            },
+            {
+              num: 3,
+              mark: '┖',
+              name: '银参通络胶囊',
+              spec: '0.46g*24粒/盒 ',
+              total: '20粒',
+              single: '0.46g',
+              freq: '每天三次',
+              way: '口服'
+            },
+            { num: 4, name: '益肾灵胶囊', spec: '0.1GM*100粒/瓶', total: '72粒', single: '0.33g', freq: '每天三次', way: '口服' },
+            { num: 5, name: '银杏叶丸', spec: '0.2g*12颗/瓶 ', total: '40颗', single: '0.33g', freq: '每天三次', way: '口服' }
+          ];
+          tabsOne.tabName = '处方单1';
+          tabsOne.diagnose = '胃炎';
+          tabsOne.costType = '自费';
+          tabsOne.listData = adviceData;
+          tabsOne.columns = columns2;
+
+          tabsTwo.tabName = '处方单2';
+          tabsTwo.diagnose = '胃炎';
+          tabsTwo.costType = '自费';
+          tabsTwo.listData = adviceData;
+          tabsTwo.columns = columns2;
+        } else {
+           let adviceData = [
+            {  num: 1, name: '银参通络胶囊', spec: '0.46g*24粒/盒 ', total: '20粒', single: '0.46g', freq: '每天三次', way: '口服' },
+            {  num: 2, name: '益肾灵胶囊', spec: '0.1GM*100粒/瓶', total: '72粒', single: '0.33g', freq: '每天三次', way: '口服' },
+            {  num: 3, name: '银杏叶丸', spec: '0.2g*12颗/瓶 ', total: '40颗', single: '0.33g', freq: '每天三次', way: '口服' },
+            {  num: 4, name: '云南白药胶囊', spec: '0.18g*24片/盒 ', total: '24片', single: '0.18g', freq: '每天三次', way: '口服' },
+            {  num: 5, name: '异烟肼片', spec: '0.1GM*100粒/瓶', total: '7粒', single: '0.33g', freq: '每天三次', way: '口服' }
+          ];
+          tabsOne.tabName = '处方单1';
+          tabsOne.diagnose = '胃炎';
+          tabsOne.costType = '自费';
+          tabsOne.listData = adviceData;
+          tabsOne.columns = columns2;
+
+          tabsTwo.tabName = '处方单2';
+          tabsTwo.diagnose = '胃炎';
+          tabsTwo.costType = '自费';
+          tabsTwo.listData = adviceData;
+          tabsTwo.columns = columns2;
+        }
+        this.dealTabsData(tabsOne,tabsTwo);
+      },
+
+      dealTabsData(dataOne,dataTwo){
+        this.tabsData.tabsOne = {
+          tabName:dataOne.tabName,
+          diagnose:dataOne.diagnose,
+          costType:dataOne.costType,
+          adviceData:dataOne.listData,
+          columns:dataOne.columns,
+        };
+        this.tabsData.tabsTwo = {
+          tabName:dataTwo.tabName,
+          diagnose:dataTwo.diagnose,
+          costType:dataTwo.costType,
+          adviceData:dataTwo.listData,
+          columns:dataTwo.columns,
+        };
       }
     }
   }
@@ -552,34 +541,11 @@
   .divInfo span {
     margin-left: 10px;
   }
-
-  .countFor {
-    text-align: center;
-    margin-bottom: 4px;
-  }
-
-  .countStyle {
-    font-size: 24px;
-    margin-top: -12px;
-    margin-bottom: -6px;
-  }
-
-  .drawerRow {
-    border-bottom: 1px solid #cecece;
-    line-height: 37px;
-  }
-
   /*自定义图标样式*/
   .myIcon {
     font-size: 22px;
     font-weight: bold;
     padding-top: 40px;
-  }
-
-  /*药方样式*/
-  .prescription {
-    margin-top: 15px;
-    line-height: 30px;
   }
 
   /*网格样式*/
@@ -625,8 +591,4 @@
     height: 100%;
   }
 
-  /*弹窗样式*/
-  .modalRow {
-    margin-bottom: 16px;
-  }
 </style>

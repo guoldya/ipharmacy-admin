@@ -19,6 +19,11 @@
                                     </a-select-option>
                                 </a-select>
                             </a-form-item>
+                          <a-form-item v-if="!item.type || item.type=='checkbox'" v-bind="formItemLayout">
+                            <a-checkbox v-decorator="[item.dataField]">
+                             {{item.name}}
+                            </a-checkbox>
+                          </a-form-item>
                         </a-col>
                     </a-row>
                     <a-row style="text-align: center" v-if="this.list.length>4">
