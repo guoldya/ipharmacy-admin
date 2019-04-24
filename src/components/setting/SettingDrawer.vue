@@ -258,7 +258,7 @@
             },
             handleLayout(mode) {
               if (mode =='sidemenu'){
-                $('.page-header[data-v-6740ec88]').css("padding","0 0");
+                $('.page-header[data-v-6740ec88]').css("padding","0 32px");
               }else {
                 $('.page-header[data-v-6740ec88]').css("padding","16px 32px 0");
               }

@@ -1,13 +1,13 @@
 <template>
-  <page-layout :desc="description" :title="getTitle" :linkList="linkList" :search="search" :tabs="tabs">
+  <page-layout :desc="getDes" :title="getTitle" :linkList="linkList" :search="search" :tabs="tabs">
     <div slot="extra" class="extra-img">
       <img v-if="typeof extraImage !== 'undefined'" :src="extraImage"/>
     </div>
     <transition :name="transition ? 'page-toggle' : ''">
       <keep-alive v-if="multipage">
-        <router-view ref="page" />
+        <router-view ref="page"/>
       </keep-alive>
-      <router-view ref="page" v-else />
+      <router-view ref="page" v-else/>
     </transition>
   </page-layout>
 </template>
@@ -17,6 +17,7 @@
   import PageLayout from '../page/PageLayout'
   import RouteView from './RouteView'
   import PageHeader from '../page/PageHeader'
+
   export default {
     name: 'PageContent',
     components: {
@@ -42,13 +43,22 @@
     },
     computed: {
       getTitle() {
-        return this.$route.meta.title
+        if (this.$route.meta.detail) {
+          return this.$route.meta.title
+        }else if(this.$route.meta.description){
+          return this.$route.meta.title
+        }else{
+          return ''
+        }
       },
-      multipage () {
+      multipage() {
         return this.$store.getters.multiPage
       },
       transition() {
         return this.$store.getters.transition
+      },
+      getDes() {
+        return this.$route.meta.description
       }
     },
     methods: {
@@ -81,12 +91,12 @@
   }
 
   .mobile {
-    .extra-img{
+    .extra-img {
       margin-top: 10px;
       text-align: center;
       width: 96px;
 
-      img{
+      img {
         width: 100%;
       }
     }

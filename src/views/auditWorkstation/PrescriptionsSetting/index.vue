@@ -3,7 +3,7 @@
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
           <a-button type="primary" @click="search" >查询</a-button>
-          <a-button style="margin-left: 5px" @click="resetForm" >重置</a-button>
+          <a-button class="margin-left-5" @click="resetForm" >重置</a-button>
         </div>
       </Searchpanel>
     <a-spin :spinning="loading" tip="加载中...">
@@ -15,24 +15,25 @@
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
           <template slot-scope="props">
-                  <span v-if="item.dataIndex == 'action'">
-                            <!--<opcol :items="items" :more="true" :data="props.row"></opcol>-->
-                    <a @click="edits(props.row)">编辑</a>
-                      <a-divider type="vertical" />
-                      <a  @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>
-                        <a-divider type="vertical" />
-                       <a @click="edits(props.row)">删除</a>
-                  </span>
+            <span v-if="item.dataIndex == 'action'">
+              <a @click="edits(props.row)">编辑</a>
+              <a-divider type="vertical" />
+              <a  @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>
+              <a-divider type="vertical" />
+              <a @click="edits(props.row)">删除</a>
+            </span>
+            <span v-else-if="item.dataIndex == 'levelType'" v-html="levelType(props.row.levelType)"></span>
+            <span v-else-if="item.dataIndex == 'problemLevel'" >
+              {{props.row.problemLevel=='1'?'门诊':'住院' }}
+            </span>
             <span v-else-if="item.dataIndex == 'status'">
                 <a-badge :status="props.row.status == 0? 'default':'processing'"
                          :text="props.row.status==0?'停用':'启用'"/>
-              </span>
+            </span>
             <span v-else-if="item.dataIndex == 'roleNum'">
                                     <a-badge :showZero="true" :count="props.row.roleNum" @click="checkRol(props)"
                                              :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
                                 </span>
-            <span v-else-if="item.dataIndex == 'colors'" >
-                </span>
             <span v-else>{{props.row[item.dataIndex]}}</span>
           </template>
         </el-table-column>
@@ -125,7 +126,13 @@
             keyExpr: 'clientId',
             valueExpr: 'clientName',
           },
-          { name: '方案类型', dataField: 'drugName', type: 'select' },
+          { name: '方案类型',
+            dataField: 'drugName',
+            type: 'select',
+            keyExpr: 'id',
+            valueExpr: 'text',
+            dataSource:this.enum.packageType,
+          },
         ]
       }
     },
@@ -146,8 +153,8 @@
         this.fetchYJSMapData({ pageSize: 10, offset: 0 })
       },
       getData(){
-        this.loadData = [{id:1,levelType:'药师审方',status:1,problemLevel:'门诊',createTime:'无',colors:'red',roleNum:5,editTime:'无'},
-          {id:2,levelType:'药师审方',status:1,problemLevel:'门诊',createTime:'无',colors:'yellow',roleNum:4,editTime:'无'}];
+        this.loadData = [{id:'审方方案1',levelType:'1',status:1,problemLevel:'1',createTime:'无',colors:'red',roleNum:5,editTime:'无'},
+          {id:'审方方案2',levelType:'2',status:1,problemLevel:'2',createTime:'无',colors:'yellow',roleNum:4,editTime:'无'}];
       },
       pageChangeSize(){
 
@@ -168,7 +175,7 @@
       edits(data){
         this.$router.push({
           name: 'PrescriptionsDetail',
-          // params:data,
+          query:data,
         })
       },
 
@@ -187,6 +194,13 @@
       },
       handleChange(){
 
+      },
+      levelType(value){
+        if(value=='1'){
+          return '药师审方'
+        }else if(value == '2'){
+          return '处方点评'
+        }
       }
     }
   }

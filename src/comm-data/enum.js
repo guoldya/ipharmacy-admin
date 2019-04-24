@@ -20,9 +20,10 @@ const Enum={
 
   patientStatus:[
     { text: '待审核', value: '0' },
-    { text: '打回修改', value: '1' },
-    { text: '拒绝建议', value: '2' },
-    { text: '通过审核', value: '3' },
+    { text: '已修改', value: '1' },
+    { text: '坚持使用', value: '2' },
+    { text: '已通过', value: '3' },
+    { text: '已驳回', value: '4' },
   ],
   patientProblem:[
     { text: '1级', value: '1' },
@@ -30,6 +31,23 @@ const Enum={
     { text: '3级', value: '3' },
     { text: '4级', value: '4' },
     { text: '5级', value: '5' },
+    { text: '6级', value: '6' },
+    { text: '7级', value: '7' },
+  ],
+  dealType:[
+    { text: '无', value: '1' },
+    { text: '提示', value: '2' },
+    { text: '本人确认', value: '3' },
+    { text: '上级确认', value: '4' },
+    { text: '禁止', value: '5' },
+  ],
+  levelType:[
+    { text: '系统', id: '1' },
+    { text: '自定义', id: '2' },
+  ],
+  packageType:[
+    { text: '药师审方', id: '1' },
+    { text: '处方点评', id: '2' },
   ],
 };
 export default Enum;

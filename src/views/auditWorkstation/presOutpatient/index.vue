@@ -12,12 +12,7 @@
       <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
       <a-button class="margin-left-5" @click="rejected" :disabled="disable">批量驳回</a-button>
       <a-button class="margin-left-5" :disabled="disable">审方设置</a-button>
-      <a-alert class="margin-top-10" type="info" :show-icon="true">
-        <div slot="message">
-          已选择&nbsp;<a style="font-weight: 600">{{checkSelect}}</a>&nbsp;项&nbsp;
-          <a style="margin-left: 2px" @click="clearSelect">清空</a>
-        </div>
-      </a-alert>
+      <alert :checkNum="checkSelect" :clearSelect="clearSelect"></alert>
       <a-spin tip="加载中..." :spinning="loading">
         <el-table
           ref="multipleTable"
@@ -48,9 +43,10 @@
           >
             <template slot-scope="props">
               <a-badge v-if="props.row.status == 0" status="default" text="待审核"/>
-              <a-badge v-else-if="props.row.status == 1" status="warning" text="打回修改"/>
-              <a-badge v-else-if="props.row.status == 2" status="error" text="拒绝建议"/>
-              <a-badge v-else-if="props.row.status == 3" status="success" text="通过审核"/>
+              <a-badge v-else-if="props.row.status == 1" status="warning" text="已修改"/>
+              <a-badge v-else-if="props.row.status == 2" status="error" text="坚持使用"/>
+              <a-badge v-else-if="props.row.status == 3" status="success" text="已通过"/>
+              <a-badge v-else-if="props.row.status == 4" status="warning" text="已驳回"/>
             </template>
           </el-table-column>
           <!--处方、处方数、患者列-->
@@ -93,7 +89,7 @@
             :show-overflow-tooltip="true"
           >
             <template slot-scope="props">
-              <a-tag :color="props.row.colors"> {{props.row.problem}}级</a-tag>
+              <a-tag :color="props.row.colors" style="cursor: default;"> {{props.row.problem }}级</a-tag>
             </template>
           </el-table-column>
           <!--问题详情列-->
@@ -103,9 +99,9 @@
           >
             <template slot-scope="props">
               <el-tooltip placement="top">
-                <div slot="content" style="width: 300px">{{props.row.problemText}}{{props.row.text}}</div>
+                <div slot="content" style="width: 300px">{{props.row.problemText}}：{{props.row.text}}</div>
                 <div class="multiLineText">
-                  <span :style="{color:props.row.colors,}">{{props.row.problemText}}</span>{{props.row.text}}
+                  <span :style="{color:props.row.colors}">{{props.row.problemText}}：</span>{{props.row.text}}
                 </div>
               </el-tooltip>
             </template>
@@ -148,12 +144,61 @@
         @ok="handleOk"
         :confirmLoading="Modal.confirmLoading"
         @cancel="handleCancel"
+        width="550px"
+        class="modals"
       >
-        <a-form :form="form">
-          <a-form-item>
-            <a-textarea v-decorator="[ 'refuseMemo' ]"/>
-          </a-form-item>
-        </a-form>
+        <a-tabs defaultActiveKey="1" size="small" style="width: 500px">
+          <a-tab-pane tab="预判情况" key="1">
+            <a-form :form="form" >
+              <a-form-item label="问题描述">
+                <div>
+                  <a-tag :color="problemsData.colors" style="cursor: default;"> {{problemsData.problem }}级</a-tag>
+                  <span :style="{color:problemsData.colors}">{{problemsData.problemText}}</span>
+                </div>
+                <div class="lineText">
+                  {{problemsData.text}}
+                </div>
+              </a-form-item>
+
+              <a-form-item label="驳回理由"
+                           :label-col="labelCol"
+                           :wrapper-col="wrapperCol">
+                <a-dropdown :trigger="['click']">
+                  <a-menu slot="overlay">
+                    <a-menu-item>1st menu item</a-menu-item>
+                    <a-menu-item>2nd menu item</a-menu-item>
+                    <a-sub-menu title="sub menu" key="test">
+                      <a-menu-item>3rd menu item</a-menu-item>
+                      <a-menu-item>4th menu item</a-menu-item>
+                    </a-sub-menu>
+                    <a-sub-menu title="disabled sub menu" disabled>
+                      <a-menu-item>5d menu item</a-menu-item>
+                      <a-menu-item>6th menu item</a-menu-item>
+                    </a-sub-menu>
+                  </a-menu>
+                  <a-button type="primary" style="margin-left: 8px" >
+                    选择模板 <a-icon type="down"/>
+                  </a-button>
+                </a-dropdown>
+              </a-form-item>
+              <a-form-item>
+                <a-textarea v-decorator="[ 'abs' ]"/>
+              </a-form-item>
+            </a-form>
+          </a-tab-pane>
+          <a-tab-pane tab="干预记录" key="2">
+            <a-timeline>
+              <a-timeline-item>Create a services site 2015-09-01</a-timeline-item>
+              <a-timeline-item>Solve initial network problems 2015-09-01</a-timeline-item>
+              <a-timeline-item color="red">
+                <a-icon slot="dot" type="clock-circle-o" style="fontSize: '16px'" />
+                Technical testing 2015-09-01
+              </a-timeline-item>
+              <a-timeline-item>Network problems being solved 2015-09-01</a-timeline-item>
+            </a-timeline>
+          </a-tab-pane>
+        </a-tabs>
+
       </a-modal>
     </a-card>
   </div>
@@ -163,6 +208,7 @@
   import { Icon } from 'ant-design-vue'
   import countText from '@/components/count-text'
   import prescriptionTabs from '@/components/prescription-tabs';
+  import alert from '@/components/alert';
   const myIcon = Icon.createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js' // 在 iconfont.cn 上生成
   })
@@ -170,10 +216,21 @@
     components: {
       myIcon,
       countText,
-      prescriptionTabs
+      prescriptionTabs,
+      alert
     },
     data() {
       return {
+
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span:3 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 12 },
+        },
+
         //页头数据
         countText: [],
         //按钮初始化
@@ -196,7 +253,7 @@
           patientSex: '女',
           patientAge: '23岁',
           problem: '5',
-          problemText: '重复给药：',
+          problemText: '重复给药',
           text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
         },
           {
@@ -210,7 +267,7 @@
             patientSex: '女',
             patientAge: '23岁',
             problem: '4',
-            problemText: '重复给药：',
+            problemText: '重复给药',
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
           }],
         columns: [
@@ -228,7 +285,8 @@
         current: 1,
 
 
-
+        //已分配科室
+        dis:false,
 
         Modal: {
           visible: false,
@@ -237,6 +295,7 @@
         form: this.$form.createForm(this),
         //处方单tabsData
         tabsData:{},
+        problemsData:{},
 
       }
     },
@@ -253,7 +312,7 @@
           { name: '问题类型', dataField: 'drugName', type: 'select' },
           { name: '选择日期', dataField: 'factoryId', type: 'range-picker' },
           { name: '医生', dataField: 'doctor', type: 'text' },
-          { name: '科室', dataField: 'dept', type: 'select' },
+          { name: '科室', dataField: 'dept', type: 'select',disable:this.dis},
           {
             name: '来源',
             dataField: 'drugSource',
@@ -265,7 +324,8 @@
           {
             type: 'checkbox',
             name: '已分配科室',
-            dataField: 'check'
+            dataField: 'check',
+            onChange:this.changeBox,
           }
         ]
       }
@@ -402,7 +462,9 @@
       },
       //单个驳回
       rejectedSingle(data) {
-        this.Modal.visible = true
+        this.Modal.visible = true;
+        console.log(data);
+        this.problemsData = data;
       },
       //弹窗提交
       handleOk() {
@@ -532,6 +594,14 @@
           adviceData:dataTwo.listData,
           columns:dataTwo.columns,
         };
+      },
+
+      changeBox(data){
+        if (data.target.checked) {
+          this.dis = true;
+        }else {
+          this.dis = false;
+        }
       }
     }
   }
@@ -589,6 +659,28 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: 100%;
+    /*text-indent:2em;*/
+  }
+  .lineText{
+    /*word-break: break-all;*/
+    /*display: -webkit-box;*/
+    /*-webkit-line-clamp: 2; !*限制在一个块元素显示的文本的行数*!*/
+    /*-webkit-box-orient: vertical;*/
+    /*overflow: hidden;*/
+    height: 100%;
+    text-indent:2em;
   }
 
+  .modals .ant-form-item{
+    margin-bottom: 5px;
+  }
+  .modals .ant-modal-body{
+    padding:4px 24px;
+  }
+  .modals .ant-form-item-control{
+    line-height:30px;
+  }
+  .modals .ant-form-item-label{
+    line-height:30px;
+  }
 </style>

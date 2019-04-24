@@ -337,20 +337,20 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/problemLevel',
             name: 'problemLevel',
             component: RouteView,
-            meta: { title: '问题等级设置',hiddenHeaderContent: true, multistage: true },
+            meta: { title: '问题等级设置', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/problemLevel/index',
                 name: 'problemLevel',
                 component: () => import( '@/views/auditWorkstation/problemLevel/index.vue'),
-                meta: { title: '问题等级设置',hiddenHeaderContent: true, index: true,keepAlive: false, }
+                meta: { title: '问题等级设置',hiddenHeaderContent: true, index: true,}
               },
               {
                 path: '/auditWorkstation/problemLevel/detail',
                 name: 'problemLevelDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/problemLevel/detail.vue'),
-                meta: { title: '问题等级详情', detail: true }
+                meta: { title: '问题等级详情', detail: true, description:'问题等级自定义设置'}
               }
             ]
           },
@@ -364,14 +364,14 @@ export const asyncRouterMap = [
                 path: '/auditWorkstation/PrescriptionsSetting/index',
                 name: 'PrescriptionsSetting',
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/index.vue'),
-                meta: { title: '审方设置',hiddenHeaderContent: true, index: true,keepAlive: false, }
+                meta: { title: '审方设置',hiddenHeaderContent: true, index: true, }
               },
               {
                 path: '/auditWorkstation/PrescriptionsSetting/detail',
                 name: 'PrescriptionsDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/detail.vue'),
-                meta: { title: '审方设置详情', detail: true }
+                meta: { title: '审方设置详情', detail: true ,description:'审方设置方案描述'}
               }
             ]
           },

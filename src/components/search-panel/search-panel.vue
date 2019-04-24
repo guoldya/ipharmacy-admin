@@ -13,14 +13,14 @@
                                 <a-range-picker v-decorator="[item.dataField]"/>
                             </a-form-item>
                             <a-form-item :label="item.name" v-if="item.type=='select'" v-bind="formItemLayout">
-                                <a-select v-decorator="[item.dataField]" placeholder="请选择...">
+                                <a-select v-decorator="[item.dataField]" placeholder="请选择..." :disabled="item.disable">
                                     <a-select-option :value='op[item.keyExpr]' v-for="(op,index) in item.dataSource" :key="index">
                                         {{op[item.valueExpr]}}
                                     </a-select-option>
                                 </a-select>
                             </a-form-item>
                           <a-form-item v-if="!item.type || item.type=='checkbox'" v-bind="formItemLayout">
-                            <a-checkbox v-decorator="[item.dataField]">
+                            <a-checkbox v-decorator="[item.dataField]" @change="item.onChange">
                              {{item.name}}
                             </a-checkbox>
                           </a-form-item>

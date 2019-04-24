@@ -15,27 +15,23 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-input read-only v-decorator="['roleId',]"/>
+        <a-input read-only v-decorator="['problemLevel',]"/>
       </a-form-item>
       <a-form-item
         label="等级说明"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-textarea
-          v-decorator="['roleName',{rules: [{ required: true, message: '请输入名称' }],initialValue: formData.roleName}]"/>
+        <a-textarea :read-only="readOnly"
+          v-decorator="['levelThat']"/>
       </a-form-item>
       <a-form-item
         label="处理类型"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-select v-decorator="[ 'status', {rules: []} ]">
-          <a-select-option :value="1">禁止</a-select-option>
-          <a-select-option :value="2">上级确认</a-select-option>
-          <a-select-option :value="3">本人确认</a-select-option>
-          <a-select-option :value="4">提示</a-select-option>
-          <a-select-option :value="5">无</a-select-option>
+        <a-select v-decorator="[ 'dealType']" mode="multiple">
+          <a-select-option v-for="(op,index) in this.enum.dealType" :value="op.value" :key="index">{{op.text}}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item
@@ -57,17 +53,13 @@
   </a-card>
 </template>
 <script>
-  import { roleMaintainDetail, roleMaintainAdd, roleMaintainUpdate } from '@/api/login'
+  import {} from '@/api/login'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
 
   export default {
     components: { ATextarea },
     data() {
       return {
-        formData: {
-          roleId: '',
-          roleName: '',
-        },
         labelCol: {
           xs: { span: 8 },
           sm: { span: 8 }
@@ -81,17 +73,25 @@
         loadData: [],
         colors:'#000',
         listData:{},
+        readOnly:false,
       }
     },
     computed: {},
     mounted() {
       let _this = this;
-      if (this.$route.query){
+      if (this.$route.query.msg == 'old'){
+        this.readOnly=true;
         _this.listData = this.$route.query;
-        if (this.$route.query.colors) {
-          _this.colors = this.$route.query.colors;
-        }
         console.log(_this.listData);
+        _this.form.setFieldsValue({
+          problemLevel:_this.listData.problemLevel,
+          dealType:_this.listData.dealType,
+          levelThat:_this.listData.levelThat,
+        });
+        _this.colors = this.$route.query.colors;
+      }else {
+        this.readOnly=false;
+        _this.form.setFieldsValue({problemLevel:this.$route.query.length+'级'});
       }
     },
     methods: {
@@ -141,7 +141,7 @@
   .m-colorPicker .colorBtn[data-v-11842410] {
     width: 38px;
     height: 38px;
-    border-radius: 50%;
+    border-radius: 10%;
   }
   .colorPick{
     margin-left: 15px;
