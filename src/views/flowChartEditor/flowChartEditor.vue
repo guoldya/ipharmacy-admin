@@ -30,6 +30,8 @@ import { setTimeout } from 'timers'
 
 //图形模块加载
 import './nodemode/flow-circle-start' //开始
+//import './nodemode/model-node' //
+import './nodemode/model-rhombus' //
 import './nodemode/flow-rhombus-if' //判断
 import './nodemode/model-card'
 import './nodemode/model-card-conclusion' //结论
@@ -278,7 +280,7 @@ export default {
         //   stroke: '#1890ff'
         // },
         color: 'rgba(0,0,0,0.25)', // flow-smooth
-        shape: 'flow-smooth'
+        shape: 'flow-polyline' //flow-polyline-round
         // labelRectStyle: {
         //   fill: '#ffffff'
         // }
@@ -344,7 +346,7 @@ export default {
             break
         }
       })
-
+    
       this.page.on('afteritemunselected', ev => {
         switch (ev.item.type) {
           case 'edge':
@@ -370,8 +372,9 @@ export default {
         }
         // 如果拖动的是目标方向，则取消显示目标节点中已被连过的锚点
         if (ev.dragEndPointType === 'target') {
+         
           //已经连接过的点禁用
-          if (this.page.anchorHasBeenLinked(ev.target, ev.targetAnchor)) {
+          if (ev.target.model.shape!="model-card-conclusion"&&this.page.anchorHasBeenLinked(ev.target, ev.targetAnchor)) {
             ev.cancel = true
           }
           //目标和源都是同一个模块 禁用

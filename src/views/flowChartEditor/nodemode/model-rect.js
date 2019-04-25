@@ -15,15 +15,18 @@ Flow.registerNode('model-rect', {
       let prototypes = model.prototypes != null ? model.prototypes : shapeObj.prototypes;
       let field = model.field != null ? model.field : shapeObj.field;
       if (label == null || label == '') {
-        label = '【' + prototypes + '】.【' + field + '】';
+        label =  prototypes + '.' + field;
       }
   
       let width = 180;
-      let height = 80;
+      let height = 70;
       let x = -width / 2;
       let y = -height / 2;
-      let borderRadius = 4;
-  
+      let borderRadius = 35;
+      let arrayText=addShapePnewline(label);
+      let arrayTextlength = arrayText.length >3 ? 3 : arrayText.length;
+      let yy=-(((arrayTextlength-1)*20))/2-5;
+      console.log(yy);
       const keyShape = group.addShape('rect', {
         attrs: {
           x,
@@ -36,14 +39,13 @@ Flow.registerNode('model-rect', {
         }
       });
   
-      let index = 5
       function addShapeP(xx, yy, text) {
         const fontPStyle = {
           attrs: {
             text: text,
-            x: xx,
+            x: 0,
             y: yy,
-            textAlign: 'start',
+            textAlign: 'center',
             fontFamily: '微软雅黑',
             fontSize: 12,
             textBaseline: 'top',
@@ -52,18 +54,19 @@ Flow.registerNode('model-rect', {
         }
         group.addShape('text', fontPStyle)
       }
-      function addShapePnewline(xx, yy, text) {
+      function addShapePnewline(text) {
         text = text
           .replace(/[^\x00-\xff]/g, '$&\x01')
           .replace(/.{24}\x01?/g, '$&\n')
           .replace(/\x01/g, '')
-        let arrayText = text.split('\n')
-        for (let i = 0; i < arrayText.length; i++) {
-          addShapeP(xx + 10, y + index, arrayText[i])
-          index += 20
-        }
+        return text.split('\n')
+       
       }
-     addShapePnewline(x, y, label)
+      let index = 0
+     for (let i = 0; i < arrayText.length&&i<3; i++) {
+      addShapeP(x + 20, yy + index, arrayText[i])
+      index += 20
+    }
       return keyShape
     }
   })

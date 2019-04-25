@@ -12,7 +12,10 @@ Flow.registerNode(
       suggestLabel: '请更换其他药品。',
       colorLevel: 'rgb(255, 191, 0)',
       // 设置锚点
-      anchor: [[0.5, 0, { type: 'input' }],[0, 0.5, { type: 'input' }]]
+      anchor: [
+        //[0.5, 0, { type: 'input' }],
+        [0, 0.5, { type: 'input' }]
+      ]
     },
     'model-card'
   )

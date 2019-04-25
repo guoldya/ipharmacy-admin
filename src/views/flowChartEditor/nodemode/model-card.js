@@ -140,13 +140,13 @@ Flow.registerNode('model-card', {
       }
       // //提示类型
       addShapeTitel(fontx, y + index, '依据:')
-      addShapePnewline(fontx + 40, y, str1)
+      addShapePnewline(fontx + 100, y, str1)
       // //消息提示
       addShapeTitel(fontx, y + index, '消息:')
-      addShapePnewline(fontx + 40, y, str2)
+      addShapePnewline(fontx + 100, y, str2)
       //消息建议
       addShapeTitel(fontx, y + index, '建议:')
-      addShapePnewline(fontx + 40, y, str3)
+      addShapePnewline(fontx + 100, y, str3)
       return keyShape
     },
     // 设置锚点
