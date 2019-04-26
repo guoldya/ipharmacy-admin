@@ -392,7 +392,7 @@ export const asyncRouterMap = [
                 name: 'presOutpatientDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-                meta: { title: '审方中心详情', detail:true }
+                meta: { title: '审方中心详情', detail:true,description:'审方中心详情页设置' }
               },
             ]
           },
