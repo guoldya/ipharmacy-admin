@@ -120,7 +120,7 @@
                 <a href="javascript:;">通过</a>
               </a-popconfirm>
               <a-divider type="vertical"/>
-              <a @click="rejectedSingle(props.row)">驳回</a>
+              <a @click="rejectedSingle(props)">驳回</a>
             </template>
           </el-table-column>
         </el-table>
@@ -148,53 +148,44 @@
         class="modals"
       >
         <a-tabs defaultActiveKey="1" size="small" style="width: 500px">
-          <a-tab-pane tab="预判情况" key="1">
-            <a-form :form="form" >
-              <a-form-item label="问题描述">
-                <div>
-                  <a-tag :color="problemsData.colors" style="cursor: default;"> {{problemsData.problem }}级</a-tag>
-                  <span :style="{color:problemsData.colors}">{{problemsData.problemText}}</span>
-                </div>
-                <div class="lineText">
-                  {{problemsData.text}}
-                </div>
-              </a-form-item>
+          <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
+                <a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">
+                  <a-tag :color="op.colors" style="cursor: default;font-weight: bold"> {{op.problem }}级</a-tag>
+                  <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
+                  <div class="lineText opacity8">
+                    {{op.text}}
+                  </div>
+                  <a-row class="margin-top-10 selectInput ">
+                    <a-col :span="3">驳回理由:</a-col>
+                    <a-col :span="18">
+                      <a-input size="small" >
+                        <a-select slot="addonBefore"  size="small" defaultValue="+86">
+                          <a-select-option value="+86">药房库存不足</a-select-option>
+                          <a-select-option value="+87">药房库存不足</a-select-option>
+                        </a-select>
+                      </a-input>
+                    </a-col>
+                    <a-col :span="3">
+                      <a-button size="small" >存为模板</a-button>
+                    </a-col>
+                  </a-row>
 
-              <a-form-item label="驳回理由"
-                           :label-col="labelCol"
-                           :wrapper-col="wrapperCol">
-                <a-dropdown :trigger="['click']">
-                  <a-menu slot="overlay">
-                    <a-menu-item>1st menu item</a-menu-item>
-                    <a-menu-item>2nd menu item</a-menu-item>
-                    <a-sub-menu title="sub menu" key="test">
-                      <a-menu-item>3rd menu item</a-menu-item>
-                      <a-menu-item>4th menu item</a-menu-item>
-                    </a-sub-menu>
-                    <a-sub-menu title="disabled sub menu" disabled>
-                      <a-menu-item>5d menu item</a-menu-item>
-                      <a-menu-item>6th menu item</a-menu-item>
-                    </a-sub-menu>
-                  </a-menu>
-                  <a-button type="primary" style="margin-left: 8px" >
-                    选择模板 <a-icon type="down"/>
-                  </a-button>
-                </a-dropdown>
-              </a-form-item>
-              <a-form-item>
-                <a-textarea v-decorator="[ 'abs' ]"/>
-              </a-form-item>
-            </a-form>
+                </a-card>
           </a-tab-pane>
           <a-tab-pane tab="干预记录" key="2">
             <a-timeline>
-              <a-timeline-item>Create a services site 2015-09-01</a-timeline-item>
-              <a-timeline-item>Solve initial network problems 2015-09-01</a-timeline-item>
+              <a-timeline-item color="green">系统预判不通过 2015-09-01</a-timeline-item>
+              <a-timeline-item color="green">请医生再次审核 2015-09-01</a-timeline-item>
               <a-timeline-item color="red">
-                <a-icon slot="dot" type="clock-circle-o" style="fontSize: '16px'" />
-                Technical testing 2015-09-01
+                <p>有接触隔离医嘱 1</p>
+                <p>有隔离措施 2</p>
+                <p>医疗废物处置 3 2015-09-01</p>
               </a-timeline-item>
-              <a-timeline-item>Network problems being solved 2015-09-01</a-timeline-item>
+              <a-timeline-item>
+                <p>离开病区检查是否通知相关科室做好防护等 1</p>
+                <p>有隔离措施 2</p>
+                <p>医疗废物处置 3 2015-09-01</p>
+              </a-timeline-item>
             </a-timeline>
           </a-tab-pane>
         </a-tabs>
@@ -295,7 +286,8 @@
         form: this.$form.createForm(this),
         //处方单tabsData
         tabsData:{},
-        problemsData:{},
+        problemsData:[],
+
 
       }
     },
@@ -463,8 +455,11 @@
       //单个驳回
       rejectedSingle(data) {
         this.Modal.visible = true;
-        console.log(data);
-        this.problemsData = data;
+        console.log(data.store.states.data);
+        this.problemsData = data.store.states.data;
+        for (let key in this.problemsData){
+          this.problemsData[key].rejectReason = '病入膏肓'
+        }
       },
       //弹窗提交
       handleOk() {
@@ -482,7 +477,10 @@
 
       //查看
       looks(data) {
-
+        this.$router.push({
+          name: 'presOutpatientDetail',
+          // params:data,
+        })
       },
       //处方单网格样式
       //TODO:处方单显示数据颜色暂未控制
@@ -662,25 +660,34 @@
     /*text-indent:2em;*/
   }
   .lineText{
-    /*word-break: break-all;*/
-    /*display: -webkit-box;*/
-    /*-webkit-line-clamp: 2; !*限制在一个块元素显示的文本的行数*!*/
-    /*-webkit-box-orient: vertical;*/
-    /*overflow: hidden;*/
     height: 100%;
     text-indent:2em;
+    font-size: 12px;
   }
 
   .modals .ant-form-item{
     margin-bottom: 5px;
   }
   .modals .ant-modal-body{
-    padding:4px 24px;
+    padding:8px 24px;
   }
   .modals .ant-form-item-control{
     line-height:30px;
   }
   .modals .ant-form-item-label{
     line-height:30px;
+  }
+  .modals .ant-tabs-bar{
+    margin: 0 0 0px 0;
+  }
+  .modals .ant-card-body{
+    padding: 10px 21px;
+  }
+  .modals .ant-timeline{
+    margin-top: 16px;
+  }
+  .modals .selectInput{
+    line-height: 20px;
+    font-size: 12px;
   }
 </style>
