@@ -8,12 +8,12 @@ Flow.registerNode(
     {
       // 设置锚点
       anchor: [
-        [0.5, 0, { type: 'input' }],
-        [0, 0.5, { type: 'input' }],
-        [1, 0.5, { type: 'output' }], 
-        [0.5, 1, { type: 'output' }]
-      ]
+        // [0.5, 0, { type: 'input' }],
+         [0, 0.5, { type: 'input' }],
+         [1, 0.5, { type: 'output' }], 
+         //[0.5, 1, { type: 'output' }]
+       ]
     },
-    'flow-rhombus'
+    'model-rhombus'
   )
   

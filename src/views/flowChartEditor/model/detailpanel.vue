@@ -5,12 +5,13 @@
       <div class="block-container">
         <a-form>
           <a-form-item label="名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-input size="small" placeholder="请输入别名" v-model="selectNode.label"/>
+            <a-input size="small" v-if="selectNode.shape == 'flow-circle-start'"  v-model="selectNode.label" :disabled="true"/>
+            <a-input size="small" v-else v-model="selectNode.label" />
           </a-form-item>
 
-          <a-form-item label="颜色" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <!-- <a-form-item label="颜色" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <colorPicker v-model="selectNode.colorLevel"/>
-          </a-form-item>
+          </a-form-item> -->
         </a-form>
       </div>
     </div>

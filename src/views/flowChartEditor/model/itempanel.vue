@@ -6,9 +6,9 @@
             class="getItem"
             data-shape="flow-circle-start"
             data-type="node"
-            data-size="80*80"
+            data-size="70*70"
             data-color="#FA8C16"
-            data-label="开始节点"
+            data-label="开始"
           >
             <span class="panel-type-icon"></span>开始节点
           </li>
@@ -16,7 +16,7 @@
             class="getItem"
             data-type="node"
             data-shape="model-rect-attribute"
-            data-size="250*80"
+            data-size="180*70"
             data-color="#1890FF"
           >
             <span class="panel-type-icon"></span>属性节点
@@ -25,9 +25,9 @@
             class="getItem"
             data-type="node"
             data-shape="flow-rhombus-if"
-            data-size="80*80"
+            data-size="160*70"
             data-color="#13C2C2"
-            data-label="判断节点"
+            data-label="判断节点判断节点判断节点判"
           >
             <span class="panel-type-icon"></span>判断节点
           </li>
@@ -35,18 +35,18 @@
             class="getItem"
             data-type="node"
             data-shape="model-image-branch"
-            data-size="80*80"
-            data-color="#13C2C2"
-            data-label="合并节点"
+            data-size="80*70"
+            data-color="#1890FF"
+            data-label="分支节点"
           >
-            <span class="panel-type-icon"></span>合并节点
+            <span class="panel-type-icon"></span>分支节点
           </li>
 
           <li
             class="getItem"
             data-type="node"
             data-shape="model-card-conclusion"
-            data-size="350*80"
+            data-size="290*80"
             data-color="#13C2C2"
           >
             <span class="panel-type-icon"></span>结论节点
