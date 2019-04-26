@@ -1,7 +1,7 @@
 <template>
   <div class="editorg6">
     <!-- 工具栏 -->
-    <a-toolbar ref="toolbar"></a-toolbar>
+    <a-toolbar v-bind:saveFlow="saveFlow" ref="toolbar"></a-toolbar>
     <div style="height: 42px;"></div>
     <div class="bottom-container">
       <!-- 节点 -->
@@ -204,6 +204,10 @@ export default {
     }
   },
   methods: {
+    saveFlow() {
+      console.log(this.flow.save(),"保存信息");//
+     localStorage.setItem('test', JSON.stringify(this.flow.save()))
+    },
     getHeight() {
       this.conheight.height = window.innerHeight - 48 + 'px'
     },
