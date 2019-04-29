@@ -7,6 +7,7 @@ import store from './store/'
 import config from '@/config'
 import axios from 'axios'
 import notification from 'ant-design-vue/es/notification'
+import './assets/iconfont/iconfont.css'
 
 //功能相关插件  可自定义卸载
 import admin from '@/plugin/admin'

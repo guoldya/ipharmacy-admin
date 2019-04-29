@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="detailPres">
     <a-card>
       <div class="cardHead">
         <a href="#" @click.prevent="cancle">
@@ -20,8 +20,8 @@
           <a-tag class="tagStyle"> 肝肾功能</a-tag>
         </a-col>
       </a-row>
-      <a-divider type="horizontal"/>
-      <detail-list class="margin-top-10">
+      <a-divider type="horizontal" style="margin-bottom: 30px;margin-top: 20px;"/>
+      <detail-list>
         <detail-list-item term="身高"><span class="opacity8">175cm</span></detail-list-item>
         <detail-list-item term="体重"><span class="opacity8">60kg</span></detail-list-item>
         <detail-list-item term="体表面积"><span class="opacity8">32㎡</span></detail-list-item>
@@ -40,11 +40,16 @@
                 <a-row>
                   <p class="dealP">处方单1：</p>
                 </a-row>
-                <a-row class="dealRow" v-for="op in adviceData">
-                  <a-col :offset="2"> {{op.num}}、
-                    <span :style="{color:op.colors}">{{op.name}}</span>&nbsp;&nbsp;{{op.spec}}&nbsp;&nbsp;{{op.total}}
-                    <br>
-                    用法： {{op.single}}&nbsp;&nbsp;{{op.freq}}&nbsp;&nbsp;<span :style="{color:op.colors}">{{op.way}}</span>
+                <a-row class="dealRow" v-for="(op,index) in adviceData" :key="index">
+                  <a-col class="dealCol" :offset="2">{{op.num}}、
+                    <span :style="{color:op.colors}">{{op.name}}</span>
+                    &nbsp;&nbsp;<span>{{op.spec}}</span>
+                    &nbsp;&nbsp;<span>{{op.total}}</span>
+                    <div style="text-indent: 2em;">
+                      用法：<span>{{op.single}}</span>
+                      &nbsp;&nbsp;<span>{{op.freq}}</span>
+                      &nbsp;&nbsp;<span :style="{color:op.colors}">{{op.way}}</span>
+                    </div>
                   </a-col>
                 </a-row>
               </a-col>
@@ -55,10 +60,17 @@
                 <a-row>
                   <p class="dealP">处方单2：</p>
                 </a-row>
-                <a-row class="dealRow" v-for="op in adviceData">
-                  <a-col :offset="2"> {{op.num}}、
-                    {{op.name}}&nbsp;&nbsp;{{op.spec}}&nbsp;&nbsp;{{op.total}} <br>
-                    用法： {{op.single}}&nbsp;&nbsp;{{op.freq}}&nbsp;&nbsp;{{op.way}}
+                <a-row class="dealRow" v-for="(op,index) in adviceData" :key="index">
+                  <a-col class="dealCol" :offset="2">{{op.num}}、
+                    <span :style="{color:op.colors}">{{op.name}}</span>
+                    &nbsp;&nbsp;<span>{{op.spec}}</span>
+                    &nbsp;&nbsp;<span>{{op.total}}</span>
+                    <br>
+                    <div style="text-indent: 2em;">
+                      用法：<span>{{op.single}}</span>
+                      &nbsp;&nbsp;<span>{{op.freq}}</span>
+                      &nbsp;&nbsp;<span :style="{color:op.colors}">{{op.way}}</span>
+                    </div>
                   </a-col>
                 </a-row>
               </a-col>
@@ -84,7 +96,8 @@
                     <a-col :md="6" :lg="5" :xxl="3">驳回理由:</a-col>
                     <a-col :md="11" :lg="14" :xxl="18">
                       <a-input>
-                        <a-select style="width: 100px" slot="addonBefore" defaultValue="+86">
+                        <a-select style="width: 100px" :dropdownMatchSelectWidth="false" slot="addonBefore"
+                                  defaultValue="+86">
                           <a-select-option value="+86">库存不足</a-select-option>
                           <a-select-option value="+87">药房库存不足</a-select-option>
                         </a-select>
@@ -118,6 +131,10 @@
         </a-card>
       </a-col>
     </a-row>
+    <footer-tool-bar
+      :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
+      <a-button type="primary" @click="submit" :loading="loading">提交</a-button>
+    </footer-tool-bar>
   </div>
 </template>
 
@@ -126,6 +143,8 @@
   import STable from '@/components/table/'
   import DetailList from '@/components/tools/DetailList'
   import ABadge from 'ant-design-vue/es/badge/Badge'
+  import FooterToolBar from '@/components/FooterToolbar'
+  import { mixin, mixinDevice } from '@/utils/mixin'
 
   const DetailListItem = DetailList.Item
   export default {
@@ -134,11 +153,14 @@
       ABadge,
       DetailList,
       DetailListItem,
-      STable
+      STable,
+      FooterToolBar
     },
+    mixins: [mixin, mixinDevice],
     name: 'detail',
     data() {
       return {
+        loading: false,
         problemsData: [
           {
             status: 1,
@@ -204,13 +226,26 @@
             colors: 'rgb(225,102,102)'
           },
           { num: 4, name: '益肾灵胶囊', spec: '0.1GM*100粒/瓶', total: '72粒', single: '0.33g', freq: '每天三次', way: '口服' },
-          { num: 5, name: '银杏叶丸', spec: '0.2g*12颗/瓶 ', total: '40颗', single: '0.33g', freq: '每天三次', way: '口服',colors: 'rgb(225,102,102)' }
+          {
+            num: 5,
+            name: '银杏叶丸',
+            spec: '0.2g*12颗/瓶 ',
+            total: '40颗',
+            single: '0.33g',
+            freq: '每天三次',
+            way: '口服',
+            colors: 'rgb(225,102,102)'
+          }
         ]
       }
     },
     mounted() {
     },
     methods: {
+      submit() {
+
+      },
+
       cancle() {
         this.$router.push({
           name: 'presOutpatient'
@@ -221,10 +256,14 @@
 </script>
 
 <style scoped>
+
+  .detailPres  .ant-card-body {
+    padding: 14px 32px;
+  }
+
   .titleText {
     font-size: 14px;
     font-weight: bold;
-    margin-bottom: 10px;
   }
 
   .lineText {
@@ -243,21 +282,25 @@
   }
 
   .cardHeight {
-    height: 500px;
+    height: 550px;
+
   }
 
   .cardHeight .cardColHeight {
-    height: 400px;
+    height: 450px;
   }
 
   .cardHeight .dealP {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold
   }
 
   .dealRow {
-    margin-top: 10px;
+    margin-top: 20px;
     font-size: 14px;
+  }
+
+  .dealRow .dealCol {
     line-height: 25px;
   }
 

@@ -88,8 +88,10 @@
             filter-placement="bottom"
             :show-overflow-tooltip="true"
           >
-            <template slot-scope="props">
-              <a-tag :color="props.row.colors" style="cursor: default;"> {{props.row.problem }}级</a-tag>
+            <template slot-scope="props" >
+              <div v-for="op in props.row.problemList" style="line-height: 23px;margin-bottom: 2px;">
+                <a-tag  :color="op.colors" style="cursor: default;"> {{op.problem }}级</a-tag>
+              </div>
             </template>
           </el-table-column>
           <!--问题详情列-->
@@ -98,12 +100,13 @@
             label=""
           >
             <template slot-scope="props">
-              <el-tooltip placement="top">
-                <div slot="content" style="width: 300px">{{props.row.problemText}}：{{props.row.text}}</div>
+              <a-tooltip placement="top" v-for="(op,index) in props.row.problemList" :key="index">
+                <template slot="title" style="width: 300px">{{op.problemText}}：{{op.text}}</template>
                 <div class="multiLineText">
-                  <span :style="{color:props.row.colors}">{{props.row.problemText}}：</span>{{props.row.text}}
+                  <span :style="{color:op.colors}">{{op.problemText}}：</span>{{op.text}}
                 </div>
-              </el-tooltip>
+              </a-tooltip>
+
             </template>
           </el-table-column>
           <!--操作列-->
@@ -144,10 +147,10 @@
         @ok="handleOk"
         :confirmLoading="Modal.confirmLoading"
         @cancel="handleCancel"
-        width="550px"
+        width="600px"
         class="modals"
       >
-        <a-tabs defaultActiveKey="1" size="small" style="width: 500px">
+        <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
                 <a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">
                   <a-tag :color="op.colors" style="cursor: default;font-weight: bold"> {{op.problem }}级</a-tag>
@@ -156,10 +159,10 @@
                     {{op.text}}
                   </div>
                   <a-row class="margin-top-10 selectInput ">
-                    <a-col :span="3">驳回理由:</a-col>
+                    <a-col :span="3" style="line-height: 24px">驳回理由:</a-col>
                     <a-col :span="18">
                       <a-input size="small" >
-                        <a-select slot="addonBefore"  size="small" defaultValue="+86">
+                        <a-select slot="addonBefore" :dropdownMatchSelectWidth="false" size="small" defaultValue="+86">
                           <a-select-option value="+86">药房库存不足</a-select-option>
                           <a-select-option value="+87">药房库存不足</a-select-option>
                         </a-select>
@@ -243,10 +246,27 @@
           patientNum: '201904010001',
           patientSex: '女',
           patientAge: '23岁',
-          problem: '5',
-          problemText: '重复给药',
-          text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
-        },
+          problemList:[
+            {problem: '5',
+              problemText: '重复给药',
+              text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药',
+              colors: '#FF6600'
+            },
+            {
+              problem: '4',
+              problemText: '重复给药',
+              text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。',
+              colors: '#FFCC00'
+            },
+            {
+              problem: '4',
+              problemText: '重复给药',
+              text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。',
+              colors: '#FFCC00'
+            },
+
+          ],
+           },
           {
             status: 1,
             time: '2018-09-21  08:50:08',
@@ -257,9 +277,14 @@
             patientNum: '201904010001',
             patientSex: '女',
             patientAge: '23岁',
-            problem: '4',
-            problemText: '重复给药',
-            text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
+            problemList:[
+              {
+                problem: '4',
+                problemText: '重复给药',
+                text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。',
+                colors: '#FFCC00'
+              },
+            ],
           }],
         columns: [
           { title: '处方', prop: 'time', width: 150 },
@@ -305,14 +330,6 @@
           { name: '选择日期', dataField: 'factoryId', type: 'range-picker' },
           { name: '医生', dataField: 'doctor', type: 'text' },
           { name: '科室', dataField: 'dept', type: 'select',disable:this.dis},
-          {
-            name: '来源',
-            dataField: 'drugSource',
-            type: 'select',
-            keyExpr: 'id',
-            valueExpr: 'text',
-            dataSource: this.enum.drugSource
-          },
           {
             type: 'checkbox',
             name: '已分配科室',
@@ -455,8 +472,8 @@
       //单个驳回
       rejectedSingle(data) {
         this.Modal.visible = true;
-        console.log(data.store.states.data);
-        this.problemsData = data.store.states.data;
+        console.log(data.row.problemList);
+        this.problemsData = data.row.problemList
         for (let key in this.problemsData){
           this.problemsData[key].rejectReason = '病入膏肓'
         }
@@ -653,10 +670,13 @@
   .multipleEl .multiLineText {
     word-break: break-all;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /*限制在一个块元素显示的文本的行数*/
+    -webkit-line-clamp: 1; /*限制在一个块元素显示的文本的行数*/
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: 100%;
+    line-height: 23px;
+    margin-bottom: 4px;
+    margin-top: 2px;
     /*text-indent:2em;*/
   }
   .lineText{
@@ -687,7 +707,8 @@
     margin-top: 16px;
   }
   .modals .selectInput{
-    line-height: 20px;
-    font-size: 12px;
+    line-height: 24px;
+    font-size: 14px;
+    width: 100%;
   }
 </style>

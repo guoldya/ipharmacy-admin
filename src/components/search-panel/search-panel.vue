@@ -1,10 +1,10 @@
 <template>
     <div class="search-form">
         <a-card>
-            <a-col :lg="20" :sm="18">
+            <a-col :lg="20" :xl="18" :sm="18">
                 <a-form :form="form">
                     <a-row :gutter="21">
-                        <a-col v-for="(item,index) in list" :span="6" :key="index"
+                        <a-col v-for="(item,index) in list" :span="8" :key="index"
                                :style="{display:index<count ?'block':'none'}">
                             <a-form-item :label="item.name" v-if="!item.type || item.type=='text'" v-bind="formItemLayout">
                                 <a-input v-decorator="[item.dataField]" placeholder="请输入..."></a-input>
@@ -26,14 +26,14 @@
                           </a-form-item>
                         </a-col>
                     </a-row>
-                    <a-row style="text-align: center" v-if="this.list.length>4">
+                    <a-row style="text-align: center" v-if="this.list.length>3">
                         <a class="expendBtn" :style="{ marginLeft: '8px', fontSize: '12px' }" @click="toggle">
                             <a-icon :type="expand ? 'up' : 'down'"/>
                         </a>
                     </a-row>
                 </a-form>
             </a-col>
-            <a-col :lg="4" :sm="6" style="text-align: right;padding-top: 3px">
+            <a-col :lg="4" :xl="6" :sm="6" style="text-align: right;padding-top: 3px">
                 <slot name="control"></slot>
             </a-col>
         </a-card>
@@ -56,12 +56,16 @@
      * valueExpr 选择框显示的内容
      *
      * dataSource 选择框的数据
+     *
      */
     export default {
         props: {
             list: {
                 type: Array,
                 required: true
+            },
+            searchNumber:{
+              type:Number,
             }
         },
         data() {
@@ -69,21 +73,33 @@
                 value: '',
                 expand: false,
                 form: this.$form.createForm(this),
-                formItemLayout: {
-                    labelCol: {
-                        lg: { span: 8 },
-                        sm: { span: 7 },
-                    },
-                    wrapperCol: {
-                        lg: { span: 16 },
-                        sm: { span: 17 },
-                    },
+                formTwoLayout:{
+                  labelCol: {
+
+
+                  },
+                  wrapperCol: {
+
+
+                  },
                 },
+              formItemLayout: {
+                labelCol: {
+                  lg: { span: 8 },
+                  sm: { span: 7 },
+                  xxl:{span:6}
+                },
+                wrapperCol: {
+                  lg: { span: 10 },
+                  sm: { span: 17 },
+                  xxl:{span:18}
+                },
+              },
             }
         },
         computed: {
             count() {
-                return this.expand ? this.list.length : 4
+                return this.expand ? this.list.length : 3
             }
         },
         mounted() {
@@ -105,7 +121,7 @@
     }
 
     .search-form .ant-card-body {
-        padding: 15px 15px 0 15px;
+        padding: 15px 15px 15px 15px;
     }
 
     .search-form .ant-form-item {

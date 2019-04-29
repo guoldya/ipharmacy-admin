@@ -1,6 +1,6 @@
 <template>
     <a-card>
-      <Searchpanel ref="searchPanel" :list="list">
+      <Searchpanel ref="searchPanel"  :list="list">
         <div slot="control">
           <a-button type="primary" @click="search" >查询</a-button>
           <a-button class="margin-left-5" @click="resetForm" >重置</a-button>
@@ -53,7 +53,7 @@
       </a-pagination>
     </a-spin>
     <a-modal
-      title="用户角色"
+      title="分配药师"
       :visible="visible"
       @ok="handleOk"
       :maskClosable="false"

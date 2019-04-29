@@ -1,5 +1,5 @@
 import G6Editor from '@antv/g6-editor';
-import G6 from "@antv/g6";
+
 const { Flow } = G6Editor;
 
 Flow.registerNode("model-node", {

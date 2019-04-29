@@ -331,7 +331,7 @@ export const asyncRouterMap = [
         path: '/auditWorkstation',
         name: 'auditWorkstation',
         component: PageView,
-        meta: { title: '审方工作站',keepAlive: false, icon: 'diff' },
+        meta: { title: '审方工作站',keepAlive: false, icon: 'laptop' },
         children: [
           {
             path: '/auditWorkstation/problemLevel',
@@ -396,6 +396,28 @@ export const asyncRouterMap = [
               },
             ]
           },
+        ]
+      },
+      {
+        path: '/knowledgeMgt',
+        name: 'knowledgeMgt',
+        component: PageView,
+        meta: { title: '知识库管理',keepAlive: false, icon: 'diff' },
+        children:[
+          {
+            path: '/knowledgeMgt/ruleMgt',
+            name: 'ruleMgt',
+            component: RouteView,
+            meta: { title: '规则管理', multistage: true  },
+            children:[
+              {
+                path: '/knowledgeMgt/ruleMgt/index',
+                name: 'ruleIndex',
+                component: () => import( '@/views/knowledgeMgt/ruleMgt/index.vue'),
+                meta: { title: '规则管理',hiddenHeaderContent: true, index: true,}
+              }
+            ]
+          }
         ]
       },
 
