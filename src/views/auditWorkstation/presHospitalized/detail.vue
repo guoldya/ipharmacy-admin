@@ -35,32 +35,57 @@
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100">
           <a-tab-pane tab="处方信息" key="1">
-              <a-row>
-                <p class="dealP">处方单1：</p>
-              </a-row>
-              <a-row class="dealRow" v-for="(op,index) in adviceData" :key="index">
-                <a-col class="dealCol" >{{op.num}}、
-                  <span :style="{color:op.colors}">{{op.name}}</span>
-                  &nbsp;&nbsp;<span>{{op.spec}}</span>
-                  &nbsp;&nbsp;<span>{{op.total}}</span>
-                    用法：<span>{{op.single}}</span>
-                    &nbsp;&nbsp;<span>{{op.freq}}</span>
-                    &nbsp;&nbsp;<span :style="{color:op.colors}">{{op.way}}</span>
-                </a-col>
-              </a-row>
-              <a-row>
-                <p class="dealP">处方单2：</p>
-              </a-row>
-              <a-row class="dealRow" v-for="(op,index) in adviceData" :key="index+5">
-                <a-col class="dealCol" >{{op.num}}、
-                  <span :style="{color:op.colors}">{{op.name}}</span>
-                  &nbsp;&nbsp;<span>{{op.spec}}</span>
-                  &nbsp;&nbsp;<span>{{op.total}}</span>
-                    用法：<span>{{op.single}}</span>
-                    &nbsp;&nbsp;<span>{{op.freq}}</span>
-                    &nbsp;&nbsp;<span :style="{color:op.colors}">{{op.way}}</span>
-                </a-col>
-              </a-row>
+
+            <el-table
+              class="margin-top-10"
+              style="width: 100%"
+              :data="adviceData"
+              highlight-current-row
+              :cell-style="cellStyle">
+              <el-table-column
+                :prop="item.prop"
+                :label="item.title"
+                :key="index"
+                v-for="(item,index) in columns"
+                :width="item.width"
+                :align="item.align"
+                :formatter="item.formatter"
+                :show-overflow-tooltip="true"
+              >
+                <template slot-scope="props">
+                                  <span>
+                                    {{props.row[item.prop]}}
+                                  </span>
+                </template>
+              </el-table-column>
+            </el-table>
+
+            <!--<a-row>-->
+              <!--<p class="dealP">处方单1：</p>-->
+            <!--</a-row>-->
+            <!--<a-row class="dealRow" v-for="(op,index) in adviceData" :key="index">-->
+              <!--<a-col class="dealCol" :offset="2">{{op.num}}、-->
+                <!--<span :style="{color:op.colors}">{{op.name}}</span>-->
+                <!--&nbsp;&nbsp;<span>{{op.spec}}</span>-->
+                <!--&nbsp;&nbsp;<span>{{op.total}}</span>-->
+                <!--用法：<span>{{op.single}}</span>-->
+                <!--&nbsp;&nbsp;<span>{{op.freq}}</span>-->
+                <!--&nbsp;&nbsp;<span :style="{color:op.colors}">{{op.way}}</span>-->
+              <!--</a-col>-->
+            <!--</a-row>-->
+            <!--<a-row>-->
+              <!--<p class="dealP">处方单2：</p>-->
+            <!--</a-row>-->
+            <!--<a-row class="dealRow" v-for="(op,index) in adviceData" :key="index+5">-->
+              <!--<a-col class="dealCol" :offset="2">{{op.num}}、-->
+                <!--<span :style="{color:op.colors}">{{op.name}}</span>-->
+                <!--&nbsp;&nbsp;<span>{{op.spec}}</span>-->
+                <!--&nbsp;&nbsp;<span>{{op.total}}</span>-->
+                <!--用法：<span>{{op.single}}</span>-->
+                <!--&nbsp;&nbsp;<span>{{op.freq}}</span>-->
+                <!--&nbsp;&nbsp;<span :style="{color:op.colors}">{{op.way}}</span>-->
+              <!--</a-col>-->
+            <!--</a-row>-->
           </a-tab-pane>
           <a-tab-pane tab="电子病历" key="2">
 
@@ -79,13 +104,13 @@
                 <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
                 <a-tooltip placement="top" :key="index" v-for="(pd,index) in op.tags" >
                   <template slot="title" style="width: 100px">{{pd.template}}</template>
-                <a-tag
-                       class="problemTag"
-                       :id="pd.num"
-                       v-if="index<2"
-                       :key="index"
-                       @click="tagsClick(pd.template,pd.num)"
-                >{{pd.updateText}}</a-tag>
+                  <a-tag
+                         class="problemTag"
+                         :id="pd.num"
+                         v-if="index<2"
+                         :key="index"
+                         @click="tagsClick(pd.template,pd.num)"
+                  >{{pd.updateText}}</a-tag>
                 </a-tooltip>
 
                 <a-dropdown :trigger="['click']">
@@ -157,8 +182,7 @@
   import FooterToolBar from '@/components/FooterToolbar'
   import { mixin, mixinDevice } from '@/utils/mixin'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
-
-  const DetailListItem = DetailList.Item
+  const DetailListItem = DetailList.Item;
   export default {
     components: {
       ATextarea,
@@ -167,7 +191,7 @@
       DetailList,
       DetailListItem,
       STable,
-      FooterToolBar
+      FooterToolBar,
     },
     mixins: [mixin, mixinDevice],
     name: 'detail',
@@ -188,7 +212,11 @@
             problem: '5',
             colors: '#FF6600',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:11},{template:'避免用药过度',num:12},{template:'药剂量太少',num:13},{template:'药剂量太少',num:14},{template:'药剂量太少',num:15}],
+            tags:[{template:'避免重复用药',num:11,updateText:''},
+              {template:'避免用药过度',num:12,updateText:''},
+              {template:'药剂量太少',num:13,updateText:''},
+              {template:'药剂量太少',num:14,updateText:''},
+              {template:'药剂量太少',num:15,updateText:''}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
           },
           {
@@ -204,7 +232,7 @@
             problem: '4',
             colors: '#FFCC00',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:21},{template:'避免用药过度',num:22},{template:'药剂量太少',num:23}],
+            tags:[{template:'避免重复用药',num:21,updateText:''},{template:'避免用药过度',num:22,updateText:''},{template:'药剂量太少',num:23,updateText:''}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
           }, {
             status: 1,
@@ -219,10 +247,9 @@
             problem: '3',
             colors: '#DFE184',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:31},{template:'避免用药过度',num:32},{template:'药剂量太少',num:33}],
+            tags:[{template:'避免重复用药',num:31,updateText:''},{template:'避免用药过度',num:32,updateText:''},{template:'药剂量太少',num:33,updateText:''}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
           }],
-        tags:[],
         adviceData: [
           {
             num: 1,
@@ -266,8 +293,17 @@
             freq: '每天三次',
             way: '口服',
             colors: 'rgb(225,102,102)'
-          }
+          },
+
         ],
+        columns:[ { title: '序号', prop: 'num', width: 50, align: 'right' },
+          { title: '', prop: 'mark', width: 20, align: 'left' },
+          { title: '名称', prop: 'name' },
+          { title: '规格', prop: 'spec', width: 130 },
+          { title: '总量', prop: 'total', width: 60 },
+          { title: '单量', prop: 'single', width: 60 },
+          { title: '频次', prop: 'freq', width: 80, align: 'center' },
+          { title: '服药方式', prop: 'way', width: 80, align: 'center' }],
         templateText:'12333',
       }
     },
@@ -280,7 +316,7 @@
       },
       cancle() {
         this.$router.push({
-          name: 'presOutpatient'
+          name: 'presHospitalized'
         })
       },
       dealData(){
@@ -292,12 +328,22 @@
             }
           }
         };
-        console.log(this.problemsData,'1111111');
       },
       tagsClick(data,index){
         $("#"+index).css("color", "rgb(85,26,139)");
         this.templateText =this.templateText+'、'+data;
-      }
+      },
+      cellStyle(row) {
+        if (row.rowIndex == 0 && row.columnIndex == 2) {
+          return 'color: red; opacity: 0.6;'
+        } else if (row.rowIndex == 0 && row.columnIndex == 4) {
+          return 'color: red; opacity: 0.6;'
+        } else if (row.rowIndex == 4 && row.columnIndex == 2) {
+          return 'color: red; opacity: 0.6;'
+        } else if (row.rowIndex == 4 && row.columnIndex == 5) {
+          return 'color: red; opacity: 0.6;'
+        }
+      },
     }
   }
 </script>
@@ -331,8 +377,8 @@
   .tagStyle {
     cursor: default;
     font-size: 12px;
-      margin-left: 7px;
-      margin-bottom: 5px;
+    margin-left: 7px;
+    margin-bottom: 5px;
   }
   .saveButton{
     margin-top: 6px;
@@ -344,17 +390,14 @@
     margin-left: 7px;
     margin-bottom: 5px;
   }
-  .problemTag:visited{
-    color: rgb(85,26,139);
-  }
 
   .cardHeight {
-    min-height: 600px;
+    min-height: 400px;
     margin-top: 5px;
   }
 
   .cardRight {
-    min-height: 865px;
+    min-height: 600px;
   }
 
   .cardHeight .cardColHeight {
@@ -373,8 +416,7 @@
   }
 
   .dealRow .dealCol {
-    line-height: 18px;
-    margin-left: 20px;
+    line-height: 25px;
   }
 
 

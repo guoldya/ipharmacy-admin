@@ -157,6 +157,10 @@ ant-card-wider-padding .ant-card-body{
   height: 100%;
 }
 
+.TextIndent{
+  text-indent: 2em;
+}
+
 .ant-badge-status-text{
   font-size: 14px !important;
 }

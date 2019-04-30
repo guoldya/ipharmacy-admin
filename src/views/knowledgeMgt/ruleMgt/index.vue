@@ -23,7 +23,7 @@
                     </a-menu-item>
                   </a-menu>
                   <a :disabled="disable">
-                    更多
+                    操作
                     <a-icon type="down"/>
                   </a>
                 </a-dropdown>
@@ -163,8 +163,6 @@
           </el-table-column>
         </el-table>
         <a-pagination
-          showSizeChanger
-          showQuickJumper
           :total="total"
           class="pnstyle"
           :defaultPageSize="pageSize"

@@ -392,7 +392,28 @@ export const asyncRouterMap = [
                 name: 'presOutpatientDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-                meta: { title: '审方中心详情', detail:true,description:'审方中心详情页设置' }
+                meta: { title: '审方中心详情(门诊)', detail:true,description:'审方中心详情页设置' }
+              },
+            ]
+          },
+          {
+            path: '/auditWorkstation/presHospitalized',
+            name: 'presHospitalized',
+            component: RouteView,
+            meta: { title: '审方中心(住院)', multistage: true },
+            children: [
+              {
+                path: '/auditWorkstation/presHospitalized/index',
+                name: 'presHospitalized',
+                component: () => import( '@/views/auditWorkstation/presHospitalized/index.vue'),
+                meta: { title: '审方中心(住院)',hiddenHeaderContent: true, index: true ,},
+              },
+              {
+                path: '/auditWorkstation/presHospitalized/detail',
+                name: 'presHospitalizedDetail',
+                hidden: true,
+                component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
+                meta: { title: '审方中心详情(住院)', detail:true,description:'审方中心详情页设置' }
               },
             ]
           },

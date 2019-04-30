@@ -64,15 +64,15 @@
               <span v-if="item.prop == 'openName'">
                         <a href="">{{props.row[item.prop]}}&nbsp;<a-icon type="message"/></a>
                   </span>
-              <span v-else-if="item.prop == 'prescriptionNum'">
-                <a-popover @mouseenter="mouseHover(props.row)" trigger="hover">
-                  <template slot="content">
-                    <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
-                  </template>
-                  <a-badge :showZero="true" :count="props.row.prescriptionNum"
-                           :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
-                </a-popover>
-              </span>
+              <!--<span v-else-if="item.prop == 'prescriptionNum'">-->
+                <!--<a-popover @mouseenter="mouseHover(props.row)" trigger="hover">-->
+                  <!--<template slot="content">-->
+                    <!--<prescriptionTabs :tabsData="tabsData"></prescriptionTabs>-->
+                  <!--</template>-->
+                  <!--<a-badge :showZero="true" :count="props.row.prescriptionNum"-->
+                           <!--:numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>-->
+                <!--</a-popover>-->
+              <!--</span>-->
               <span v-else>
                 {{props.row[item.prop]}}
               </span>
@@ -251,7 +251,6 @@
           time: '2018-09-21  08:50:08',
           openName: '黄磊',
           deptName: '消化内科',
-          prescriptionNum: 1,
           patientName: '张力',
           patientNum: '201904010001',
           patientSex: '女',
@@ -276,14 +275,14 @@
               colors: '#FFCC00'
             }
 
-          ]
+          ],
+          bedNo:'123床',
         },
           {
             status: 1,
             time: '2018-09-21  08:50:08',
             openName: '张力張',
             deptName: '消化内科',
-            prescriptionNum: 1,
             patientName: '张力張',
             patientNum: '201904010001',
             patientSex: '女',
@@ -295,17 +294,18 @@
                 text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。',
                 colors: '#FFCC00'
               }
-            ]
+            ],
+            bedNo:'456床',
           }],
         columns: [
           { title: '处方', prop: 'time', width: 150 },
           { title: '', prop: 'openName', width: 90 },
           { title: '', prop: 'deptName', width: 80 },
-          { title: '处方数', prop: 'prescriptionNum', width: 70, align: 'center' },
           { title: '患者', prop: 'patientNum',width:150 },
           { title: '', prop: 'patientName', width: 80 },
           { title: '', prop: 'patientSex', width: 50 },
-          { title: '', prop: 'patientAge', width: 60 }
+          { title: '', prop: 'patientAge', width: 60 },
+          { title: '', prop: 'bedNo', width: 60 },
         ],
         //页码初始化
         total: 2,
@@ -506,7 +506,7 @@
       //查看
       looks(data) {
         this.$router.push({
-          name: 'presOutpatientDetail'
+          name: 'presHospitalizedDetail'
           // params:data,
         })
       },
@@ -659,6 +659,9 @@
     border-right: 0px;
   }
 
+  .multipleEl .has-gutter tr th:nth-child(6) {
+    border-right: 0px;
+  }
   .multipleEl .has-gutter tr th:nth-child(7) {
     border-right: 0px;
   }
@@ -671,12 +674,12 @@
     border-right: 0px;
   }
 
-  .multipleEl .has-gutter tr th:nth-child(11) {
-    border-right: 0px;
-  }
+  /*.multipleEl .has-gutter tr th:nth-child(12) {*/
+    /*border-right: 0px;*/
+  /*}*/
 
   /*.multipleEl .el-table__row td:nth-child(11) {*/
-    /*border-right: 0px;*/
+  /*border-right: 0px;*/
   /*}*/
   .problemRow{
     line-height: 30px;
