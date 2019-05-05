@@ -20,7 +20,7 @@
               placeholder="日志内容"></a-input>
     <a-button type="primary" @click="handleAdd">记录</a-button>
     <a-button type="primary" @click="handleNewError">触发一个错误</a-button>
-    <i class="iconfont icon anticonchufang"></i>
+    <i class="iconfont action action-map"></i>
   </div>
 
 </template>

@@ -22,6 +22,7 @@
           style="width: 100%"
           @select="selectBox"
           @select-all="selectAll"
+          highlight-current-row
         >
           <!--多选框checkbox-->
           <el-table-column
@@ -85,6 +86,7 @@
             :filters="this.enum.patientProblem"
             :filter-method="filterTag"
             filter-placement="bottom"
+            min-width="500"
           >
             <template slot-scope="props">
               <a-row v-for="(op,index) in props.row.problemList" class="problemRow" :key="index">
@@ -675,7 +677,7 @@
   }
 
   /*.multipleEl .has-gutter tr th:nth-child(12) {*/
-    /*border-right: 0px;*/
+  /*border-right: 0px;*/
   /*}*/
 
   /*.multipleEl .el-table__row td:nth-child(11) {*/

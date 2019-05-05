@@ -37,8 +37,7 @@
           <a-tab-pane tab="处方信息" key="1">
 
             <el-table
-              class="margin-top-10"
-              style="width: 100%"
+              class="margin-top-10 width-100"
               :data="adviceData"
               highlight-current-row
               :cell-style="cellStyle">
@@ -102,22 +101,22 @@
               <a-card class="margin-top-10 antCard" v-for="(op,index) in problemsData" :key="index">
                 <a-tag :color="op.colors" class="tagStyle"> {{op.problem }}级</a-tag>
                 <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
-                <a-tooltip placement="top" :key="index" v-for="(pd,index) in op.tags" >
-                  <template slot="title" style="width: 100px">{{pd.template}}</template>
+                <a-tooltip placement="top" :key="num" v-for="(pd,num) in op.tags" >
+                  <template slot="title" class="width-100" >{{pd.template}}</template>
                   <a-tag
                          class="problemTag"
                          :id="pd.num"
-                         v-if="index<2"
-                         :key="index"
-                         @click="tagsClick(pd.template,pd.num)"
+                         v-if="num<3"
+                         :key="num"
+                         @click="tagsClick( pd.template,pd.num,pd.status,index,num,)"
                   >{{pd.updateText}}</a-tag>
                 </a-tooltip>
 
                 <a-dropdown :trigger="['click']">
                   <a-menu slot="overlay">
-                    <a-menu-item v-for="(pd,index) in op.tags" @click="tagsClick(pd.template)" v-if="index>=2" :key="index">{{pd.updateText}}</a-menu-item>
+                    <a-menu-item v-for="(pd,num) in op.tags" @click="tagsClick(pd.template)" v-if="num>=3" :key="num">{{pd.updateText}}</a-menu-item>
                   </a-menu>
-                  <a v-if="op.tags.length>2">更多<a-icon type="down"/></a>
+                  <a v-if="op.tags.length>3" class="margin-left-5">更多<a-icon type="down"/></a>
                   <a v-else></a>
                 </a-dropdown>
                 <div :rows="3" :maxRows="4" read-only class="textArea opacity8">
@@ -141,22 +140,31 @@
 
               </a-card>
               <p class="dealP margin-top-10" style="float: left">审核意见</p>
-              <a-button type="primary" class="saveButton">存为模板</a-button>
+              <a-button type="primary" class="saveButton" size="small">存为模板</a-button>
               <a-textarea :rows="4" v-model="templateText"></a-textarea>
             </a-tab-pane>
             <a-tab-pane tab="干预记录" key="2">
-              <a-timeline>
-                <a-timeline-item color="green">系统预判不通过 2015-09-01</a-timeline-item>
-                <a-timeline-item color="green">请医生再次审核 2015-09-01</a-timeline-item>
-                <a-timeline-item color="red">
+              <a-timeline style="margin-top: 20px">
+                <a-timeline-item color="green" class="timelineItem">
+                  <p>2015-09-01 15:00</p>
                   <p>有接触隔离医嘱 1</p>
                   <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3 2015-09-01</p>
                 </a-timeline-item>
-                <a-timeline-item>
+                <a-timeline-item color="green" class="timelineItem">
+                  <p>2015-09-01 15:00</p>
+                  <p>请医生再次审核 </p>
+                </a-timeline-item>
+                <a-timeline-item color="red" class="timelineItem">
+                  <p>2015-09-01 15:00</p>
+                  <p>有接触隔离医嘱 1</p>
+                  <p>有隔离措施 2</p>
+                  <p>医疗废物处置 3 </p>
+                </a-timeline-item>
+                <a-timeline-item class="timelineItem">
+                  <p>2015-09-01 15:00</p>
                   <p>离开病区检查是否通知相关科室做好防护等 1</p>
                   <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3 2015-09-01</p>
+                  <p>医疗废物处置 3 </p>
                 </a-timeline-item>
               </a-timeline>
             </a-tab-pane>
@@ -175,22 +183,14 @@
 </template>
 
 <script>
-  import PageLayout from '@/components/page/PageLayout'
-  import STable from '@/components/table/'
   import DetailList from '@/components/tools/DetailList'
-  import ABadge from 'ant-design-vue/es/badge/Badge'
   import FooterToolBar from '@/components/FooterToolbar'
   import { mixin, mixinDevice } from '@/utils/mixin'
-  import ATextarea from 'ant-design-vue/es/input/TextArea'
   const DetailListItem = DetailList.Item;
   export default {
     components: {
-      ATextarea,
-      PageLayout,
-      ABadge,
       DetailList,
       DetailListItem,
-      STable,
       FooterToolBar,
     },
     mixins: [mixin, mixinDevice],
@@ -212,11 +212,11 @@
             problem: '5',
             colors: '#FF6600',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:11,updateText:''},
-              {template:'避免用药过度',num:12,updateText:''},
-              {template:'药剂量太少',num:13,updateText:''},
-              {template:'药剂量太少',num:14,updateText:''},
-              {template:'药剂量太少',num:15,updateText:''}],
+            tags:[{template:'避免重复用药',num:11,updateText:'',status:1},
+              {template:'避免用药过度',num:12,updateText:'',status:1},
+              {template:'药剂量太少',num:13,updateText:'',status:1},
+              {template:'药剂量太少',num:14,updateText:'',status:1},
+              {template:'药剂量太少',num:15,updateText:'',status:1}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
           },
           {
@@ -232,9 +232,12 @@
             problem: '4',
             colors: '#FFCC00',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:21,updateText:''},{template:'避免用药过度',num:22,updateText:''},{template:'药剂量太少',num:23,updateText:''}],
+            tags:[{template:'避免重复用药',num:21,updateText:'',status:1},
+              {template:'避免用药过度',num:22,updateText:'',status:1},
+              {template:'药剂量太少',num:23,updateText:'',status:1}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
-          }, {
+          },
+          {
             status: 1,
             time: '2018-09-21  08:50:08',
             openName: '张力張',
@@ -247,7 +250,9 @@
             problem: '3',
             colors: '#DFE184',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:31,updateText:''},{template:'避免用药过度',num:32,updateText:''},{template:'药剂量太少',num:33,updateText:''}],
+            tags:[{template:'避免重复用药',num:31,updateText:'',status:1},
+              {template:'避免用药过度',num:32,updateText:'',status:1},
+              {template:'药剂量太少',num:33,updateText:'',status:1}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
           }],
         adviceData: [
@@ -266,7 +271,7 @@
             num: 2,
             mark: '┃',
             name: '西咪替丁注射液',
-            spec: '2ml:0.2g',
+            spec: '2ml*0.2g',
             total: '2支',
             single: '0.4g',
             freq: '每天一次',
@@ -304,7 +309,7 @@
           { title: '单量', prop: 'single', width: 60 },
           { title: '频次', prop: 'freq', width: 80, align: 'center' },
           { title: '服药方式', prop: 'way', width: 80, align: 'center' }],
-        templateText:'12333',
+        templateText:'',
       }
     },
     mounted() {
@@ -322,16 +327,26 @@
       dealData(){
         for (let key in this.problemsData){
           for (let i in this.problemsData[key].tags){
-            if (this.problemsData[key].tags[i].template.length>4){
-              let str = this.problemsData[key].tags[i].template.substr(0,4);
+            if (this.problemsData[key].tags[i].template.length>5){
+              let str = this.problemsData[key].tags[i].template.substr(0,5);
               this.problemsData[key].tags[i].updateText = str+'...';
+            }else {
+              let str = this.problemsData[key].tags[i].template.substr(0,5);
+              this.problemsData[key].tags[i].updateText = str;
             }
           }
         };
       },
-      tagsClick(data,index){
-        $("#"+index).css("color", "rgb(85,26,139)");
-        this.templateText =this.templateText+'、'+data;
+      tagsClick(data,index,status,i,num,){
+        if (status == 1){
+          $("#"+index).css("color", "#1890ff");
+          this.problemsData[i].tags[num].status = 2;
+          this.templateText =this.templateText+'、'+data;
+        } else {
+          $("#"+index).css("color", "rgba(0, 0, 0, 0.65)");
+          this.problemsData[i].tags[num].status = 1;
+          this.templateText =this.templateText.replace('、'+data,'');
+        }
       },
       cellStyle(row) {
         if (row.rowIndex == 0 && row.columnIndex == 2) {
@@ -381,7 +396,7 @@
     margin-bottom: 5px;
   }
   .saveButton{
-    margin-top: 6px;
+    margin-top: 10px;
     margin-left:10px;
     float: left
   }
@@ -392,12 +407,12 @@
   }
 
   .cardHeight {
-    min-height: 400px;
+    min-height: 420px;
     margin-top: 5px;
   }
 
   .cardRight {
-    min-height: 600px;
+    min-height: 670px;
   }
 
   .cardHeight .cardColHeight {
@@ -425,9 +440,11 @@
     font-weight: bold
   }
 
-  .dealRight .selectInput {
-    line-height: 30px;
+  .timelineItem p{
+    margin-bottom: 5px;
   }
-
+  .timelineItem p:nth-child(n+2){
+    opacity: 0.8;
+  }
 
 </style>

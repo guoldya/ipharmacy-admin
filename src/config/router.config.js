@@ -358,20 +358,20 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/PrescriptionsSetting',
             name: 'PrescriptionsSetting',
             component: RouteView,
-            meta: { title: '审方设置', multistage: true },
+            meta: { title: '审方方案设置', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/PrescriptionsSetting/index',
                 name: 'PrescriptionsSetting',
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/index.vue'),
-                meta: { title: '审方设置',hiddenHeaderContent: true, index: true, }
+                meta: { title: '审方方案设置',hiddenHeaderContent: true, index: true, }
               },
               {
                 path: '/auditWorkstation/PrescriptionsSetting/detail',
                 name: 'PrescriptionsDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/detail.vue'),
-                meta: { title: '审方设置详情', detail: true ,description:'审方设置方案描述'}
+                meta: { title: '审方方案设置详情', detail: true ,description:'审方设置方案描述'}
               }
             ]
           },

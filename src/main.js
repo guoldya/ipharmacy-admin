@@ -74,12 +74,6 @@ Vue.component('grid-item', GridItem);
 Vue.component('opcol', opcol)
 
 
-/**
- * 引入自定义font图表
- */
-const myIcon = Icon.createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js', // 在 iconfont.cn 上生成
-});
 
 
 new Vue({
@@ -102,7 +96,4 @@ new Vue({
     this.$store.commit('ua/get')
     this.$store.commit('SET_NAME',{name:this.userName});
   },
-  components: {
-    'my-icon': myIcon,
-  }
 }).$mount('#app')

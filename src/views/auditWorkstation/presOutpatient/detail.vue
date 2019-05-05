@@ -28,7 +28,9 @@
           <detail-list-item term="体表面积"><span class="opacity8">32㎡</span></detail-list-item>
           <detail-list-item term="临床诊断"><span class="opacity8">胃炎</span></detail-list-item>
           <detail-list-item term="过敏史"><span class="opacity8">无</span></detail-list-item>
-          <detail-list-item term="处方医生"><span class="opacity8"><a href="">黄磊&nbsp;<a-icon type="message"/>&nbsp;18423327418</a>
+          <detail-list-item term="处方医生">
+            <span class="opacity8"><a href="">
+              黄磊&nbsp;<a-icon type="message"/>&nbsp;18423327418</a>
           </span></detail-list-item>
         </detail-list>
       </a-card>
@@ -77,22 +79,22 @@
               <a-card class="margin-top-10 antCard" v-for="(op,index) in problemsData" :key="index">
                 <a-tag :color="op.colors" class="tagStyle"> {{op.problem }}级</a-tag>
                 <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
-                <a-tooltip placement="top" :key="index" v-for="(pd,index) in op.tags" >
+                <a-tooltip placement="top" :key="num" v-for="(pd,num) in op.tags" >
                   <template slot="title" style="width: 100px">{{pd.template}}</template>
                 <a-tag
                        class="problemTag"
                        :id="pd.num"
-                       v-if="index<2"
-                       :key="index"
-                       @click="tagsClick(pd.template,pd.num)"
+                       v-if="num<3"
+                       :key="num"
+                       @click="tagsClick( pd.template,pd.num,pd.status,index,num,)"
                 >{{pd.updateText}}</a-tag>
                 </a-tooltip>
 
                 <a-dropdown :trigger="['click']">
                   <a-menu slot="overlay">
-                    <a-menu-item v-for="(pd,index) in op.tags" @click="tagsClick(pd.template)" v-if="index>=2" :key="index">{{pd.updateText}}</a-menu-item>
+                    <a-menu-item v-for="(pd,num) in op.tags" @click="tagsClick(pd.template)" v-if="num>=3" :key="num">{{pd.updateText}}</a-menu-item>
                   </a-menu>
-                  <a v-if="op.tags.length>2">更多<a-icon type="down"/></a>
+                  <a v-if="op.tags.length>3" class="margin-left-5">更多<a-icon type="down"/></a>
                   <a v-else></a>
                 </a-dropdown>
                 <div :rows="3" :maxRows="4" read-only class="textArea opacity8">
@@ -116,22 +118,31 @@
 
               </a-card>
               <p class="dealP margin-top-10" style="float: left">审核意见</p>
-              <a-button type="primary" class="saveButton">存为模板</a-button>
+              <a-button type="primary" class="saveButton" size="small">存为模板</a-button>
               <a-textarea :rows="4" v-model="templateText"></a-textarea>
             </a-tab-pane>
             <a-tab-pane tab="干预记录" key="2">
-              <a-timeline>
-                <a-timeline-item color="green">系统预判不通过 2015-09-01</a-timeline-item>
-                <a-timeline-item color="green">请医生再次审核 2015-09-01</a-timeline-item>
-                <a-timeline-item color="red">
+              <a-timeline style="margin-top: 20px">
+                <a-timeline-item color="green" class="timelineItem">
+                  <p>2015-09-01 15:00</p>
                   <p>有接触隔离医嘱 1</p>
                   <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3 2015-09-01</p>
                 </a-timeline-item>
-                <a-timeline-item>
+                <a-timeline-item color="green" class="timelineItem">
+                  <p>2015-09-01 15:00</p>
+                  <p>请医生再次审核 </p>
+                </a-timeline-item>
+                <a-timeline-item color="red" class="timelineItem">
+                  <p>2015-09-01 15:00</p>
+                  <p>有接触隔离医嘱 1</p>
+                  <p>有隔离措施 2</p>
+                  <p>医疗废物处置 3 </p>
+                </a-timeline-item>
+                <a-timeline-item class="timelineItem">
+                  <p>2015-09-01 15:00</p>
                   <p>离开病区检查是否通知相关科室做好防护等 1</p>
                   <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3 2015-09-01</p>
+                  <p>医疗废物处置 3 </p>
                 </a-timeline-item>
               </a-timeline>
             </a-tab-pane>
@@ -188,7 +199,11 @@
             problem: '5',
             colors: '#FF6600',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:11},{template:'避免用药过度',num:12},{template:'药剂量太少',num:13},{template:'药剂量太少',num:14},{template:'药剂量太少',num:15}],
+            tags:[{template:'避免重复用药',num:11,updateText:'',status:1},
+              {template:'避免用药过度',num:12,updateText:'',status:1},
+              {template:'药剂量太少',num:13,updateText:'',status:1},
+              {template:'药剂量太少',num:14,updateText:'',status:1},
+              {template:'药剂量太少',num:15,updateText:'',status:1}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
           },
           {
@@ -204,9 +219,12 @@
             problem: '4',
             colors: '#FFCC00',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:21},{template:'避免用药过度',num:22},{template:'药剂量太少',num:23}],
+            tags:[{template:'避免重复用药',num:21,updateText:'',status:1},
+              {template:'避免用药过度',num:22,updateText:'',status:1},
+              {template:'药剂量太少',num:23,updateText:'',status:1}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
-          }, {
+          },
+          {
             status: 1,
             time: '2018-09-21  08:50:08',
             openName: '张力張',
@@ -219,7 +237,9 @@
             problem: '3',
             colors: '#DFE184',
             problemText: '重复给药',
-            tags:[{template:'避免重复用药',num:31},{template:'避免用药过度',num:32},{template:'药剂量太少',num:33}],
+            tags:[{template:'避免重复用药',num:31,updateText:'',status:1},
+              {template:'避免用药过度',num:32,updateText:'',status:1},
+              {template:'药剂量太少',num:33,updateText:'',status:1}],
             text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
           }],
         tags:[],
@@ -286,24 +306,32 @@
       dealData(){
         for (let key in this.problemsData){
           for (let i in this.problemsData[key].tags){
-            if (this.problemsData[key].tags[i].template.length>4){
-              let str = this.problemsData[key].tags[i].template.substr(0,4);
+            if (this.problemsData[key].tags[i].template.length>5){
+              let str = this.problemsData[key].tags[i].template.substr(0,5);
               this.problemsData[key].tags[i].updateText = str+'...';
+            }else {
+              let str = this.problemsData[key].tags[i].template.substr(0,5);
+              this.problemsData[key].tags[i].updateText = str;
             }
           }
         };
-        console.log(this.problemsData,'1111111');
       },
-      tagsClick(data,index){
-        $("#"+index).css("color", "rgb(85,26,139)");
-        this.templateText =this.templateText+'、'+data;
+      tagsClick(data,index,status,i,num,){
+        if (status == 1){
+          $("#"+index).css("color", "#1890ff");
+          this.problemsData[i].tags[num].status = 2;
+          this.templateText =this.templateText+'、'+data;
+        } else {
+          $("#"+index).css("color", "rgba(0, 0, 0, 0.65)");
+          this.problemsData[i].tags[num].status = 1;
+          this.templateText =this.templateText.replace('、'+data,'');
+        }
       }
     }
   }
 </script>
 
 <style scoped>
-
   .detailPres .ant-card-body {
     padding: 14px 32px;
   }
@@ -331,11 +359,11 @@
   .tagStyle {
     cursor: default;
     font-size: 12px;
-      margin-left: 7px;
-      margin-bottom: 5px;
+    margin-left: 7px;
+    margin-bottom: 5px;
   }
   .saveButton{
-    margin-top: 6px;
+    margin-top: 10px;
     margin-left:10px;
     float: left
   }
@@ -344,17 +372,14 @@
     margin-left: 7px;
     margin-bottom: 5px;
   }
-  .problemTag:visited{
-    color: rgb(85,26,139);
-  }
 
   .cardHeight {
-    min-height: 600px;
+    min-height: 450px;
     margin-top: 5px;
   }
 
   .cardRight {
-    min-height: 865px;
+    min-height: 700px;
   }
 
   .cardHeight .cardColHeight {
@@ -363,17 +388,16 @@
 
   .dealP {
     font-size: 14px;
-    font-weight: bold
+    font-weight: bold;
+    margin-top: 10px;
   }
 
   .dealRow {
-    margin-top: 10px;
-    margin-bottom: 20px;
     font-size: 14px;
   }
 
   .dealRow .dealCol {
-    line-height: 18px;
+    line-height: 25px;
     margin-left: 20px;
   }
 
@@ -383,9 +407,14 @@
     font-weight: bold
   }
 
-  .dealRight .selectInput {
-    line-height: 30px;
+  /*.dealRight .selectInput {*/
+  /*line-height: 30px;*/
+  /*}*/
+
+  .timelineItem p{
+    margin-bottom: 5px;
   }
-
-
+  .timelineItem p:nth-child(n+2){
+    opacity: 0.8;
+  }
 </style>

@@ -33,6 +33,7 @@ const Enum={
     { text: '5级', value: '5' },
     { text: '6级', value: '6' },
     { text: '7级', value: '7' },
+
   ],
   dealType:[
     { text: '无', value: '1' },

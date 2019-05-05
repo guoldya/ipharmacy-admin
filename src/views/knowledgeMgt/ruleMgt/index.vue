@@ -486,7 +486,9 @@
         }
       },
       handleOk() {
-        let data = this.form.getFieldsValue()
+        console.log(this.selkeys,'this.selkeys');
+        console.log(this.selectNode,'this.selectNode');
+        let data = this.form.getFieldsValue();
         this.Modal.visible = false
       },
       handleCancel() {
