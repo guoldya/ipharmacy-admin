@@ -151,6 +151,7 @@
       </a-card>
     </a-col>
     <footer-tool-bar
+      :extra="false"
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
       <a-button  @click="submit"  :loading="loading">上一个</a-button>
       <a-button  @click="submit" class="margin-left-5"  :loading="loading">下一个</a-button>
@@ -300,7 +301,7 @@
       },
       cancle() {
         this.$router.push({
-          name: 'presOutpatient'
+          name: 'presOutpatientIndex'
         })
       },
       dealData(){

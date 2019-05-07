@@ -341,7 +341,7 @@ export const asyncRouterMap = [
             children: [
               {
                 path: '/auditWorkstation/problemLevel/index',
-                name: 'problemLevel',
+                name: 'problemLevelIndex',
                 component: () => import( '@/views/auditWorkstation/problemLevel/index.vue'),
                 meta: { title: '问题等级设置',hiddenHeaderContent: true, index: true,}
               },
@@ -362,7 +362,7 @@ export const asyncRouterMap = [
             children: [
               {
                 path: '/auditWorkstation/PrescriptionsSetting/index',
-                name: 'PrescriptionsSetting',
+                name: 'PrescriptionsSettingIndex',
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/index.vue'),
                 meta: { title: '审方方案设置',hiddenHeaderContent: true, index: true, }
               },
@@ -383,7 +383,7 @@ export const asyncRouterMap = [
             children: [
               {
                 path: '/auditWorkstation/presOutpatient/index',
-                name: 'presOutpatient',
+                name: 'presOutpatientIndex',
                 component: () => import( '@/views/auditWorkstation/presOutpatient/index.vue'),
                 meta: { title: '审方中心(门诊)',hiddenHeaderContent: true, index: true ,},
               },
@@ -404,7 +404,7 @@ export const asyncRouterMap = [
             children: [
               {
                 path: '/auditWorkstation/presHospitalized/index',
-                name: 'presHospitalized',
+                name: 'presHospitalizedIndex',
                 component: () => import( '@/views/auditWorkstation/presHospitalized/index.vue'),
                 meta: { title: '审方中心(住院)',hiddenHeaderContent: true, index: true ,},
               },

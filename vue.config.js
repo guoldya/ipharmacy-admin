@@ -80,7 +80,23 @@ module.exports = {
             pathRewrite: {
               '^/gateway': '/api'
             }
-          }
+          },
+          // '/api/sys/': {
+          //   //target: 'http://192.168.0.150:38080/sysweb/',
+          //   target: 'http://192.168.0.110:8091/',
+          //   changeOrigin: true, // 允许跨域
+          //   pathRewrite: {
+          //     '^/api/sys/': '/'
+          //   }
+          // },
+          // '/api/biz/': {
+          //   // target: 'http://192.168.0.150:38080/bizweb/',
+          //   target: 'http://192.168.0.110:8092',
+          //   changeOrigin: true, // 允许跨域
+          //   pathRewrite: {
+          //     '^/api/biz/': '/'
+          //   }
+          // }
         },
     },
     // 如果你不需要使用eslint，把lintOnSave设为false即可

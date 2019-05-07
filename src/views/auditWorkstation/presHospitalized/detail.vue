@@ -12,14 +12,15 @@
           <a-col class="titleText" :md="4" :lg="3" :xxl="2">
             消化内科:
           </a-col>
-          <a-col :md="3" :lg="4" :xxl="4">
-            张力&nbsp;&nbsp; 女&nbsp;&nbsp;23岁
+          <a-col :md="4" :lg="5" :xxl="6">
+            张力&nbsp;&nbsp;201904010001&nbsp;&nbsp;女&nbsp;&nbsp;23岁
           </a-col>
-          <a-col class="titleText" :md="12" :lg="12" :xxl="16">
+          <a-col class="titleText" :md="8" :lg="8" :xxl="8">
             <a-tag :color="problemsData[0].colors" class="tagStyle"> 妊娠</a-tag>
             <a-tag :color="'#40a9ff'" class="tagStyle"> 哺乳</a-tag>
             <a-tag class="tagStyle"> 肝肾功能</a-tag>
           </a-col>
+          <a-col :md="8" :lg="8" :xxl="8">入院日期：&nbsp;2015.02.09</a-col>
         </a-row>
         <a-divider type="horizontal" class="detailDivider"/>
         <detail-list>
@@ -30,12 +31,12 @@
           <detail-list-item term="过敏史"><span class="opacity8">无</span></detail-list-item>
           <detail-list-item term="处方医生"><span class="opacity8"><a href="">黄磊&nbsp;<a-icon type="message"/>&nbsp;18423327418</a>
           </span></detail-list-item>
+
         </detail-list>
       </a-card>
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100">
           <a-tab-pane tab="处方信息" key="1">
-
             <el-table
               class="margin-top-10 width-100"
               :data="adviceData"
@@ -52,9 +53,12 @@
                 :show-overflow-tooltip="true"
               >
                 <template slot-scope="props">
-                                  <span>
-                                    {{props.row[item.prop]}}
-                                  </span>
+                  <span v-if="item.prop == 'name'">
+                    {{props.row.name}}&nbsp;&nbsp;{{props.row.spec}}
+                  </span>
+                  <span v-else>
+                    {{props.row[item.prop]}}
+                  </span>
                 </template>
               </el-table-column>
             </el-table>
@@ -173,8 +177,14 @@
       </a-card>
     </a-col>
     <footer-tool-bar
-      :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
-      <a-button  @click="submit"  :loading="loading">上一个</a-button>
+      :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
+      :extra="true"
+      :clickOne="versionContrast"
+      oneText="版本对比"
+      twoText="标记收藏"
+      :clickTwo="tagCollection"
+    >
+      <a-button  @click="submit"   :loading="loading">上一个</a-button>
       <a-button  @click="submit" class="margin-left-5"  :loading="loading">下一个</a-button>
       <a-button  @click="submit"style="margin-left: 20px"  :loading="loading">驳回</a-button>
       <a-button type="primary" class="margin-left-5" @click="submit"  :loading="loading">通过</a-button>
@@ -286,7 +296,10 @@
             single: '0.46g',
             freq: '每天三次',
             way: '口服',
-            colors: 'rgb(225,102,102)'
+            colors: 'rgb(225,102,102)',
+            deptName:'内科',
+            doctorName:'张医生',
+            time:'2015.05.19 12:00'
           },
           { num: 4, name: '益肾灵胶囊', spec: '0.1GM*100粒/瓶', total: '72粒', single: '0.33g', freq: '每天三次', way: '口服' },
           {
@@ -297,18 +310,25 @@
             single: '0.33g',
             freq: '每天三次',
             way: '口服',
-            colors: 'rgb(225,102,102)'
+            colors: 'rgb(225,102,102)',
+            deptName:'内科',
+            doctorName:'张医生',
+            time:'2015.05.19 12:00'
           },
 
         ],
         columns:[ { title: '序号', prop: 'num', width: 50, align: 'right' },
           { title: '', prop: 'mark', width: 20, align: 'left' },
-          { title: '名称', prop: 'name' },
-          { title: '规格', prop: 'spec', width: 130 },
-          { title: '总量', prop: 'total', width: 60 },
-          { title: '单量', prop: 'single', width: 60 },
-          { title: '频次', prop: 'freq', width: 80, align: 'center' },
-          { title: '服药方式', prop: 'way', width: 80, align: 'center' }],
+          { title: '药品', prop: 'name' },
+          { title: '用法用量', prop: 'way', width: 80, align: 'center' },
+          { title: '', prop: 'single', width: 60 },
+          { title: '', prop: 'freq', width: 80, align: 'center' },
+          { title: '科室', prop: 'deptName', width: 80, align: 'left' },
+          { title: '医生', prop: 'doctorName', width: 80 },
+          { title: '开嘱时间', prop: 'time', width: 130, align: 'left' },
+
+
+          ],
         templateText:'',
       }
     },
@@ -321,7 +341,7 @@
       },
       cancle() {
         this.$router.push({
-          name: 'presHospitalized'
+          name: 'presHospitalizedIndex'
         })
       },
       dealData(){
@@ -359,6 +379,14 @@
           return 'color: red; opacity: 0.6;'
         }
       },
+      //版本对比
+      versionContrast(){
+        console.log(1);
+      },
+      //标记收藏
+      tagCollection(){
+        console.log(2);
+      }
     }
   }
 </script>

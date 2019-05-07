@@ -1,7 +1,10 @@
 <template>
   <div :class="prefixCls">
     <div style="float: left">
-      <slot name="extra">{{ extra }}</slot>
+      <slot name="extra" v-if="extra">
+        <a-button @click="clickOne">{{oneText}}</a-button>
+        <a-button class="margin-left-5" @click="clickTwo">{{twoText}}</a-button>
+      </slot>
     </div>
     <div style="float: right">
       <slot></slot>
@@ -18,9 +21,21 @@
         default: 'ant-pro-footer-toolbar'
       },
       extra: {
-        type: [String, Object],
+        type: Boolean,
         default: ''
-      }
+      },
+      clickOne:{
+        type: Function,
+      },
+      oneText:{
+        type: String,
+      },
+      twoText:{
+        type: String,
+      },
+      clickTwo:{
+        type: Function,
+      },
     }
   }
 </script>

@@ -115,7 +115,7 @@
       },
       backTo() {
         this.$router.push({
-          name: 'problemLevel'
+          name: 'problemLevelIndex'
         })
       },
       confirm(e) {

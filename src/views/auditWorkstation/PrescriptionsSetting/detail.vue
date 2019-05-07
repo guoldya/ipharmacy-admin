@@ -139,7 +139,7 @@
       //返回首页
       cancle() {
         this.$router.push({
-          name: 'PrescriptionsSetting'
+          name: 'PrescriptionsSettingIndex'
         })
       },
       // //新增客户
