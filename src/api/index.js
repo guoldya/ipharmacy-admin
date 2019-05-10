@@ -8,7 +8,18 @@ const api = {
     SendSms: '/account/sms',
     SendSmsErr: '/account/sms_err',
     // get my info
-    UserInfo: '/user/info'
+    UserInfo: '/user/info',
+
+    //审方中心（门诊）
+    selectTribunalRecord:'/sys/reviewOrderissue/selectTribunalRecord',
+
+    //问题等级设置
+    reviewAuditlevelPage:'/sys/reviewAuditlevel/selectPage',
+    reviewAuditlevelSelectList:'/sys/reviewAuditlevel/selectPage',
+    reviewAuditlevelUpdate:'/sys/reviewAuditlevel/update',
+
+    //审方方案设置
+    reviewPlanPage:'/sys/reviewPlan/selectPage',
 }
 export default api
 

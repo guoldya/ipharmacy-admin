@@ -59,3 +59,45 @@ export function get2step(parameter) {
     data: parameter
   })
 }
+
+/**
+ * 审方中心
+ *
+ */
+export function selectTribunalRecord(parameter){
+  return axios({
+    url: api.selectTribunalRecord,
+    method: 'put',
+    data: parameter
+  })
+}
+
+/**
+ * 问题等级设置
+ *
+ */
+export function reviewAuditlevelPage(parameter){
+  return axios({
+    url: api.reviewAuditlevelPage,
+    method: 'put',
+    data: parameter
+  })
+}
+export function reviewAuditlevelUpdate(parameter){
+  return axios({
+    url: api.reviewAuditlevelUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**
+ * 方案设置
+ */
+export function reviewPlanPage(parameter){
+  return axios({
+    url: api.reviewPlanPage,
+    method: 'put',
+    data: parameter
+  })
+}

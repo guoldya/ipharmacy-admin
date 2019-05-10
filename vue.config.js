@@ -67,36 +67,36 @@ module.exports = {
 
     devServer: {
         proxy: {
-          '/api': {
-            // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-            target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-            ws: false,
-            changeOrigin: true
-          },
-          '/gateway': {
-            target: 'https://www.easy-mock.com/mock/5b7bce071f130e5b7fe8cd7d/antd-pro',
-            ws: false,
-            changeOrigin: true,
-            pathRewrite: {
-              '^/gateway': '/api'
-            }
-          },
-          // '/api/sys/': {
-          //   //target: 'http://192.168.0.150:38080/sysweb/',
-          //   target: 'http://192.168.0.110:8091/',
-          //   changeOrigin: true, // 允许跨域
+          // '/api': {
+          //   // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
+          //   target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
+          //   ws: false,
+          //   changeOrigin: true
+          // },
+          // '/gateway': {
+          //   target: 'https://www.easy-mock.com/mock/5b7bce071f130e5b7fe8cd7d/antd-pro',
+          //   ws: false,
+          //   changeOrigin: true,
           //   pathRewrite: {
-          //     '^/api/sys/': '/'
+          //     '^/gateway': '/api'
           //   }
           // },
-          // '/api/biz/': {
-          //   // target: 'http://192.168.0.150:38080/bizweb/',
-          //   target: 'http://192.168.0.110:8092',
-          //   changeOrigin: true, // 允许跨域
-          //   pathRewrite: {
-          //     '^/api/biz/': '/'
-          //   }
-          // }
+          '/api/sys/': {
+            //target: 'http://192.168.0.150:38080/sysweb/',
+            target: 'http://192.168.0.188:8086/',
+            changeOrigin: true, // 允许跨域
+            pathRewrite: {
+              '^/api/sys/': '/'
+            }
+          },
+          '/api/biz/': {
+            // target: 'http://192.168.0.150:38080/bizweb/',
+            target: 'http://192.168.0.188:8086',
+            changeOrigin: true, // 允许跨域
+            pathRewrite: {
+              '^/api/biz/': '/'
+            }
+          }
         },
     },
     // 如果你不需要使用eslint，把lintOnSave设为false即可

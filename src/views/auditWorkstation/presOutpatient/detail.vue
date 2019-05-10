@@ -190,7 +190,7 @@
           {
             status: 1,
             time: '2018-09-21  08:50:08',
-            openName: '黄磊',
+            submitDoc: '黄磊',
             deptName: '消化内科',
             prescriptionNum: 1,
             patientName: '张力',

@@ -441,6 +441,35 @@ export const asyncRouterMap = [
           }
         ]
       },
+      {
+        path: '/baseData',
+        name: 'baseData',
+        component: PageView,
+        meta: { title: '基础数据',keepAlive: false, icon: 'diff' },
+        children:[
+          {
+            path: '/baseData/drugSpec',
+            name: 'DrugSpec',
+            component: RouteView,
+            meta: { title: '药品说明书', multistage: true  },
+            children:[
+              {
+                path: '/baseData/drugSpec/index',
+                name: 'drugSpecIndex',
+                component: () => import( '@/views/baseData/drugSpec/index.vue'),
+                meta: { title: '药品说明书',hiddenHeaderContent: true, index: true,}
+              },
+              {
+                path: '/baseData/drugSpec/detail',
+                name: 'drugSpecDetail',
+                hidden: true,
+                component: () => import( '@/views/baseData/drugSpec/detail.vue'),
+                meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
+              },
+            ]
+          },
+        ]
+      },
 
       // test
       {

@@ -43,12 +43,31 @@ const Enum={
     { text: '禁止', value: '5' },
   ],
   levelType:[
-    { text: '系统', id: '1' },
-    { text: '自定义', id: '2' },
+    { text: '系统固定', id: 1 },
+    { text: '自定义', id: 0 },
+  ],
+  handleType:[
+    { text: '记录', id:1 },
+    { text: '提示', id: 2 },
+    { text: '医师确认', id: 3 },
+    { text: '双签确认', id: 4 },
+    { text: '药师确认', id: 5 },
+    { text: '驳回', id: 9 },
   ],
   packageType:[
     { text: '药师审方', id: '1' },
     { text: '处方点评', id: '2' },
   ],
+  planScope:[
+    { text: '住院', id: '1' },
+    { text: '门诊', id: '2' },
+  ],
+  refreshRate:[
+    { text: '5秒', id: 5000 },
+    { text: '10秒', id: 10000 },
+    { text: '20秒', id: 20000 },
+    { text: '30秒', id: 30000 },
+    { text: '60秒', id: 60000 },
+  ]
 };
 export default Enum;

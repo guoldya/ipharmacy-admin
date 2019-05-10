@@ -7,7 +7,7 @@
           返回
         </a>
       </div>
-      <a-form :form="form" id="form" @submit="handleSubmit">
+      <a-form :form="form" id="form">
         <a-form-item
           label="方案名称"
           v-bind="formItemLayout"
@@ -15,7 +15,7 @@
           <a-input
             placeholder="请输入..."
             v-decorator="[
-                                'id',
+                                'planName',
                                 {rules: [{ required: true, message: '请输入方案名称' },{ max:20 }]}
                                 ]"
           />
@@ -35,7 +35,7 @@
           label="方案范围"
           :required="true"
         >
-          <a-radio-group v-decorator="['problemLevel',{initialValue: '1'}]">
+          <a-radio-group v-decorator="['planScope',{initialValue: '1'}]">
             <a-radio value="1">门诊</a-radio>
             <a-radio value="0">住院</a-radio>
           </a-radio-group>
@@ -60,7 +60,7 @@
           v-bind="formItemLayout"
         >
           <a-textarea
-            v-decorator="['createTime',{rules: [{ max:100 }]}]"
+            v-decorator="['describe',{rules: [{ max:100 }]}]"
           />
         </a-form-item>
         <a-form-item
@@ -74,13 +74,13 @@
         </a-form-item>
       </a-form>
       <conditionSelect class="margin-top-10"
-                       :conditions="conditionList"
+                       :conditions="planruleList"
                        :levelData="levelData"
                        :classData="classData"
                        :deleteCon="deleteCondition">
       </conditionSelect>
       <a-row class="btnStyle">
-        <a-button htmlType="submit" type="primary" :loading="loading">提交</a-button>
+        <a-button htmlType="submit" type="primary" @click="handleSubmit" :loading="loading">提交</a-button>
         <a-button @click="cancle"  style="margin-left: 8px" >取消</a-button>
 
       </a-row>
@@ -108,7 +108,7 @@
         loading: false,
         classData: this.enum.clientClass,
         levelData: this.enum.clientLevel,
-        conditionList: [{ val: '1', calculate: null, value: null, valueTwo: null, list: [] }],
+        planruleList: [{ val: '1', calculate: null, value: null, valueTwo: null, list: [] }],
         selectMode:'tags',
       }
     },
@@ -124,18 +124,6 @@
       });
     },
     methods: {
-      //验证手机
-      validPhone(rule, value, callback) {
-        if (value) {
-          if (!(/^1[3584679]\d{9}$/.test(value))) {
-            callback('请输入正确的联系电话')
-          } else {
-            callback()
-          }
-        } else {
-          callback()
-        }
-      },
       //返回首页
       cancle() {
         this.$router.push({
@@ -175,11 +163,11 @@
       },
       //添加条件
       addCondition() {
-        this.conditionList.push({ val: '1', calculate: null, value: null, valueTwo: null, list: [] })
+        this.planruleList.push({ val: '1', calculate: null, value: null, valueTwo: null, list: [] })
       },
       deleteCondition(index) {
-        this.conditionList.splice(index, 1);
-        console.log(this.conditionList);
+        this.planruleList.splice(index, 1);
+        console.log(this.planruleList);
       },
     }
   }

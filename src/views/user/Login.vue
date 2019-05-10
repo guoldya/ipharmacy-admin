@@ -195,27 +195,28 @@
                         delete loginParams.username
                         loginParams[!state.loginType ? 'email' : 'username'] = values.username
                         loginParams.password = md5(values.password)
-                        Login(loginParams)
-                            .then((res) => {
-                                // if(res.code == '200'){
-                                    // localStorage.setItem('user', values.username);
-                                    // Cookies.set('user', values.username);
-                                    // 获取用户模块信息
-                                    // this.$store.commit('setUserModuleList');
-                                    // this.$store.commit('SET_NAME', { name: values.username, welcome: welcome() })
-                                    this.loginSuccess(res)
-                                // }else{
-                                //     if (res.msg.indexOf('过期') != -1) {
-                                //         this.warning(res.msg);
-                                //     } else {
-                                //         this.error(res.msg);
-                                //     }
-                                //     state.loginBtn = false
-                                // }
-                            }).catch(err => this.requestFailed(err))
-                            .finally(() => {
-                                state.loginBtn = false
-                            })
+                        // Login(loginParams)
+                        //     .then((res) => {
+                        //         // if(res.code == '200'){
+                        //             // localStorage.setItem('user', values.username);
+                        //             // Cookies.set('user', values.username);
+                        //             // 获取用户模块信息
+                        //             // this.$store.commit('setUserModuleList');
+                        //             // this.$store.commit('SET_NAME', { name: values.username, welcome: welcome() })
+                        //             this.loginSuccess(res)
+                        //         // }else{
+                        //         //     if (res.msg.indexOf('过期') != -1) {
+                        //         //         this.warning(res.msg);
+                        //         //     } else {
+                        //         //         this.error(res.msg);
+                        //         //     }
+                        //         //     state.loginBtn = false
+                        //         // }
+                        //     }).catch(err => this.requestFailed(err))
+                        //     .finally(() => {
+                        //         state.loginBtn = false;
+                        //     })
+                      this.loginSuccess()
                     } else {
                         setTimeout(() => {
                             state.loginBtn = false
@@ -270,12 +271,12 @@
             loginSuccess(res) {
               this.$router.push({ name: 'dashboard' })
               // 延迟 1 秒显示欢迎信息
-              setTimeout(() => {
-                this.$notification.success({
-                  message: '欢迎',
-                  description: `${timeFix()}，欢迎回来`
-                })
-              }, 500)
+              // setTimeout(() => {
+              //   this.$notification.success({
+              //     message: '欢迎',
+              //     description: `${timeFix()}，欢迎回来`
+              //   })
+              // }, 500)
             },
             requestFailed(err) {
                 this.$notification['error']({

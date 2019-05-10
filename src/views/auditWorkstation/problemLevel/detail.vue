@@ -15,7 +15,7 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-input read-only v-decorator="['problemLevel',]"/>
+        <a-input read-only v-decorator="['levelName',]"/>
       </a-form-item>
       <a-form-item
         label="等级说明"
@@ -23,15 +23,15 @@
         :wrapper-col="wrapperCol"
       >
         <a-textarea :read-only="readOnly"
-          v-decorator="['levelThat']"/>
+          v-decorator="['levelDescription']"/>
       </a-form-item>
       <a-form-item
         label="处理类型"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-select v-decorator="[ 'dealType']" mode="multiple">
-          <a-select-option v-for="(op,index) in this.enum.dealType" :value="op.value" :key="index">{{op.text}}</a-select-option>
+        <a-select v-decorator="[ 'handleType']">
+          <a-select-option v-for="(op,index) in this.enum.handleType" :value="op.id" :key="index">{{op.text}}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item
@@ -40,7 +40,7 @@
         :wrapper-col="wrapperCol"
       >
         <a-col :span="2">
-          <colorPicker @change="handlesColor" class="colorPick" v-model="colors"/>
+          <colorPicker @change="handlesColor" class="colorPick" v-model="levelColor"/>
         </a-col>
       </a-form-item>
       <a-form-item
@@ -53,7 +53,7 @@
   </a-card>
 </template>
 <script>
-  import {} from '@/api/login'
+  import {reviewAuditlevelUpdate} from '@/api/login'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
 
   export default {
@@ -71,7 +71,7 @@
         form: this.$form.createForm(this),
         roleCode: '',
         loadData: [],
-        colors:'#000',
+        levelColor:'#000',
         listData:{},
         readOnly:false,
       }
@@ -82,16 +82,17 @@
       if (this.$route.query.msg == 'old'){
         this.readOnly=true;
         _this.listData = this.$route.query;
-        console.log(_this.listData);
         _this.form.setFieldsValue({
-          problemLevel:_this.listData.problemLevel,
-          dealType:_this.listData.dealType,
-          levelThat:_this.listData.levelThat,
+          levelName:_this.listData.levelName,
+          handleType:_this.listData.handleType,
+          levelDescription:_this.listData.levelDescription,
         });
-        _this.colors = this.$route.query.colors;
+        if (this.$route.query.levelColor){
+          _this.levelColor = this.$route.query.levelColor;
+        }
       }else {
         this.readOnly=false;
-        _this.form.setFieldsValue({problemLevel:this.$route.query.length+'级'});
+        _this.form.setFieldsValue({levelName:this.$route.query.length+'级'});
       }
     },
     methods: {
@@ -99,17 +100,22 @@
         e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
-            // roleMaintainAdd(values).then(res => {
-            //   if (res.code == '200') {
-            //     this.$message.info('保存成功!')
-            //     this.backTo()
-            //   } else {
-            //     this.$message.error('保存失败!')
-            //     this.warn(res.msg)
-            //   }
-            // }).catch(err => {
-            //   this.error(err)
-            // })
+            values.levelColor = this.levelColor;
+            values.auditLevel = this.$route.query.auditLevel;
+            if (this.$route.query.msg == 'new'){
+              values.levelType = 0;
+            }
+            reviewAuditlevelUpdate(values).then(res => {
+              if (res.code == '200') {
+                this.$message.info('保存成功!')
+                this.backTo()
+              } else {
+                this.$message.error('保存失败!')
+                this.warn(res.msg)
+              }
+            }).catch(err => {
+              this.error(err)
+            })
           }
         })
       },
@@ -124,7 +130,7 @@
       handlesColor(data){
         if (data) {
           console.log(data);
-          this.listData.colors = data;
+          this.listData.levelColor = data;
         }
       }
     }

@@ -10,28 +10,27 @@
     <a-spin :spinning="loading" tip="加载中...">
       <el-table
         class="margin-top-10"
-        :data="loadData" border
+        :data="dataSource" border
         :highlight-current-row="true"
         style="width: 100%"
       >
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
           <template slot-scope="props">
-                  <span v-if="item.dataIndex == 'action'">
-                     <a @click="edits(props.row)">编辑</a>
-                     <a-divider type="vertical"/>
-                        <a @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>
-                  </span>
-                  <span v-if="item.dataIndex == 'problemLevel'">
-                          <a-tag :color="props.row.colors" style="cursor: default;"> {{props.row.problemLevel}}</a-tag>
-                  </span>
-                  <!--<span v-else-if="item.dataIndex == 'colors'">-->
-                    <!--<my-icon :style="{fontSize:'22px', color:props.row.colors}" type="anticonyuanquan"/>-->
-                  <!--</span>-->
-                  <span v-else-if="item.dataIndex == 'status'">
-                    <a-badge :status="props.row.status == 0? 'default':'processing'"
-                         :text="props.row.status==0?'停用':'启用'"/>
-                  </span>
+            <span v-if="item.dataIndex == 'action'">
+              <a @click="edits(props.row)">编辑</a>
+              <a-divider type="vertical"/>
+              <a @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>
+            </span>
+            <span v-if="item.dataIndex == 'levelName'">
+              <a-tag :color="props.row.levelColor" style="cursor: default;"> {{props.row.levelName}}</a-tag>
+            </span>
+            <span v-else-if="item.dataIndex == 'levelType'" v-html="levelFormatter(props.row.levelType)"></span>
+            <span v-else-if="item.dataIndex == 'handleType'" v-html="handleFormatter(props.row.handleType)"></span>
+            <span v-else-if="item.dataIndex == 'status'">
+              <a-badge :status="props.row.status == 0? 'default':'processing'"
+                       :text="props.row.status==0?'停用':'启用'"/>
+            </span>
             <span v-else>{{props.row[item.dataIndex]}}</span>
           </template>
         </el-table-column>
@@ -54,6 +53,7 @@
 </template>
 
 <script>
+  import { reviewAuditlevelPage } from '@/api/login'
   import { Icon } from 'ant-design-vue'
   import STable from '@/components/table/'
   const myIcon = Icon.createFromIconfontCN({
@@ -69,16 +69,16 @@
         curent: 1,
         pageSize: 10,
         columns: [
-          { title: '编号', dataIndex: 'id', width: 60, align: 'right' },
+          { title: '编号', dataIndex: 'auditLevel', width: 60, align: 'right' },
           { title: '等级类型', dataIndex: 'levelType', align: 'center', width: 100 },
-          { title: '问题等级', dataIndex: 'problemLevel', align: 'center', width: 100 },
-          { title: '处理类型', dataIndex: 'dealType', align: 'center', width: 110 },
-          { title: '等级说明', dataIndex: 'levelThat' },
+          { title: '问题等级', dataIndex: 'levelName', align: 'center', width: 100 },
+          { title: '处理类型', dataIndex: 'handleType', align: 'center', width: 110 },
+          { title: '等级说明', dataIndex: 'levelDescription' },
           { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
           { title: '操作', width: 100, dataIndex: 'action', align: 'center' }
         ],
-        colors: '#ffffff',
-        loadData: []
+        levelColor: '#ffffff',
+        dataSource: []
       }
     },
     computed: {
@@ -86,18 +86,18 @@
         return [
           {
             name: '等级类型',
-            dataField: 'clientId',
+            dataField: 'levelType',
             type: 'select',
             keyExpr: 'id',
             valueExpr: 'text',
             dataSource:this.enum.levelType,
           },
           { name: '处理类型',
-            dataField: 'drugName',
+            dataField: 'handleType',
             type: 'select',
-            keyExpr: 'value',
+            keyExpr: 'id',
             valueExpr: 'text',
-            dataSource:this.enum.dealType,}
+            dataSource:this.enum.handleType,}
         ]
       }
     },
@@ -110,30 +110,35 @@
         let params = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = 10
         params.offset = 0
-        this.fetchYJSMapData(params)
+        this.getData(params)
       },
       //重置
       resetForm() {
         this.$refs.searchPanel.form.resetFields()
-        this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+        this.getData({ pageSize: 10, offset: 0 })
       },
-      getData() {
-        this.loadData = [{
-          id: 1,
-          levelType: '系统',
-          status: 1,
-          problemLevel:  '0级',
-          dealType: '无',
-          colors: '#1890ff',
-          levelThat: '不提示，后台记录；'
-        },
-          { id: 2, levelType: '系统', status: 0, problemLevel: '1级', dealType: '无', colors: '#d38718', levelThat: '无问题' }]
+      getData(params = { pageSize: 10, offset: 0 }) {
+        this.loading = false
+        // params.orderId = 1
+        reviewAuditlevelPage(params).then(res => {
+          if (res.code == '200') {
+            this.dataSource = res.rows
+            this.total = res.total;
+            this.loading = false
+          } else {
+            this.loading = false
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.loading = false
+          this.error(err)
+        })
       },
-      pageChangeSize() {
-
+      pageChange(page, pageSize) {
+        this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
       },
-      pageChange() {
-
+      pageChangeSize(page, pageSize){
+        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
       },
       //启用停用
       user() {
@@ -152,15 +157,37 @@
 
       cellStyle(row) {
         if (row.column.label === '显示颜色') {
-          return 'backgroundColor:' + row.row.colors
+          return 'backgroundColor:' + row.row.levelColor
         }
       },
 
       add(){
         this.$router.push({
           name: 'problemLevelDetail',
-          query:{msg:'new',length:this.loadData.length+1}
+          query:{msg:'new',length:this.dataSource.length,}
         })
+      },
+
+      //枚举
+      levelFormatter(data) {
+        let levelText
+        this.enum.levelType.forEach(item => {
+          if (Number(data) == item.id) {
+            levelText = item.text
+            return
+          }
+        })
+        return levelText
+      },
+      handleFormatter(data){
+        let levelText
+        this.enum.handleType.forEach(item => {
+          if (Number(data) == item.id) {
+            levelText = item.text
+            return
+          }
+        })
+        return levelText
       }
     }
   }

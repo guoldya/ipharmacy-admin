@@ -1,17 +1,29 @@
 <template>
   <div>
     <a-card>
-      <countText :countList="countText"></countText>
+      <!--<countText :countList="countText"></countText>-->
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
           <a-button type="primary" @click="search">查询</a-button>
           <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
         </div>
       </Searchpanel>
-      <a-button class="margin-top-10 margin-left-5" :type="buttonType" @click="buttonClick">{{buttonText}}</a-button>
-      <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
-      <a-button class="margin-left-5" @click="rejected" :disabled="disable">批量驳回</a-button>
-      <a-button class="margin-left-5" :disabled="disable">审方设置</a-button>
+      <a-row>
+        <a-col :span="10" style="padding-top: 15px">
+          <a-button class=" margin-left-5" :type="buttonType" @click="buttonClick">{{buttonText}}</a-button>
+          <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
+          <a-button class="margin-left-5" @click="rejected" :disabled="disable">批量驳回</a-button>
+          <a-select style="width: 100px"  class="margin-left-5"  placeholder="刷新频率" @change="rateChange">
+            <a-select-option :value='op.id' v-for="(op,index) in this.enum.refreshRate" :key="index">
+              {{op.text}}
+            </a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :span="14" class="countCol">
+          <countText :countList="countText"></countText>
+        </a-col>
+      </a-row>
+
       <alert :checkNum="checkSelect" :clearSelect="clearSelect"></alert>
       <a-spin tip="加载中..." :spinning="loading">
         <el-table
@@ -59,19 +71,19 @@
             :width="item.width"
             :align="item.align"
             :formatter="item.formatter"
-            :show-overflow-tooltip="true"
           >
             <template slot-scope="props">
               <span v-if="item.prop == 'openName'">
                         <a href="">{{props.row[item.prop]}}&nbsp;<a-icon type="message"/></a>
                   </span>
-              <span v-else-if="item.prop == 'prescriptionNum'">
+              <span v-else-if="item.prop == 'orderNo'">
                 <a-popover @mouseenter="mouseHover(props.row)" trigger="hover">
                   <template slot="content">
                     <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
                   </template>
-                  <a-badge :showZero="true" :count="props.row.prescriptionNum"
-                           :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
+                  <a-tag color="#1694fb"> {{props.row.orderNo}}</a-tag>
+                  <!--<a-badge :showZero="true" :count="props.row.orderNo"-->
+                           <!--:numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>-->
                 </a-popover>
               </span>
               <span v-else>
@@ -89,19 +101,19 @@
             min-width="500"
           >
             <template slot-scope="props">
-              <a-row v-for="(op,index) in props.row.problemList" class="problemRow" :key="index">
+              <a-row v-for="(op,index) in props.row.orderissueVOS" class="problemRow" :key="index">
                 <a-col :span="2">
-                  <a-tag :color="op.colors" style="cursor: default;"> {{op.problem }}级</a-tag>
+                  <a-tag :color="op.levelColor" style="cursor: default;"> {{op.auditName }}</a-tag>
                 </a-col>
                 <a-col :span="22">
                   <a-tooltip placement="top" :key="index">
-                    <template slot="title" style="width: 300px">{{op.problemText}}：{{op.text}}</template>
+                    <template slot="title" style="width: 300px">{{op.auditClass}}：{{op.auditDescription}}</template>
                     <div class="multiLineText">
-                      <span :style="{color:op.colors}">{{op.problemText}}：</span>{{op.text}}
+                      <span class="auditClass">{{op.auditClass}}：</span>{{op.auditDescription}}
                     </div>
                   </a-tooltip>
                 </a-col>
-                <a-divider v-if="index<props.row.problemList.length-1" type="horizontal" />
+                <a-divider v-if="index<props.row.orderissueVOS.length-1" type="horizontal"/>
               </a-row>
             </template>
           </el-table-column>
@@ -164,7 +176,7 @@
         <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
             <a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">
-              <a-tag :color="op.colors" style="cursor: default;font-weight: bold"> {{op.problem }}级</a-tag>
+              <a-tag :color="op.levelColor" style="cursor: default;font-weight: bold"> {{op.problem }}级</a-tag>
               <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
               <div class="lineText opacity8">
                 {{op.text}}
@@ -209,7 +221,7 @@
   </div>
 </template>
 <script>
-  import {} from '@/api/login'
+  import { selectTribunalRecord } from '@/api/login'
   import { Icon } from 'ant-design-vue'
   import countText from '@/components/count-text'
   import prescriptionTabs from '@/components/prescription-tabs'
@@ -227,7 +239,6 @@
     },
     data() {
       return {
-
         labelCol: {
           xs: { span: 24 },
           sm: { span: 3 }
@@ -248,75 +259,22 @@
         selections: [],
         //table数据加载
         loading: false,
-        dataSource: [{
-          status: 1,
-          time: '2018-09-21  08:50:08',
-          openName: '黄磊',
-          deptName: '消化内科',
-          prescriptionNum: 1,
-          patientName: '张力',
-          patientNum: '201904010001',
-          patientSex: '女',
-          patientAge: '23岁',
-          problemList: [
-            {
-              problem: '5',
-              problemText: '重复给药',
-              text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药',
-              colors: '#FF6600'
-            },
-            {
-              problem: '4',
-              problemText: '重复给药',
-              text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。',
-              colors: '#FFCC00'
-            },
-            {
-              problem: '4',
-              problemText: '重复给药',
-              text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。',
-              colors: '#FFCC00'
-            }
-
-          ]
-        },
-          {
-            status: 1,
-            time: '2018-09-21  08:50:08',
-            openName: '张力張',
-            deptName: '消化内科',
-            prescriptionNum: 1,
-            patientName: '张力張',
-            patientNum: '201904010001',
-            patientSex: '女',
-            patientAge: '23岁',
-            problemList: [
-              {
-                problem: '4',
-                problemText: '重复给药',
-                text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。',
-                colors: '#FFCC00'
-              }
-            ]
-          }],
+        dataSource: [],
         columns: [
-          { title: '处方', prop: 'time', width: 150 },
-          { title: '', prop: 'openName', width: 90 },
-          { title: '', prop: 'deptName', width: 80 },
-          { title: '处方数', prop: 'prescriptionNum', width: 70, align: 'center' },
-          { title: '患者', prop: 'patientNum',width:150 },
-          { title: '', prop: 'patientName', width: 80 },
-          { title: '', prop: 'patientSex', width: 50 },
-          { title: '', prop: 'patientAge', width: 60 }
+          { title: '处方号', prop: 'orderNo', width: 100, align: 'center' },
+          { title: '处方时间', prop: 'submitTime', width: 170 },
+          { title: '医生', prop: 'submitName', width: 90 },
+          { title: '科室', prop: 'deptName', width: 80, align: 'center' },
+          { title: '门诊号', prop: 'admitNum', width: 150, align: 'right' },
+          { title: '患者', prop: 'pname', width: 80 },
+          { title: '性别', prop: 'sex', width: 50,align:'center' },
+          { title: '年龄', prop: 'age', width: 60 }
         ],
         //页码初始化
         total: 2,
         current: 1,
-
-
         //已分配科室
         dis: false,
-
         Modal: {
           visible: false,
           confirmLoading: false
@@ -324,9 +282,8 @@
         form: this.$form.createForm(this),
         //处方单tabsData
         tabsData: {},
-        problemsData: []
-
-
+        problemsData: [],
+        rateTime:10000000000,
       }
     },
     computed: {
@@ -334,21 +291,19 @@
         return [
           {
             name: '患者',
-            dataField: 'clientId',
-            type: 'text',
-            keyExpr: 'clientId',
-            valueExpr: 'clientName'
+            dataField: 'pname',
+            type: 'text'
           },
           { name: '问题类型', dataField: 'drugName', type: 'select' },
-          { name: '选择日期', dataField: 'factoryId', type: 'range-picker' },
-          { name: '医生', dataField: 'doctor', type: 'text' },
-          { name: '科室', dataField: 'dept', type: 'select', disable: this.dis },
-          {
-            type: 'checkbox',
-            name: '已分配科室',
-            dataField: 'check',
-            onChange: this.changeBox
-          }
+          // { name: '选择日期', dataField: 'factoryId', type: 'range-picker' },
+          { name: '医生', dataField: 'submitName', type: 'text' },
+          // { name: '科室', dataField: 'dept', type: 'select', disable: this.dis },
+          // {
+          //   type: 'checkbox',
+          //   name: '已分配科室',
+          //   dataField: 'check',
+          //   onChange: this.changeBox
+          // }
         ]
       }
     },
@@ -356,7 +311,10 @@
       //获取后台数据
       this.fetchYJSMapData()
       //获取头部数据
-      this.getCountText()
+      this.getCountText();
+
+
+
     },
     methods: {
       //搜索
@@ -386,43 +344,25 @@
         params.offset = 0
         this.fetchYJSMapData(params)
       },
-      //处理数据
-      dealData() {
-        let data = this.dataSource
-        for (let key in data) {
-          if (data[key].problem == '2') {
-            data[key].colors = '#33CCFF'
-          } else if (data[key].problem == '3') {
-            data[key].colors = '#DFE184'
-          } else if (data[key].problem == '4') {
-            data[key].colors = '#FFCC00'
-          } else if (data[key].problem == '5') {
-            data[key].colors = '#FF6600'
-          } else if (data[key].problem == '6') {
-            data[key].colors = '#FF0000'
-          }
-        }
-        this.dataSource = data
-      },
+
       //TODO:后台暂未获取数据
       fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
-        params.statusYjs = '1'
-        params.drugSource = '1'
         this.loading = false
-        // yjsDrugMap(params).then(res => {
-        //   if (res.code == '200') {
-        //     this.dataSource = res.rows;
-        //     this.total = res.total;
-        //     this.loading = false;
-        //   } else {
-        //     this.loading = false;
-        //     this.warn(res.msg)
-        //   }
-        // }).catch(err => {
-        //   this.loading = false;
-        //   this.error(err)
-        // })
-        this.dealData()
+        params.orderId = 1
+        selectTribunalRecord(params).then(res => {
+          if (res.code == '200') {
+            this.dataSource = res.rows
+            this.total = res.total;
+            this.loading = false
+          } else {
+            this.loading = false
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.loading = false
+          this.error(err)
+        })
+
       },
       //TODO：数据暂未获取
       getCountText() {
@@ -486,7 +426,7 @@
       rejectedSingle(data) {
         this.Modal.visible = true
         console.log(data.row.problemList)
-        this.problemsData = data.row.problemList
+        this.problemsData = data.row.orderissueVOS
         for (let key in this.problemsData) {
           this.problemsData[key].rejectReason = '病入膏肓'
         }
@@ -528,7 +468,6 @@
       //TODO:处方单数据暂未处理
       mouseHover(data) {
         let tabsOne = {}
-        let tabsTwo = {}
         let columns2 = [
           { title: '序号', prop: 'num', width: 50, align: 'right' },
           { title: '', prop: 'mark', width: 20, align: 'left' },
@@ -579,11 +518,6 @@
           tabsOne.listData = adviceData
           tabsOne.columns = columns2
 
-          tabsTwo.tabName = '处方单2'
-          tabsTwo.diagnose = '胃炎'
-          tabsTwo.costType = '自费'
-          tabsTwo.listData = adviceData
-          tabsTwo.columns = columns2
         } else {
           let adviceData = [
             { num: 1, name: '银参通络胶囊', spec: '0.46g*24粒/盒 ', total: '20粒', single: '0.46g', freq: '每天三次', way: '口服' },
@@ -598,29 +532,17 @@
           tabsOne.listData = adviceData
           tabsOne.columns = columns2
 
-          tabsTwo.tabName = '处方单2'
-          tabsTwo.diagnose = '胃炎'
-          tabsTwo.costType = '自费'
-          tabsTwo.listData = adviceData
-          tabsTwo.columns = columns2
         }
-        this.dealTabsData(tabsOne, tabsTwo)
+        this.dealTabsData(tabsOne)
       },
 
-      dealTabsData(dataOne, dataTwo) {
+      dealTabsData(dataOne) {
         this.tabsData.tabsOne = {
           tabName: dataOne.tabName,
           diagnose: dataOne.diagnose,
           costType: dataOne.costType,
           adviceData: dataOne.listData,
           columns: dataOne.columns
-        }
-        this.tabsData.tabsTwo = {
-          tabName: dataTwo.tabName,
-          diagnose: dataTwo.diagnose,
-          costType: dataTwo.costType,
-          adviceData: dataTwo.listData,
-          columns: dataTwo.columns
         }
       },
 
@@ -630,6 +552,16 @@
         } else {
           this.dis = false
         }
+      },
+
+      //频率事件
+      rateChange(value){
+        this.rateTime = value;
+        console.log(value);
+        clearInterval(()=>{
+          this.fetchYJSMapData();
+          console.log(1111);
+        },value)
       }
     }
   }
@@ -652,38 +584,44 @@
     margin-top: 10px;
 
   }
-
-  .multipleEl .has-gutter tr th:nth-child(3) {
-    border-right: 0px;
+  .auditClass{
+    font-weight: bold;
+    color:#000000;
+    opacity: 0.9
   }
 
-  .multipleEl .has-gutter tr th:nth-child(4) {
-    border-right: 0px;
-  }
+  /*.multipleEl .has-gutter tr th:nth-child(3) {*/
+    /*border-right: 0px;*/
+  /*}*/
 
-  .multipleEl .has-gutter tr th:nth-child(7) {
-    border-right: 0px;
-  }
+  /*.multipleEl .has-gutter tr th:nth-child(4) {*/
+    /*border-right: 0px;*/
+  /*}*/
 
-  .multipleEl .has-gutter tr th:nth-child(8) {
-    border-right: 0px;
-  }
+  /*.multipleEl .has-gutter tr th:nth-child(7) {*/
+    /*border-right: 0px;*/
+  /*}*/
 
-  .multipleEl .has-gutter tr th:nth-child(9) {
-    border-right: 0px;
-  }
+  /*.multipleEl .has-gutter tr th:nth-child(8) {*/
+    /*border-right: 0px;*/
+  /*}*/
+
+  /*.multipleEl .has-gutter tr th:nth-child(9) {*/
+    /*border-right: 0px;*/
+  /*}*/
 
   .multipleEl .has-gutter tr th:nth-child(11) {
     border-right: 0px;
   }
 
   /*.multipleEl .el-table__row td:nth-child(11) {*/
-    /*border-right: 0px;*/
+  /*border-right: 0px;*/
   /*}*/
-  .problemRow{
+  .problemRow {
     line-height: 30px;
   }
-  .problemRow .ant-divider-horizontal{
+
+  .problemRow .ant-divider-horizontal {
     margin: 0 0;
   }
 
@@ -735,5 +673,11 @@
     line-height: 24px;
     font-size: 14px;
     width: 100%;
+  }
+  .countCol .countStyle{
+    margin-top: 0px !important;
+  }
+  .countCol .countFor{
+    margin-bottom: 0px !important;
   }
 </style>

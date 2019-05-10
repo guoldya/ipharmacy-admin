@@ -10,7 +10,7 @@
       <a-button class="margin-top-10" type="primary" @click="add">新增</a-button>
       <el-table
         class="margin-top-10"
-        :data="loadData" border
+        :data="dataSource" border
         :highlight-current-row="true">
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
@@ -22,16 +22,16 @@
               <a-divider type="vertical" />
               <a @click="edits(props.row)">删除</a>
             </span>
-            <span v-else-if="item.dataIndex == 'levelType'" v-html="levelType(props.row.levelType)"></span>
-            <span v-else-if="item.dataIndex == 'problemLevel'" >
-              {{props.row.problemLevel=='1'?'门诊':'住院' }}
+            <span v-else-if="item.dataIndex == 'planType'" v-html="planType(props.row.planType)"></span>
+            <span v-else-if="item.dataIndex == 'planScope'" >
+              {{props.row.planScope=='1'?'门诊':'住院' }}
             </span>
             <span v-else-if="item.dataIndex == 'status'">
                 <a-badge :status="props.row.status == 0? 'default':'processing'"
                          :text="props.row.status==0?'停用':'启用'"/>
             </span>
-            <span v-else-if="item.dataIndex == 'roleNum'">
-                                    <a-badge :showZero="true" :count="props.row.roleNum" @click="checkRol(props)"
+            <span v-else-if="item.dataIndex == 'userNum'">
+                                    <a-badge :showZero="true" :count="props.row.userNum" @click="checkRol(props)"
                                              :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
                                 </span>
             <span v-else>{{props.row[item.dataIndex]}}</span>
@@ -83,6 +83,7 @@
 </template>
 
 <script>
+  import { reviewPlanPage } from '@/api/login'
   export default {
     name: 'index',
     data(){
@@ -93,16 +94,15 @@
         pageSize:10,
         visible: false,
         confirmLoading: false,
-
         //穿梭狂数据
         targetKeys: [],
         mockData:[],
         columns: [
-          {title: '方案名称',dataIndex: 'id',width:200},
-          {title: '方案类型',dataIndex: 'levelType',align: 'center',width:80},
-          {title: '方案范围',dataIndex: 'problemLevel',align: 'center',width:80},
-          {title: '方案描述',dataIndex: 'createTime'},
-          { title: '分配', dataIndex: 'roleNum', align: 'center',width:80 },
+          {title: '方案名称',dataIndex: 'planName',width:250},
+          {title: '方案类型',dataIndex: 'planType',align: 'center',width:80},
+          {title: '方案范围',dataIndex: 'planScope',align: 'center',width:80},
+          {title: '方案描述',dataIndex: 'describe'},
+          { title: '分配', dataIndex: 'userNum', align: 'center',width:80 },
           {title: '状态',dataIndex: 'status',width:80,align:'center'},
           {title: '操作',dataIndex: 'action',align:'center',width:140,}
         ],
@@ -113,7 +113,7 @@
           {text:'停用',showtip:true,tip:'确认停用吗？',click:this.changeStatus},
         ],
         colors:'#ffffff',
-        loadData:[],
+        dataSource:[],
       }
     },
     computed: {
@@ -145,16 +145,29 @@
         let params = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = 10
         params.offset = 0
-        this.fetchYJSMapData(params)
+        this.getData(params)
       },
       //重置
       resetForm() {
         this.$refs.searchPanel.form.resetFields()
-        this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+        this.getData({ pageSize: 10, offset: 0 })
       },
-      getData(){
-        this.loadData = [{id:'审方方案1',levelType:'1',status:1,problemLevel:'1',createTime:'无',colors:'red',roleNum:5,editTime:'无'},
-          {id:'审方方案2',levelType:'2',status:1,problemLevel:'2',createTime:'无',colors:'yellow',roleNum:4,editTime:'无'}];
+      getData(params = { pageSize: 10, offset: 0 }) {
+        this.loading = true
+        // params.orderId = 1
+        reviewPlanPage(params).then(res => {
+          if (res.code == '200') {
+            this.dataSource = res.rows
+            this.total = res.total;
+            this.loading = false
+          } else {
+            this.loading = false
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.loading = false
+          this.error(err)
+        })
       },
       pageChangeSize(){
 
@@ -195,7 +208,7 @@
       handleChange(){
 
       },
-      levelType(value){
+      planType(value){
         if(value=='1'){
           return '药师审方'
         }else if(value == '2'){

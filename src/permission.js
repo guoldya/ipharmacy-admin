@@ -20,30 +20,30 @@ router.beforeEach((to, from, next) => {
   let isLock = getSessionStore({
     name: 'isLock'
   }) || false
-
-  if (token && token !== 'undefined' && accessToken) {
-    if (isLock && to.path !== '/user/lock') {
-      next({
-        path: '/user/lock'
-      })
-      NProgress.done()
-    } else {
-      if (to.path === '/user/login') {
-        next({ path: '/dashboard/workplace' })
-        NProgress.done()
-      } else {
-        next()
-      }
-    }
-  } else {
-    if (whiteList.includes(to.name)) {
-      // 在免登录白名单，直接进入
-      next()
-    } else {
-      next({ path: '/user/login', query: { redirect: to.fullPath } })
-      NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
-    }
-  }
+next();
+  // if (token && token !== 'undefined' && accessToken) {
+  //   if (isLock && to.path !== '/user/lock') {
+  //     next({
+  //       path: '/user/lock'
+  //     })
+  //     NProgress.done()
+  //   } else {
+  //     if (to.path === '/user/login') {
+  //       next({ path: '/dashboard/workplace' })
+  //       NProgress.done()
+  //     } else {
+  //       next()
+  //     }
+  //   }
+  // } else {
+  //   if (whiteList.includes(to.name)) {
+  //     // 在免登录白名单，直接进入
+  //     next()
+  //   } else {
+  //     next({ path: '/user/login', query: { redirect: to.fullPath } })
+  //     NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
+  //   }
+  // }
 })
 
 router.afterEach((to) => {
