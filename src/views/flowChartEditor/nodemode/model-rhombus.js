@@ -1,5 +1,4 @@
 import G6Editor from '@antv/g6-editor';
-import G6 from "@antv/g6";
 const { Flow } = G6Editor;
 
 Flow.registerNode("model-rhombus", {
@@ -65,27 +64,14 @@ Flow.registerNode("model-rhombus", {
     //获取绘制路线 塞贝尔曲线
     getPath: function (t) {
         var e = t[0],
-            n = t[1],
-            r = [{
-                x: 0,
-                y: 0 - n / 2
-            },
-            {
-                x: 0 + e / 2,
-                y: 0
-            },
-            {
-                x: 0,
-                y: 0 + n / 2
-            },
-            {
-                x: 0 - e / 2,
-                y: 0
-            },
-            {
-                x: 0,
-                y: 0 - n / 2
-            }];
-        return G6.Util.pointsToPolygon(r)
+            n = t[1];
+        var p = [
+            ["M", 0, 0 - n / 2],
+            ["L", 0 + e / 2, 0],
+            ["L", 0, 0 + n / 2],
+            ["L", 0 - e / 2, 0],
+            ["L", 0, 0 - n / 2],
+        ]
+        return p
     }
 });
