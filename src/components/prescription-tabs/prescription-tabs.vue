@@ -1,34 +1,41 @@
 <template>
-  <a-tabs defaultActiveKey="1" size="small" style="width: 650px">
-    <a-tab-pane :tab="tabsOne.tabName" key="1">
-      <a-row>
-        <a-col :span="12">诊断：<span class="opacity8">{{tabsOne.diagnose}}</span></a-col>
-        <a-col :span="12">费别：<span class="opacity8">{{tabsOne.costType}}</span></a-col>
-      </a-row>
-      <el-table
-        class="margin-top-10"
-        style="width: 100%"
-        :data="tabsOne.adviceData"
-        highlight-current-row
-        :cell-style="cellStyle">
-        <el-table-column
-          :prop="item.prop"
-          :label="item.title"
-          :key="index"
-          v-for="(item,index) in tabsOne.columns"
-          :width="item.width"
-          :align="item.align"
-          :formatter="item.formatter"
-          :show-overflow-tooltip="true"
-        >
-          <template slot-scope="props">
-                                  <span>
-                                    {{props.row[item.prop]}}
-                                  </span>
-          </template>
-        </el-table-column>
-      </el-table>
-    </a-tab-pane>
+  <!--<a-tabs defaultActiveKey="1" size="small" style="width: 650px">-->
+    <!--<a-tab-pane :tab="tabsOne.tabName" key="1">-->
+  <div>
+    <a-row>
+      <a-col :span="12">诊断：<span class="opacity8">{{tabsOne.diagnose}}</span></a-col>
+      <a-col :span="12">费别：<span class="opacity8">{{tabsOne.costType}}</span></a-col>
+    </a-row>
+    <el-table
+      class="margin-top-10"
+      style="width: 700px"
+      :data="tabsOne.adviceData"
+      highlight-current-row
+      :cell-style="cellStyle">
+      <el-table-column
+        :prop="item.prop"
+        :label="item.title"
+        :key="index"
+        v-for="(item,index) in tabsOne.columns"
+        :width="item.width"
+        :align="item.align"
+        :formatter="item.formatter"
+        :show-overflow-tooltip="true"
+      >
+        <template slot-scope="props">
+          <span v-if="item.prop == 'drugName'" >
+            <span>{{props.row.drugName}}</span>&nbsp;&nbsp;
+            <a-tag :color="op.levelColor" v-for="(op,index) in props.row.auditLevelList" style="cursor: default;" :key="index"> {{op.levelName }}</a-tag>
+          </span>
+          <span v-else>
+            {{props.row[item.prop]}}
+          </span>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+
+    <!--</a-tab-pane>-->
     <!--<a-tab-pane :tab="tabsTwo.tabName" key="2">-->
       <!--<a-row>-->
         <!--<a-col :span="12">诊断：<span class="opacity8">{{tabsTwo.diagnose}}</span></a-col>-->
@@ -58,7 +65,7 @@
         <!--</el-table-column>-->
       <!--</el-table>-->
     <!--</a-tab-pane>-->
-  </a-tabs>
+  <!--</a-tabs>-->
 </template>
 
 <script>
@@ -78,15 +85,18 @@
     },
     methods:{
       cellStyle(row) {
-        if (row.rowIndex == 0 && row.columnIndex == 2) {
-          return 'color: red; opacity: 0.6;'
-        } else if (row.rowIndex == 0 && row.columnIndex == 4) {
-          return 'color: red; opacity: 0.6;'
-        } else if (row.rowIndex == 4 && row.columnIndex == 2) {
-          return 'color: red; opacity: 0.6;'
-        } else if (row.rowIndex == 4 && row.columnIndex == 5) {
-          return 'color: red; opacity: 0.6;'
+        if (row.row.auditLevelList.length>0 && row.column.label== '名称'){
+          return 'color: rgb(255,102,102);'
         }
+        // if (row.rowIndex == 0 && row.columnIndex == 2) {
+        //   return 'color: red; opacity: 0.6;'
+        // } else if (row.rowIndex == 0 && row.columnIndex == 4) {
+        //   return 'color: red; opacity: 0.6;'
+        // } else if (row.rowIndex == 4 && row.columnIndex == 2) {
+        //   return 'color: red; opacity: 0.6;'
+        // } else if (row.rowIndex == 4 && row.columnIndex == 5) {
+        //   return 'color: red; opacity: 0.6;'
+        // }
       },
     }
   }

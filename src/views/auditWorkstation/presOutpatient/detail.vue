@@ -162,6 +162,7 @@
 </template>
 
 <script>
+  import { selectTribunalRecord } from '@/api/login'
   import PageLayout from '@/components/page/PageLayout'
   import STable from '@/components/table/'
   import DetailList from '@/components/tools/DetailList'

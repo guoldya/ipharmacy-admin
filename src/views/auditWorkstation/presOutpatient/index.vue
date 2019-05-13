@@ -73,7 +73,7 @@
             :formatter="item.formatter"
           >
             <template slot-scope="props">
-              <span v-if="item.prop == 'openName'">
+              <span v-if="item.prop == 'submitName'">
                         <a href="">{{props.row[item.prop]}}&nbsp;<a-icon type="message"/></a>
                   </span>
               <span v-else-if="item.prop == 'orderNo'">
@@ -82,8 +82,6 @@
                     <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
                   </template>
                   <a-tag color="#1694fb"> {{props.row.orderNo}}</a-tag>
-                  <!--<a-badge :showZero="true" :count="props.row.orderNo"-->
-                           <!--:numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>-->
                 </a-popover>
               </span>
               <span v-else>
@@ -117,22 +115,6 @@
               </a-row>
             </template>
           </el-table-column>
-          <!--问题详情列-->
-          <!--<el-table-column-->
-          <!--prop="text"-->
-          <!--label=""-->
-          <!--&gt;-->
-          <!--<template slot-scope="props">-->
-          <!--<a-tooltip placement="top" v-for="(op,index) in props.row.problemList" :key="index">-->
-          <!--<template slot="title" style="width: 300px">{{op.problemText}}：{{op.text}}</template>-->
-          <!--<div class="multiLineText">-->
-          <!--<span :style="{color:op.colors}">{{op.problemText}}：</span>{{op.text}}-->
-          <!--</div>-->
-          <!--</a-tooltip>-->
-
-          <!--</template>-->
-          <!--</el-table-column>-->
-          <!--操作列-->
           <el-table-column
             prop="action"
             label="操作"
@@ -176,10 +158,10 @@
         <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
             <a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">
-              <a-tag :color="op.levelColor" style="cursor: default;font-weight: bold"> {{op.problem }}级</a-tag>
-              <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
+              <a-tag :color="op.levelColor" style="cursor: default;font-weight: bold"> {{op.auditLevel }}级</a-tag>
+              <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
               <div class="lineText opacity8">
-                {{op.text}}
+                {{op.auditDescription}}
               </div>
               <a-row class="margin-top-10 selectInput ">
                 <a-col :span="3" style="line-height: 24px">驳回理由:</a-col>
@@ -347,7 +329,7 @@
 
       //TODO:后台暂未获取数据
       fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
-        this.loading = false
+        this.loading = true
         params.orderId = 1
         selectTribunalRecord(params).then(res => {
           if (res.code == '200') {
@@ -405,7 +387,6 @@
           this.warn('请选择处方')
           return
         } else {
-          console.log(1)
         }
       },
       //批量驳回
@@ -414,18 +395,14 @@
           this.warn('请选择处方')
           return
         } else {
-          console.log(1)
         }
       },
       //单个通过
       passSingle(data) {
-        console.log(data)
-        console.log(1)
       },
       //单个驳回
       rejectedSingle(data) {
         this.Modal.visible = true
-        console.log(data.row.problemList)
         this.problemsData = data.row.orderissueVOS
         for (let key in this.problemsData) {
           this.problemsData[key].rejectReason = '病入膏肓'
@@ -441,98 +418,36 @@
       },
       //筛选
       filterTag(row, column) {
-        console.log(column)
-        console.log(row)
       },
 
       //查看
       looks(data) {
+        console.log(data);
         this.$router.push({
-          name: 'presOutpatientDetail'
-          // params:data,
+          name: 'presOutpatientDetail',
+          query:{orderId:data.orderId},
         })
-      },
-      //处方单网格样式
-      //TODO:处方单显示数据颜色暂未控制
-      cellStyle(row) {
-        if (row.rowIndex == 0 && row.columnIndex == 2) {
-          return 'color: red; opacity: 0.6;'
-        } else if (row.rowIndex == 0 && row.columnIndex == 4) {
-          return 'color: red; opacity: 0.6;'
-        } else if (row.rowIndex == 4 && row.columnIndex == 2) {
-          return 'color: red; opacity: 0.6;'
-        } else if (row.rowIndex == 4 && row.columnIndex == 5) {
-          return 'color: red; opacity: 0.6;'
-        }
       },
       //TODO:处方单数据暂未处理
       mouseHover(data) {
         let tabsOne = {}
         let columns2 = [
-          { title: '序号', prop: 'num', width: 50, align: 'right' },
+          { title: '序号', prop: 'seqNum', width: 50, align: 'right' },
           { title: '', prop: 'mark', width: 20, align: 'left' },
-          { title: '名称', prop: 'name' },
-          { title: '规格', prop: 'spec', width: 130 },
-          { title: '总量', prop: 'total', width: 60 },
-          { title: '单量', prop: 'single', width: 60 },
-          { title: '频次', prop: 'freq', width: 80, align: 'center' },
-          { title: '服药方式', prop: 'way', width: 80, align: 'center' }
+          { title: '名称', prop: 'drugName'},
+          // { title: '', prop: 'tags',width:100 },
+          { title: '规格', prop: 'spec', width: 80 },
+          { title: '单量', prop: 'amountStr', width: 60 },
+          { title: '总量', prop: 'dosageStr', width: 60 },
+          { title: '频次', prop: 'frequency', width: 80, align: 'center' },
+          { title: '服药方式', prop: 'useType', width: 80, align: 'center' }
         ]
-        if (data.patientName == '张力') {
-          let adviceData = [{
-            num: 1,
-            mark: '┎',
-            name: '5%葡萄糖氯化钠注射液',
-            spec: '500ml/袋',
-            total: '1袋',
-            single: '500ml',
-            freq: '每天一次',
-            way: '静滴'
-          },
-            {
-              num: 2,
-              mark: '┃',
-              name: '西咪替丁注射液',
-              spec: '2ml:0.2g',
-              total: '2支',
-              single: '0.4g',
-              freq: '每天一次',
-              way: '静滴'
-            },
-            {
-              num: 3,
-              mark: '┖',
-              name: '银参通络胶囊',
-              spec: '0.46g*24粒/盒 ',
-              total: '20粒',
-              single: '0.46g',
-              freq: '每天三次',
-              way: '口服'
-            },
-            { num: 4, name: '益肾灵胶囊', spec: '0.1GM*100粒/瓶', total: '72粒', single: '0.33g', freq: '每天三次', way: '口服' },
-            { num: 5, name: '银杏叶丸', spec: '0.2g*12颗/瓶 ', total: '40颗', single: '0.33g', freq: '每天三次', way: '口服' }
-          ]
+        let adviceData = data.clinicPrescVOS;
           tabsOne.tabName = '处方单1'
           tabsOne.diagnose = '胃炎'
           tabsOne.costType = '自费'
           tabsOne.listData = adviceData
           tabsOne.columns = columns2
-
-        } else {
-          let adviceData = [
-            { num: 1, name: '银参通络胶囊', spec: '0.46g*24粒/盒 ', total: '20粒', single: '0.46g', freq: '每天三次', way: '口服' },
-            { num: 2, name: '益肾灵胶囊', spec: '0.1GM*100粒/瓶', total: '72粒', single: '0.33g', freq: '每天三次', way: '口服' },
-            { num: 3, name: '银杏叶丸', spec: '0.2g*12颗/瓶 ', total: '40颗', single: '0.33g', freq: '每天三次', way: '口服' },
-            { num: 4, name: '云南白药胶囊', spec: '0.18g*24片/盒 ', total: '24片', single: '0.18g', freq: '每天三次', way: '口服' },
-            { num: 5, name: '异烟肼片', spec: '0.1GM*100粒/瓶', total: '7粒', single: '0.33g', freq: '每天三次', way: '口服' }
-          ]
-          tabsOne.tabName = '处方单1'
-          tabsOne.diagnose = '胃炎'
-          tabsOne.costType = '自费'
-          tabsOne.listData = adviceData
-          tabsOne.columns = columns2
-
-        }
         this.dealTabsData(tabsOne)
       },
 
@@ -557,13 +472,11 @@
       //频率事件
       rateChange(value){
         this.rateTime = value;
-        console.log(value);
-        clearInterval(()=>{
+        setInterval(()=>{
           this.fetchYJSMapData();
-          console.log(1111);
-        },value)
+        },this.rateTime)
       }
-    }
+    },
   }
 </script>
 <style>

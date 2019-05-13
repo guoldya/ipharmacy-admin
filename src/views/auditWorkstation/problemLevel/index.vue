@@ -118,7 +118,7 @@
         this.getData({ pageSize: 10, offset: 0 })
       },
       getData(params = { pageSize: 10, offset: 0 }) {
-        this.loading = false
+        this.loading = true
         // params.orderId = 1
         reviewAuditlevelPage(params).then(res => {
           if (res.code == '200') {

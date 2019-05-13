@@ -79,20 +79,22 @@
     computed: {},
     mounted() {
       let _this = this;
-      if (this.$route.query.msg == 'old'){
-        this.readOnly=true;
-        _this.listData = this.$route.query;
-        _this.form.setFieldsValue({
-          levelName:_this.listData.levelName,
-          handleType:_this.listData.handleType,
-          levelDescription:_this.listData.levelDescription,
-        });
-        if (this.$route.query.levelColor){
-          _this.levelColor = this.$route.query.levelColor;
-        }
+      if (this.$route.query){
+        if (this.$route.query.msg == 'old'){
+          _this.listData = this.$route.query;
+          _this.form.setFieldsValue({
+            levelName:_this.listData.levelName,
+            handleType:_this.listData.handleType,
+            levelDescription:_this.listData.levelDescription,
+          });
+          this.readOnly = this.$route.query.levelType == 1 ? true:false;
+          if (this.$route.query.levelColor){
+            _this.levelColor = this.$route.query.levelColor;
+          }
       }else {
-        this.readOnly=false;
-        _this.form.setFieldsValue({levelName:this.$route.query.length+'级'});
+          this.readOnly=false;
+          _this.form.setFieldsValue({levelName:this.$route.query.length+'级'});
+        }
       }
     },
     methods: {

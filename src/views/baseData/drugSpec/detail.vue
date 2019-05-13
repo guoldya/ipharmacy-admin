@@ -14,37 +14,37 @@
     </a-card>
     <a-card class="margin-top-10">
       <a-col :span="4">
-        <a-anchor>
-          <a-anchor-link href="#drugName" title="药品名称"/>
-          <a-anchor-link href="#composition" title="成分"/>
-          <a-anchor-link href="#applicableConditions" title="适应病症"/>
-          <a-anchor-link href="#usage" title="用法用量"/>
-          <a-anchor-link href="#adverseReactions" title="不良反应"/>
-          <a-anchor-link href="#taboo" title="禁忌"/>
-          <a-anchor-link href="#mattersAttention" title="注意事项"/>
-          <a-anchor-link href="#drugInteraction" title="药物相互作用"/>
-          <a-anchor-link href="#storage" title="贮藏"/>
-          <a-anchor-link href="#PackingSpec" title="包装规格"/>
-          <a-anchor-link href="#periodValidity" title="有效期"/>
-          <a-anchor-link href="#titanic" title="批准文号"/>
-          <a-anchor-link href="#enterprise" title="生产企业"/>
+        <a-anchor style="text-align: justify;">
+          <a-anchor-link href="#drugName" class="w4" title="药品名称"/>
+          <a-anchor-link href="#composition" class="w4" title="药品成分"/>
+          <a-anchor-link href="#applicableConditions" class="w4" title="适应病症"/>
+          <a-anchor-link href="#usage" class="w4" title="用法用量"/>
+          <a-anchor-link href="#adverseReactions" class="w4" title="不良反应"/>
+          <a-anchor-link href="#taboo" class="w4" title="药品禁忌"/>
+          <a-anchor-link href="#mattersAttention" class="w4" title="注意事项"/>
+          <a-anchor-link href="#drugInteraction" class="w4" title="相互作用"/>
+          <a-anchor-link href="#storage" class="w4" title="药品贮藏"/>
+          <a-anchor-link href="#PackingSpec" class="w4" title="包装规格"/>
+          <a-anchor-link href="#periodValidity" class="w3" title="有效期"/>
+          <a-anchor-link href="#titanic" class="w4" title="批准文号"/>
+          <a-anchor-link href="#enterprise" class="w4" title="生产企业"/>
         </a-anchor>
       </a-col>
       <a-col :span="18">
         <div id="drugName">
           <a-row>
             <p class="font-bold">药品名称:</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div id="composition">
           <a-row>
-            <p class="font-bold">成分</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p class="font-bold">药品成分</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -52,8 +52,8 @@
         <div id="applicableConditions">
           <a-row>
             <p class="font-bold">适应病症</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -61,8 +61,8 @@
         <div id="usage">
           <a-row>
             <p class="font-bold">用法用量</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -70,17 +70,17 @@
         <div id="adverseReactions">
           <a-row>
             <p class="font-bold">不良反应</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div id="taboo">
           <a-row>
-            <p class="font-bold">禁忌</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p class="font-bold">药品禁忌</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -88,35 +88,35 @@
         <div id="mattersAttention">
           <a-row>
             <p class="font-bold">注意事项</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div id="drugInteraction">
           <a-row>
-            <p class="font-bold">药物相互作用</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p class="font-bold">相互作用</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div id="storage">
           <a-row>
-            <p class="font-bold">贮藏</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p class="font-bold">药品贮藏</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div id="PackingSpec">
           <a-row>
-            <p class="font-bold">包装规格</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p class="font-bold" >包装规格</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -124,8 +124,8 @@
         <div id="periodValidity">
           <a-row>
             <p class="font-bold">有效期</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -133,8 +133,8 @@
         <div id="titanic">
           <a-row>
             <p class="font-bold">批准文号</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -142,8 +142,8 @@
         <div id="enterprise">
           <a-row>
             <p class="font-bold">生产企业</p>
-            <p>通用名称：前列腺注射液</p>
-            <p>英文名称：nmslhhhhh</p>
+            <p>通用名称：治肾亏不含糖</p>
+            <p>英文名称：kidney</p>
             <p>商品名称：六味地黄丸</p>
           </a-row>
           <a-divider></a-divider>
@@ -518,5 +518,18 @@
 <style>
   .drugDetail .fontSize {
     font-size: 24px;
+
   }
+  .drugDetail .font-bold{
+    text-align: justify;
+  }
+  w2{
+    letter-spacing:2em; /*如果需要y个字两端对齐，则为(x-y)/(y-1),这里是（4-2）/(2-1)=2em */
+    padding-right:-2em; /*同上*/
+  }
+  .w3{
+    letter-spacing:0.5em; /*如果需要y个字两端对齐，则为(x-y)/(y-1),这里是（4-3）/(3-1)=0.5em */
+    padding-right:-0.5em; /*同上*/
+  }
+
 </style>

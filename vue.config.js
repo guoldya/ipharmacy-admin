@@ -83,7 +83,7 @@ module.exports = {
           // },
           '/api/sys/': {
             //target: 'http://192.168.0.150:38080/sysweb/',
-            target: 'http://192.168.0.188:8086/',
+            target: 'http://192.168.0.236:8088/',
             changeOrigin: true, // 允许跨域
             pathRewrite: {
               '^/api/sys/': '/'
@@ -91,7 +91,7 @@ module.exports = {
           },
           '/api/biz/': {
             // target: 'http://192.168.0.150:38080/bizweb/',
-            target: 'http://192.168.0.188:8086',
+            target: 'http://192.168.0.236:8088',
             changeOrigin: true, // 允许跨域
             pathRewrite: {
               '^/api/biz/': '/'
