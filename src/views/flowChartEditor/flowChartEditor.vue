@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import HeadInfo from '@/components/tools/HeadInfo'
+//import HeadInfo from '@/components/tools/HeadInfo'
 import G6Editor from '@antv/g6-editor'
 import { setTimeout } from 'timers'
 
@@ -300,7 +300,7 @@ export default {
       var _this = this
       // 选中数据处理
       this.page.on('afteritemselected', ev => {
-        // console.log(ev)
+         console.log(ev)
         // 判断数据类型
         switch (ev.item.type) {
           case 'node':
