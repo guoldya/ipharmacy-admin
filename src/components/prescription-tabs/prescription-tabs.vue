@@ -4,7 +4,7 @@
   <div>
     <a-row>
       <a-col :span="12">诊断：<span class="opacity8">{{tabsOne.diagnose}}</span></a-col>
-      <a-col :span="12">费别：<span class="opacity8">{{tabsOne.costType}}</span></a-col>
+      <a-col :span="12">患者类型：<span class="opacity8">{{tabsOne.costType}}</span></a-col>
     </a-row>
     <el-table
       class="margin-top-10"

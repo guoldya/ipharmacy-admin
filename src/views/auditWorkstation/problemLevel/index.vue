@@ -65,7 +65,7 @@
     data() {
       return {
         loading: false,
-        total: 10,
+        total: null,
         curent: 1,
         pageSize: 10,
         columns: [

@@ -430,6 +430,7 @@
       },
       //TODO:处方单数据暂未处理
       mouseHover(data) {
+        console.log(data);
         let tabsOne = {}
         let columns2 = [
           { title: '序号', prop: 'seqNum', width: 50, align: 'right' },
@@ -444,8 +445,12 @@
         ]
         let adviceData = data.clinicPrescVOS;
           tabsOne.tabName = '处方单1'
-          tabsOne.diagnose = '胃炎'
-          tabsOne.costType = '自费'
+        if (data.diseaseName) {
+          tabsOne.diseaseName = data.diseaseName
+        }
+        if (data.ptype) {
+          tabsOne.costType = data.ptype
+        }
           tabsOne.listData = adviceData
           tabsOne.columns = columns2
         this.dealTabsData(tabsOne)
@@ -454,7 +459,7 @@
       dealTabsData(dataOne) {
         this.tabsData.tabsOne = {
           tabName: dataOne.tabName,
-          diagnose: dataOne.diagnose,
+          diagnose: dataOne.diseaseName,
           costType: dataOne.costType,
           adviceData: dataOne.listData,
           columns: dataOne.columns

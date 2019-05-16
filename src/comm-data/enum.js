@@ -3,6 +3,10 @@ const Enum={
         {id: 0, text: '否'},
         {id: 1, text: '是'}
     ],
+  status:[
+    {id: 0, text: '停用'},
+      {id: 1, text: '启用'}
+    ],
   clientClass:[
     {id:'1',text:'大于'},
     {id:'2',text:'小于'},
@@ -68,6 +72,12 @@ const Enum={
     { text: '20秒', id: 20000 },
     { text: '30秒', id: 30000 },
     { text: '60秒', id: 60000 },
+  ],
+  ruleClassification:[
+    { text: '药品', id: 1 },
+    { text: '药品分类', id: 2 },
+    { text: '药品组', id: 3 },
+    { text: '全局', id: 4 },
   ]
 };
 export default Enum;

@@ -105,7 +105,7 @@
           </a-form-item>
           
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-input size="small" placeholder="请输入" v-model="selectNode.value" :rows="4"/>
+            <a-input size="small" placeholder="请输入" v-model="selectEdge.value" :rows="4"/>
           </a-form-item>
         </a-form>
       </div>

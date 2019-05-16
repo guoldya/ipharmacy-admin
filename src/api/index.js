@@ -20,6 +20,15 @@ const api = {
 
     //审方方案设置
     reviewPlanPage:'/sys/reviewPlan/selectPage',
+
+    //规则
+    coreRuleTypeSelect:'/sys/coreRuleType/selectTypePid',
+    coreRuleTypePage:'/sys/coreRule/selectPage',
+    coreRuleTypeUpdate:'/sys/coreRuleType/update',
+    coreRuleTypeDelete:'/sys/coreRuleType/delete',
+    coreRuleSelectKeyword:'/sys/coreRule/selectDrugKeyword',
+    coreRuleUpdate:'/sys/coreRule/update',
+    coreRuleGroupSpec: '/sys/coreRule/coreGroupingSpec',
 }
 export default api
 

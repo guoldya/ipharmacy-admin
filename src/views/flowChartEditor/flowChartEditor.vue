@@ -1,7 +1,7 @@
 <template>
   <div class="editorg6">
     <!-- 工具栏 -->
-    <a-toolbar v-bind:saveFlow="saveFlow" ref="toolbar"></a-toolbar>
+    <a-toolbar v-bind:saveFlow="saveFlow" :titleData="titleData" ref="toolbar"></a-toolbar>
     <div style="height: 42px;"></div>
     <div class="bottom-container">
       <!-- 节点 -->
@@ -109,13 +109,14 @@ export default {
       multiId: [], // 多选模式选中的node节点id
       multiColor: null, // 多选模式下的color，仅以最后一个为代表颜色
       isMultiSelect: false, // 是否是多选模式
-      gridCheck: false
+      gridCheck: false,
+      titleData:{status:'已审核',rule:'自定义',type:'药品规则',drugName:'葡萄糖注射液',time:'2019-04-05 12:00:00'}
     }
   },
   mounted() {
     this.initEditor()
     window.addEventListener('resize', this.getHeight)
-    this.getHeight()
+    this.getHeight();
   },
   computed: {
     selectNodeBasisLabel() {
@@ -146,6 +147,9 @@ export default {
     },
     selectEdgeLabel() {
       return this.selectEdge.label
+    },
+    selectEdgeValue() {
+      return this.selectEdge.value
     }
   },
 
@@ -201,7 +205,12 @@ export default {
       if (newValue != oldValue && newValue != null) {
         this.flow.update(this.selectEdge.id, { label: { text: newValue } })
       }
-    }
+    },
+    selectEdgeValue(newValue, oldValue) {
+      if (newValue != oldValue && newValue != null) {
+        this.flow.update(this.selectEdge.id, { value: newValue  })
+      }
+    },
   },
   methods: {
     saveFlow() {
@@ -284,7 +293,7 @@ export default {
         //   stroke: '#1890ff'
         // },
         color: 'rgba(0,0,0,0.25)', // flow-smooth
-        shape: 'flow-polyline' //flow-polyline-round
+        shape: 'flow-smooth' //flow-polyline-round
         // labelRectStyle: {
         //   fill: '#ffffff'
         // }
@@ -337,7 +346,7 @@ export default {
             setTimeout(() => {
               _this.selectEdge.id = ev.item.model.id
               _this.selectEdge.label = ev.item.model.label ? ev.item.model.label.text : null
-
+              _this.selectEdge.value = ev.item.model.value
               _this.selectEdge.sourceId = ev.item.source.id
               if (ev.item.source.model) {
                 _this.selectEdge.sourceType = ev.item.source.model.shape

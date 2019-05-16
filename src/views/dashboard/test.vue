@@ -20,21 +20,16 @@
               placeholder="日志内容"></a-input>
     <a-button type="primary" @click="handleAdd">记录</a-button>
     <a-button type="primary" @click="handleNewError">触发一个错误</a-button>
-    <i class="iconfont action action-map"></i>
+    <i class="iconfont action action-user-lock"></i>
   </div>
 
 </template>
 
 <script>
-  import { Icon } from 'ant-design-vue';
-  const IconFont = Icon.createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_1075515_yfbx0smkglf.js',
-  })
+
   export default {
     name: 'Test',
-    components: {
-      IconFont,
-    },
+
     data () {
       return {
         text: '测试BUG信息'

@@ -101,3 +101,59 @@ export function reviewPlanPage(parameter){
     data: parameter
   })
 }
+
+/**
+ * 规则管理
+ */
+export function coreRuleTypeSelect(parameter){
+  return axios({
+    url: api.coreRuleTypeSelect,
+    method: 'put',
+    data: parameter
+  })
+}
+
+export function coreRuleTypePage(parameter){
+  return axios({
+    url: api.coreRuleTypePage,
+    method: 'put',
+    data: parameter
+  })
+}
+
+export function coreRuleTypeUpdate(parameter){
+  return axios({
+    url: api.coreRuleTypeUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+export function coreRuleTypeDelete(parameter){
+  return axios({
+    url: api.coreRuleTypeDelete,
+    method: 'delete',
+    data: parameter
+  })
+}
+export function coreRuleSelectKeyword(parameter){
+  return axios({
+    url: api.coreRuleSelectKeyword,
+    method: 'put',
+    data: parameter
+  })
+}
+
+export function coreRuleUpdate(parameter){
+  return axios({
+    url: api.coreRuleUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+export function coreRuleGroupSpec(parameter){
+  return axios({
+    url: api.coreRuleGroupSpec,
+    method: 'put',
+    data: parameter
+  })
+}

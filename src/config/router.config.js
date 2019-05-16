@@ -468,6 +468,48 @@ export const asyncRouterMap = [
               },
             ]
           },
+          {
+            path: '/baseData/dictionary',
+            name: 'dictionary',
+            component: RouteView,
+            meta: { title: '基础字典', multistage: true  },
+            children:[
+              {
+                path: '/baseData/dictionary/index',
+                name: 'dictionaryIndex',
+                component: () => import( '@/views/baseData/dictionary/index.vue'),
+                meta: { title: '基础字典数据',hiddenHeaderContent: true, index: true,}
+              },
+              // {
+              //   path: '/baseData/drugSpec/detail',
+              //   name: 'drugAdministration',
+              //   hidden: true,
+              //   component: () => import( '@/views/baseData/drugSpec/detail.vue'),
+              //   meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
+              // },
+            ]
+          },
+          {
+            path: '/baseData/drugAdministration',
+            name: 'drugAdministration',
+            component: RouteView,
+            meta: { title: '药品组管理', multistage: true  },
+            children:[
+              {
+                path: '/baseData/drugAdministration/index',
+                name: 'drugAdminIndex',
+                component: () => import( '@/views/baseData/drugAdministration/index.vue'),
+                meta: { title: '药品组管理',hiddenHeaderContent: true, index: true,}
+              },
+              // {
+              //   path: '/baseData/drugSpec/detail',
+              //   name: 'drugAdministration',
+              //   hidden: true,
+              //   component: () => import( '@/views/baseData/drugSpec/detail.vue'),
+              //   meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
+              // },
+            ]
+          },
         ]
       },
 

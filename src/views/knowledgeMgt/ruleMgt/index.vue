@@ -16,10 +16,10 @@
                   <a-menu slot="overlay">
                     <a-menu-item key="1" @click="newTreeNode">新增</a-menu-item>
                     <a-menu-item key="2" @click="updateTreeNode">编辑</a-menu-item>
-                    <a-menu-item key="3" @click="deleteTreeNode">
-                      <a-popconfirm
-                        title="你确定要删除该分类吗？">删除
-                      </a-popconfirm>
+                    <a-menu-item key="3" @click="deleteTreeNode">删除
+                      <!--<a-popconfirm-->
+                      <!--title="你确定要删除该分类吗？">删除-->
+                      <!--</a-popconfirm>-->
                     </a-menu-item>
                   </a-menu>
                   <a :disabled="disable">
@@ -30,23 +30,15 @@
               </a-col>
             </a-row>
             <a-row>
-              <a-tree
-                class="draggable-tree"
-                @expand="onExpand"
-                :expandedKeys="expandedKeys"
-                :autoExpandParent="autoExpandParent"
-                @select="onSelect"
-                :treeData="gData"
-              >
-                <template slot="title" slot-scope="{title}">
-              <span v-if="title.indexOf(searchValue) > -1">
-                {{title.substr(0, title.indexOf(searchValue))}}
-                <span style="color: #f50">{{searchValue}}</span>
-                {{title.substr(title.indexOf(searchValue) + searchValue.length)}}
-              </span>
-                  <span v-else>{{title}}</span>
-                </template>
-              </a-tree>
+              <a-spin tip="加载中..." :spinning="loading">
+                <a-tree
+                  class="draggable-tree"
+                  :treeData="gData"
+                  :loadData="onLoadData"
+                  @select="onSelect"
+                >
+                </a-tree>
+              </a-spin>
             </a-row>
           </a-card>
         </div>
@@ -59,8 +51,8 @@
               <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
             </div>
           </Searchpanel>
-          <a-button class="margin-top-10" type="primary" :disabled="disable" @click="addMdc">添加药品</a-button>
-          <a-spin tip="加载中..." :spinning="loading">
+          <a-button class="margin-top-10" type="primary" :disabled="disable" @click="addMdc">添加规则</a-button>
+          <a-spin tip="加载中..." :spinning="loadingTable">
             <el-table
               ref="table"
               :data="loadData"
@@ -72,27 +64,23 @@
                                :label="item.title" :prop="item.prop" :width="item.width" :align="item.align">
                 <template slot-scope="props">
                   <span v-if="item.prop == 'status'">
-                     <a-badge v-if="props.row.status == 0" status="default" text="未配置"/>
-                     <a-badge v-else-if="props.row.status == 1" status="warning" text="已修改"/>
-                     <a-badge v-else-if="props.row.status == 2" status="error" text="已停用"/>
-                     <a-badge v-else-if="props.row.status == 3" status="processing" text="已配置，待生效"/>
-                     <a-badge v-else-if="props.row.status == 4" status="warning" text="已驳回"/>
-                    <a-badge v-else-if="props.row.status == 4" status="success" text="已生效"/>
+                    <a-badge :status="props.row.status == 0? 'default':'processing'"
+                             :text="props.row.status==0?'停用':'启用'"/>
                   </span>
-                  <span v-else-if="item.prop == 'rule'" v-html="ruleType(props.row.rule)"></span>
-                  <span v-else-if="item.prop == 'type'" v-html="typeType(props.row.type)"></span>
+                  <span v-else-if="item.prop == 'type'" v-html="ruleType(props.row.type)"></span>
+                  <span v-else-if="item.prop == 'type2'" v-html="typeType(props.row.type2)"></span>
                   <span v-else-if="item.prop == 'action'">
-                                    <span class='editable-row-operations'>
-                                        <span>
-                                            <a @click="edit(props)">编辑</a>
-                                            <a-divider type="vertical"/>
-                                            <a-popconfirm title="确定删除?" @confirm="del(props.row)" okText="删除"
-                                                          cancelText="取消">
-                                                <a href="javascript:;">删除</a>
-                                            </a-popconfirm>
-                                        </span>
-                                    </span>
-                                </span>
+                    <span class='editable-row-operations'>
+                      <span>
+                        <a @click="edit(props)">编辑</a>
+                        <a-divider type="vertical"/>
+                        <a-popconfirm title="确定删除?" @confirm="del(props.row)" okText="删除"
+                                      cancelText="取消">
+                          <a href="javascript:;">删除</a>
+                        </a-popconfirm>
+                      </span>
+                    </span>
+                  </span>
                   <span v-else>{{props.row[item.prop]}}</span>
                 </template>
               </el-table-column>
@@ -126,52 +114,84 @@
                        :wrapper-col="{ span: 15 }">
             <a-input v-decorator="[ 'title' ]"/>
           </a-form-item>
+          <a-form-item label="类型"
+                       :label-col="{ span: 5 }"
+                       :wrapper-col="{ span: 15 }">
+            <a-select v-decorator="[ 'type2' ]" :disabled="treeEditor" >
+              <a-select-option :value='op.id' v-for="(op,index) in this.enum.ruleClassification" :key="index">
+                {{op.text}}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
         </a-form>
       </a-modal>
       <a-modal
-        title="添加药品"
+        :title="drugModal.modalTitle"
         :visible="drugModal.visible"
         @ok="drugOk"
         :confirmLoading="drugModal.confirmLoading"
         @cancel="drugCancel"
         class="drugModal"
+        width="600px"
       >
-        <a-input-search
-          placeholder="请输入名称或简码"
-          style="width: 200px;"
-          @change="searchDrug"
-        >
-
-        </a-input-search>
-        <el-table
-          ref="table"
-          :data="drugData"
-          border
-          class="margin-top-10"
-          :highlight-current-row="true"
-        >
-          <el-table-column
-            type="selection"
-            width="55"
-            align="center">
-          </el-table-column>
-          <el-table-column :show-overflow-tooltip="true" v-for="item in column2" :key="item.prop"
-                           :label="item.title" :prop="item.prop" :width="item.width" :align="item.align">
-            <template slot-scope="props">
-              <span>{{props.row[item.prop]}}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <a-pagination
-          :total="total"
-          class="pnstyle"
-          :defaultPageSize="pageSize"
-          :pageSizeOptions="['10', '20','50']"
-          @showSizeChange="pageChangeSize"
-          @change="pageChange"
-          size="small"
-        >
-        </a-pagination>
+        <a-form :form="drugForm">
+          <a-form-item style="padding-top: 20px" label="规则名称"
+                       :label-col="{ span: 5 }"
+                       :wrapper-col="{ span: 15 }">
+            <a-input v-decorator="[ 'name',  {rules: [{ required: true,message: '请输入规则名称'  }]} ]"/>
+          </a-form-item>
+          <a-form-item label="规则限定项"
+                       :label-col="{ span: 5 }"
+                       :wrapper-col="{ span: 15 }"
+                        v-if="selkeys == 1"
+          >
+            <a-select v-decorator="[ 'limitedItemid',  {rules: [{ required: true,message: '请选择规则限定项'  }]} ]"
+                      :disabled="treeEditor"
+                      showSearch
+                      optionLabelProp="title"
+                      @search="handleSearch"
+                      :defaultActiveFirstOption="false"
+                      :showArrow="false"
+                      :filterOption="false"
+                      >
+              <a-select-option :value='op.drugCode'  v-for="(op,index) in selectDrug" :key="index" :title="op.drugName">
+                <a-row>
+                  <a-col class="selectCol" :span="18">
+                    {{op.drugName}}
+                  </a-col>
+                  <a-col :span="6">
+                    <a-tag>{{op.dosageForms}}</a-tag>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col class="opacity8">
+                    {{op.producedBy}}
+                  </a-col>
+                </a-row>
+                <a-divider style="margin: 8px 0 0 0;" />
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="规则限定项"
+                       :label-col="{ span: 5 }"
+                       :wrapper-col="{ span: 15 }"
+                       v-if=" selkeys == 3"
+          >
+            <a-select v-decorator="[ 'limitedItemid',  {rules: [{ required: true,message: '请选择规则限定项'  }]} ]"
+                      :disabled="treeEditor"
+                      showSearch
+                      optionLabelProp="title"
+                      @search="searchCoreRule"
+                      :defaultActiveFirstOption="false"
+                      :showArrow="false"
+                      :filterOption="false"
+            >
+              <a-select-option :value='op.specName'  v-for="(op,index) in coreRule" :key="index" :title="op.specName">
+                {{op.specName}}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-form>
       </a-modal>
     </a-row>
   </a-card>
@@ -179,177 +199,85 @@
 
 <script>
   import treeList from './treeList.vue'
-
+  import {
+    coreRuleTypeSelect,
+    coreRuleTypePage,
+    coreRuleTypeUpdate,
+    coreRuleTypeDelete,
+    coreRuleSelectKeyword,
+    coreRuleGroupSpec,
+    coreRuleUpdate,
+  } from '@/api/login'
+  import debounce from 'lodash/debounce'
   export default {
     components: {
       treeList
     },
     name: 'ruleMgt',
     data() {
+      this.handleSearch = debounce(this.handleSearch, 800);
+      this.searchCoreRule =  debounce(this.searchCoreRule, 800);
       return {
-        expandedKeys: [],
-        searchValue: '',
-        autoExpandParent: true,
-        gData: [
-          {
-            key: '0',
-            value: '0',
-            scopedSlots: { title: 'title' },
-            title: '系统规则',
-            children: [
-              {
-                key: '01',
-                value: '0',
-                type: '1',
-                scopedSlots: { title: 'title' },
-                title: '药品',
-                children: [
-                  {
-                    key: '011',
-                    value: '0',
-                    scopedSlots: { title: 'title' },
-                    title: '中成药'
-                  },
-                  {
-                    key: '012',
-                    value: '0',
-                    scopedSlots: { title: 'title' },
-                    title: '西成药'
-                  },
-                  {
-                    key: '013',
-                    value: '0',
-                    scopedSlots: { title: 'title' },
-                    title: '中草药',
-                    children: [
-                      {
-                        key: '0131',
-                        value: '0',
-                        scopedSlots: { title: 'title' },
-                        title: '中药饮片'
-                      },
-                      {
-                        key: '0132',
-                        value: '0',
-                        scopedSlots: { title: 'title' },
-                        title: '防病补虚药'
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                key: '02',
-                value: '0',
-                type: '2',
-                scopedSlots: { title: 'title' },
-                title: '通用'
-              }
-            ]
-          },
-          {
-            key: '1',
-            value: '1',
-            scopedSlots: { title: 'title' },
-            title: '自定义规则',
-            children: [
-              {
-                key: '11',
-                value: '1',
-                type: '1',
-                scopedSlots: { title: 'title' },
-                title: '药品',
-                children: [
-                  {
-                    key: '111',
-                    value: '1',
-                    type: '1',
-                    scopedSlots: { title: 'title' },
-                    title: '中成药'
-                  },
-                  {
-                    key: '112',
-                    value: '1',
-                    type: '1',
-                    scopedSlots: { title: 'title' },
-                    title: '西成药'
-                  },
-                  {
-                    key: '113',
-                    value: '1',
-                    type: '1',
-                    scopedSlots: { title: 'title' },
-                    title: '中草药',
-                    children: [
-                      {
-                        key: '1131',
-                        value: '1',
-                        type: '1',
-                        scopedSlots: { title: 'title' },
-                        title: '中药饮片'
-                      },
-                      {
-                        key: '1132',
-                        value: '1',
-                        type: '1',
-                        scopedSlots: { title: 'title' },
-                        title: '防病补虚药'
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                key: '12',
-                value: '1',
-                type: '2',
-                scopedSlots: { title: 'title' },
-                title: '通用'
-              }
-            ]
-          }
-        ],
-        dataList: [],
+        loadedKeys: ['1', '2'],
+        //树形机构数据
+        gData: [],
+        //网格数据
+        loadData: [],
         loading: false,
-        loadData: [{ rule: '1', type: '1', ruleName: '剂型与给药途径匹配性', status: '3', time: '2015-01-01 12:00' }],
-        columns: [{ title: '规则', prop: 'rule', width: 90, align: 'center' },
-          { title: '类型', prop: 'type', width: 90, align: 'center' },
-          { title: '规则名称', prop: 'ruleName' },
-          { title: '状态', prop: 'status', width: 140, align: 'center' },
-          { title: '生效时间', prop: 'time', width: 150, align: 'right' },
+        loadingTable: false,
+        confirmLoading: false,
+        //网格列
+        columns: [{ title: '规则', prop: 'type', width: 90, align: 'center' },
+          { title: '类型', prop: 'type2', width: 90, align: 'center' },
+          { title: '规则名称', prop: 'name' },
+          { title: '更新人', prop: 'updateBy', width: 150 },
+          { title: '更新时间', prop: 'updateTime', width: 150 },
+          { title: '状态', prop: 'status', width: 80, align: 'center' },
           { title: '操作', prop: 'action', width: 110, align: 'center' }
         ],
+        total: 10,
+        pageSize: 10,
         //药品数据和表格title
         drugData: [
           { drugId: '123456', drugName: '阿司匹林', dosage: '颗粒', manufacturer: '肛泰制药' }
         ],
+        //药品列
         column2: [{ title: '药品编码', prop: 'drugId', width: 100 },
           { title: '药品名称', prop: 'drugName' },
           { title: '剂型', prop: 'dosage', width: 70 },
           { title: '生成厂家', prop: 'manufacturer', width: 100 }],
-
-        confirmLoading: false,
-        total: 10,
-        pageSize: 10,
-        visible: false,
         values: '',
         selectNode: '',
+        //操作按钮停用启用
         disable: true,
+        //分类modal
         Modal: {
           modalTitle: '新增分类',
           visible: false,
           confirmLoading: false
         },
+        // 药品modal
         drugModal: {
+          modalTitle:'添加规则',
           visible: false,
           confirmLoading: false
         },
+
         form: this.$form.createForm(this),
-        selkeys: null
+        drugForm:this.$form.createForm(this),
+        //选择分类Id
+        typeIds: '',
+        selkeys: '',
+        parentData: {},
+        //编辑新增树
+        treeEditor:false,
+        selectDrug:[],
+        coreRule:[],
       }
     },
     mounted() {
-      this.getgData()
+      this.getData()
+      // this.getPageData();
     },
     computed: {
       list() {
@@ -359,7 +287,14 @@
             dataField: 'clientId',
             type: 'text'
           },
-          { name: '状态', dataField: 'drugName', type: 'select' }
+          {
+            name: '状态',
+            dataField: 'drugName',
+            type: 'select',
+            dataSource: this.enum.status,
+            keyExpr: 'id',
+            valueExpr: 'text'
+          }
 
         ]
       }
@@ -377,7 +312,6 @@
         this.$refs.searchPanel.form.resetFields()
         // this.fetchYJSMapData({ pageSize: 10, offset: 0 })
       },
-
       //查询按下回车的回调
       pressEnterChange(e) {
         this.searchRule()
@@ -394,107 +328,243 @@
         }).filter((item, i, self) => item && self.indexOf(item) === i)
         Object.assign(this, {
           expandedKeys,
-          searchValue: this.values,
-          autoExpandParent: true
+          searchValue: this.values
         })
       },
       //输入框值改变事件
       onChange(e) {
-        this.values = e.target.value
+        // this.values = e.target.value
       },
       //树形节点点击事件
       onSelect(selectedKeys, e) {
-        this.selkeys = selectedKeys
+        this.typeIds = e.node.dataRef.key
+        this.getPageData()
         this.selectNode = e.node.dataRef
-        if (e.node.dataRef.value == '0' || (e.node.dataRef.value == '1' && e.node.dataRef.type != '1')) {
-          this.disable = true
-        } else {
+        if (e.node.dataRef.type == '2') {
           this.disable = false
+        } else {
+          this.disable = true
+        }
+        if (e.node.dataRef.type2 == 1){
+          this.drugModal.modalTitle = '添加药品规则';
+          this.selkeys = 1;
+          this.coreRuleSelect({keyword: ''});
+        }else if (e.node.dataRef.type2 == 2){
+          this.drugModal.modalTitle = '添加药品分类规则';
+          this.selkeys = 2;
+
+        } else if (e.node.dataRef.type2 == 3){
+          this.drugModal.modalTitle = '添加药品组规则';
+          this.coreRuleGroup({keyword: ''});
+          this.selkeys = 3;
+        }else if (e.node.dataRef.type2 == 4){
+          this.drugModal.modalTitle = '添加全局规则';
+          this.selkeys = 4;
         }
       },
       //树形节点展开事件
       onExpand(expandedKeys) {
-        this.expandedKeys = expandedKeys
-        this.autoExpandParent = false
       },
-      generateList(data) {
-
-        for (let i = 0; i < data.length; i++) {
-          const node = data[i]
-
-          const key = node.key
-          const title = node.title
-          this.dataList.push({ key, title: title })
-          if (node.children) {
-            this.generateList(node.children, node.title)
+      //异步加载数据
+      onLoadData(treeNode) {
+        return new Promise((resolve) => {
+          if (treeNode.dataRef.children) {
+            resolve()
+            return
           }
+          setTimeout(() => {
+            let params = {}
+            params.typePid = treeNode.dataRef.key
+            coreRuleTypeSelect(params).then(res => {
+              if (res.code == '200') {
+                treeNode.dataRef.children = []
+                for (let i in res.rows) {
+                  let isLeaf = false
+                  if (res.rows[i].isleaf == 1) {
+                    isLeaf = false
+                  } else {
+                    isLeaf = true
+                  }
+                  treeNode.dataRef.children.push({
+                    key: res.rows[i].typeId, title: res.rows[i].typeName,
+                    isLeaf: isLeaf, type: res.rows[i].type, type2: res.rows[i].type2, typePid: res.rows[i].typePid
+                  })
+                }
+                this.gData = [...this.gData]
+              } else {
+                this.warn(res.msg)
+              }
+            }).catch(err => {
+              this.error(err)
+            })
+            resolve()
+          }, 500)
+        })
+      },
+      //获取tree初始数据
+      getData() {
+        this.gData = []
+        let params = {}
+        params.typePid = -1
+        this.loading = true
+        coreRuleTypeSelect(params).then(res => {
+          if (res.code == '200') {
+            this.dealData(res.rows)
+            this.loading = false
+          } else {
+            this.loading = false
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.loading = false
+          this.error(err)
+        })
+      },
+      //处理tree初始数据
+      dealData(data) {
+        for (let i in data) {
+          let isleaf = false
+          if (data[i].isleaf == 1) {
+            isleaf = false
+          } else {
+            isleaf = true
+          }
+          this.gData.push({
+            key: data[i].typeId,
+            title: data[i].typeName,
+            isLeaf: isleaf,
+            type: data[i].type,
+            type2: data[i].type2
+          })
         }
       },
-      getParentKey(title, tree) {
-        let parentKey
-        for (let i = 0; i < tree.length; i++) {
-          const node = tree[i]
-          if (node.children) {
-            if (node.children.some(item => item.title === title)) {
-              parentKey = node.key
-            } else if (this.getParentKey(title, node.children)) {
-              parentKey = this.getParentKey(title, node.children)
-            }
-          }
-        }
-        return parentKey
-      },
-      //获取树形结构数据
-      getgData() {
-        this.generateList(this.gData)
-      },
 
 
-      //页面数change事件
-      pageChangeSize() {
-
-      },
-      //页面跳转事件
-      pageChange() {
-
-      },
-
-      //新增树节点
+      //分类新增子集按钮事件
       newTreeNode() {
         if (this.selectNode) {
           this.Modal.modalTitle = '新增分类'
-          this.Modal.visible = true
+          this.Modal.visible = true;
+          this.treeEditor = false;
+          this.form.resetFields();
         } else {
           this.warn('请选择规则')
         }
       },
+      //分类更新按钮事件
       updateTreeNode() {
         setTimeout(() => {
-          this.form.setFieldsValue({ title: this.selectNode.title })
+          this.form.setFieldsValue({ title: this.selectNode.title,type2: this.selectNode.type2})
         }, 100)
-        if (this.selectNode) {
-          this.Modal.modalTitle = '编辑分类'
-          this.Modal.visible = true
-        } else {
-          this.warn('请选择规则')
-        }
+        this.Modal.modalTitle = '编辑分类'
+        this.Modal.visible = true;
+        this.treeEditor = true;
       },
+      //分类删除按钮事件
       deleteTreeNode() {
         if (this.selectNode) {
+          let params = { id: this.selectNode.key }
+          coreRuleTypeDelete(params).then(res => {
+            if (res.code == '200') {
+              this.success(res.msg)
+              setTimeout(() => {
+                this.selectParent(this.selectNode, this.gData)
+                this.$set(this.gData)
+              })
+            } else {
+              this.warn(res.msg)
+            }
+          }).catch(err => {
+            this.error(err)
+          })
         } else {
           this.warn('请选择规则')
         }
       },
-      handleOk() {
-        console.log(this.selkeys,'this.selkeys');
-        console.log(this.selectNode,'this.selectNode');
-        let data = this.form.getFieldsValue();
-        this.Modal.visible = false
+      selectParent(params, gdata) {
+        for (let i in gdata) {
+          let item = gdata[i]
+          if (item.key == params.typePid) {
+            for (let j in item.children) {
+              if (item.children[j].key == params.key) {
+                item.children.splice(j, 1)
+              }
+            }
+            return
+          } else if (item.children) {
+            this.selectParent(params, item.children)
+          }
+        }
       },
+      //提交分类操作
+      handleOk() {
+        let data = this.form.getFieldsValue()
+        let params = {}
+        if (this.Modal.modalTitle == '新增分类') {
+          params.pid = this.selectNode.key
+          params.name = data.title
+          params.type2 = data.type2
+        } else {
+          params.id = this.selectNode.key
+          params.name = data.title
+        }
+        this.Modal.visible = false
+        coreRuleTypeUpdate(params).then(res => {
+          if (res.code == '200') {
+            if (this.Modal.modalTitle == '编辑分类') {
+              this.updateGdata(params, this.gData)
+            }
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
+      },
+      //本地修改gdata
+      updateGdata(params, gdata) {
+        for (let i in gdata) {
+          let item = gdata[i]
+          if (item.key == params.id) {
+            item.title = params.name
+            return
+          } else if (item.children) {
+            this.updateGdata(params, item.children)
+          }
+        }
+      },
+      //取消分类操作
       handleCancel() {
         this.Modal.visible = false
       },
 
+
+      coreRuleSelect(params = {}){
+        coreRuleSelectKeyword(params).then(res => {
+          if (res.code == '200') {
+            this.selectDrug = res.rows;
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
+      },
+      coreRuleGroup(params={}){
+        coreRuleGroupSpec(params).then(res => {
+          if (res.code == '200') {
+            this.coreRule = res.rows;
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
+      },
+
+
+      //添加药品按钮事件
       addMdc() {
         if (!this.disable) {
           this.drugModal.visible = true
@@ -502,22 +572,98 @@
           this.warn('请选择规则')
         }
       },
+      //药品确认选
+      drugOk(e) {
+        this.drugForm.validateFields((err,values) => {
+            if (!err) {
+              console.log(values);
+              values.type = this.selectNode.type;
+              values.type2 = this.selectNode.type2;
+              values.typeId = this.selectNode.key;
+              coreRuleUpdate(values).then(res => {
+                if (res.code == '200') {
+                  this.getPageData();
+                  this.success(res.msg)
+                } else {
+                  this.warn(res.msg)
+                }
+              }).catch(err => {
+                this.error(err)
+              })
+              this.drugModal.visible = false
+            }
+          },
+        );
+
+      },
+      //药品取消
+      drugCancel() {
+        this.drugModal.visible = false
+      },
+      //药品搜索
+      searchDrug(e) {
+      },
+
+      //获取网格分页
+      getPageData(params = {}) {
+        params.typeId = this.typeIds
+        this.loadingTable = true
+        coreRuleTypePage(params).then(res => {
+          if (res.code == '200') {
+            this.loadData = res.rows
+            this.total = res.total
+            this.loadingTable = false
+          } else {
+            this.loadingTable = false
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
+      },
+      //页面数change事件
+      pageChangeSize(page, pageSize) {
+        this.getPageData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      },
+      //页面跳转事件
+      pageChange(page, pageSize) {
+        this.getPageData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
+      },
+      //编辑操作
       edit(data) {
         let newPage = this.$router.resolve({
           name: 'flowChartEditor'
         })
         window.open(newPage.href, '_blank')
       },
-      drugOk() {
-        this.drugModal.visible = false
+
+      //selectDrug
+      handleSearch(value){
+        console.log(value);
+        coreRuleSelectKeyword({keyword:value}).then(res => {
+          if (res.code == '200') {
+            this.selectDrug = res.rows;
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
       },
-      drugCancel() {
-        this.drugModal.visible = false
+      //searchCoreRule
+      searchCoreRule(value){
+        coreRuleGroupSpec({keyword:value}).then(res => {
+          if (res.code == '200') {
+            this.coreRule = res.rows;
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
       },
 
-      searchDrug(e) {
-        console.log(e.target.value)
-      },
 
       //filter
       ruleType(value) {
@@ -563,6 +709,14 @@
 
   .drugModal .ant-modal-body {
     text-align: right
+  }
+  .selectCol{
+    overflow:hidden;
+    text-align: left;
+    display: inline-block;
+    width: 220px;
+    white-space:nowrap;
+    text-overflow:ellipsis;
   }
 
 </style>
