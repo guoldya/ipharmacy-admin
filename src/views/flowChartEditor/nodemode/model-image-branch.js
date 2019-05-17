@@ -1,7 +1,7 @@
 import G6Editor from '@antv/g6-editor';
 const { Flow } = G6Editor;
 
-
+//分支节点
 Flow.registerNode(
     'model-image-branch',
     {

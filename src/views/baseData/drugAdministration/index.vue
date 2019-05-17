@@ -133,7 +133,7 @@
       },
       //页码跳转事件
       pageChange(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
+        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
       },
       //编辑按钮事件
       edits(data) {

@@ -6,12 +6,14 @@ const { Flow } = G6Editor;
 Flow.registerNode(
     'flow-circle-start',
     {
+      label:'开始',
       // 设置锚点
       anchor: [
         [1, 0.5, { type: 'output' }], 
        // [0.5, 1, { type: 'output' }]
       ]
     },
+
     'flow-circle'
   )
   

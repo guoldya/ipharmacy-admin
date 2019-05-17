@@ -1,6 +1,6 @@
 import G6Editor from '@antv/g6-editor';
 const { Flow } = G6Editor;
-
+//画图 菱形
 Flow.registerNode("model-rhombus", {
     draw: function (item) {
         let group = item.getGraphicGroup();
@@ -8,8 +8,9 @@ Flow.registerNode("model-rhombus", {
         let shapeObj = item.getShapeObj();
 
         let label = model.label != null ? model.label : shapeObj.label;
+        let size = model.size != null ? model.size : shapeObj.size;
 
-        var i = model.size.split('*');
+        var i = size.split('*');
 
         const x = -i[0] / 2
         const keyShape = group.addShape('path', {

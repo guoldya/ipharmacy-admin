@@ -1,6 +1,6 @@
 import G6Editor from '@antv/g6-editor';
 const { Flow } = G6Editor;
-
+//六边形绘图分支节点
 Flow.registerNode("model-image", {
   draw: function (item) {
     let group = item.getGraphicGroup();

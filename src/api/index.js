@@ -28,7 +28,9 @@ const api = {
     coreRuleTypeDelete:'/sys/coreRuleType/delete',
     coreRuleSelectKeyword:'/sys/coreRule/selectDrugKeyword',
     coreRuleUpdate:'/sys/coreRule/update',
+    coreRuleDelete:'/sys/coreRule/delete',
     coreRuleGroupSpec: '/sys/coreRule/coreGroupingSpec',
+    coreRuleNodeSelectOne:'/sys/coreRuleNode/selectOne',
 }
 export default api
 

@@ -154,13 +154,13 @@
         // this.fetchYJSMapData({ pageSize: 10, offset: 0 })
       },
 
-      //页面数change事件
-      pageChangeSize() {
-
+      //页码数change事件
+      pageChangeSize(page, pageSize){
+        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
       },
-      //页面跳转事件
-      pageChange() {
-
+      //页码跳转事件
+      pageChange(page, pageSize) {
+        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
       },
       edits(data) {
         this.$router.push({

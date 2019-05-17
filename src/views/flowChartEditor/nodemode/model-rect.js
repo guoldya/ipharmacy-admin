@@ -34,7 +34,7 @@ Flow.registerNode('model-rect', {
           width,
           height,
           radius: borderRadius,
-          fill: 'white',
+          fill: color,
           stroke: color
         }
       });

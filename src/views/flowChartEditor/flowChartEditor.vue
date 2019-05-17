@@ -47,6 +47,7 @@ import itempanel from './model/itempanel'
 import navigator from './model/navigator'
 import toolbar from './model/toolbar'
 
+import { coreRuleNodeSelectOne } from '@/api/login'
 export default {
   name: 'g6e',
   props: {
@@ -117,6 +118,7 @@ export default {
     this.initEditor()
     window.addEventListener('resize', this.getHeight)
     this.getHeight();
+    this.getNodeData();
   },
   computed: {
     selectNodeBasisLabel() {
@@ -278,11 +280,12 @@ export default {
       editor.add(this.detailpannel)
 
       // 流图读取数据
-      this.g6data && this.flow.read(this.g6data)
-      let temp = localStorage.getItem('test')
-      if (temp != null) {
-        this.flow.read(JSON.parse(temp))
-      }
+      // this.g6data && this.flow.read(this.g6data)
+      // let temp = localStorage.getItem('test')
+      // if (temp != null) {
+      //   this.flow.read(JSON.parse(temp))
+      // }
+      // console.log(JSON.parse(temp));
       // 获取流图的graph示例
       this.graph = this.flow.getGraph()
       // 居中画布中的内容
@@ -455,6 +458,45 @@ export default {
      */
     formatTooltip(val) {
       return `${val}%`
+    },
+
+    /**
+     * @description:获取节点数据
+     */
+    getNodeData(){
+      let params = {};
+      params.ruleId = '113';
+      coreRuleNodeSelectOne(params).then(res => {
+        if (res.code == '200') {
+          console.log(res.data);
+          let edgesData = res.data.ruleCableVOS;
+          let nodeData = res.data.ruleNodeVOS;
+          let edges = [];
+          let nodes = [];
+          for (let key in edgesData){
+            edges.push({
+              id:edgesData[key].id,
+              source:edgesData[key].pid,
+              target:edgesData[key].target,
+            })
+          }
+          for (let key in nodeData){
+            nodes.push({
+              id:nodeData[key].id,
+              shape:nodeData[key].shape,
+              label:nodeData[key].suggest,
+              type:'node'
+            })
+          }
+          //console.log(JSON.stringify({edges:edges,nodes:nodes}))
+          this.flow.read({edges:edges,nodes:nodes});
+        } else {
+          this.warn(res.msg)
+        }
+      }).catch(err => {
+        console.log(err);
+        this.error(err)
+      })
     }
   }
 }

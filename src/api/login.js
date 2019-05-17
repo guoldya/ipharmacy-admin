@@ -150,9 +150,24 @@ export function coreRuleUpdate(parameter){
     data: parameter
   })
 }
+export function coreRuleDelete(parameter){
+  return axios({
+    url: api.coreRuleDelete,
+    method: 'delete',
+    data: parameter
+  })
+}
 export function coreRuleGroupSpec(parameter){
   return axios({
     url: api.coreRuleGroupSpec,
+    method: 'put',
+    data: parameter
+  })
+}
+
+export function coreRuleNodeSelectOne(parameter){
+  return axios({
+    url: api.coreRuleNodeSelectOne,
     method: 'put',
     data: parameter
   })
