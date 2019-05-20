@@ -562,7 +562,11 @@
             nodeTree[key].x = x
             nodeTree[key].y = y;
           } else if (i > 0) {
-                y += 150;
+              if ((i+1)%2 >0){
+                y += i*100;
+              } else{
+                y -= i*100
+              }
           }
           i++
           if (nodeTree[key].childNodes) {
