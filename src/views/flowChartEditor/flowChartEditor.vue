@@ -572,9 +572,9 @@
             }
             max = this.getNOdeShaft(nodeTree[key].childNodes, x, y)
             if(max!=y&&max>0) {
-              y=max+100+nodeTree[key].childNodes.length;
+              y=max+100;
             }else  if(max!=y&&max<0){
-              y=max-100+nodeTree[key].childNodes.length;
+              y=max-100;
             }
           }
         }
