@@ -712,8 +712,10 @@
       },
       //编辑操作
       edit(data) {
+        console.log(data);
         let newPage = this.$router.resolve({
-          name: 'flowChartEditor'
+          name: 'flowChartEditor',
+          query:{id:data.row.id},
         })
         window.open(newPage.href, '_blank')
       },
