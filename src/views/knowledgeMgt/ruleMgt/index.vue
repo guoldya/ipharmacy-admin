@@ -135,12 +135,12 @@
         width="600px"
       >
         <a-form :form="drugForm">
-          <a-form-item label="规则限定项"
+          <a-form-item label="药品"
                        :label-col="{ span: 5 }"
                        :wrapper-col="{ span: 17 }"
                        v-if="selkeys == 1"
           >
-            <a-select v-decorator="[ 'limitedItemid',  {rules: [{ required: true,message: '请选择规则限定项'  }]} ]"
+            <a-select v-decorator="[ 'limitedItemid',  {rules: [{ required: true,message: '请选择药品'  }]} ]"
                       showSearch
                       allowClear
                       optionLabelProp="title"
@@ -170,12 +170,12 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="规则限定项"
+          <a-form-item label="药品组"
                        :label-col="{ span: 5 }"
                        :wrapper-col="{ span: 15 }"
                        v-if=" selkeys == 3"
           >
-            <a-select v-decorator="[ 'limited',{rules: [{ required: true,message: '请选择规则限定项'  }]} ]"
+            <a-select v-decorator="[ 'limited',{rules: [{ required: true,message: '请选择药品组'  }]} ]"
                       showSearch
                       allowClear
                       @search="searchCoreRule"

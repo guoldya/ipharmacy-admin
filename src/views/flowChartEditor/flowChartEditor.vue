@@ -112,7 +112,8 @@
         multiColor: null, // 多选模式下的color，仅以最后一个为代表颜色
         isMultiSelect: false, // 是否是多选模式
         gridCheck: false,
-        titleData: { status: '已审核', rule: '自定义', type: '药品规则', drugName: '葡萄糖注射液', time: '2019-04-05 12:00:00' }
+        titleData: { status:null, type2: null, type: null, name: null, updateTime: null },
+        pieChartData:{},
       }
     },
     mounted() {
@@ -322,7 +323,6 @@
                 _this.nodeId = ev.item.model.id
                 let model = ev.item.model
                 let shape = ev.item.shapeObj
-
                 _this.selectNode.id = model.id
                 _this.selectNode.shape = model.shape
                 _this.selectNode.label = model.label != null ? model.label : shape.label
@@ -431,6 +431,11 @@
        * @description: 保存流图数据
        */
       saveFlow() {
+        let list = this.flow.save().nodes.concat(this.flow.save().edges);
+        for (let key in list){
+          delete list[key].childNodes;
+        }
+        console.log(JSON.stringify(list),'保存');
         localStorage.setItem('test', JSON.stringify(this.flow.save()))
       },
 
@@ -470,6 +475,11 @@
         params.ruleId = '113'
         coreRuleNodeSelectOne(params).then(res => {
           if (res.code == '200') {
+            this.titleData.name = res.data.name;
+            this.titleData.status = res.data.status? '启用':'停用';
+            this.titleData.type = res.data.type? '系统固定':'自定义';
+            this.titleData.updateTime = res.data.updateTime;
+            this.titleData.type2 = res.data.type2;
             let edgesData = res.data.ruleCableVOS
             let nodeData = res.data.ruleNodeVOS
             let edges = []
@@ -479,8 +489,8 @@
             for (let key in nodeData) {
               nodes.push({
                 color: '#FA8C16',
-                id: this.setStrLength(nodeData[key].id),
-                pid: this.setStrLength(nodeData[key].pid),
+                id: nodeData[key].id,
+                pid:nodeData[key].pid,
                 index: nodeData[key].id,
                 shape: nodeData[key].shape,
                 size: '70*70',
@@ -500,25 +510,26 @@
               }
               edges.push({
                 color: 'rgba(0,0,0,0.25)',
-                id: this.setStrLength(edgesData[key].id),
-                pid: this.setStrLength(edgesData[key].pid),
-                label: { text: edgesData[key].label },
+                id: edgesData[key].id,
+                pid: edgesData[key].pid,
+                label: edgesData[key].label,
                 index: edgesData[key].id,
                 shape: 'flow-smooth',
-                source: this.setStrLength(edgesData[key].pid),
+                source:edgesData[key].pid,
                 sourceAnchor: targetAnchor,
-                target: this.setStrLength(edgesData[key].target),
+                target:edgesData[key].target,
                 targetAnchor: 0,
                 type: 'edge'
               })
             }
             let list = nodes.concat(edges)
-            let indexData = this.getNodeTreeData(list)
-            let nodeTree = this.recursiveNodeTree(indexData, 'ndefined')
-            this.getNOdeShaft(nodeTree, x, y)
-            console.log(nodeTree);
-            let nodesData = this.getNodesData(nodeTree, [],'node')
+            let indexData = this.getNodeTreeData(list);
+            let i = 0;
+            let nodeTree = this.recursiveNodeTree(indexData, 'undefined',i);
             let edgeData = this.getNodesData(nodeTree, [],'edge')
+            // console.log(this.pieChartData);
+           console.log(this.getDealPieChart());
+            let nodesData = this.getDealPieChart();
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
           } else {
@@ -542,85 +553,66 @@
         }
         return indexData
       },
-      recursiveNodeTree(indexData, pid) {
-        let childNodes = indexData[pid]
+      recursiveNodeTree(indexData, pid,i) {
+        i++;
+        let childNodes = indexData[pid];
         if (childNodes != null && childNodes != undefined) {
           for (let ckey in childNodes) {
-            let cnode = childNodes[ckey]
-            childNodes[ckey].childNodes = this.recursiveNodeTree(indexData, cnode.id)
+            let cnode = childNodes[ckey];
+            childNodes[ckey].childNodes = this.recursiveNodeTree(indexData, cnode.id,i);
+            if (childNodes[ckey].type == 'node'){
+              let shapeKey=i;
+              if (childNodes[ckey].shape=="model-card-conclusion") {
+                shapeKey = 999;
+              }
+              if(!this.pieChartData[shapeKey]) {
+                this.pieChartData[shapeKey]=[];
+              }
+              this.pieChartData[shapeKey].push(childNodes[ckey]);
+            }
           }
         }
         return childNodes
       },
-      getNOdeShaft(nodeTree, x, y) {
-
-        let i = 0;
-        let max=y;
-        for (let key in nodeTree) {
-          if (nodeTree[key].type == 'node') {
-            x += this.getX(nodeTree[key].shape);
-            nodeTree[key].x = x
-            nodeTree[key].y = y;
-          } else if (i > 0) {
-              if ((i+1)%2 >0){
-                y += i*100;
-              } else{
-                y -= i*100
+      //处理扇形结构node节点
+      getDealPieChart(){
+        let newNodeData = [];
+        let yHeight = 1;
+        for (let key in this.pieChartData){
+          let data = this.pieChartData[key];
+          let yLength = data.length/2;
+          console.log(yLength,'yLength');
+          console.log(yHeight,'yHeight');
+          for (let i in data){
+            if (key == 999){
+              if (i > data.length/2){
+                data[i].y = (i-yLength)*130;
+              } else {
+                data[i].y = -(yLength-i)*130;
               }
-          }
-          i++
-          if (nodeTree[key].childNodes) {
-            if(nodeTree[key].childNodes.length>4)
-            {
-              x+=150;
+            } else{
+              if (i > data.length/2){
+                data[i].y = (i-yLength)*500+yHeight*500;
+              } else {
+                data[i].y = -(yLength-i)*500+yHeight*500;
+              }
             }
-            max = this.getNOdeShaft(nodeTree[key].childNodes, x, y)
-            if(max!=y&&max>0) {
-              y=max+100;
-            }else  if(max!=y&&max<0){
-              y=max-100;
+            if (key == 1){
+              data[i].x = 0;
+            }else if (key == 999) {
+              let pieDataLength = Object.getOwnPropertyNames(this.pieChartData).length;
+              data[i].x = pieDataLength*250;
+            }else{
+              data[i].x = (key-1)*100;
             }
           }
+          yHeight = yLength;
+          newNodeData = newNodeData.concat(data);
         }
-        return y
-      },
-      getX(shape) {
-        let x=0;
-        switch (shape) {
-          case 'flow-circle-start':
-            x+= 300
-            break
-          case 'flow-rhombus-if':
-            x += 150
-            break
-          case 'model-image-branch':
-            x += 350
-            break
-          case 'model-rect-attribute':
-            x += 350
-            break
-          case 'model-card-conclusion':
-            x += 350
-            break
-        }
-        return x
+        return newNodeData;
       },
       //获取树形结构node
       getNodesData(nodeShaft, data,type) {
-        if (type == 'node'){
-          for (let key in nodeShaft) {
-            if (nodeShaft[key].childNodes) {
-              this.getNodesData(nodeShaft[key].childNodes, data,'node')
-              if (nodeShaft[key].type == 'node') {
-                data.push(nodeShaft[key])
-              }
-            } else {
-              if (nodeShaft[key].type == 'node') {
-                data.push(nodeShaft[key])
-              }
-            }
-          }
-        }else{
           for (let key in nodeShaft) {
             if (nodeShaft[key].childNodes) {
               if (nodeShaft[key].type == 'edge') {
@@ -633,12 +625,8 @@
               }
             }
           }
-        }
         return data
       },
-      setStrLength(num) {
-        return (Array(8).join('a') + num).slice(-8)
-      }
     }
   }
 </script>

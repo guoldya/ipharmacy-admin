@@ -36,11 +36,11 @@
       </div>
       <div class="rightButton">
         <a-row>
-          <a-col :span="3">状态：<span class="opacity8">{{titleData.status}}</span></a-col>
-          <a-col :span="3">规则：<span class="opacity8">{{titleData.rule}}</span></a-col>
-          <a-col :span="4">类型：<span class="opacity8">{{titleData.type}}</span></a-col>
-          <a-col :span="6">药品：<span class="opacity8">{{titleData.drugName}}</span></a-col>
-          <a-col :span="8">最后审核时间：<span class="opacity8">{{titleData.time}}</span></a-col>
+          <a-col :span="2">状态：<span class="opacity8">{{titleData.status}}</span></a-col>
+          <a-col :span="3">规则：<span class="opacity8">{{titleData.type}}</span></a-col>
+          <a-col :span="3">类型：<span class="opacity8" v-html="typeType(titleData.type2)"></span></a-col>
+          <a-col :span="9">规则名称：<span class="opacity8">{{titleData.name}}</span></a-col>
+          <a-col :span="7">更新时间：<span class="opacity8">{{titleData.updateTime}}</span></a-col>
         </a-row>
       </div>
 
@@ -59,6 +59,17 @@ export default {
     //   console.log(this.saveFlow,"保存信息");//.save()
     //   //localStorage.setItem('test', JSON.stringify(this.flow.save()))
     // },
+    typeType(value) {
+      if (value == '1') {
+        return '药品'
+      } else if (value == '2') {
+        return '药品分类'
+      } else if (value == '3') {
+        return '药品组'
+      } else if (value == '4') {
+        return '全局'
+      }
+    }
   }
 
 }
@@ -82,7 +93,7 @@ export default {
   line-height: 35px;
 }
 .toolbar .rightButton{
-  width: 40%;
+  width: 50%;
   float: right;
   line-height: 35px;
   color: #F5222D;
