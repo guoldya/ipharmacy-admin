@@ -172,3 +172,35 @@ export function coreRuleNodeSelectOne(parameter){
     data: parameter
   })
 }
+
+export function coreRuleNodeUpdate(parameter){
+  return axios({
+    url: api.coreRuleNodeUpdate,
+    method: 'post',
+    data: parameter
+  })
+}
+
+export function reviewAuditlevelSelect(parameter){
+  return axios({
+    url: api.reviewAuditlevelSelect,
+    method: 'put',
+    data: parameter
+  })
+}
+
+export function dicBaseSelectClassList(parameter){
+  return axios({
+    url: api.dicBaseSelectClassList,
+    method: 'put',
+    data: parameter
+  })
+}
+
+export function coreFactColAll(parameter){
+  return axios({
+    url: api.coreFactColAll,
+    method: 'put',
+    data: parameter
+  })
+}

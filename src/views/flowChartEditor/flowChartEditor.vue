@@ -47,7 +47,7 @@
   import navigator from './model/navigator'
   import toolbar from './model/toolbar'
 
-  import { coreRuleNodeSelectOne } from '@/api/login'
+  import { coreRuleNodeSelectOne, coreRuleNodeUpdate,reviewAuditlevelSelect } from '@/api/login'
 
   export default {
     name: 'g6e',
@@ -73,9 +73,15 @@
           label: null,
           ///-------结论节点特有属性---------
           basisLabel: null,
-          messageLabel: null,
-          suggestLabel: null,
-          colorLevel: '#ffffff',
+          message: null,
+          suggest: null,
+          restrictionType: null,
+          verdictType: null,
+          itemId:null,
+          ro:null,
+          assertVal:null,
+          assertVal1:null,
+          levelColor: '#ffffff',
           level: '0',
           ///-------结论节点特有属性---------
 
@@ -112,34 +118,40 @@
         multiColor: null, // 多选模式下的color，仅以最后一个为代表颜色
         isMultiSelect: false, // 是否是多选模式
         gridCheck: false,
-        titleData: { status:null, type2: null, type: null, name: null, updateTime: null },
-        pieChartData:{},
+        titleData: { status: null, type2: null, type: null, name: null, updateTime: null },
+        pieChartData: {}
       }
     },
     mounted() {
       this.initEditor()
       window.addEventListener('resize', this.getHeight)
       this.getHeight()
-      this.getNodeData();
-      console.log(this.$route.query,'1');
+      this.getNodeData()
+      // this.getReviewLevel();
+      // console.log(this.$route.query,'1');
     },
     computed: {
       selectNodeBasisLabel() {
         return this.selectNode.basisLabel
       },
-      selectNodeMessageLabel() {
-        return this.selectNode.messageLabel
+      selectNodeMessage() {
+        return this.selectNode.message
       },
-      selectNodeSuggestLabel() {
-        return this.selectNode.suggestLabel
+      selectNodeSuggest() {
+        return this.selectNode.suggest
       },
-      selectNodecolorLevel() {
-        return this.selectNode.colorLevel
+      selectNodeVerdictType() {
+        return this.selectNode.verdictType
+      },
+      selectNodeRestrictionType() {
+        return this.selectNode.restrictionType
+      },
+      selectNodeLevelColor() {
+        return this.selectNode.levelColor
       },
       selectNodeLevel() {
         return this.selectNode.level
       },
-
 
       selectNodelabel() {
         return this.selectNode.label
@@ -149,6 +161,18 @@
       },
       selectNodelfield() {
         return this.selectNode.field
+      },
+      selectNodeItemId() {
+        return this.selectNode.itemId
+      },
+      selectNodeRo(){
+        return this.selectNode.ro
+      },
+      selectNodeAssertVal(){
+        return this.selectNode.assertVal
+      },
+      selectNodeAssertVal1(){
+        return this.selectNode.assertVal1
       },
       selectEdgeLabel() {
         return this.selectEdge.label
@@ -179,14 +203,24 @@
           this.flow.update(this.selectNode.id, { basisLabel: newValue })
         }
       },
-      selectNodeMessageLabel(newValue, oldValue) {
+      selectNodeMessage(newValue, oldValue) {
         if (newValue != oldValue) {
-          this.flow.update(this.selectNode.id, { messageLabel: newValue })
+          this.flow.update(this.selectNode.id, { message: newValue })
         }
       },
-      selectNodeSuggestLabel(newValue, oldValue) {
+      selectNodeSuggest(newValue, oldValue) {
         if (newValue != oldValue) {
-          this.flow.update(this.selectNode.id, { suggestLabel: newValue })
+          this.flow.update(this.selectNode.id, { suggest: newValue })
+        }
+      },
+      selectNodeVerdictType(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { verdictType: newValue })
+        }
+      },
+      selectNodeRestrictionType(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { restrictionType: newValue })
         }
       },
       selectNodelabel(newValue, oldValue) {
@@ -194,16 +228,36 @@
           this.flow.update(this.selectNode.id, { label: newValue })
         }
       },
-      selectNodecolorLevel(newValue, oldValue) {
+      selectNodeLevelColor(newValue, oldValue) {
         if (newValue != oldValue) {
           switch (this.selectNode.shape) {
             case 'model-card-conclusion':
-              this.flow.update(this.selectNode.id, { colorLevel: newValue })
+              this.flow.update(this.selectNode.id, { levelColor: newValue })
               break
             case 'model-rect-attribute':
               this.flow.update(this.selectNode.id, { color: newValue })
               break
           }
+        }
+      },
+      selectNodeItemId(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { itemId: newValue })
+        }
+      },
+      selectNodeRo(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { ro: newValue })
+        }
+      },
+      selectNodeAssertVal(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { assertVal: newValue })
+        }
+      },
+      selectNodeAssertVal1(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { assertVal1: newValue })
         }
       },
       selectEdgeLabel(newValue, oldValue) {
@@ -329,16 +383,23 @@
                 switch (_this.selectNode.shape) {
                   case 'model-card-conclusion':
                     _this.selectNode.basisLabel = model.basisLabel != null ? model.basisLabel : shape.basisLabel
-                    _this.selectNode.colorLevel = model.colorLevel != null ? model.colorLevel : shape.colorLevel
-                    _this.selectNode.messageLabel = model.messageLabel != null ? model.messageLabel : shape.messageLabel
-                    _this.selectNode.suggestLabel = model.suggestLabel != null ? model.suggestLabel : shape.suggestLabel
+                    _this.selectNode.levelColor = model.levelColor != null ? model.levelColor : shape.levelColor
+                    _this.selectNode.message = model.message != null ? model.message : shape.message
+                    _this.selectNode.suggest = model.suggest != null ? model.suggest : shape.suggest
+                    _this.selectNode.verdictType = model.verdictType != null ? model.verdictType : shape.verdictType
+                    _this.selectNode.restrictionType = model.restrictionType != null ? model.restrictionType : shape.restrictionType
                     _this.selectNode.level = model.level != null ? model.level : shape.level
                     break
                   case 'model-rect-attribute':
-                    _this.selectNode.colorLevel = model.color != null ? model.color : shape.color
-                    _this.selectNode.prototypes = model.prototypes != null ? model.prototypes : shape.prototypes
-                    _this.selectNode.field = model.field != null ? model.field : shape.field
+                    _this.selectNode.levelColor = model.color != null ? model.color : shape.color
+                    // _this.selectNode.prototypes = model.prototypes != null ? model.prototypes : shape.prototypes
+                    _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     break
+                  case 'flow-rhombus-if':
+                    _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
+                    _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
+                    _this.selectNode.assertVal = model.assertVal != null ? model.assertVal : shape.assertVal
+                    _this.selectNode.assertVal1 = model.assertVal1 != null ? model.assertVal1 : shape.assertVal1
                 }
               } else {
                 _this.multiId.push(ev.item.model.id)
@@ -431,11 +492,20 @@
        * @description: 保存流图数据
        */
       saveFlow() {
-        let list = this.flow.save().nodes.concat(this.flow.save().edges);
-        for (let key in list){
-          delete list[key].childNodes;
+        let list = this.flow.save().nodes.concat(this.flow.save().edges)
+        for (let key in list) {
+          delete list[key].childNodes
         }
-        console.log(JSON.stringify(list),'保存');
+        console.log(JSON.stringify(list), '保存')
+        // coreRuleNodeUpdate(params).then(res => {
+        //   if (res.code == '200') {
+        //     this.success(res.msg)
+        //   } else {
+        //     this.warn(res.msg)
+        //   }
+        // }).catch(err => {
+        //   this.error(err)
+        // })
         localStorage.setItem('test', JSON.stringify(this.flow.save()))
       },
 
@@ -475,11 +545,11 @@
         params.ruleId = '113'
         coreRuleNodeSelectOne(params).then(res => {
           if (res.code == '200') {
-            this.titleData.name = res.data.name;
-            this.titleData.status = res.data.status? '启用':'停用';
-            this.titleData.type = res.data.type? '系统固定':'自定义';
-            this.titleData.updateTime = res.data.updateTime;
-            this.titleData.type2 = res.data.type2;
+            this.titleData.name = res.data.name
+            this.titleData.status = res.data.status ? '启用' : '停用'
+            this.titleData.type = res.data.type ? '系统固定' : '自定义'
+            this.titleData.updateTime = res.data.updateTime
+            this.titleData.type2 = res.data.type2
             let edgesData = res.data.ruleCableVOS
             let nodeData = res.data.ruleNodeVOS
             let edges = []
@@ -488,17 +558,23 @@
             let y = 0
             for (let key in nodeData) {
               nodes.push({
-                color: '#FA8C16',
+                color: 'rgb(255, 191, 0)',
                 id: nodeData[key].id,
-                pid:nodeData[key].pid,
+                pid: nodeData[key].pid,
                 index: nodeData[key].id,
                 shape: nodeData[key].shape,
-                size: '70*70',
                 type: 'node',
                 label: nodeData[key].label,
                 level: nodeData[key].level,
-                messageLabel: nodeData[key].message,
-                suggestLabel: nodeData[key].suggest,
+                levelColor: nodeData[key].levelColor,
+                message: nodeData[key].message,
+                suggest: nodeData[key].suggest,
+                verdictType:''+ nodeData[key].verdictType,
+                restrictionType: nodeData[key].restrictionType,
+                ro: nodeData[key].ro,
+                itemId:''+nodeData[key].itemId,
+                assertVal:nodeData[key].assertVal,
+                assertVal1:nodeData[key].assertVal1,
                 y: y,
                 x: x
               })
@@ -515,21 +591,21 @@
                 label: edgesData[key].label,
                 index: edgesData[key].id,
                 shape: 'flow-smooth',
-                source:edgesData[key].pid,
+                source: edgesData[key].pid,
                 sourceAnchor: targetAnchor,
-                target:edgesData[key].target,
+                target: edgesData[key].target,
                 targetAnchor: 0,
                 type: 'edge'
               })
             }
+            // let list = nodes.concat(edges)
             let list = nodes.concat(edges)
-            let indexData = this.getNodeTreeData(list);
-            let i = 0;
-            let nodeTree = this.recursiveNodeTree(indexData, 'undefined',i);
-            let edgeData = this.getNodesData(nodeTree, [],'edge')
+            let indexData = this.getNodeTreeData(list)
+            let i = 0
+            let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
+            let edgeData = this.getNodesData(nodeTree, [], 'edge')
             // console.log(this.pieChartData);
-           console.log(this.getDealPieChart());
-            let nodesData = this.getDealPieChart();
+            let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
           } else {
@@ -553,79 +629,89 @@
         }
         return indexData
       },
-      recursiveNodeTree(indexData, pid,i) {
-        i++;
-        let childNodes = indexData[pid];
+      recursiveNodeTree(indexData, pid, i) {
+        i++
+        let childNodes = indexData[pid]
         if (childNodes != null && childNodes != undefined) {
           for (let ckey in childNodes) {
-            let cnode = childNodes[ckey];
-            childNodes[ckey].childNodes = this.recursiveNodeTree(indexData, cnode.id,i);
-            if (childNodes[ckey].type == 'node'){
-              let shapeKey=i;
-              if (childNodes[ckey].shape=="model-card-conclusion") {
-                shapeKey = 999;
+            let cnode = childNodes[ckey]
+            childNodes[ckey].childNodes = this.recursiveNodeTree(indexData, cnode.id, i)
+            if (childNodes[ckey].type == 'node') {
+              let shapeKey = i
+              if (childNodes[ckey].shape == 'model-card-conclusion') {
+                shapeKey = 999
               }
-              if(!this.pieChartData[shapeKey]) {
-                this.pieChartData[shapeKey]=[];
+              if (!this.pieChartData[shapeKey]) {
+                this.pieChartData[shapeKey] = []
               }
-              this.pieChartData[shapeKey].push(childNodes[ckey]);
+              this.pieChartData[shapeKey].push(childNodes[ckey])
             }
           }
         }
         return childNodes
       },
-      //处理扇形结构node节点
-      getDealPieChart(){
-        let newNodeData = [];
-        let yHeight = 1;
-        for (let key in this.pieChartData){
-          let data = this.pieChartData[key];
-          let yLength = data.length/2;
-          console.log(yLength,'yLength');
-          console.log(yHeight,'yHeight');
-          for (let i in data){
-            if (key == 999){
-              if (i > data.length/2){
-                data[i].y = (i-yLength)*130;
+      getDealPieChart() {
+        let newNodeData = []
+        let yHeight = 1
+        for (let key in this.pieChartData) {
+          let data = this.pieChartData[key]
+          // data = this.dealDataLength(data);
+          let yLength = data.length / 2
+          for (let i in data) {
+            if (key == 999) {
+              if (i > data.length / 2) {
+                data[i].y = (i - yLength) * 130
+                data[i].yaxis = (i - yLength) * 130
               } else {
-                data[i].y = -(yLength-i)*130;
+                data[i].y = -(yLength - i) * 130
+                data[i].yaxis = -(yLength - i) * 130
               }
-            } else{
-              if (i > data.length/2){
-                data[i].y = (i-yLength)*500+yHeight*500;
+              let pieDataLength = Object.getOwnPropertyNames(this.pieChartData).length
+              data[i].x = pieDataLength * 250
+            } else if (key == 1) {
+              data[i].x = 0
+            } else {
+              if (i > data.length / 2) {
+                data[i].y = (i - yLength) * 500 + yHeight * 500
+                data[i].yaxis = (i - yLength) * 500 + yHeight * 500
               } else {
-                data[i].y = -(yLength-i)*500+yHeight*500;
+                data[i].y = -(yLength - i) * 500 + yHeight * 500
+                data[i].yaxis = -(yLength - i) * 500 + yHeight * 500
               }
-            }
-            if (key == 1){
-              data[i].x = 0;
-            }else if (key == 999) {
-              let pieDataLength = Object.getOwnPropertyNames(this.pieChartData).length;
-              data[i].x = pieDataLength*250;
-            }else{
-              data[i].x = (key-1)*100;
+              data[i].x = (key - 1) * 100
             }
           }
-          yHeight = yLength;
-          newNodeData = newNodeData.concat(data);
+          yHeight = yLength
+          newNodeData = newNodeData.concat(data)
         }
-        return newNodeData;
+        return newNodeData
       },
       //获取树形结构node
-      getNodesData(nodeShaft, data,type) {
-          for (let key in nodeShaft) {
-            if (nodeShaft[key].childNodes) {
-              if (nodeShaft[key].type == 'edge') {
-                data.push(nodeShaft[key])
-              }
-              this.getNodesData(nodeShaft[key].childNodes, data,'edge')
-            } else {
-              if (nodeShaft[key].type == 'edge') {
-                data.push(nodeShaft[key])
-              }
+      getNodesData(nodeShaft, data, type) {
+        for (let key in nodeShaft) {
+          if (nodeShaft[key].childNodes) {
+            if (nodeShaft[key].type == 'edge') {
+              data.push(nodeShaft[key])
+            }
+            this.getNodesData(nodeShaft[key].childNodes, data, 'edge')
+          } else {
+            if (nodeShaft[key].type == 'edge') {
+              data.push(nodeShaft[key])
             }
           }
+        }
         return data
+      },
+
+      getReviewLevel(){
+        reviewAuditlevelSelect({}).then(res => {
+          if (res.code == '200') {
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
       },
     }
   }

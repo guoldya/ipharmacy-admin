@@ -96,7 +96,6 @@ export default {
   width: 50%;
   float: right;
   line-height: 35px;
-  color: #F5222D;
 }
 .toolbar *::before {
   font-size: 16px !important;

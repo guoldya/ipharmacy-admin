@@ -31,6 +31,11 @@ const api = {
     coreRuleDelete:'/sys/coreRule/delete',
     coreRuleGroupSpec: '/sys/coreRule/coreGroupingSpec',
     coreRuleNodeSelectOne:'/sys/coreRuleNode/selectOne',
+    coreRuleNodeUpdate:'/sys/coreRuleNode/update',
+    reviewAuditlevelSelect:'/sys/reviewAuditlevel/selectUsingList',
+    dicBaseSelectClassList:'/sys/dicBase/selectClassList',
+    coreFactColAll:'/sys/coreFactCol/selectAllUsing',
+
 }
 export default api
 
