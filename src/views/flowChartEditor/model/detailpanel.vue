@@ -1,13 +1,13 @@
 <template>
   <div id="detailpanel" class="detailpanel" ref="dom">
-    <div data-status="node-selected" class="pannel" id="node_detailpannel" v-if="selectNode.shape != 'model-card-conclusion'" style="display: none;">
-      <div class="panel-title">节点属性</div>
-      <div class="block-container">
+    <div data-status="node-selected" class="pannel" id="node_detailpannel"  style="display: none;">
+      <div class="panel-title" v-if="selectNode.shape != 'model-card-conclusion'">节点属性</div>
+      <div class="block-container" v-if="selectNode.shape != 'model-card-conclusion'">
         <a-form>
           <a-form-item label="名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-input size="small" v-if="selectNode.shape == 'flow-circle-start'" v-model="selectNode.label"
+            <a-input size="small"  v-if="selectNode.shape == 'flow-circle-start'" v-model="selectNode.label"
                      :disabled="true"/>
-            <a-input size="small" v-else v-model="selectNode.label"/>
+            <a-input size="small" :read-only="true" v-else v-model="selectNode.label"/>
           </a-form-item>
 
           <!-- <a-form-item label="颜色" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
@@ -21,25 +21,25 @@
       <div class="block-container" v-if="selectNode.shape == 'model-card-conclusion'">
         <a-form>
           <a-form-item label="依据" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectNode.basisLabel">
-              <a-select-option value="医院规定">医院规定</a-select-option>
-              <a-select-option value="药品说明书">药品说明书</a-select-option>
+            <a-select size="small" v-model="selectNode.inAccordanceWith" @change="sourceName">
+              <a-select-option :value=1 title="药品说明书">药品说明书</a-select-option>
+              <a-select-option :value=2 title="医院规定">医院规定</a-select-option>
             </a-select>
           </a-form-item>
 
           <a-form-item label="级别" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectNode.level" @change="levelChange">
+            <a-select size="small" v-model="selectNode.levels" @change="levelChange">
               <a-select-option v-for="(op,index) in levelData" :value=op.auditLevel :key="index"
-                               :titile="op.levelColor">{{op.levelName}}
+                               :title="op.levelColor">{{op.levelName}}
               </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="消息" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-textarea size="small" placeholder="small size" v-model="selectNode.message" :rows="3"/>
+            <a-textarea size="small"  v-model="selectNode.message" :rows="3"/>
           </a-form-item>
 
           <a-form-item label="建议" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-textarea size="small" placeholder="small size" v-model="selectNode.suggest" :rows="3"/>
+            <a-textarea size="small" v-model="selectNode.suggest" :rows="3"/>
           </a-form-item>
 
           <a-form-item label="结论类型" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
@@ -48,16 +48,8 @@
               :treeData="dicBaseTreeData"
               v-model="selectNode.verdictType"
               treeDefaultExpandAll>
-
             </a-tree-select>
           </a-form-item>
-          <!--<a-form-item label="控制类型" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">-->
-            <!--<a-select size="small" v-model="selectNode.restrictionType">-->
-              <!--<a-select-option :value=1>禁慎用</a-select-option>-->
-              <!--<a-select-option :value=2>皮试提示</a-select-option>-->
-              <!--<a-select-option :value=3>过敏提示</a-select-option>-->
-            <!--</a-select>-->
-          <!--</a-form-item>-->
         </a-form>
       </div>
     </div>
@@ -73,42 +65,46 @@
               :treeData="CoreFactAllTree"
               v-model="selectNode.itemId"
               treeDefaultExpandAll
+              class="nodeSelect"
               @select="coreFactTreeChange">
             </a-tree-select>
           </a-form-item>
           <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectNode.ro">
-              <a-select-option :value=1>等于</a-select-option>
-              <a-select-option :value=2>不等于</a-select-option>
-              <a-select-option :value=3>小于</a-select-option>
-              <a-select-option :value=4>小于等于</a-select-option>
-              <a-select-option :value=5>大于</a-select-option>
-              <a-select-option :value=6>大于等于</a-select-option>
-              <a-select-option :value=7>包含</a-select-option>
-              <a-select-option :value=8>不包含</a-select-option>
+            <a-select size="small" v-model="selectNode.ro" @select="selectNodeRo">
+              <a-select-option :value=1 title="=">等于</a-select-option>
+              <a-select-option :value=2 title="≠">不等于</a-select-option>
+              <a-select-option :value=3 title="<">小于</a-select-option>
+              <a-select-option :value=4 title="≤">小于等于</a-select-option>
+              <a-select-option :value=5 title=">">大于</a-select-option>
+              <a-select-option :value=6 title="≥">大于等于</a-select-option>
+              <a-select-option :value=7 title="包含">包含</a-select-option>
+              <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-input :type="inValueType" v-if="inputType =='input'" size="small" v-model="selectNode.assertVal"></a-input>
-            <div v-else-if="inputType =='scopeInput'">
-              <a-input :type="inValueType" class="inputLeft" size="small" placeholder="min" v-model="selectNode.assertVal"/>
-              <a-input :type="inValueType" class="inputCenter" size="small" placeholder="~" disabled/>
-              <a-input :type="inValueType" class="inputRight" size="small" placeholder="max" v-model="selectNode.assertVal1"/>
+            <a-input :type="boxInitialized.inValueType" v-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType!='time'" @change="inputChange" size="small" v-model="selectNode.assertVal"></a-input>
+            <div v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType!='time'">
+              <a-input :type="boxInitialized.inValueType" class="inputLeft" size="small" placeholder="min" @change="scopeAssertVal"  v-model="selectNode.assertVal"/>
+              <a-input :type="boxInitialized.inValueType" class="inputCenter" size="small" placeholder="~" disabled/>
+              <a-input :type="boxInitialized.inValueType" class="inputRight" size="small" placeholder="max" @change="scopeAssertVal1" v-model="selectNode.assertVal1"/>
             </div>
-            <div v-else-if="inputType =='select'">
-              <a-select size="small" v-model="selectNode.assertVal">
-                <a-select-option :value=1>等于</a-select-option>
-                <a-select-option :value=2>不等于</a-select-option>
-                <a-select-option :value=3>小于</a-select-option>
-                <a-select-option :value=4>小于等于</a-select-option>
-                <a-select-option :value=5>大于</a-select-option>
-                <a-select-option :value=6>大于等于</a-select-option>
-                <a-select-option :value=7>包含</a-select-option>
-                <a-select-option :value=8>不包含</a-select-option>
+            <div v-else-if="boxInitialized.inputType =='select'&&boxInitialized.inValueType!='time'">
+              <a-select
+                size="small"
+                v-model="selectNode.assertVal"
+                showSearch
+                @search="searchSelect"
+                @change="assertValSelect"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+              >
+                <a-select-option v-for="(op,index) in boxInitialized.inputSelectData" :value="op.ID" :title="op.NAME" :key="index">{{op.NAME}}
+                </a-select-option>
               </a-select>
             </div>
-            <a-date-picker v-else-if="inputType =='input'&&inValueType=='time'" @change="onChange" />
-            <a-range-picker v-else-if="inputType =='scopeInput'&&inValueType=='time'" @change="onChange" />
+            <a-date-picker v-else-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType=='time'" @change="onChange" />
+            <a-range-picker v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType=='time'" @change="onChange" />
           </a-form-item>
         </a-form>
       </div>
@@ -117,18 +113,13 @@
       <div class="panel-title" v-if="selectNode.shape == 'model-rect-attribute'">规则属性</div>
       <div class="block-container" v-if="selectNode.shape == 'model-rect-attribute'">
         <a-form>
-          <!--<a-form-item label="模型" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">-->
-          <!--<a-select size="small" v-model="selectNode.prototypes">-->
-          <!--<a-select-option value="门诊模型">门诊模型</a-select-option>-->
-          <!--<a-select-option value="药学模型">药学模型</a-select-option>-->
-          <!--</a-select>-->
-          <!--</a-form-item>-->
           <a-form-item label="模型字段" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
               <a-tree-select
                 size="small"
                 :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
                 :treeData="CoreFactAllTree"
                 v-model="selectNode.itemId"
+                @select="attributeEdge"
                 treeDefaultExpandAll>
               </a-tree-select>
           </a-form-item>
@@ -140,7 +131,7 @@
       <div class="block-container">
         <div class="p name">
           名称：
-          <a-input size="small" v-model="selectEdge.label"></a-input>
+          <a-input size="small" :read-only="true" v-model="selectEdge.label"></a-input>
         </div>
       </div>
     </div>
@@ -149,9 +140,9 @@
       <div class="block-container" v-if="selectEdge.sourceType=='flow-rhombus-if'">
         <a-form>
           <a-form-item label="判断条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectEdge.label">
-              <a-select-option value="是">是</a-select-option>
-              <a-select-option value="否">否</a-select-option>
+            <a-select size="small" v-model="selectEdge.assertVal" @select="lineCondition" >
+              <a-select-option value="true" title="真">真</a-select-option>
+              <a-select-option value="false" title="假">假</a-select-option>
             </a-select>
           </a-form-item>
         </a-form>
@@ -162,17 +153,44 @@
       <div class="block-container" v-if="selectEdge.sourceType=='model-rect-attribute'">
         <a-form>
           <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectEdge.label">
-              <a-select-option value="不等于(!=)">不等于(!=)</a-select-option>
-              <a-select-option value="等于(!=)">等于(!=)</a-select-option>
-              <a-select-option value="包含(like)">包含(like)</a-select-option>
-              <a-select-option value="不包含(not like)">不包含(not like)</a-select-option>
+            <a-select size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
+              <a-select-option :value=1 title="=">等于</a-select-option>
+              <a-select-option :value=2 title="≠">不等于</a-select-option>
+              <a-select-option :value=3 title="<">小于</a-select-option>
+              <a-select-option :value=4 title="≤">小于等于</a-select-option>
+              <a-select-option :value=5 title=">">大于</a-select-option>
+              <a-select-option :value=6 title="≥">大于等于</a-select-option>
+              <a-select-option :value=7 title="包含">包含</a-select-option>
+              <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
           </a-form-item>
 
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-input size="small" placeholder="请输入" v-model="selectEdge.value" :rows="4"/>
+            <a-input :type="edgeInitialized.inValueEdge" v-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inputEdge!='time'" @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
+            <div v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge!='time'">
+              <a-input :type="edgeInitialized.inValueEdge" class="inputLeft" size="small" placeholder="min" @change="edgeAssertVal"   v-model="selectEdge.assertVal"/>
+              <a-input :type="edgeInitialized.inValueEdge" class="inputCenter" size="small" placeholder="~" disabled/>
+              <a-input :type="edgeInitialized.inValueEdge" class="inputRight" size="small" placeholder="max" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
+            </div>
+            <div v-else-if="edgeInitialized.inputEdge =='select'&&edgeInitialized.inValueEdge!='time'">
+              <a-select
+                size="small"
+                v-model="selectEdge.assertVal"
+                showSearch
+                @search="searchEdge"
+                @select="assertValEdge"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+              >
+                <a-select-option v-for="(op,index) in edgeInitialized.inputEdgeSelect" :value="op.ID" :title="op.NAME" :key="index">{{op.NAME}}
+                </a-select-option>
+              </a-select>
+            </div>
+            <a-date-picker v-else-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
+            <a-range-picker v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
           </a-form-item>
+
         </a-form>
       </div>
     </div>
@@ -194,17 +212,33 @@
 </template>
 
 <script>
-  import { reviewAuditlevelSelect, dicBaseSelectClassList,coreFactColAll } from '@/api/login'
-
+  import { reviewAuditlevelSelect, dicBaseSelectClassList,coreFactColAll ,coreRuleNodeSelectColId} from '@/api/login'
+  import debounce from 'lodash/debounce'
   export default {
-    props: ['graphAPI', 'selectNode', 'selectEdge'],
+    props: ['graphAPI', 'selectNode', 'selectEdge','boxInitialized','edgeInitialized'],
     data() {
+      this.searchSelect = debounce(this.searchSelect, 500)
+      this.searchEdge = debounce(this.searchEdge, 500)
       return {
         levelData: [],
         dicBaseTreeData: [],
         CoreFactAllTree:[],
         inputType:'input',
-        inValueType:'Number'
+        inValueType:'Number',
+        inputSelectData:[],
+        modelValue:'',
+        condition:'',
+        conditionValue:'',
+        conditionValue1:'',
+        //模型id
+        modelId:null,
+        inputEdge:'input',
+        inValueEdge:'Number',
+        edgeModel:'',
+        edgeId:null,
+        edgeCondition:'',
+        edgeConditionValue:'',
+        edgeConditionValue1:'',
       }
     },
     mounted() {
@@ -213,10 +247,17 @@
       this.getCoreFactAllStart();
     },
     methods: {
+      textChange(){
+        console.log(1);
+      },
+      sourceName(value, option){
+        this.selectNode.sourcename = option.componentOptions.propsData.title;
+      },
       getReviewLevel() {
         reviewAuditlevelSelect({}).then(res => {
           if (res.code == '200') {
             this.levelData = res.rows
+            console.log(this.levelData);
           } else {
             this.warn(res.msg)
           }
@@ -225,7 +266,7 @@
         })
       },
       levelChange(value, option) {
-        this.selectNode.levelColor = option.data.attrs.titile
+        this.selectNode.levelColor = option.componentOptions.propsData.title;
       },
       getSelectClassList() {
         dicBaseSelectClassList({ 'codeClass': '7' }).then(res => {
@@ -256,7 +297,7 @@
             if (treeData[key].value == data[i].parentId) {
               treeData[key].children.push({
                 title: data[i].name,
-                value: ''+data[i].id,
+                value: data[i].id,
                 key: data[i].code,
                 isLeaf:true,
               })
@@ -264,41 +305,229 @@
           }
         }
         this.dicBaseTreeData = treeData;
+        console.log(this.dicBaseTreeData);
       },
       coreFactTreeChange(value, node, extra){
         let params = extra.selectedNodes[0].data.props;
-        console.log(params,'extra');
         if (params.lo == 1){
-          this.inputType = 'input'
+          this.boxInitialized.inputType = 'input'
         }else if (params.lo == 2){
-          this.inputType = 'scopeInput'
+          this.boxInitialized.inputType = 'scopeInput'
         }else if (params.lo == 3){
-          this.inputType = 'select'
+          this.boxInitialized.inputType = 'select';
+          this.boxInitialized.modelId = params.id;
+          coreRuleNodeSelectColId({id:params.id}).then(res => {
+            if (res.code == '200') {
+              this.boxInitialized.inputSelectData = res.rows;
+            } else {
+              this.warn(res.msg)
+              this.boxInitialized.inputSelectData = [];
+            }
+          }).catch(err => {
+            this.error(err)
+          })
         }
         if (params.colDbType == 1){
-          this.inValueType = 'number'
-        }else if (params.lo == 2){
-          this.inputType == 'time'
-        }else if (params.lo == 3){
-          this.inValueType = 'text'
+          this.boxInitialized.inValueType = 'number'
+        }else if (params.colDbType == 2){
+          this.boxInitialized.inputType == 'time'
+        }else if (params.colDbType == 3){
+          this.boxInitialized.inValueType = 'text'
         }
-        this.selectNode.label = params.title+this.selectNode.ro+this.selectNode.ro+this.selectNode.assertVal;
-        console.log(this.inputType,'inputType')
-        console.log(this.inValueType,'inValueType')
+        this.modelValue = params.title;
+        this.selectNode.label = this.modelValue;
+        this.selectNode.ro = null;
+        this.selectNode.assertVal = null;
+        this.condition = '';
+        this.conditionValue = '';
+        this.conditionValue1 = '';
       },
-      getCoreFactAllStart(){
-        coreFactColAll({}).then(res => {
+      //判断节点条件选择事件
+      selectNodeRo(value,option){
+        this.condition = option.componentOptions.propsData.title;
+        if ($.trim(this.modelValue).length==0){
+          this.modelValue = this.selectNode.itemName;
+        }
+        console.log(this.selectNode)
+        this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
+      },
+      //条件值单个输入事件
+      inputChange(e){
+        this.conditionValue = e.srcElement.value;
+        if ($.trim(this.modelValue).length==0){
+          this.modelValue = this.selectNode.itemName;
+        }
+        if ($.trim(this.condition).length==0){
+          this.condition = this.selectNode.roSymbol;
+        }
+        this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
+      },
+      //多个条件值输入第一个事件
+      scopeAssertVal(e){
+        this.conditionValue = e.srcElement.value;
+        if ($.trim(this.modelValue).length==0){
+          this.modelValue = this.selectNode.itemName;
+        }
+        if ($.trim(this.condition).length==0){
+          this.condition = this.selectNode.roSymbol;
+        }
+        this.selectNode.label =this.modelValue+this.condition+this.conditionValue+this.conditionValue1;
+      },
+      scopeAssertVal1(e){
+        this.conditionValue = e.srcElement.value;
+        if ($.trim(this.modelValue).length==0){
+          this.modelValue = this.selectNode.itemName;
+        }
+        if ($.trim(this.condition).length==0){
+          this.condition = this.selectNode.roSymbol;
+        }
+        this.selectNode.label =this.modelValue+this.condition+this.conditionValue+this.conditionValue1;
+      },
+      //下拉选择事件
+      assertValSelect(value,option){
+        if ($.trim(this.modelValue).length==0){
+          this.modelValue = this.selectNode.itemName;
+        }
+        if ($.trim(this.condition).length==0){
+          this.condition = this.selectNode.roSymbol;
+        }
+        this.conditionValue = option.componentOptions.propsData.title;
+        console.log(option.componentOptions.propsData);
+        this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
+      },
+      //枚举时搜索下拉框
+      searchSelect(value){
+        let params = {};
+        params.keyword = value;
+        if ($.trim(this.modelId).length == 0){
+          params.id = this.boxInitialized.itemId;
+        } else{
+          params.id = this.modelId;
+        }
+        coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
-            let indexData = this.dealAllStartTree(res.rows);
-            this.CoreFactAllTree = this.recursiveNodeTree(indexData, 'undefined')
+            this.boxInitialized.inputSelectData = res.rows;
+          } else {
+            this.inputSelectData = [];
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
+      },
 
-            console.log(this.CoreFactAllTree);
+      //线判断条件
+      lineCondition(value,option){
+        option.componentOptions.propsData.title;
+        this.selectEdge.label = option.componentOptions.propsData.title;
+      },
+      //属性节点后线段属性
+      attributeEdge(value, node, extra){
+        let params = extra.selectedNodes[0].data.props;
+        console.log(params,'1');
+        this.selectNode.label = params.title;
+        if (params.lo == 1){
+          this.edgeInitialized.inputEdge = 'input'
+        }else if (params.lo == 2){
+          this.edgeInitialized.inputEdge = 'scopeInput'
+        }else if (params.lo == 3){
+          this.edgeInitialized.inputEdge = 'select';
+          this.edgeId = params.id;
+          coreRuleNodeSelectColId({id:this.edgeId}).then(res => {
+            if (res.code == '200') {
+              this.edgeInitialized.inputEdgeSelect = res.rows;
+            } else {
+              this.warn(res.msg)
+            }
+          }).catch(err => {
+            this.error(err)
+          })
+        }
+        if (params.colDbType == 1){
+          this.edgeInitialized.inValueEdge = 'number'
+        }else if (params.colDbType == 2){
+          this.edgeInitialized.inValueEdge == 'time'
+        }else if (params.colDbType == 3){
+          this.edgeInitialized.inValueEdge = 'text'
+        }
+        this.nodeModel = params.title;
+        this.selectNode.label = this.nodeModel;
+        console.log(this.edgeInitialized);
+      },
+
+      //线段输入框input事件
+      inputEdgeChange(e){
+        this.edgeConditionValue = e.srcElement.value;
+        this.selectEdge.label =this.edgeCondition+this.edgeConditionValue;
+      },
+      //线中下拉事件
+      assertValEdge(value,option){
+        this.edgeConditionValue = option.componentOptions.propsData.title;
+        this.selectEdge.label =this.edgeCondition+this.edgeConditionValue;
+      },
+      //线下拉搜索
+      searchEdge(value){
+        let params = {};
+        params.keyword = value;
+        if ($.trim(this.modelId).length == 0){
+          params.id = this.edgeInitialized.itemId;
+        } else{
+          params.id = this.edgeId;
+        }
+        coreRuleNodeSelectColId(params).then(res => {
+          if (res.code == '200') {
+            this.edgeInitialized.inputEdgeSelect = res.rows;
           } else {
             this.warn(res.msg)
           }
         }).catch(err => {
           this.error(err)
         })
+      },
+
+      //线条件选择
+      selectEdgeRo(value,option){
+        this.edgeCondition = option.componentOptions.propsData.title;
+        this.selectEdge.label =this.edgeCondition;
+      },
+      //多个条件值输入第一个事件
+      edgeAssertVal(e){
+        // edgeCondition:'',
+        //   edgeConditionValue:'',
+        this.conditionValue = e.srcElement.value;
+        if ($.trim(this.edgeCondition).length==0){
+          this.edgeCondition = this.selectNode.roSymbol;
+        }
+        console.log(this.edgeConditionValue1,'1');
+        console.log(this.edgeConditionValue,'0');
+        this.selectNode.label =this.edgeCondition+this.edgeConditionValue+this.edgeConditionValue1;
+      },
+      edgeAssertVal1(e){
+        this.edgeConditionValue = e.srcElement.value;
+        if ($.trim(this.edgeConditionValue).length==0){
+          this.edgeConditionValue = this.selectNode.assertVal;
+        }
+        if ($.trim(this.condition).length==0){
+          this.edgeCondition = this.selectNode.roSymbol;
+        }
+        console.log(this.edgeConditionValue1,'1');
+        console.log(this.edgeConditionValue,'0');
+        console.log(this.edgeCondition,'0');
+        this.selectNode.label =this.edgeCondition+this.edgeConditionValue+this.edgeConditionValue1;
+      },
+      getCoreFactAllStart(){
+        coreFactColAll({}).then(res => {
+          if (res.code == '200') {
+            let indexData = this.dealAllStartTree(res.rows);
+            this.CoreFactAllTree = this.recursiveNodeTree(indexData, 'undefined');
+            console.log(this.CoreFactAllTree,'111')
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
+
       },
       //处理模型字段
       dealAllStartTree(list){

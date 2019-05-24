@@ -5,14 +5,14 @@ const { Flow } = G6Editor;
 Flow.registerNode(
     'model-card-conclusion',
     {
-      level:0,
-      basisLabel: '医院规定',
-      message:
-        '本药仅门诊科室使用！本药仅。',
-      suggest: '请更换其他药品。',
-      levelColor: 'red',
-      verdictType:'1',
-      restrictionType:1,
+      levels:null,
+      inAccordanceWith: null,
+      sourcename:'',
+      message: '',
+      suggest: '',
+      levelColor: '',
+      verdictType:null,
+      restrictionType:null,
       // 设置锚点
       anchor: [
         //[0.5, 0, { type: 'input' }],

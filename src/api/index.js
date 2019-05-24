@@ -35,6 +35,8 @@ const api = {
     reviewAuditlevelSelect:'/sys/reviewAuditlevel/selectUsingList',
     dicBaseSelectClassList:'/sys/dicBase/selectClassList',
     coreFactColAll:'/sys/coreFactCol/selectAllUsing',
+    coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
+    coreRuleCategoryKeyword:'/sys/coreRule/selectCategoryKeyword',
 
 }
 export default api

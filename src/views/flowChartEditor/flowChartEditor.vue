@@ -12,6 +12,8 @@
         v-bind:graphAPI="graph"
         v-bind:selectNode="selectNode"
         v-bind:selectEdge="selectEdge"
+        v-bind:boxInitialized="boxInitialized"
+        v-bind:edgeInitialized="edgeInitialized"
       ></a-detailpanel>
       <!-- 缩略图 -->
       <a-navigator ref="navigator" v-bind:graphAPI="graph"></a-navigator>
@@ -47,7 +49,7 @@
   import navigator from './model/navigator'
   import toolbar from './model/toolbar'
 
-  import { coreRuleNodeSelectOne, coreRuleNodeUpdate,reviewAuditlevelSelect } from '@/api/login'
+  import { coreRuleNodeSelectOne, coreRuleNodeUpdate, reviewAuditlevelSelect,coreRuleNodeSelectColId  } from '@/api/login'
 
   export default {
     name: 'g6e',
@@ -64,6 +66,7 @@
     },
     data() {
       return {
+        ruleId:null,
         page: null,
         flow: null,
         graph: null,
@@ -72,17 +75,20 @@
           shape: null,
           label: null,
           ///-------结论节点特有属性---------
-          basisLabel: null,
+          inAccordanceWith: null,
+          sourcename: null,
           message: null,
           suggest: null,
           restrictionType: null,
           verdictType: null,
-          itemId:null,
-          ro:null,
-          assertVal:null,
-          assertVal1:null,
+          itemId: null,
+          itemName:null,
+          ro: null,
+          roSymbol:null,
+          assertVal: null,
+          assertVal1: null,
           levelColor: '#ffffff',
-          level: '0',
+          levels: 0,
           ///-------结论节点特有属性---------
 
           ///-------------属性节点特定属性-----------------
@@ -97,7 +103,9 @@
           sourceId: null,
           sourceType: null,
           targetId: null,
-          targetType: null
+          targetType: null,
+          assertVal: null,
+          ro:null,
         },
         conheight: {
           height: '700px'
@@ -119,7 +127,11 @@
         isMultiSelect: false, // 是否是多选模式
         gridCheck: false,
         titleData: { status: null, type2: null, type: null, name: null, updateTime: null },
-        pieChartData: {}
+        //属性框初始化
+        boxInitialized:{inputSelectData:[],inputType:'',inValueType:'',itemId:null},
+        edgeInitialized:{inputEdgeSelect:[],inputEdge:'',inValueEdge:'',itemId:null},
+        pieChartData: {},
+        getEdgesData: []
       }
     },
     mounted() {
@@ -131,8 +143,11 @@
       // console.log(this.$route.query,'1');
     },
     computed: {
-      selectNodeBasisLabel() {
-        return this.selectNode.basisLabel
+      selectNodeInAccordanceWith() {
+        return this.selectNode.inAccordanceWith
+      },
+      selectNodeSourcename() {
+        return this.selectNode.sourcename
       },
       selectNodeMessage() {
         return this.selectNode.message
@@ -149,8 +164,8 @@
       selectNodeLevelColor() {
         return this.selectNode.levelColor
       },
-      selectNodeLevel() {
-        return this.selectNode.level
+      selectNodeLevels() {
+        return this.selectNode.levels
       },
 
       selectNodelabel() {
@@ -165,27 +180,45 @@
       selectNodeItemId() {
         return this.selectNode.itemId
       },
-      selectNodeRo(){
+      selectNodeItemName() {
+        return this.selectNode.itemName
+      },
+      selectNodeRo() {
         return this.selectNode.ro
       },
-      selectNodeAssertVal(){
+      selectNodeLo() {
+        return this.selectNode.lo
+      },
+      selectNodeAssertVal() {
         return this.selectNode.assertVal
       },
-      selectNodeAssertVal1(){
+      selectNodeAssertVal1() {
         return this.selectNode.assertVal1
+      },
+      selectNodeRoSymbol() {
+        return this.selectNode.roSymbol
       },
       selectEdgeLabel() {
         return this.selectEdge.label
       },
+      selectEdgeLo() {
+        return this.selectEdge.lo
+      },
       selectEdgeValue() {
         return this.selectEdge.value
-      }
+      },
+      selectEdgeAssertVal(){
+        return this.selectEdge.assertVal
+      },
+      selectEdgeRo() {
+        return this.selectEdge.ro
+      },
     },
 
     watch: {
-      selectNodeLevel(newValue, oldValue) {
+      selectNodeLevels(newValue, oldValue) {
         if (newValue != oldValue) {
-          this.flow.update(this.selectNode.id, { level: newValue })
+          this.flow.update(this.selectNode.id, { levels: newValue })
         }
       },
       selectNodeprototypes(newValue, oldValue) {
@@ -198,9 +231,14 @@
           this.flow.update(this.selectNode.id, { field: newValue })
         }
       },
-      selectNodeBasisLabel(newValue, oldValue) {
+      selectNodeInAccordanceWith(newValue, oldValue) {
         if (newValue != oldValue) {
-          this.flow.update(this.selectNode.id, { basisLabel: newValue })
+          this.flow.update(this.selectNode.id, { inAccordanceWith: newValue })
+        }
+      },
+      selectNodeSourcename(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { sourcename: newValue })
         }
       },
       selectNodeMessage(newValue, oldValue) {
@@ -240,42 +278,77 @@
           }
         }
       },
-      selectNodeItemId(newValue, oldValue){
-        if (newValue != oldValue) {
+      selectNodeItemId(newValue, oldValue) {
+        if (newValue != oldValue && oldValue != null) {
+          console.log(newValue);
+          console.log(oldValue);
           this.flow.update(this.selectNode.id, { itemId: newValue })
+          for (let key in this.getEdgesData) {
+            this.flow.update(this.getEdgesData[key].id, { ro: null, assertVal: null, assertVal1: null,label:null })
+          }
         }
       },
-      selectNodeRo(newValue, oldValue){
+      selectNodeItemName(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { itemName: newValue })
+        }
+      },
+      selectNodeRo(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { ro: newValue })
         }
       },
-      selectNodeAssertVal(newValue, oldValue){
+      selectNodeLo(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { lo: newValue })
+        }
+      },
+      selectNodeRoSymbol(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { roSymbol: newValue })
+        }
+      },
+      selectNodeAssertVal(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { assertVal: newValue })
         }
       },
-      selectNodeAssertVal1(newValue, oldValue){
+      selectNodeAssertVal1(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { assertVal1: newValue })
         }
       },
       selectEdgeLabel(newValue, oldValue) {
         if (newValue != oldValue && newValue != null) {
-          this.flow.update(this.selectEdge.id, { label: { text: newValue } })
+          this.flow.update(this.selectEdge.id, { label: newValue })
         }
       },
       selectEdgeValue(newValue, oldValue) {
         if (newValue != oldValue && newValue != null) {
           this.flow.update(this.selectEdge.id, { value: newValue })
         }
+      },
+      selectEdgeLo(newValue, oldValue) {
+        if (newValue != oldValue && newValue != null) {
+          this.flow.update(this.selectEdge.id, { lo: newValue })
+        }
+      },
+      selectEdgeAssertVal(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { assertVal: newValue })
+        }
+      },
+      selectEdgeRo(newValue, oldValue){
+        if (newValue != oldValue && newValue != null) {
+          this.flow.update(this.selectEdge.id, { ro: newValue })
+        }
       }
     },
     methods: {
-      saveFlow() {
-        console.log(this.flow.save(), '保存信息')//
-        localStorage.setItem('test', JSON.stringify(this.flow.save()))
-      },
+      // saveFlow() {
+      //   console.log(this.flow.save(), '保存信息')//
+      //   localStorage.setItem('test', JSON.stringify(this.flow.save()))
+      // },
       getHeight() {
         this.conheight.height = window.innerHeight - 48 + 'px'
       },
@@ -369,37 +442,71 @@
         var _this = this
         // 选中数据处理
         this.page.on('afteritemselected', ev => {
-          console.log(ev)
           // 判断数据类型
           switch (ev.item.type) {
             case 'node':
+              this.getEdgesData = ev.item.getEdges();
               if (!ev.item.isSelected) {
                 _this.nodeId = ev.item.model.id
                 let model = ev.item.model
                 let shape = ev.item.shapeObj
                 _this.selectNode.id = model.id
+                _this.selectNode.pid = model.pid
                 _this.selectNode.shape = model.shape
                 _this.selectNode.label = model.label != null ? model.label : shape.label
                 switch (_this.selectNode.shape) {
                   case 'model-card-conclusion':
-                    _this.selectNode.basisLabel = model.basisLabel != null ? model.basisLabel : shape.basisLabel
+                    _this.selectNode.inAccordanceWith = model.inAccordanceWith != null ? model.inAccordanceWith : shape.inAccordanceWith
+                    _this.selectNode.sourcename = model.sourcename != null ? model.sourcename : shape.sourcename
                     _this.selectNode.levelColor = model.levelColor != null ? model.levelColor : shape.levelColor
                     _this.selectNode.message = model.message != null ? model.message : shape.message
                     _this.selectNode.suggest = model.suggest != null ? model.suggest : shape.suggest
                     _this.selectNode.verdictType = model.verdictType != null ? model.verdictType : shape.verdictType
                     _this.selectNode.restrictionType = model.restrictionType != null ? model.restrictionType : shape.restrictionType
-                    _this.selectNode.level = model.level != null ? model.level : shape.level
+                    _this.selectNode.levels = model.levels != null ? model.levels : shape.levels
                     break
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
-                    // _this.selectNode.prototypes = model.prototypes != null ? model.prototypes : shape.prototypes
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
+
                     break
                   case 'flow-rhombus-if':
+                    console.log(ev.item.model.ro)
+                    let params = ev.item.model;
+                      this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
+                      if (params.lo == 1){
+                        this.boxInitialized.inputType = 'input'
+                      }else if (params.lo == 2){
+                        this.boxInitialized.inputType = 'scopeInput'
+                      }else if (params.lo == 3){
+                        this.boxInitialized.inputType = 'select';
+                        this.boxInitialized.itemId = params.itemId;
+                        coreRuleNodeSelectColId({id:params.itemId,assertVal:params.assertVal}).then(res => {
+                          if (res.code == '200') {
+                            this.boxInitialized.inputSelectData = res.rows;
+                          } else {
+                            this.warn(res.msg)
+                            this.boxInitialized.inputSelectData = [];
+                          }
+                        }).catch(err => {
+                          this.error(err)
+                        })
+                      }
+                      if (params.colDbType == 1){
+                        this.boxInitialized.inValueType = 'number'
+                      }else if (params.colDbType == 2){
+                        this.boxInitialized.inputType == 'time'
+                      }else if (params.colDbType == 3){
+                        this.boxInitialized.inValueType = 'text'
+                      }
+                    console.log(this.boxInitialized,'111');
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
+                    _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
+                    _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.selectNode.assertVal = model.assertVal != null ? model.assertVal : shape.assertVal
                     _this.selectNode.assertVal1 = model.assertVal1 != null ? model.assertVal1 : shape.assertVal1
+                    _this.selectNode.roSymbol = model.roSymbol != null ? model.roSymbol : shape.roSymbol
                 }
               } else {
                 _this.multiId.push(ev.item.model.id)
@@ -409,19 +516,53 @@
             case 'edge':
               //选中后设置颜色 和连接线的宽度
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-              setTimeout(() => {
-                _this.selectEdge.id = ev.item.model.id
-                _this.selectEdge.label = ev.item.model.label ? ev.item.model.label.text : null
-                _this.selectEdge.value = ev.item.model.value
-                _this.selectEdge.sourceId = ev.item.source.id
-                if (ev.item.source.model) {
-                  _this.selectEdge.sourceType = ev.item.source.model.shape
+              console.log(ev.item);
+              let sourceP = ev.item.source.model;
+              let params = ev.item.model;
+              // this.edgeInitialized={inputEdgeSelect:[]};
+              if ($.trim(params.ro).length>0 ||$.trim(params.assertVal).length>0 ){
+              if (params.lo == 1){
+                this.edgeInitialized.inputEdge = 'input'
+              }else if (params.lo == 2){
+                this.edgeInitialized.inputEdge = 'scopeInput'
+              }else if (params.lo == 3) {
+                this.edgeInitialized.inputEdge = 'select';
+                this.edgeInitialized.itemId = sourceP.itemId;
+                coreRuleNodeSelectColId({id:sourceP.itemId,assertVal:params.assertVal}).then(res => {
+                  if (res.code == '200') {
+                    this.edgeInitialized.inputEdgeSelect = res.rows;
+                  } else {
+                    this.warn(res.msg)
+                    this.edgeInitialized.inputEdgeSelect = [];
+                  }
+                }).catch(err => {
+                  this.error(err)
+                })
+                if (params.colDbType == 1) {
+                  this.edgeInitialized.inValueEdge = 'number'
+                } else if (params.colDbType == 2) {
+                  this.edgeInitialized.inputEdge == 'time'
+                } else if (params.colDbType == 3) {
+                  this.edgeInitialized.inValueEdge = 'text'
                 }
-                _this.selectEdge.targetId = ev.item.target.id
-                if (ev.item.target.model) {
-                  _this.selectEdge.targetType = ev.item.target.model.shape
                 }
-              }, 0)
+              }
+              console.log(this.edgeInitialized, '111');
+                setTimeout(() => {
+                  _this.selectEdge.id = ev.item.model.id
+                  _this.selectEdge.label = ev.item.model.label
+                  _this.selectEdge.value = ev.item.model.value
+                  _this.selectEdge.sourceId = ev.item.source.id
+                  _this.selectEdge.assertVal = ev.item.model.assertVal
+                  _this.selectEdge.ro = ev.item.model.ro
+                  if (ev.item.source.model) {
+                    _this.selectEdge.sourceType = ev.item.source.model.shape
+                  }
+                  _this.selectEdge.targetId = ev.item.target.id
+                  if (ev.item.target.model) {
+                    _this.selectEdge.targetType = ev.item.target.model.shape
+                  }
+                }, 0)
               break
           }
         })
@@ -492,23 +633,44 @@
        * @description: 保存流图数据
        */
       saveFlow() {
-        let list = this.flow.save().nodes.concat(this.flow.save().edges)
+        let data= this.flow.save();
+        let list =data.nodes.concat(data.edges)
         for (let key in list) {
           delete list[key].childNodes
+          if(list[key].type=="node")
+          {
+            list[key].pid = this.getNodePids(data.edges,list[key].id);
+          }else {
+            list[key].pid = list[key].source
+          }
+          list[key].disOrder = list[key].index;
+          list[key].ruleId = this.ruleId;
+          delete  list[key].index
         }
         console.log(JSON.stringify(list), '保存')
-        // coreRuleNodeUpdate(params).then(res => {
-        //   if (res.code == '200') {
-        //     this.success(res.msg)
-        //   } else {
-        //     this.warn(res.msg)
-        //   }
-        // }).catch(err => {
-        //   this.error(err)
-        // })
+        coreRuleNodeUpdate({ ruleNodeVOS: list }).then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
         localStorage.setItem('test', JSON.stringify(this.flow.save()))
       },
-
+      getNodePids(edges,id)
+      {
+        let pids=[];
+        for (let y in edges){
+          let edge=edges[y];
+          if(edge.target==id)
+          {
+            pids.push(edges[y].id);
+          }
+        }
+        return pids.join(",");
+      },
       /**
        * @description: 下载流图
        */
@@ -542,7 +704,8 @@
        */
       getNodeData() {
         let params = {}
-        params.ruleId = '113'
+        params.ruleId = this.$route.query.id
+        this.ruleId = this.$route.query.id
         coreRuleNodeSelectOne(params).then(res => {
           if (res.code == '200') {
             this.titleData.name = res.data.name
@@ -557,24 +720,42 @@
             let x = 0
             let y = 0
             for (let key in nodeData) {
+              if (nodeData[key].x){
+                x = nodeData[key].x
+              } else{
+                x = 0
+              }
+              if (nodeData[key].y){
+                y = nodeData[key].y
+              } else{
+                y = 0
+              }
               nodes.push({
                 color: 'rgb(255, 191, 0)',
                 id: nodeData[key].id,
-                pid: nodeData[key].pid,
+                pid:''+ nodeData[key].pid,
                 index: nodeData[key].id,
                 shape: nodeData[key].shape,
                 type: 'node',
                 label: nodeData[key].label,
-                level: nodeData[key].level,
+                levels: nodeData[key].levels,
                 levelColor: nodeData[key].levelColor,
                 message: nodeData[key].message,
                 suggest: nodeData[key].suggest,
-                verdictType:''+ nodeData[key].verdictType,
+                sourcename: nodeData[key].sourcename,
+                inAccordanceWith: nodeData[key].inAccordanceWith,
+                verdictType: nodeData[key].verdictType,
                 restrictionType: nodeData[key].restrictionType,
                 ro: nodeData[key].ro,
-                itemId:''+nodeData[key].itemId,
-                assertVal:nodeData[key].assertVal,
-                assertVal1:nodeData[key].assertVal1,
+                lo: nodeData[key].lo,
+                roSymbol:nodeData[key].roSymbol,
+                colDbType:nodeData[key].colDbType,
+                handleType:nodeData[key].handleType,
+                itemName:nodeData[key].itemName,
+                itemId:nodeData[key].itemId,
+                assertVal: '' + nodeData[key].assertVal,
+                assertVal1: '' + nodeData[key].assertVal1,
+                size:'70*70',
                 y: y,
                 x: x
               })
@@ -587,24 +768,29 @@
               edges.push({
                 color: 'rgba(0,0,0,0.25)',
                 id: edgesData[key].id,
-                pid: edgesData[key].pid,
+                pid: ''+edgesData[key].pid,
                 label: edgesData[key].label,
                 index: edgesData[key].id,
                 shape: 'flow-smooth',
                 source: edgesData[key].pid,
-                sourceAnchor: targetAnchor,
+                sourceAnchor: 1,
                 target: edgesData[key].target,
+                ro: edgesData[key].ro,
+                lo: edgesData[key].lo,
+                roSymbol:edgesData[key].roSymbol,
+                assertVal: '' + edgesData[key].assertVal,
                 targetAnchor: 0,
                 type: 'edge'
               })
             }
-            // let list = nodes.concat(edges)
+            console.log(edges,'edges');
             let list = nodes.concat(edges)
             let indexData = this.getNodeTreeData(list)
             let i = 0
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
             // console.log(this.pieChartData);
+            // console.log( this.pieChartData);
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
@@ -619,13 +805,18 @@
       getNodeTreeData(list) {
         let indexData = {}
         for (let key in list) {
-          let childNodes = indexData[list[key].pid]
-          if (childNodes instanceof Array) {
-            childNodes.push(list[key])
-          } else {
-            childNodes = [list[key]]
+          let pids= list[key].pid.split(',');
+          for(let p in pids)
+          {
+            let pid=pids[p];
+            let childNodes = indexData[pid]
+            if (childNodes instanceof Array) {
+              childNodes.push(list[key])
+            } else {
+              childNodes = [list[key]]
+            }
+            indexData[pid] = childNodes
           }
-          indexData[list[key].pid] = childNodes
         }
         return indexData
       },
@@ -654,34 +845,40 @@
         let newNodeData = []
         let yHeight = 1
         for (let key in this.pieChartData) {
+          console.log(this.pieChartData[key],'111112222');
           let data = this.pieChartData[key]
-          // data = this.dealDataLength(data);
-          let yLength = data.length / 2
-          for (let i in data) {
-            if (key == 999) {
-              if (i > data.length / 2) {
-                data[i].y = (i - yLength) * 130
-                data[i].yaxis = (i - yLength) * 130
-              } else {
-                data[i].y = -(yLength - i) * 130
-                data[i].yaxis = -(yLength - i) * 130
+            // data = this.dealDataLength(data);
+            let yLength = data.length / 2
+            for (let i in data) {
+              if (data[i].x && data[i].y){
+                data[i].x = data[i].x;
+                data[i].y = data[i].y;
+              } else{
+                if (key == 999) {
+                  if (i > data.length / 2) {
+                    data[i].y = (i - yLength) * 130
+                    data[i].yaxis = (i - yLength) * 130
+                  } else {
+                    data[i].y = -(yLength - i) * 130
+                    data[i].yaxis = -(yLength - i) * 130
+                  }
+                  let pieDataLength = Object.getOwnPropertyNames(this.pieChartData).length
+                  data[i].x = pieDataLength * 250
+                } else if (key == 1) {
+                  data[i].x = 0
+                } else {
+                  if (i > data.length / 2) {
+                    data[i].y = (i - yLength) * 500 + yHeight * 500
+                    data[i].yaxis = (i - yLength) * 500 + yHeight * 500
+                  } else {
+                    data[i].y = -(yLength - i) * 500 + yHeight * 500
+                    data[i].yaxis = -(yLength - i) * 500 + yHeight * 500
+                  }
+                  data[i].x = (key - 1) * 100
+                }
               }
-              let pieDataLength = Object.getOwnPropertyNames(this.pieChartData).length
-              data[i].x = pieDataLength * 250
-            } else if (key == 1) {
-              data[i].x = 0
-            } else {
-              if (i > data.length / 2) {
-                data[i].y = (i - yLength) * 500 + yHeight * 500
-                data[i].yaxis = (i - yLength) * 500 + yHeight * 500
-              } else {
-                data[i].y = -(yLength - i) * 500 + yHeight * 500
-                data[i].yaxis = -(yLength - i) * 500 + yHeight * 500
-              }
-              data[i].x = (key - 1) * 100
             }
-          }
-          yHeight = yLength
+            yHeight = yLength
           newNodeData = newNodeData.concat(data)
         }
         return newNodeData
@@ -703,7 +900,7 @@
         return data
       },
 
-      getReviewLevel(){
+      getReviewLevel() {
         reviewAuditlevelSelect({}).then(res => {
           if (res.code == '200') {
           } else {
@@ -712,7 +909,7 @@
         }).catch(err => {
           this.error(err)
         })
-      },
+      }
     }
   }
 </script>

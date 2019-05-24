@@ -212,7 +212,8 @@
     coreRuleSelectKeyword,
     coreRuleGroupSpec,
     coreRuleUpdate,
-    coreRuleDelete
+    coreRuleDelete,
+    coreRuleCategoryKeyword
   } from '@/api/login'
   import debounce from 'lodash/debounce'
 

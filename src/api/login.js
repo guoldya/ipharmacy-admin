@@ -180,6 +180,13 @@ export function coreRuleNodeUpdate(parameter){
     data: parameter
   })
 }
+export function coreRuleCategoryKeyword(parameter){
+  return axios({
+    url: api.coreRuleCategoryKeyword,
+    method: 'put',
+    data: parameter
+  })
+}
 
 export function reviewAuditlevelSelect(parameter){
   return axios({
@@ -200,6 +207,13 @@ export function dicBaseSelectClassList(parameter){
 export function coreFactColAll(parameter){
   return axios({
     url: api.coreFactColAll,
+    method: 'put',
+    data: parameter
+  })
+}
+export function coreRuleNodeSelectColId(parameter){
+  return axios({
+    url: api.coreRuleNodeSelectColId,
     method: 'put',
     data: parameter
   })

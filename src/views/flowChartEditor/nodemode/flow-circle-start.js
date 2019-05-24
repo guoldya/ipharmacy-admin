@@ -7,6 +7,7 @@ Flow.registerNode(
     'flow-circle-start',
     {
       label:'开始',
+      size:"70*70",
       // 设置锚点
       anchor: [
         [1, 0.5, { type: 'output' }],

@@ -27,7 +27,7 @@
             data-shape="flow-rhombus-if"
             data-size="160*70"
             data-color="#13C2C2"
-            data-label="判断节点判断节点判断节点判"
+            data-label="判断节点"
           >
             <span class="panel-type-icon"></span>判断节点
           </li>
