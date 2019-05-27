@@ -203,7 +203,7 @@
   </div>
 </template>
 <script>
-  import { selectTribunalRecord } from '@/api/login'
+  import { selectTribunalRecord} from '@/api/login'
   import { Icon } from 'ant-design-vue'
   import countText from '@/components/count-text'
   import prescriptionTabs from '@/components/prescription-tabs'
@@ -425,7 +425,7 @@
         console.log(data);
         this.$router.push({
           name: 'presOutpatientDetail',
-          query:{orderId:data.orderId},
+          query:{visId:data.visId},
         })
       },
       //TODO:处方单数据暂未处理

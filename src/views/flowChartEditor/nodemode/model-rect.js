@@ -15,7 +15,7 @@ Flow.registerNode('model-rect', {
       let prototypes = model.prototypes != null ? model.prototypes : shapeObj.prototypes;
       let field = model.field != null ? model.field : shapeObj.field;
       if (label == null || label == '') {
-        label =  prototypes + '.' + field;
+        label =  prototypes + field;
       }
   
       let width = 180;

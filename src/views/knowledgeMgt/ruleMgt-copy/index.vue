@@ -1,46 +1,6 @@
 <template>
   <a-card>
     <a-row class="ruleRow">
-      <a-col :xl="8" :xxl="5">
-        <div class="ruleCow">
-          <a-card>
-            <a-row>
-              <a-col :span="13">
-                <a-input @pressEnter="pressEnterChange" placeholder="请输入" @change="onChange"/>
-              </a-col>
-              <a-col class="treeCol" :span="5">
-                <a-button size="small" type="primary" @click="searchRule">查询</a-button>
-              </a-col>
-              <a-col :span="6" class="treeCol">
-                <a-dropdown :trigger="['click']">
-                  <a-menu slot="overlay">
-                    <a-menu-item key="1" @click="newTreeNode">新增</a-menu-item>
-                    <a-menu-item key="2" @click="updateTreeNode">编辑</a-menu-item>
-                    <a-menu-item key="3" @click="deleteTreeNode">删除
-                    </a-menu-item>
-                  </a-menu>
-                  <a :disabled="disable">
-                    操作
-                    <a-icon type="down"/>
-                  </a>
-                </a-dropdown>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-spin tip="加载中..." :spinning="loading">
-                <a-tree
-                  class="draggable-tree"
-                  :treeData="gData"
-                  :loadData="onLoadData"
-                  @select="onSelect"
-                >
-                </a-tree>
-              </a-spin>
-            </a-row>
-          </a-card>
-        </div>
-      </a-col>
-      <a-col :xl="16" :xxl="19">
         <a-card>
           <Searchpanel ref="searchPanel" :list="list">
             <div slot="control">
@@ -48,7 +8,7 @@
               <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
             </div>
           </Searchpanel>
-          <a-button class="margin-top-10" type="primary" :disabled="disable" @click="addMdc">添加规则</a-button>
+          <a-button class="margin-top-10" type="primary"  @click="addMdc">添加规则</a-button>
           <a-spin tip="加载中..." :spinning="loadingTable">
             <el-table
               ref="table"
@@ -99,32 +59,6 @@
             </a-pagination>
           </a-spin>
         </a-card>
-      </a-col>
-      <a-modal
-        :title="Modal.modalTitle"
-        :visible="Modal.visible"
-        @ok="handleOk"
-        :confirmLoading="Modal.confirmLoading"
-        @cancel="handleCancel"
-        class="ruleModal"
-      >
-        <a-form :form="form">
-          <a-form-item style="padding-top: 20px" label="分类名称"
-                       :label-col="{ span: 5 }"
-                       :wrapper-col="{ span: 15 }">
-            <a-input v-decorator="[ 'title' ]"/>
-          </a-form-item>
-          <a-form-item label="类型"
-                       :label-col="{ span: 5 }"
-                       :wrapper-col="{ span: 15 }">
-            <a-select v-decorator="[ 'type2' ]" :disabled="treeEditor">
-              <a-select-option :value='op.id' v-for="(op,index) in this.enum.ruleClassification" :key="index">
-                {{op.text}}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-form>
-      </a-modal>
       <a-modal
         :title="drugModal.modalTitle"
         :visible="drugModal.visible"
@@ -132,11 +66,22 @@
         :confirmLoading="drugModal.confirmLoading"
         @cancel="drugCancel"
         class="drugModal"
-        width="600px"
+        width="700px"
       >
         <a-form :form="drugForm">
+          <a-form-item label="类型"
+                       :label-col="{ span: 4 }"
+                       :wrapper-col="{ span: 17 }">
+            <a-select v-decorator="[ 'type2',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
+                      @select="selectType"
+                      placeholder="请选择类型">
+              <a-select-option :value='op.id' v-for="(op,index) in this.enum.ruleClassification" :key="index">
+                {{op.text}}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
           <a-form-item label="药品"
-                       :label-col="{ span: 5 }"
+                       :label-col="{ span: 4 }"
                        :wrapper-col="{ span: 17 }"
                        v-if="selkeys == 1"
           >
@@ -150,20 +95,21 @@
                       :filterOption="false"
                       labelInValue
                       @change="handleChange"
+                      placeholder="请选择药品"
             >
               <a-select-option :value='op.drugCode' v-for="(op,index) in selectDrug" :key="op.drugCode"
                                :title="op.drugName">
                 <a-row>
-                  <a-col class="selectCol" :span="20">
+                  <a-col  :span="16">
                     {{op.drugName}}
                   </a-col>
-                  <a-col :span="4" style="text-align: right">
+                  <a-col :span="8" style="text-align: right">
                     <a-tag >{{op.dosageForms}}</a-tag>
                   </a-col>
                 </a-row>
                 <a-row>
-                  <a-col class="opacity8">
-                    {{op.producedBy}}
+                  <a-col style="opacity: 0.6">
+                    生产厂商：{{op.producedBy}}
                   </a-col>
                 </a-row>
                 <a-divider style="margin: 8px 0 0 0;"/>
@@ -171,11 +117,11 @@
             </a-select>
           </a-form-item>
           <a-form-item label="药品分类"
-                       :label-col="{ span: 5 }"
+                       :label-col="{ span: 4 }"
                        :wrapper-col="{ span: 17 }"
                        v-if="selkeys == 2"
           >
-            <a-select v-decorator="[ 'categoryId',  {rules: [{ required: true,message: '请选择分类规则'  }]} ]"
+            <a-select v-decorator="[ 'categoryId',  {rules: [{ required: true,message: '请选择分类'  }]} ]"
                       showSearch
                       optionLabelProp="title"
                       @search="handleCategory"
@@ -184,6 +130,7 @@
                       :filterOption="false"
                       labelInValue
                       @change="handleChange"
+                      placeholder="请选择分类"
             >
               <a-select-option :value='op.categoryId' v-for="(op,index) in selectCategory" :key="op.categoryId"
                                :title="op.categoryName">
@@ -205,8 +152,8 @@
             </a-select>
           </a-form-item>
           <a-form-item label="药品组"
-                       :label-col="{ span: 5 }"
-                       :wrapper-col="{ span: 15 }"
+                       :label-col="{ span: 4 }"
+                       :wrapper-col="{ span: 17 }"
                        v-if=" selkeys == 3"
           >
             <a-select v-decorator="[ 'limited',{rules: [{ required: true,message: '请选择药品组'  }]} ]"
@@ -218,14 +165,16 @@
                       :filterOption="false"
                       labelInValue
                       @change="handleChange"
+                      placeholder="请选择药品组"
             >
               <a-select-option :value='op.id' v-for="op in coreRule" :key="op.id">{{op.specName}}</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="规则名称"
-                       :label-col="{ span: 5 }"
-                       :wrapper-col="{ span: 15 }"
+                       :label-col="{ span: 4}"
+                       :wrapper-col="{ span: 17 }"
                        v-if=" selkeys == 4"
+                       placeholder="请输入规则名称"
           >
             <a-input v-decorator="[ 'name',{rules: [{ required: true,message: '请输入规则名称'  }]} ]">
             </a-input>
@@ -292,14 +241,6 @@
           { title: '生成厂家', prop: 'manufacturer', width: 100 }],
         values: '',
         selectNode: '',
-        //操作按钮停用启用
-        disable: true,
-        //分类modal
-        Modal: {
-          modalTitle: '新增分类',
-          visible: false,
-          confirmLoading: false
-        },
         // 药品modal
         drugModal: {
           modalTitle: '添加规则',
@@ -322,7 +263,6 @@
       }
     },
     mounted() {
-      this.getData()
       this.getPageData()
     },
     computed: {
@@ -378,10 +318,7 @@
           searchValue: this.values
         })
       },
-      //输入框值改变事件
-      onChange(e) {
-        // this.values = e.target.value
-      },
+
       //树形节点点击事件
       onSelect(selectedKeys, e) {
         this.drugForm.resetFields()
@@ -393,224 +330,25 @@
         } else {
           this.disable = true
         }
-        if (e.node.dataRef.type2 == 1) {
-          this.drugModal.modalTitle = '添加药品规则'
+      },
+      selectType(value){
+        console.log(value);
+        if (value == 1) {
+          // this.drugModal.modalTitle = '添加药品规则'
           this.selkeys = 1
           this.coreRuleSelect({ keyword: '' })
-        } else if (e.node.dataRef.type2 == 2) {
-          this.drugModal.modalTitle = '添加药品分类规则'
+        } else if (value == 2) {
+          // this.drugModal.modalTitle = '添加药品分类规则'
           this.selkeys = 2
           this.coreRuleCategory({keyword:''})
-        } else if (e.node.dataRef.type2 == 3) {
-          this.drugModal.modalTitle = '添加药品组规则'
+        } else if (value == 3) {
+          // this.drugModal.modalTitle = '添加药品组规则'
           this.coreRuleGroup({ keyword: '' })
           this.selkeys = 3
-        } else if (e.node.dataRef.type2 == 4) {
-          this.drugModal.modalTitle = '添加全局规则'
+        } else if (value == 4) {
+          // this.drugModal.modalTitle = '添加全局规则'
           this.selkeys = 4
         }
-      },
-      //树形节点展开事件
-      onExpand(expandedKeys) {
-      },
-      //异步加载数据
-      onLoadData(treeNode) {
-        return new Promise((resolve) => {
-          if (treeNode.dataRef.children) {
-            resolve()
-            return
-          }
-          setTimeout(() => {
-            let params = {}
-            params.typePid = treeNode.dataRef.key
-            coreRuleTypeSelect(params).then(res => {
-              if (res.code == '200') {
-                treeNode.dataRef.children = []
-                for (let i in res.rows) {
-                  let isLeaf = false
-                  if (res.rows[i].isleaf == 1) {
-                    isLeaf = false
-                  } else {
-                    isLeaf = true
-                  }
-                  treeNode.dataRef.children.push({
-                    key: res.rows[i].typeId, title: res.rows[i].typeName,
-                    isLeaf: isLeaf, type: res.rows[i].type, type2: res.rows[i].type2, typePid: res.rows[i].typePid
-                  })
-                }
-                this.gData = [...this.gData]
-              } else {
-                this.warn(res.msg)
-              }
-            }).catch(err => {
-              this.error(err)
-            })
-            resolve()
-          }, 500)
-        })
-      },
-      //获取tree初始数据
-      getData() {
-        this.gData = []
-        let params = {}
-        params.typePid = -1
-        this.loading = true
-        coreRuleTypeSelect(params).then(res => {
-          if (res.code == '200') {
-            this.dealData(res.rows)
-            this.loading = false
-          } else {
-            this.loading = false
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.loading = false
-          this.error(err)
-        })
-      },
-      //处理tree初始数据
-      dealData(data) {
-        for (let i in data) {
-          let isleaf = false
-          if (data[i].isleaf == 1) {
-            isleaf = false
-          } else {
-            isleaf = true
-          }
-          this.gData.push({
-            key: data[i].typeId,
-            title: data[i].typeName,
-            isLeaf: isleaf,
-            type: data[i].type,
-            type2: data[i].type2
-          })
-        }
-      },
-
-
-      //分类新增子集按钮事件
-      newTreeNode() {
-        console.log(this.selectNode);
-        if (this.selectNode) {
-          this.Modal.modalTitle = '新增分类'
-          this.Modal.visible = true
-          this.treeEditor = false
-          this.form.resetFields()
-        } else {
-          this.warn('请选择规则')
-        }
-      },
-      //分类更新按钮事件
-      updateTreeNode() {
-        setTimeout(() => {
-          this.form.setFieldsValue({ title: this.selectNode.title, type2: this.selectNode.type2 })
-        }, 100)
-        this.Modal.modalTitle = '编辑分类'
-        this.Modal.visible = true
-        this.treeEditor = true
-      },
-      //分类删除按钮事件
-      deleteTreeNode() {
-        if (this.selectNode) {
-          let params = { id: this.selectNode.key }
-          coreRuleTypeDelete(params).then(res => {
-            if (res.code == '200') {
-              this.success(res.msg)
-              setTimeout(() => {
-                this.selectParent(this.selectNode, this.gData)
-                this.$set(this.gData)
-              })
-            } else {
-              this.warn(res.msg)
-            }
-          }).catch(err => {
-            this.error(err)
-          })
-        } else {
-          this.warn('请选择规则')
-        }
-      },
-      selectParent(params, gdata) {
-        for (let i in gdata) {
-          let item = gdata[i]
-          if (item.key == params.typePid) {
-            for (let j in item.children) {
-              if (item.children[j].key == params.key) {
-                item.children.splice(j, 1)
-              }
-            }
-            return
-          } else if (item.children) {
-            this.selectParent(params, item.children)
-          }
-        }
-      },
-      //提交分类操作
-      handleOk() {
-        let data = this.form.getFieldsValue()
-        let params = {}
-        if (this.Modal.modalTitle == '新增分类') {
-          params.pid = this.selectNode.key
-          params.name = data.title
-          params.type2 = data.type2
-        } else {
-          params.id = this.selectNode.key
-          params.name = data.title
-        }
-        this.Modal.visible = false
-        coreRuleTypeUpdate(params).then(res => {
-          if (res.code == '200') {
-            if (this.Modal.modalTitle == '编辑分类') {
-              this.updateGdata(params, this.gData)
-            }else{
-              if (this.selectNode.children){
-                // this.addGdata(params, this.gData);
-              }
-            }
-            this.success(res.msg)
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.error(err)
-        })
-      },
-
-      //本地编辑时修改gdata
-      updateGdata(params, gdata) {
-        for (let i in gdata) {
-          let item = gdata[i]
-          if (item.key == params.id) {
-            item.title = params.name
-            item.isleaf = '1'
-            item.children.push(params);
-            return
-          } else if (item.children) {
-            this.updateGdata(params, item.children)
-          }
-        }
-      },
-      //新增
-      addGdata(params, gdata){
-        for (let i in gdata) {
-          let item = gdata[i]
-          if (item.key == params.pid) {
-            let list = {};
-            list.type = 2;
-            list.type2 = params.type2;
-            list.isleaf = '1';
-            list.typeName = params.name;
-            list.typePid = params.pid;
-            item.children.push(list);
-            return
-          } else if (item.children) {
-            this.updateGdata(params, item.children)
-          }
-        }
-      },
-      //取消分类操作
-      handleCancel() {
-        this.Modal.visible = false
       },
 
       //药品select列
@@ -695,11 +433,9 @@
 
       //添加药品按钮事件
       addMdc() {
-        if (!this.disable) {
-          this.drugModal.visible = true
-        } else {
-          this.warn('请选择规则')
-        }
+        this.drugModal.visible = true;
+        this.drugForm.resetFields();
+        this.selkeys = null;
       },
       //药品确认选
       drugOk(e) {
@@ -872,7 +608,7 @@
     overflow: hidden;
     text-align: left;
     display: inline-block;
-    width: 220px;
+    width: 300px;
     white-space: nowrap;
     text-overflow: ellipsis;
   }

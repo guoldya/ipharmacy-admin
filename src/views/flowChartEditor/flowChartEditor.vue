@@ -84,6 +84,7 @@
           itemId: null,
           itemName:null,
           ro: null,
+          lo:null,
           roSymbol:null,
           assertVal: null,
           assertVal1: null,
@@ -105,7 +106,9 @@
           targetId: null,
           targetType: null,
           assertVal: null,
+          assertVal1: null,
           ro:null,
+          lo:null,
         },
         conheight: {
           height: '700px'
@@ -140,7 +143,6 @@
       this.getHeight()
       this.getNodeData()
       // this.getReviewLevel();
-      // console.log(this.$route.query,'1');
     },
     computed: {
       selectNodeInAccordanceWith() {
@@ -189,6 +191,9 @@
       selectNodeLo() {
         return this.selectNode.lo
       },
+      selectNodeColDbType() {
+        return this.selectNode.colDbType
+      },
       selectNodeAssertVal() {
         return this.selectNode.assertVal
       },
@@ -204,11 +209,17 @@
       selectEdgeLo() {
         return this.selectEdge.lo
       },
+      selectEdgeColDbType() {
+        return this.selectEdge.colDbType
+      },
       selectEdgeValue() {
         return this.selectEdge.value
       },
       selectEdgeAssertVal(){
         return this.selectEdge.assertVal
+      },
+      selectEdgeAssertVal1(){
+        return this.selectEdge.assertVal1
       },
       selectEdgeRo() {
         return this.selectEdge.ro
@@ -279,13 +290,13 @@
         }
       },
       selectNodeItemId(newValue, oldValue) {
-        if (newValue != oldValue && oldValue != null) {
-          console.log(newValue);
-          console.log(oldValue);
+        console.log(newValue,'newValue');
+        console.log(oldValue,'oldValue');
+        if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { itemId: newValue })
-          for (let key in this.getEdgesData) {
-            this.flow.update(this.getEdgesData[key].id, { ro: null, assertVal: null, assertVal1: null,label:null })
-          }
+          // for (let key in this.getEdgesData) {
+          //   this.flow.update(this.getEdgesData[key].id, { ro: null, assertVal: null, assertVal1: null,label:null })
+          // }
         }
       },
       selectNodeItemName(newValue, oldValue){
@@ -301,6 +312,11 @@
       selectNodeLo(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { lo: newValue })
+        }
+      },
+      selectNodeColDbType(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { colDbType: newValue })
         }
       },
       selectNodeRoSymbol(newValue, oldValue){
@@ -333,9 +349,19 @@
           this.flow.update(this.selectEdge.id, { lo: newValue })
         }
       },
+      selectEdgeColDbType(newValue, oldValue){
+        if (newValue != oldValue && newValue != null) {
+          this.flow.update(this.selectEdge.id, { colDbType: newValue })
+        }
+      },
       selectEdgeAssertVal(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { assertVal: newValue })
+        }
+      },
+      selectEdgeAssertVal1(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { assertVal1: newValue })
         }
       },
       selectEdgeRo(newValue, oldValue){
@@ -445,7 +471,7 @@
           // 判断数据类型
           switch (ev.item.type) {
             case 'node':
-              this.getEdgesData = ev.item.getEdges();
+              this.getEdgesData = ev.item.model.childNodes;
               if (!ev.item.isSelected) {
                 _this.nodeId = ev.item.model.id
                 let model = ev.item.model
@@ -468,12 +494,14 @@
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
-
+                    _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
+                    _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
+                    _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     break
                   case 'flow-rhombus-if':
-                    console.log(ev.item.model.ro)
+                    console.log(ev.item.model);
                     let params = ev.item.model;
-                      this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
+                      // this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
                       if (params.lo == 1){
                         this.boxInitialized.inputType = 'input'
                       }else if (params.lo == 2){
@@ -499,7 +527,8 @@
                       }else if (params.colDbType == 3){
                         this.boxInitialized.inValueType = 'text'
                       }
-                    console.log(this.boxInitialized,'111');
+                    _this.selectNode.lo =params.lo;
+                    _this.selectNode.colDbType =params.colDbType;
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
@@ -516,48 +545,50 @@
             case 'edge':
               //选中后设置颜色 和连接线的宽度
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-              console.log(ev.item);
               let sourceP = ev.item.source.model;
               let params = ev.item.model;
-              // this.edgeInitialized={inputEdgeSelect:[]};
-              if ($.trim(params.ro).length>0 ||$.trim(params.assertVal).length>0 ){
-              if (params.lo == 1){
-                this.edgeInitialized.inputEdge = 'input'
-              }else if (params.lo == 2){
-                this.edgeInitialized.inputEdge = 'scopeInput'
-              }else if (params.lo == 3) {
-                this.edgeInitialized.inputEdge = 'select';
-                this.edgeInitialized.itemId = sourceP.itemId;
-                coreRuleNodeSelectColId({id:sourceP.itemId,assertVal:params.assertVal}).then(res => {
-                  if (res.code == '200') {
-                    this.edgeInitialized.inputEdgeSelect = res.rows;
-                  } else {
-                    this.warn(res.msg)
-                    this.edgeInitialized.inputEdgeSelect = [];
+              if ( !this.edgeInitialized.inputEdge){
+                if ($.trim(sourceP.ro).length>0 ||$.trim(params.assertVal).length>0 ){
+                  if (sourceP.lo == 1){
+                    this.edgeInitialized.inputEdge = 'input'
+                  }else if (sourceP.lo == 2){
+                    this.edgeInitialized.inputEdge = 'scopeInput'
+                  }else if (sourceP.lo == 3) {
+                    this.edgeInitialized.inputEdge = 'select';
+                    this.edgeInitialized.itemId = sourceP.itemId;
+                    coreRuleNodeSelectColId({ id: sourceP.itemId, assertVal: params.assertVal }).then(res => {
+                      if (res.code == '200') {
+                        this.edgeInitialized.inputEdgeSelect = res.rows;
+                      } else {
+                        this.warn(res.msg)
+                        this.edgeInitialized.inputEdgeSelect = [];
+                      }
+                    }).catch(err => {
+                      this.error(err)
+                    })
                   }
-                }).catch(err => {
-                  this.error(err)
-                })
-                if (params.colDbType == 1) {
-                  this.edgeInitialized.inValueEdge = 'number'
-                } else if (params.colDbType == 2) {
-                  this.edgeInitialized.inputEdge == 'time'
-                } else if (params.colDbType == 3) {
-                  this.edgeInitialized.inValueEdge = 'text'
-                }
+                  if (sourceP.colDbType == 1) {
+                    this.edgeInitialized.inValueEdge = 'number'
+                  } else if (sourceP.colDbType == 2) {
+                    this.edgeInitialized.inputEdge == 'time'
+                  } else if (sourceP.colDbType == 3) {
+                    this.edgeInitialized.inValueEdge = 'text'
+                  }
+                  console.log(this.edgeInitialized,'1');
                 }
               }
-              console.log(this.edgeInitialized, '111');
                 setTimeout(() => {
                   _this.selectEdge.id = ev.item.model.id
                   _this.selectEdge.label = ev.item.model.label
                   _this.selectEdge.value = ev.item.model.value
                   _this.selectEdge.sourceId = ev.item.source.id
                   _this.selectEdge.assertVal = ev.item.model.assertVal
+                  _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                   _this.selectEdge.ro = ev.item.model.ro
                   if (ev.item.source.model) {
                     _this.selectEdge.sourceType = ev.item.source.model.shape
                   }
+                  console.log(_this.selectEdge.sourceType);
                   _this.selectEdge.targetId = ev.item.target.id
                   if (ev.item.target.model) {
                     _this.selectEdge.targetType = ev.item.target.model.shape
@@ -647,10 +678,10 @@
           list[key].ruleId = this.ruleId;
           delete  list[key].index
         }
-        console.log(JSON.stringify(list), '保存')
+        console.log(JSON.stringify(list));
         coreRuleNodeUpdate({ ruleNodeVOS: list }).then(res => {
           if (res.code == '200') {
-            this.success(res.msg)
+            this.success('保存成功');
           } else {
             this.warn(res.msg)
           }
@@ -753,8 +784,8 @@
                 handleType:nodeData[key].handleType,
                 itemName:nodeData[key].itemName,
                 itemId:nodeData[key].itemId,
-                assertVal: '' + nodeData[key].assertVal,
-                assertVal1: '' + nodeData[key].assertVal1,
+                assertVal: nodeData[key].assertVal,
+                assertVal1: nodeData[key].assertVal1,
                 size:'70*70',
                 y: y,
                 x: x
@@ -768,7 +799,7 @@
               edges.push({
                 color: 'rgba(0,0,0,0.25)',
                 id: edgesData[key].id,
-                pid: ''+edgesData[key].pid,
+                pid: edgesData[key].pid,
                 label: edgesData[key].label,
                 index: edgesData[key].id,
                 shape: 'flow-smooth',
@@ -778,19 +809,17 @@
                 ro: edgesData[key].ro,
                 lo: edgesData[key].lo,
                 roSymbol:edgesData[key].roSymbol,
-                assertVal: '' + edgesData[key].assertVal,
+                assertVal:edgesData[key].assertVal,
+                assertVal1:edgesData[key].assertVal1,
                 targetAnchor: 0,
                 type: 'edge'
               })
             }
-            console.log(edges,'edges');
             let list = nodes.concat(edges)
             let indexData = this.getNodeTreeData(list)
             let i = 0
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
-            // console.log(this.pieChartData);
-            // console.log( this.pieChartData);
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
@@ -845,7 +874,6 @@
         let newNodeData = []
         let yHeight = 1
         for (let key in this.pieChartData) {
-          console.log(this.pieChartData[key],'111112222');
           let data = this.pieChartData[key]
             // data = this.dealDataLength(data);
             let yLength = data.length / 2

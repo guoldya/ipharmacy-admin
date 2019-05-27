@@ -23,9 +23,6 @@ window.$=$
 import { Table, TableColumn,Card,Tag,Collapse,CollapseItem,Scrollbar,Tooltip} from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局
 import vcolorpicker from 'vcolorpicker'
-// //异步加载
-import infiniteScroll from 'vue-infinite-scroll'
-import VueVirtualScroller from 'vue-virtual-scroller'
 //业务相关组件
 import msgHandler from '@/comm-msg/msg-handler.js'
 import Searchpanel from '@/components/search-panel'
@@ -57,8 +54,6 @@ Vue.use(Scrollbar)
 Vue.use(Tooltip)
 Vue.use(msgHandler)//统一错误处理
 Vue.use(VueAxios, router)
-Vue.use(infiniteScroll)
-Vue.use(VueVirtualScroller)
 
 Vue.config.productionTip = false
 // 当前环境

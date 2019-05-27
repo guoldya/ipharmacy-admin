@@ -154,7 +154,7 @@
 </template>
 
 <script>
-
+  import { dicPackageSelectOne } from '@/api/login'
   export default {
 
     name: 'ruleMgt',

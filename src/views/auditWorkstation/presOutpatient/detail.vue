@@ -162,7 +162,7 @@
 </template>
 
 <script>
-  import { selectTribunalRecord } from '@/api/login'
+  import { selectTribunalRecord,selectOutDetail } from '@/api/login'
   import PageLayout from '@/components/page/PageLayout'
   import STable from '@/components/table/'
   import DetailList from '@/components/tools/DetailList'
@@ -295,8 +295,21 @@
     },
     mounted() {
       this.dealData();
+      this.getDetailData();
     },
     methods: {
+      getDetailData(){
+        let params = this.$route.query
+        selectOutDetail(params).then(res => {
+          if (res.code == '200') {
+            console.log(res);
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
+      },
       submit() {
 
       },

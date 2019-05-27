@@ -438,6 +438,20 @@ export const asyncRouterMap = [
                 meta: { title: '规则管理',hiddenHeaderContent: true, index: true,}
               }
             ]
+          },
+          {
+            path: '/knowledgeMgt/ruleMgt-copy',
+            name: 'ruleMgt-copy',
+            component: RouteView,
+            meta: { title: '规则管理副本', multistage: true  },
+            children:[
+              {
+                path: '/knowledgeMgt/ruleMgt-copy/index',
+                name: 'ruleMgtCopyIndex',
+                component: () => import( '@/views/knowledgeMgt/ruleMgt-copy/index.vue'),
+                meta: { title: '规则管理副本',hiddenHeaderContent: true, index: true,}
+              }
+            ]
           }
         ]
       },

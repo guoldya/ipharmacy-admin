@@ -71,6 +71,13 @@ export function selectTribunalRecord(parameter){
     data: parameter
   })
 }
+export function selectOutDetail(parameter){
+  return axios({
+    url: api.selectOutDetail,
+    method: 'put',
+    data: parameter
+  })
+}
 
 /**
  * 问题等级设置
@@ -97,6 +104,18 @@ export function reviewAuditlevelUpdate(parameter){
 export function reviewPlanPage(parameter){
   return axios({
     url: api.reviewPlanPage,
+    method: 'put',
+    data: parameter
+  })
+}
+
+/**
+ *
+ * 药品说明书
+ */
+export function dicPackageSelectOne(parameter){
+  return axios({
+    url: api.dicPackageSelectOne,
     method: 'put',
     data: parameter
   })
