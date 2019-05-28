@@ -12,7 +12,7 @@ const api = {
 
     //审方中心（门诊）
     selectTribunalRecord:'/sys/reviewOrderissue/selectTribunalRecord',
-    selectOutDetail:'sys/reviewOrderissue/selectHospitalizationRecordDetail',
+    selectOutDetail:'sys/reviewOrderissue/selectTribunalRecordDetail',
 
     //问题等级设置
     reviewAuditlevelPage:'/sys/reviewAuditlevel/selectPage',

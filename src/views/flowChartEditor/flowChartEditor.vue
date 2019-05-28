@@ -588,7 +588,6 @@
                   if (ev.item.source.model) {
                     _this.selectEdge.sourceType = ev.item.source.model.shape
                   }
-                  console.log(_this.selectEdge.sourceType);
                   _this.selectEdge.targetId = ev.item.target.id
                   if (ev.item.target.model) {
                     _this.selectEdge.targetType = ev.item.target.model.shape
@@ -623,9 +622,9 @@
           }
           // 如果拖动的是目标方向，则取消显示目标节点中已被连过的锚点
           if (ev.dragEndPointType === 'target') {
-
+            console.log(1);
             //已经连接过的点禁用
-            if (ev.target.model.shape != 'model-card-conclusion' && this.page.anchorHasBeenLinked(ev.target, ev.targetAnchor)) {
+            if (ev.target.model.shape != 'model-image-branch' && ev.target.model.shape != 'model-card-conclusion' && this.page.anchorHasBeenLinked(ev.target, ev.targetAnchor)) {
               ev.cancel = true
             }
             //目标和源都是同一个模块 禁用
@@ -816,9 +815,10 @@
               })
             }
             let list = nodes.concat(edges)
-            let indexData = this.getNodeTreeData(list)
+            let indexData = this.getNodeTreeData(list);
             let i = 0
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
+            console.log(nodeTree,'nodeTree');
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })

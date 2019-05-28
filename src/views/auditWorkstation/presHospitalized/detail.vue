@@ -326,8 +326,6 @@
           { title: '科室', prop: 'deptName', width: 80, align: 'left' },
           { title: '医生', prop: 'doctorName', width: 80 },
           { title: '开嘱时间', prop: 'time', width: 130, align: 'left' },
-
-
           ],
         templateText:'',
       }
