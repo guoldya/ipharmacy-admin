@@ -568,6 +568,21 @@ export const asyncRouterMap = [
             meta: { title: '图片剪裁', permission: ['result'] }
           }
         ]
+      },
+      {
+        path: '/sys',
+        name: 'sys',
+        component: PageView,
+        redirect: '/sys/org',
+        meta: { title: '系统设置', icon: 'check-circle-o', permission: ['result'] },
+        children: [
+          {
+            path: '/sys/org',
+            name: 'sys_org',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org'),
+            meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'] }
+          },
+        ]
       }
     ]
   },

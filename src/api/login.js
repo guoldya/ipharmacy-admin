@@ -237,3 +237,11 @@ export function coreRuleNodeSelectColId(parameter){
     data: parameter
   })
 }
+/****************************/
+export function selectSysOrgs(parameter){
+  return axios({
+    url: api.selectSysOrgs,
+    method: 'put',
+    data: parameter
+  })
+}

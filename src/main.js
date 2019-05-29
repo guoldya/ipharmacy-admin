@@ -5,7 +5,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store/'
 import config from '@/config'
-import axios from 'axios'
+// import axios from 'axios'
+import { axios } from '@/utils/request'
 import notification from 'ant-design-vue/es/notification'
 import './assets/iconfont/iconfont.css'
 
@@ -23,6 +24,7 @@ window.$=$
 import { Table, TableColumn,Card,Tag,Collapse,CollapseItem,Scrollbar,Tooltip} from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局
 import vcolorpicker from 'vcolorpicker'
+
 //业务相关组件
 import msgHandler from '@/comm-msg/msg-handler.js'
 import Searchpanel from '@/components/search-panel'
@@ -38,6 +40,7 @@ import 'flex.css'// flex 布局库
 import '@/style/main.css'//引入自定义样式
 import { Icon } from 'ant-design-vue'
 import opcol from '@/my-components/opcol/opcol.vue'
+import api from '@/api/index'
 
 
 
@@ -55,10 +58,12 @@ Vue.use(Tooltip)
 Vue.use(msgHandler)//统一错误处理
 Vue.use(VueAxios, router)
 
+
 Vue.config.productionTip = false
 // 当前环境
 Vue.prototype.$env = process.env.NODE_ENV
 Vue.prototype.$axios = axios //引入Axios
+Vue.prototype.$api = api //引入Axios
 Vue.prototype.getFormat = getFormat
 Vue.prototype.$config = config
 Vue.prototype.enum = Enum//公用枚举源

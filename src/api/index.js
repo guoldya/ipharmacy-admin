@@ -41,7 +41,7 @@ const api = {
     coreFactColAll:'/sys/coreFactCol/selectAllUsing',
     coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
     coreRuleCategoryKeyword:'/sys/coreRule/selectCategoryKeyword',
-
+    selectSysOrgs:'/sys/sysOrgs/selectList',
 
 
 
