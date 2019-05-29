@@ -371,6 +371,9 @@
               } else{
                 this.rightData[key].status = true;
               }
+            };
+            if (!this.rightData[key].status){
+              this.checkedAll=false;
             }
           }
           this.rightData.push();
