@@ -78,6 +78,13 @@ const Enum={
     { text: '药品分类', id: 2 },
     { text: '药品组', id: 3 },
     { text: '全局', id: 4 },
-  ]
+  ],
+  orgType:[
+    { text: '医联体', id: '1' },
+    { text: '医共体', id: '2' },
+    { text: '医院', id: '3' },
+    { text: '药店', id: '4' },
+    { text: '互联网医院', id: '5' },
+  ],
 };
 export default Enum;
