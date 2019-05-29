@@ -10,7 +10,7 @@ import preference from './modules/preference'
 import ua from './modules/ua'
 import getters from './getters'
 Vue.use(Vuex)
-
+const routerData = {}
 export default new Vuex.Store({
   modules: {
     db,
@@ -20,10 +20,11 @@ export default new Vuex.Store({
     user,
     permission,
     releases,
-    log
+    log,
+
   },
   state: {
-
+    routerData
   },
   mutations: {
 

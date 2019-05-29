@@ -290,8 +290,6 @@
         }
       },
       selectNodeItemId(newValue, oldValue) {
-        console.log(newValue,'newValue');
-        console.log(oldValue,'oldValue');
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { itemId: newValue })
           // for (let key in this.getEdgesData) {
@@ -499,7 +497,6 @@
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     break
                   case 'flow-rhombus-if':
-                    console.log(ev.item.model);
                     let params = ev.item.model;
                       // this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
                       if (params.lo == 1){
@@ -574,7 +571,6 @@
                   } else if (sourceP.colDbType == 3) {
                     this.edgeInitialized.inValueEdge = 'text'
                   }
-                  console.log(this.edgeInitialized,'1');
                 }
               }
                 setTimeout(() => {
@@ -622,7 +618,6 @@
           }
           // 如果拖动的是目标方向，则取消显示目标节点中已被连过的锚点
           if (ev.dragEndPointType === 'target') {
-            console.log(1);
             //已经连接过的点禁用
             if (ev.target.model.shape != 'model-image-branch' && ev.target.model.shape != 'model-card-conclusion' && this.page.anchorHasBeenLinked(ev.target, ev.targetAnchor)) {
               ev.cancel = true
@@ -646,7 +641,6 @@
           if (ev.dragEndPointType === 'source' && this.page.anchorHasBeenLinked(ev.source, ev.sourceAnchor)) {
             ev.cancel = true
           }
-          console.log(ev, ev.dragEndPointType)
         })
 
         // 取消多选
@@ -677,7 +671,6 @@
           list[key].ruleId = this.ruleId;
           delete  list[key].index
         }
-        console.log(JSON.stringify(list));
         coreRuleNodeUpdate({ ruleNodeVOS: list }).then(res => {
           if (res.code == '200') {
             this.success('保存成功');
@@ -760,8 +753,32 @@
               } else{
                 y = 0
               }
+              let nodeSize = '';
+              let nodeColor = '';
+              switch (nodeData[key].shape) {
+                case 'flow-circle-start':
+                  nodeSize = "70*70";
+                  nodeColor = "#FA8C16";
+                  break
+                case 'model-rect-attribute':
+                  nodeSize = "180*70";
+                  nodeColor = "#1890FF";
+                  break
+                case 'flow-rhombus-if':
+                  nodeSize = "160*70";
+                  nodeColor = "#13C2C2";
+                  break
+                case 'model-image-branch':
+                  nodeSize = "80*70";
+                  nodeColor = "#1890FF";
+                  break
+                case 'model-card-conclusion':
+                  nodeSize = "290*80";
+                  nodeColor = "#13C2C2";
+                  break
+                }
               nodes.push({
-                color: 'rgb(255, 191, 0)',
+                color: nodeColor,
                 id: nodeData[key].id,
                 pid:''+ nodeData[key].pid,
                 index: nodeData[key].id,
@@ -785,7 +802,7 @@
                 itemId:nodeData[key].itemId,
                 assertVal: nodeData[key].assertVal,
                 assertVal1: nodeData[key].assertVal1,
-                size:'70*70',
+                size:nodeSize,
                 y: y,
                 x: x
               })
@@ -818,9 +835,11 @@
             let indexData = this.getNodeTreeData(list);
             let i = 0
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
-            console.log(nodeTree,'nodeTree');
+
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
+
             let nodesData = this.getDealPieChart()
+            console.log(edgeData,'edgeData');
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
           } else {
@@ -873,9 +892,9 @@
       getDealPieChart() {
         let newNodeData = []
         let yHeight = 1
+        console.log(this.pieChartData,'this.pieChartData');
         for (let key in this.pieChartData) {
           let data = this.pieChartData[key]
-            // data = this.dealDataLength(data);
             let yLength = data.length / 2
             for (let i in data) {
               if (data[i].x && data[i].y){
@@ -909,7 +928,18 @@
             yHeight = yLength
           newNodeData = newNodeData.concat(data)
         }
-        return newNodeData
+        let keys=[];
+        let nodes=[];
+        for(let key in newNodeData)
+        {
+          if(keys.indexOf(newNodeData[key].id)==-1)
+          {
+            keys.push(newNodeData[key].id)
+            delete  newNodeData[key].childNodes
+            nodes.push(newNodeData[key])
+          }
+        }
+        return nodes
       },
       //获取树形结构node
       getNodesData(nodeShaft, data, type) {

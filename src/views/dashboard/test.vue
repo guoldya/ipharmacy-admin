@@ -35,6 +35,12 @@
         text: '测试BUG信息'
       }
     },
+    mounted(){
+      if (this.$store.state.routerData.count == 0){
+        this.$store.state.routerData.count =50
+      }
+      console.log(this.$store.state.routerData.count,'1')
+    },
     methods: {
       onClick({ key }) {
         console.log(`Click on item ${key}`);

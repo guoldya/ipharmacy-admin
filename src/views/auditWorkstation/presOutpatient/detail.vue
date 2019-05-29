@@ -37,9 +37,11 @@
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100">
           <a-tab-pane tab="处方信息" key="1">
-
             <div v-for=" (op,index) in leftData.clinicPrescVOList">
               <a-card class="margin-top-10">
+                <div v-if="op.auditingStatus == '1'" class="iconTobe"></div>
+                <div v-if="op.auditingStatus == '2'" class="iconRefused"></div>
+                <!--<img src="" alt="">-->
                 <a-row>
                   <a-col :span="5">处方号：<span class="font-bold">{{op.prescNum}}</span></a-col>
                   <a-col :span="5">处方科室：<span class="font-bold">{{op.deptName}}</span></a-col>
@@ -47,14 +49,6 @@
                   <a-col :span="6">处方时间：<span class="font-bold">{{op.prescDate}}</span></a-col>
                 </a-row>
                 <a-row class="dealRow">
-                  <!--<a-col class="dealCol" >{{ds.seqNum}}、-->
-                  <!--<span :style="{color:op.colors}">{{ds.drugName}}</span>-->
-                  <!--&nbsp;&nbsp;<span>{{ds.spec}}</span>-->
-                  <!--&nbsp;&nbsp;<span>{{ds.amountStr}}</span>-->
-                  <!--<span>{{ds.dosageStr}}</span>-->
-                  <!--用法：<span>{{ds.frequency}}</span>-->
-                  <!--&nbsp;&nbsp;<span>{{ds.useType}}</span>-->
-                  <!--</a-col>-->
                   <el-table
                     class="margin-top-10 width-100"
                     :data="op.prescVOList"
@@ -100,41 +94,51 @@
           <a-tabs defaultActiveKey="1" size="small" class="width-100">
             <a-tab-pane tab="预判情况" key="1">
               <span class="dealP">问题描述</span>
-              <span v-for="ta in rightData " style="float: right">
+              <span v-for="ta in tagsData " style="float: right">
                 <a-tag v-if="ta.status == true" class="checkTag tagStyle" :style="{'background':ta.levelColor, 'color':'#fff'}" @click="checkableChange(ta)" > {{ta.auditName }}</a-tag>
                 <a-tag v-else-if="ta.status == false" class="checkTag tagStyle" :style="{'background':'#fff', 'color':ta.levelColor}"   @click="checkableChange(ta)" > {{ta.auditName }}</a-tag>
               </span>
               <span style="float: right">
-                <a-tag class="checkTag tagStyle" v-if="checkedAll"style="background: #2eabff;color:#fff" @click="handleChange" > 全部</a-tag>
-                <a-tag class="checkTag tagStyle" v-else style="background: #fff;color: #2eabff" @click="handleChange"> 全部</a-tag>
+                <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll"style="" @click="handleChange" > 全部</a-tag>
+                <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange"> 全部</a-tag>
               </span>
-              <a-card class="margin-top-10 antCard" v-for="(op,index) in this.rightData " v-if="op.status"  :key="index">
+              <a-card class="margin-top-10 antCard" @click="clickTagsCard(op)" v-for="(op,index) in rightData " v-if="op.status" :style="{'borderColor':op.borderColor}" :key="index">
                 <a-tag class="tagStyle" :color="op.levelColor" > {{op.auditName }}</a-tag>
                 <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
-                <!--<a-tooltip placement="top" :key="num" v-for="(pd,num) in op.tags">-->
-                  <!--<template slot="title" style="width: 100px">{{pd.template}}</template>-->
-                  <!--<a-tag-->
-                    <!--class="problemTag"-->
-                    <!--:id="pd.num"-->
-                    <!--v-if="num<3"-->
-                    <!--:key="num"-->
-                    <!--@click="tagsClick( pd.template,pd.num,pd.status,index,num,)"-->
-                  <!--&gt;{{pd.updateText}}-->
-                  <!--</a-tag>-->
-                <!--</a-tooltip>-->
-                <!--<a-dropdown :trigger="['click']">-->
-                  <!--<a-menu slot="overlay">-->
-                    <!--<a-menu-item v-for="(pd,num) in op.tags" @click="tagsClick(pd.template)" v-if="num>=3" :key="num">-->
-                      <!--{{pd.updateText}}-->
-                    <!--</a-menu-item>-->
-                  <!--</a-menu>-->
-                  <!--<a v-if="op.tags.length>3" class="margin-left-5">更多-->
-                    <!--<a-icon type="down"/>-->
-                  <!--</a>-->
-                  <!--<a v-else></a>-->
-                <!--</a-dropdown>-->
-                <div :rows="3" :maxRows="4" read-only class="textArea opacity8">
-                  {{op.auditDescription}}
+                <a-tooltip placement="top" :key="index" v-for="(pd,index) in op.reviewTemplateList">
+                  <template slot="title" style="width: 100px">{{pd.titles}}</template>
+                  <a-tag
+                    class="problemTag"
+                    v-if="index<3 && pd.bgColor == '#2eabff'"
+                    :key="index"
+                    @click="tagsClick(pd)"
+                    color="#2eabff"
+                  >{{pd.updateTitles}}
+                  </a-tag>
+                  <a-tag
+                    class="problemTag"
+                    v-else-if="index<3"
+                    :key="index"
+                    @click="tagsClick(pd)"
+                  >{{pd.updateTitles}}
+                  </a-tag>
+                </a-tooltip>
+                <a-dropdown :trigger="['hover']">
+                  <a-menu slot="overlay">
+                    <a-menu-item v-for="(gd,index) in op.reviewTemplateList"  @click="tagsClick(gd)" v-if="index>=3" :key="index">
+                      {{gd.updateTitles}}
+                    </a-menu-item>
+                  </a-menu>
+                  <a v-if="op.reviewTemplateList.length>3" class="margin-left-5">更多
+                    <a-icon type="down"/>
+                  </a>
+                  <a v-else></a>
+                </a-dropdown>
+                <div :rows="3" :maxRows="4" read-only class="textArea ">
+                  <a-tag>描述</a-tag><span class="opacity8">{{op.auditDescription}}</span>
+                </div>
+                <div :rows="3" :maxRows="4" read-only >
+                  <a-tag>建议</a-tag>{{op.audSuggest}}
                 </div>
               </a-card>
               <div class="margin-top-10">
@@ -212,66 +216,10 @@
       return {
         loading: false,
         tags: [],
-        problemsData: [
-          {
-            status: 1,
-            time: '2018-09-21  08:50:08',
-            openName: '黄磊',
-            deptName: '消化内科',
-            prescriptionNum: 1,
-            patientName: '张力',
-            patientNum: '201904010001',
-            patientSex: '女',
-            patientAge: '23岁',
-            problem: '5',
-            colors: '#FF6600',
-            problemText: '重复给药',
-            tags: [{ template: '避免重复用药', num: 11, updateText: '', status: 1 },
-              { template: '避免用药过度', num: 12, updateText: '', status: 1 },
-              { template: '药剂量太少', num: 13, updateText: '', status: 1 },
-              { template: '药剂量太少', num: 14, updateText: '', status: 1 },
-              { template: '药剂量太少', num: 15, updateText: '', status: 1 }],
-            text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
-          },
-          {
-            status: 1,
-            time: '2018-09-21  08:50:08',
-            openName: '张力張',
-            deptName: '消化内科',
-            prescriptionNum: 1,
-            patientName: '张力張',
-            patientNum: '201904010001',
-            patientSex: '女',
-            patientAge: '23岁',
-            problem: '4',
-            colors: '#FFCC00',
-            problemText: '重复给药',
-            tags: [{ template: '避免重复用药', num: 21, updateText: '', status: 1 },
-              { template: '避免用药过度', num: 22, updateText: '', status: 1 },
-              { template: '药剂量太少', num: 23, updateText: '', status: 1 }],
-            text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
-          },
-          {
-            status: 1,
-            time: '2018-09-21  08:50:08',
-            openName: '张力張',
-            deptName: '消化内科',
-            prescriptionNum: 1,
-            patientName: '张力張',
-            patientNum: '201904010001',
-            patientSex: '女',
-            patientAge: '23岁',
-            problem: '3',
-            colors: '#DFE184',
-            problemText: '重复给药',
-            tags: [{ template: '避免重复用药', num: 31, updateText: '', status: 1 },
-              { template: '避免用药过度', num: 32, updateText: '', status: 1 },
-              { template: '药剂量太少', num: 33, updateText: '', status: 1 }],
-            text: '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。'
-          }],
-        templateText: '12333',
+        templateText: '',
         leftData: {},
         rightData:[],
+        tagsData:[],
         columns: [{ title: '序号', prop: 'seqNum', width: 50, align: 'right' },
           { title: '', prop: 'mark', width: 20, align: 'left' },
           { title: '药品', prop: 'drugName' },
@@ -282,11 +230,12 @@
           { title: '用法', prop: 'useType' }
         ],
         problemId: '122',
-        checkedAll:false,
+        checkedAll:true,
+        orderId:'',
+        levelColor:'',
       }
     },
     mounted() {
-      this.dealData()
       this.getDetailData()
     },
     methods: {
@@ -296,6 +245,8 @@
           if (res.code == '200') {
             this.leftData = res.data
             this.rightData =this.leftData.reviewOrderissueVOList;
+            this.tagsData = this.leftData.levelTotalsList;
+            this.dealTagsData(this.tagsData);
             this.deal(this.rightData);
           } else {
             this.warn(res.msg)
@@ -304,10 +255,26 @@
           this.error(err)
         })
       },
+      dealTagsData(data){
+        for (let key in data) {
+          data[key].status = true;
+        }
+      },
       deal(data) {
         for (let key in data) {
-          data[key].status = false;
+          data[key].status = true;
+          data[key].borderColor = '#d9d9d9';
+          let list = data[key].reviewTemplateList;
+          for (let i in list){
+            list[i].bgColor= '#d9d9d9'
+            if (list[i].titles.length>5){
+              list[i].updateTitles = list[i].titles.substr(0, 5)+'...'
+            }else {
+              list[i].updateTitles = list[i].titles
+            }
+          }
         }
+        data.push();
       },
       submit() {
 
@@ -317,68 +284,80 @@
           name: 'presOutpatientIndex'
         })
       },
-      dealData() {
-        for (let key in this.problemsData) {
-          for (let i in this.problemsData[key].tags) {
-            if (this.problemsData[key].tags[i].template.length > 5) {
-              let str = this.problemsData[key].tags[i].template.substr(0, 5)
-              this.problemsData[key].tags[i].updateText = str + '...'
-            } else {
-              let str = this.problemsData[key].tags[i].template.substr(0, 5)
-              this.problemsData[key].tags[i].updateText = str
+      tagsClick(pd) {
+        var event = window.event || arguments.callee.caller.arguments[0]
+        if (event.stopPropagation) {
+          event.stopPropagation();      //阻止事件 冒泡传播
+        } else {
+          event.cancelBubble = true;   //ie兼容
+        }
+        let data =  this.rightData;
+        for (let key in data) {
+          let list = data[key].reviewTemplateList;
+          for (let i in list){
+            if (list[i].id == pd.id){
+              list[i].bgColor= '#2eabff'
+            }else{
+              list[i].bgColor= '#d9d9d9'
             }
           }
         }
-
-      },
-      tagsClick(data, index, status, i, num) {
-        if (status == 1) {
-          $('#' + index).css('color', '#1890ff')
-          this.problemsData[i].tags[num].status = 2
-          this.templateText = this.templateText + '、' + data
-        } else {
-          $('#' + index).css('color', 'rgba(0, 0, 0, 0.65)')
-          this.problemsData[i].tags[num].status = 1
-          this.templateText = this.templateText.replace('、' + data, '')
-        }
+        this.templateText = pd.reviewTemplate;
+        this.rightData.push();
       },
       tableRowStyle({ row, rowIndex }) {
-        if (this.problemId == row.drugId) {
-          let colors = '#FF6600'
-          return 'background:' + colors
+        if (this.orderId == row.clinicPrescId) {
+          // console.log('rgb('+this.convertHexToRGB(this.levelColor).join(',')+',0.4)');
+          return {'background':'rgb('+this.convertHexToRGB(this.levelColor).join(',')+',0.3)'}
         }
+      },
+      convertHexToRGB(str )
+      {
+        str = str[0] === '#' ? str.slice(1) : str
+        str = str.length === 3 ? str.repeat(2) : str
+        if ((str.length !== 6) || !(/^[0-9a-fA-F]{3,6}$/i.test(str))) return 'Invalid data'
+        return [parseInt(str[0] + str[1], 16), parseInt(str[2] + str[3], 16), parseInt(str[4] + str[5], 16)]
       },
       handleChange(checked){
         let data = this.rightData
-        if(this.checkedAll)
-        {
-          for (let key in data){
-            data[key].status = false;
-          }
-          this.checkedAll=false;
-        }else {
           for (let key in data){
             data[key].status = true;
           }
-          this.checkedAll=true;
+        for (let key in this.tagsData){
+          this.tagsData[key].status = true;
         }
+          this.checkedAll=true;
       },
       checkableChange(data){
           for (let key in this.rightData){
-            if (this.rightData[key].verdictId == data.verdictId){
-              if (this.rightData[key].status){
-                this.rightData[key].status = false;
-              } else{
-                this.rightData[key].status = true;
-              }
-            };
-            if (!this.rightData[key].status){
+            if (this.rightData[key].auditLevel == data.auditLevel){
               this.checkedAll=false;
+              this.rightData[key].status = true;
+            }else{
+              this.rightData[key].status = false;
+            }
+          }
+          for (let key in this.tagsData){
+            if (data.auditLevel == this.tagsData[key].auditLevel){
+              this.tagsData[key].status = true;
+            }else {
+              this.tagsData[key].status = false;
             }
           }
           this.rightData.push();
+      },
 
-        console.log(data)
+      clickTagsCard(data){
+        for (let key in this.rightData){
+          if (this.rightData[key].verdictId == data.verdictId){
+            this.rightData[key].borderColor = '#1890ff';
+          }else {
+            this.rightData[key].borderColor = '#d9d9d9'
+          }
+        }
+        this.orderId = data.orderId;
+        this.levelColor = data.levelColor;
+        this.rightData.push();
       }
     },
     filters: {
@@ -418,14 +397,23 @@
     overflow: hidden;
     height: 100%;
     margin-top: 5px;
-    text-indent: 2em
+    margin-bottom: 5px;
+    /*text-indent: 2em*/
   }
 
   .tagStyle {
     font-size: 12px;
-    margin-left: 7px;
+    /*margin-left: 7px;*/
     margin-bottom: 5px;
   }
+   .aTag1{
+     background: #2eabff;
+     color:#fff
+  }
+   .aTag2{
+     background: #fff;
+     color: #2eabff
+   }
 
   .saveButton {
     margin-top: 10px;
@@ -442,6 +430,29 @@
   .cardHeight {
     min-height: 450px;
     margin-top: 5px;
+  }
+  .cardHeight .iconTobe {
+    width: 183px;
+    height: 96px;
+    z-index: 3;
+    background-image: url("~@/assets/pass.png");
+    background-repeat: no-repeat;
+    /*background-size: 50% 50%;*/
+    position: absolute;
+    right: 30%;
+    top: 15%;
+    /*background-repeat:no-repeat;*/
+  }
+  .cardHeight .iconRefused{
+    width: 183px;
+    height: 96px;
+    z-index: 3;
+    background-image: url("~@/assets/refused.png");
+    background-repeat: no-repeat;
+    /*background-size: 50% 50%;*/
+    position: absolute;
+    right: 30%;
+    top: 15%;
   }
 
   .cardRight {
@@ -486,6 +497,10 @@
 
   .checkTag{
     border: 1px #d9d9d9 solid;
+  }
+
+  .antCard{
+    cursor: pointer;
   }
 
 </style>

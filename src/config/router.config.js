@@ -392,7 +392,7 @@ export const asyncRouterMap = [
                 name: 'presOutpatientDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-                meta: { title: '审方中心详情(门诊)', detail:true,description:'审方中心详情页设置' }
+                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true,detail:true, }
               },
             ]
           },
@@ -579,8 +579,15 @@ export const asyncRouterMap = [
           {
             path: '/sys/org',
             name: 'sys_org',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org'),
-            meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'] }
+            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index'),
+            meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'],index:true }
+          },
+          {
+            path: '/sys/org/detail',
+            name: 'sys_org_detail',
+            hidden: true,
+            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail'),
+            meta: { title: '机构维护详情', hiddenHeaderContent: true, permission: ['result'],detail:true }
           },
         ]
       }
