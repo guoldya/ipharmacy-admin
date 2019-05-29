@@ -69,7 +69,7 @@
               @select="coreFactTreeChange">
             </a-tree-select>
           </a-form-item>
-          <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="boxInitialized.inputType !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
@@ -84,9 +84,9 @@
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input :type="boxInitialized.inValueType" v-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType!='time'" @change="inputChange" size="small" v-model="selectNode.assertVal"></a-input>
             <div v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType!='time'">
-              <a-input :type="boxInitialized.inValueType" class="inputLeft" size="small" placeholder="min" @change="scopeAssertVal"  v-model="selectNode.assertVal"/>
+              <a-input :type="boxInitialized.inValueType" class="inputLeft" size="small" placeholder="最小值" @change="scopeAssertVal"  v-model="selectNode.assertVal"/>
               <a-input :type="boxInitialized.inValueType" class="inputCenter" size="small" placeholder="~" disabled/>
-              <a-input :type="boxInitialized.inValueType" class="inputRight" size="small" placeholder="max" @change="scopeAssertVal1" v-model="selectNode.assertVal1"/>
+              <a-input :type="boxInitialized.inValueType" class="inputRight" size="small" placeholder="最大值" @change="scopeAssertVal1" v-model="selectNode.assertVal1"/>
             </div>
             <div v-else-if="boxInitialized.inputType =='select'&&boxInitialized.inValueType!='time'">
               <a-select
@@ -131,7 +131,7 @@
       <div class="block-container">
         <div class="p name">
           名称：
-          <a-input size="small" :read-only="true" v-model="selectEdge.label"></a-input>
+          <a-input size="small" v-model="selectEdge.label"></a-input>
         </div>
       </div>
     </div>
@@ -152,7 +152,7 @@
       <div class="panel-title" v-if="selectEdge.sourceType=='model-rect-attribute'">规则属性</div>
       <div class="block-container" v-if="selectEdge.sourceType=='model-rect-attribute'">
         <a-form>
-          <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="edgeInitialized.inputEdge !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
@@ -168,9 +168,9 @@
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input :type="edgeInitialized.inValueEdge" v-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inputEdge!='time'" @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
             <div v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge!='time'">
-              <a-input :type="edgeInitialized.inValueEdge" class="inputLeft" size="small" placeholder="min" @change="edgeAssertVal"   v-model="selectEdge.assertVal"/>
+              <a-input :type="edgeInitialized.inValueEdge" class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal"   v-model="selectEdge.assertVal"/>
               <a-input :type="edgeInitialized.inValueEdge" class="inputCenter" size="small" placeholder="~" disabled/>
-              <a-input :type="edgeInitialized.inValueEdge" class="inputRight" size="small" placeholder="max" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
+              <a-input :type="edgeInitialized.inValueEdge" class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
             </div>
             <div v-else-if="edgeInitialized.inputEdge =='select'&&edgeInitialized.inValueEdge!='time'">
               <a-select
@@ -257,7 +257,6 @@
         reviewAuditlevelSelect({}).then(res => {
           if (res.code == '200') {
             this.levelData = res.rows
-            console.log(this.levelData);
           } else {
             this.warn(res.msg)
           }
@@ -305,7 +304,6 @@
           }
         }
         this.dicBaseTreeData = treeData;
-        console.log(this.dicBaseTreeData);
       },
       coreFactTreeChange(value, node, extra){
         let params = extra.selectedNodes[0].data.props;
@@ -334,6 +332,8 @@
         }else if (params.colDbType == 3){
           this.boxInitialized.inValueType = 'text'
         }
+        this.selectNode.lo = params.lo;
+        this.selectNode.colDbType = params.colDbType;
         this.modelValue = params.title;
         this.selectNode.label = this.modelValue;
         this.selectNode.ro = null;
@@ -348,7 +348,6 @@
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
         }
-        console.log(this.selectNode)
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
       //条件值单个输入事件
@@ -356,9 +355,6 @@
         this.conditionValue = e.srcElement.value;
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
-        }
-        if ($.trim(this.condition).length==0){
-          this.condition = this.selectNode.roSymbol;
         }
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
@@ -368,20 +364,20 @@
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
         }
-        if ($.trim(this.condition).length==0){
-          this.condition = this.selectNode.roSymbol;
+        if ($.trim(this.conditionValue1).length==0){
+          this.conditionValue1 = this.selectNode.assertVal1;
         }
-        this.selectNode.label =this.modelValue+this.condition+this.conditionValue+this.conditionValue1;
+        this.selectNode.label =this.modelValue+'['+this.conditionValue+'-'+this.conditionValue1+']';
       },
       scopeAssertVal1(e){
-        this.conditionValue = e.srcElement.value;
+        this.conditionValue1 = e.srcElement.value;
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
         }
-        if ($.trim(this.condition).length==0){
-          this.condition = this.selectNode.roSymbol;
+        if ($.trim(this.conditionValue).length==0){
+          this.conditionValue = this.selectNode.assertVal;
         }
-        this.selectNode.label =this.modelValue+this.condition+this.conditionValue+this.conditionValue1;
+        this.selectNode.label =this.modelValue+'['+this.conditionValue+'-'+this.conditionValue1+']';
       },
       //下拉选择事件
       assertValSelect(value,option){
@@ -392,7 +388,6 @@
           this.condition = this.selectNode.roSymbol;
         }
         this.conditionValue = option.componentOptions.propsData.title;
-        console.log(option.componentOptions.propsData);
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
       //枚举时搜索下拉框
@@ -423,19 +418,20 @@
       },
       //属性节点后线段属性
       attributeEdge(value, node, extra){
+        let _this = this;
         let params = extra.selectedNodes[0].data.props;
-        console.log(params,'1');
-        this.selectNode.label = params.title;
+        console.log(params);
+        _this.selectNode.label = params.title;
         if (params.lo == 1){
-          this.edgeInitialized.inputEdge = 'input'
+          _this.edgeInitialized.inputEdge = 'input'
         }else if (params.lo == 2){
-          this.edgeInitialized.inputEdge = 'scopeInput'
+          _this.edgeInitialized.inputEdge = 'scopeInput'
         }else if (params.lo == 3){
-          this.edgeInitialized.inputEdge = 'select';
-          this.edgeId = params.id;
+          _this.edgeInitialized.inputEdge = 'select';
+          _this.edgeId = params.id;
           coreRuleNodeSelectColId({id:this.edgeId}).then(res => {
             if (res.code == '200') {
-              this.edgeInitialized.inputEdgeSelect = res.rows;
+              _this.edgeInitialized.inputEdgeSelect = res.rows;
             } else {
               this.warn(res.msg)
             }
@@ -444,15 +440,13 @@
           })
         }
         if (params.colDbType == 1){
-          this.edgeInitialized.inValueEdge = 'number'
+          _this.edgeInitialized.inValueEdge = 'number'
         }else if (params.colDbType == 2){
-          this.edgeInitialized.inValueEdge == 'time'
+          _this.edgeInitialized.inValueEdge == 'time'
         }else if (params.colDbType == 3){
-          this.edgeInitialized.inValueEdge = 'text'
+          _this.edgeInitialized.inValueEdge = 'text'
         }
-        this.nodeModel = params.title;
-        this.selectNode.label = this.nodeModel;
-        console.log(this.edgeInitialized);
+        console.log(_this.edgeInitialized,'1');
       },
 
       //线段输入框input事件
@@ -494,33 +488,24 @@
       edgeAssertVal(e){
         // edgeCondition:'',
         //   edgeConditionValue:'',
-        this.conditionValue = e.srcElement.value;
-        if ($.trim(this.edgeCondition).length==0){
-          this.edgeCondition = this.selectNode.roSymbol;
+        this.edgeConditionValue = ''+ e.srcElement.value;
+        if ($.trim(this.edgeConditionValue1).length==0){
+          this.edgeConditionValue1 = ''+ this.selectNode.assertVal1;
         }
-        console.log(this.edgeConditionValue1,'1');
-        console.log(this.edgeConditionValue,'0');
-        this.selectNode.label =this.edgeCondition+this.edgeConditionValue+this.edgeConditionValue1;
+        this.selectEdge.label ='范围'+'['+this.edgeConditionValue+'-'+this.edgeConditionValue1+']';
       },
       edgeAssertVal1(e){
-        this.edgeConditionValue = e.srcElement.value;
+        this.edgeConditionValue1 =  ''+e.srcElement.value;
         if ($.trim(this.edgeConditionValue).length==0){
-          this.edgeConditionValue = this.selectNode.assertVal;
+          this.edgeConditionValue = ''+ this.selectNode.assertVal;
         }
-        if ($.trim(this.condition).length==0){
-          this.edgeCondition = this.selectNode.roSymbol;
-        }
-        console.log(this.edgeConditionValue1,'1');
-        console.log(this.edgeConditionValue,'0');
-        console.log(this.edgeCondition,'0');
-        this.selectNode.label =this.edgeCondition+this.edgeConditionValue+this.edgeConditionValue1;
+        this.selectEdge.label ='范围'+'['+this.edgeConditionValue+'-'+this.edgeConditionValue1+']';
       },
       getCoreFactAllStart(){
         coreFactColAll({}).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows);
             this.CoreFactAllTree = this.recursiveNodeTree(indexData, 'undefined');
-            console.log(this.CoreFactAllTree,'111')
           } else {
             this.warn(res.msg)
           }
@@ -657,7 +642,7 @@
   }
 
   .inputLeft {
-    width: 70px;
+    width: 95px;
     text-align: center;
     border-right: 0;
     border-radius: 0px
@@ -673,7 +658,7 @@
   }
 
   .inputRight {
-    width: 70px;
+    width: 95px;
     text-align: center;
     border-left: 0;
     border-radius: 0px;

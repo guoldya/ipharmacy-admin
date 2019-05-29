@@ -100,6 +100,11 @@ export default {
             return menuArr
         },
         onOpenChange(openKeys) {
+          // 在水平模式下时执行，并且不再执行后续
+          if (this.mode === 'horizontal') {
+            this.openKeys = openKeys
+            return
+          }
             const latestOpenKey = openKeys.find(key => !this.openKeys.includes(key))
             if (!this.rootSubmenuKeys.includes(latestOpenKey)) {
                 this.openKeys = openKeys

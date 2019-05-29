@@ -3,6 +3,10 @@ const Enum={
         {id: 0, text: '否'},
         {id: 1, text: '是'}
     ],
+  sex:[
+    {id:'1',text:'女'},
+    {id:'0',text:'男'},
+  ],
   status:[
     {id: 0, text: '停用'},
       {id: 1, text: '启用'}

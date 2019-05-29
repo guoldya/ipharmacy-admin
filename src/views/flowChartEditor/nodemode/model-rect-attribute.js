@@ -6,8 +6,9 @@ Flow.registerNode(
     'model-rect-attribute',
     {
       label: null,
-      field: null,
-      prototypes:null,
+      field: '',
+      itemId:null,
+      prototypes:'',
       // 设置锚点
       anchor: [
         //[0.5, 0, { type: 'input' }],

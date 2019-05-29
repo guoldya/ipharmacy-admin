@@ -6,6 +6,7 @@ Flow.registerNode(
     'model-card-conclusion',
     {
       levels:null,
+      itemId:null,
       inAccordanceWith: null,
       sourcename:'',
       message: '',

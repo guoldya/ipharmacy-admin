@@ -409,6 +409,7 @@
         height: 64px;
 
         .ant-menu.ant-menu-horizontal {
+          width:835px;
           border: none;
           height: 64px;
           line-height: 64px;

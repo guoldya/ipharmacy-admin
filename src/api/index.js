@@ -12,6 +12,7 @@ const api = {
 
     //审方中心（门诊）
     selectTribunalRecord:'/sys/reviewOrderissue/selectTribunalRecord',
+    selectOutDetail:'sys/reviewOrderissue/selectTribunalRecordDetail',
 
     //问题等级设置
     reviewAuditlevelPage:'/sys/reviewAuditlevel/selectPage',
@@ -20,6 +21,9 @@ const api = {
 
     //审方方案设置
     reviewPlanPage:'/sys/reviewPlan/selectPage',
+
+    //药品说明书
+    dicPackageSelectOne:'/sys/dicPackageinsert/selectOne',
 
     //规则
     coreRuleTypeSelect:'/sys/coreRuleType/selectTypePid',
@@ -38,6 +42,9 @@ const api = {
     coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
     coreRuleCategoryKeyword:'/sys/coreRule/selectCategoryKeyword',
     selectSysOrgs:'/sys/sysOrgs/selectList',
+
+
+
 }
 export default api
 

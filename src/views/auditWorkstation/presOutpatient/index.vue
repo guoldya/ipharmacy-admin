@@ -203,7 +203,7 @@
   </div>
 </template>
 <script>
-  import { selectTribunalRecord } from '@/api/login'
+  import { selectTribunalRecord} from '@/api/login'
   import { Icon } from 'ant-design-vue'
   import countText from '@/components/count-text'
   import prescriptionTabs from '@/components/prescription-tabs'
@@ -425,7 +425,7 @@
         console.log(data);
         this.$router.push({
           name: 'presOutpatientDetail',
-          query:{orderId:data.orderId},
+          query:{visId:data.visId},
         })
       },
       //TODO:处方单数据暂未处理
@@ -438,10 +438,10 @@
           { title: '名称', prop: 'drugName'},
           // { title: '', prop: 'tags',width:100 },
           { title: '规格', prop: 'spec', width: 80 },
-          { title: '单量', prop: 'amountStr', width: 60 },
-          { title: '总量', prop: 'dosageStr', width: 60 },
+          { title: '单量', prop: 'dosageStr', width: 60 },
+          { title: '总量', prop: 'amountStr', width: 60 },
           { title: '频次', prop: 'frequency', width: 80, align: 'center' },
-          { title: '服药方式', prop: 'useType', width: 80, align: 'center' }
+          { title: '服药方式', prop: 'useType', width: 80 }
         ]
         let adviceData = data.clinicPrescVOS;
           tabsOne.tabName = '处方单1'
