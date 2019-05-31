@@ -10,58 +10,128 @@
       :form="form"
       @submit="handleSubmit"
     >
-      <a-form-item
-        label="编码"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-        <a-input read-only v-decorator="['orgId', {rules: [{ required: true, message: '<系统自动生成>' }]}]"/>
-      </a-form-item>
-      <a-form-item
-        label="名称"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-        <a-input
-          v-decorator="['title', {rules: [{ required: true, message: '请输入名称' }]}]"/>
-      </a-form-item>
-      <a-form-item
-        label="机构代码"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-        <a-input
-          v-decorator="['orgCode', {rules: [{ required: true, message: '请输入机构代码' }]}]"/>
-      </a-form-item>
-      <a-form-item
-        label="机构类型"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-        <a-select v-decorator="[ 'orgType']">
-          <a-select-option v-for="(op,index) in this.enum.orgType" :value="op.id" :key="index">{{op.text}}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item
-        label="医院分类"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-        <a-select v-decorator="[ 'orgClass']">
-          <a-select-option v-for="(op,index) in this.enum.orgType" :value="op.id" :key="index">{{op.text}}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item
-        :wrapper-col="{ span: 20, offset: 10 }"
-      >
-        <a-button class="margin-left-20" type="primary" @click="handleSubmit">保存</a-button>
-        <a-button class="margin-left-20" @click="backTo">取消</a-button>
-      </a-form-item>
+      <a-row>
+        <a-form-item
+          label="编码"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-input read-only
+                   v-decorator="['orgId']"
+                   placeholder="<系统自动生成>"/>
+        </a-form-item>
+        <a-form-item
+          label="名称"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-input
+            v-decorator="['title', {rules: [{ required: true, message: '请输入名称' }]}]"/>
+        </a-form-item>
+        <a-form-item
+          label="上级机构"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-select v-decorator="[ 'parentId',{rules: [{ required: true, message: '请选择上级机构' }]}]">
+            <a-select-option
+              v-for="(op,index) in listData"
+              :value="op.orgId"
+              :key="index">
+              {{op.title}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="机构代码"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-input
+            v-decorator="['orgCode', {rules: [{ required: true, message: '请输入机构代码' }]}]"/>
+
+        </a-form-item>
+        <a-form-item
+          label="机构类型"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-select v-decorator="[ 'orgType',{rules: [{ required: true, message: '请选择机构类型' }]}]">
+            <a-select-option
+              v-for="(op,index) in this.enum.orgType"
+              :value="op.id"
+              :key="index">
+              {{op.text}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="医院分类"
+          :label-col="{span: 8}"
+          :wrapper-col="{span: 8}"
+        >
+          <a-select style="margin-left: 1px"
+                    v-decorator="[ 'orgClass',{rules: [{ required: true, message: '请选择医院分类' }]}]">
+            <a-select-option v-for="(op,index) in enumList['33']" :value="op.id" :key="index">{{op.name}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="等级"
+          :label-col="{span: 8}"
+          :wrapper-col="{span: 8}"
+        >
+          <a-select v-decorator="[ 'orgGrade',{rules: [{ required: true, message: '请选择医院分类' }]}]">
+            <a-select-option v-for="(op,index) in enumList['34']" :value="op.id" :key="index">{{op.name}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="联系电话"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-input
+          v-decorator="['phone',{rules: [{ required: true,message: '请输入手机号' },{ message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ },]}]"
+          placeholder="11 位手机号">
+        </a-input>
+        </a-form-item>
+        <a-form-item
+          label="地址"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-input v-decorator="[ 'adress']"></a-input>
+        </a-form-item>
+        <a-form-item
+          label="备注"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-input v-decorator="[ 'remarks']"></a-input>
+        </a-form-item>
+        <a-form-item
+          label="状态"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-select v-decorator="[ 'status']">
+            <a-select-option v-for="(op,index) in this.enum.status" :value="op.id" :key="index">{{op.text}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          :wrapper-col="{ span: 20, offset: 10 }"
+        >
+          <a-button class="margin-left-20" type="primary" @click="handleSubmit">保存</a-button>
+          <a-button class="margin-left-20" @click="backTo">取消</a-button>
+        </a-form-item>
+      </a-row>
     </a-form>
   </a-card>
 </template>
 <script>
-  import {reviewAuditlevelUpdate} from '@/api/login'
+  import { reviewAuditlevelUpdate } from '@/api/login'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
 
   export default {
@@ -69,7 +139,8 @@
     data() {
       return {
         api: {
-          selectClassListWithMoreParam: '/sys/dicBase/selectClassListWithMoreParam'
+          selectClassListWithMoreParam: '/sys/dicBase/selectClassListWithMoreParam',
+          selectOrgList: 'sys/sysOrgs/selectList'
         },
         labelCol: {
           xs: { span: 8 },
@@ -82,17 +153,34 @@
         form: this.$form.createForm(this),
         roleCode: '',
         loadData: [],
-        levelColor:'#000',
-        listData:{},
-        readOnly:false,
-        enumList:[],
+        listData: [],
+        readOnly: false,
+        enumList: []
       }
     },
     computed: {},
     mounted() {
       this.getEnumList()
+      this.getOrgList()
     },
     methods: {
+      //验证手机号
+      // handlePhoneCheck(rule, value, callback){
+      //   console.log(value);
+      //   checkMobile({account:this.userData.account,phone:value}).then(res=>{
+      //     if (res.code == '200') {
+      //       if (res.data == false){
+      //         callback();
+      //       }else if (res.data == true) {
+      //         callback(new Error('手机号已被注册'));
+      //       }
+      //     }else {
+      //       this.warn(res.msg);
+      //     }
+      //   }).catch(err => {
+      //     this.error(err)
+      //   })
+      // },
       getEnumList() {
         console.log(this.$api.selectClassListWithMoreParam, '枚举值')
         this.loading = true
@@ -115,11 +203,26 @@
               this.loading = false
               this.warn(res.msg)
             }
-            this.getData()
           })
           .catch(err => {
-            this.getData()
             this.loading = false
+            this.error(err)
+          })
+      },
+      getOrgList() {
+        this.$axios({
+          url: this.api.selectOrgList,
+          method: 'put',
+          data: {}
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.listData = res.rows
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
             this.error(err)
           })
       },
@@ -145,7 +248,7 @@
         this.$router.push({
           name: 'sys_org'
         })
-      },
+      }
     }
   }
 </script>
@@ -157,12 +260,14 @@
   .spanBtn {
     color: #1694fb
   }
+
   .m-colorPicker .colorBtn[data-v-11842410] {
     width: 38px;
     height: 38px;
     border-radius: 10%;
   }
-  .colorPick{
+
+  .colorPick {
     margin-left: 15px;
     z-index: 3;
   }

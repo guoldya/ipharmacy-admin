@@ -197,7 +197,6 @@
             </a-timeline>
           </a-tab-pane>
         </a-tabs>
-
       </a-modal>
     </a-card>
   </div>
@@ -399,6 +398,14 @@
       },
       //单个通过
       passSingle(data) {
+        console.log(data);
+        let params = {};
+        params.auditType = '1';
+        params.passType = "1";
+        params.reviewOpinion = '通过'
+        params.reviewVerdict = '1';
+        params.reviewIds = [];
+        params.reviewIds[0] = data.reviewId;
       },
       //单个驳回
       rejectedSingle(data) {

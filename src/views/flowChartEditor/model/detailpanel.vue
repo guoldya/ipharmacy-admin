@@ -307,13 +307,15 @@
       },
       coreFactTreeChange(value, node, extra){
         let params = extra.selectedNodes[0].data.props;
+        console.log(params,'pa');
         if (params.lo == 1){
           this.boxInitialized.inputType = 'input'
         }else if (params.lo == 2){
           this.boxInitialized.inputType = 'scopeInput'
         }else if (params.lo == 3){
           this.boxInitialized.inputType = 'select';
-          this.boxInitialized.modelId = params.id;
+          this.boxInitialized.itemId = params.id;
+          console.log(this.boxInitialized)
           coreRuleNodeSelectColId({id:params.id}).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = res.rows;
@@ -394,11 +396,12 @@
       searchSelect(value){
         let params = {};
         params.keyword = value;
-        if ($.trim(this.modelId).length == 0){
-          params.id = this.boxInitialized.itemId;
-        } else{
-          params.id = this.modelId;
-        }
+        // if ($.trim(this.modelId).length == 0){
+        //   params.id = this.boxInitialized.itemId;
+        // } else{
+        //   params.id = this.modelId;
+        // }
+        params.id = this.boxInitialized.itemId;
         coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
             this.boxInitialized.inputSelectData = res.rows;
@@ -420,7 +423,6 @@
       attributeEdge(value, node, extra){
         let _this = this;
         let params = extra.selectedNodes[0].data.props;
-        console.log(params);
         _this.selectNode.label = params.title;
         if (params.lo == 1){
           _this.edgeInitialized.inputEdge = 'input'
@@ -429,6 +431,7 @@
         }else if (params.lo == 3){
           _this.edgeInitialized.inputEdge = 'select';
           _this.edgeId = params.id;
+          _this.edgeInitialized.itemId = params.id;
           coreRuleNodeSelectColId({id:this.edgeId}).then(res => {
             if (res.code == '200') {
               _this.edgeInitialized.inputEdgeSelect = res.rows;
@@ -463,11 +466,12 @@
       searchEdge(value){
         let params = {};
         params.keyword = value;
-        if ($.trim(this.modelId).length == 0){
-          params.id = this.edgeInitialized.itemId;
-        } else{
-          params.id = this.edgeId;
-        }
+        // if ($.trim(this.modelId).length == 0){
+        //   params.id = this.edgeInitialized.itemId;
+        // } else{
+        //   params.id = this.edgeId;
+        // }
+        params.id = this.edgeInitialized.itemId;
         coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
             this.edgeInitialized.inputEdgeSelect = res.rows;

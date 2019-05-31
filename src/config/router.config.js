@@ -331,7 +331,7 @@ export const asyncRouterMap = [
         path: '/auditWorkstation',
         name: 'auditWorkstation',
         component: PageView,
-        meta: { title: '审方工作站',keepAlive: false, icon: 'laptop' },
+        meta: { title: '审方工作站', keepAlive: false, icon: 'laptop' },
         children: [
           {
             path: '/auditWorkstation/problemLevel',
@@ -343,14 +343,14 @@ export const asyncRouterMap = [
                 path: '/auditWorkstation/problemLevel/index',
                 name: 'problemLevelIndex',
                 component: () => import( '@/views/auditWorkstation/problemLevel/index.vue'),
-                meta: { title: '问题等级设置',hiddenHeaderContent: true, index: true,}
+                meta: { title: '问题等级设置', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/auditWorkstation/problemLevel/detail',
                 name: 'problemLevelDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/problemLevel/detail.vue'),
-                meta: { title: '问题等级详情', detail: true, description:'问题等级自定义设置'}
+                meta: { title: '问题等级详情', detail: true, description: '问题等级自定义设置' }
               }
             ]
           },
@@ -364,14 +364,14 @@ export const asyncRouterMap = [
                 path: '/auditWorkstation/PrescriptionsSetting/index',
                 name: 'PrescriptionsSettingIndex',
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/index.vue'),
-                meta: { title: '审方方案设置',hiddenHeaderContent: true, index: true, }
+                meta: { title: '审方方案设置', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/auditWorkstation/PrescriptionsSetting/detail',
                 name: 'PrescriptionsDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/detail.vue'),
-                meta: { title: '审方方案设置详情', detail: true ,description:'审方设置方案描述'}
+                meta: { title: '审方方案设置详情', detail: true, description: '审方设置方案描述' }
               }
             ]
           },
@@ -385,15 +385,15 @@ export const asyncRouterMap = [
                 path: '/auditWorkstation/presOutpatient/index',
                 name: 'presOutpatientIndex',
                 component: () => import( '@/views/auditWorkstation/presOutpatient/index.vue'),
-                meta: { title: '审方中心(门诊)',hiddenHeaderContent: true, index: true ,},
+                meta: { title: '审方中心(门诊)', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/auditWorkstation/presOutpatient/detail',
                 name: 'presOutpatientDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true,detail:true, }
-              },
+                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, detail: true }
+              }
             ]
           },
           {
@@ -406,36 +406,36 @@ export const asyncRouterMap = [
                 path: '/auditWorkstation/presHospitalized/index',
                 name: 'presHospitalizedIndex',
                 component: () => import( '@/views/auditWorkstation/presHospitalized/index.vue'),
-                meta: { title: '审方中心(住院)',hiddenHeaderContent: true, index: true ,},
+                meta: { title: '审方中心(住院)', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/auditWorkstation/presHospitalized/detail',
                 name: 'presHospitalizedDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
-                meta: { title: '审方中心详情(住院)', detail:true,description:'审方中心详情页设置' }
-              },
+                meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
+              }
             ]
-          },
+          }
         ]
       },
       {
         path: '/knowledgeMgt',
         name: 'knowledgeMgt',
         component: PageView,
-        meta: { title: '知识库管理',keepAlive: false, icon: 'diff' },
-        children:[
+        meta: { title: '知识库管理', keepAlive: false, icon: 'diff' },
+        children: [
           {
             path: '/knowledgeMgt/ruleMgt',
             name: 'ruleMgt',
             component: RouteView,
-            meta: { title: '规则管理', multistage: true  },
-            children:[
+            meta: { title: '规则管理', multistage: true },
+            children: [
               {
                 path: '/knowledgeMgt/ruleMgt/index',
                 name: 'ruleIndex',
                 component: () => import( '@/views/knowledgeMgt/ruleMgt/index.vue'),
-                meta: { title: '规则管理',hiddenHeaderContent: true, index: true,}
+                meta: { title: '规则管理', hiddenHeaderContent: true, index: true }
               }
             ]
           },
@@ -443,13 +443,13 @@ export const asyncRouterMap = [
             path: '/knowledgeMgt/ruleMgt-copy',
             name: 'ruleMgt-copy',
             component: RouteView,
-            meta: { title: '规则管理副本', multistage: true  },
-            children:[
+            meta: { title: '规则管理副本', multistage: true },
+            children: [
               {
                 path: '/knowledgeMgt/ruleMgt-copy/index',
                 name: 'ruleMgtCopyIndex',
                 component: () => import( '@/views/knowledgeMgt/ruleMgt-copy/index.vue'),
-                meta: { title: '规则管理副本',hiddenHeaderContent: true, index: true,}
+                meta: { title: '规则管理副本', hiddenHeaderContent: true, index: true }
               }
             ]
           }
@@ -459,41 +459,41 @@ export const asyncRouterMap = [
         path: '/baseData',
         name: 'baseData',
         component: PageView,
-        meta: { title: '基础数据',keepAlive: false, icon: 'diff' },
-        children:[
+        meta: { title: '基础数据', keepAlive: false, icon: 'diff' },
+        children: [
           {
             path: '/baseData/drugSpec',
             name: 'DrugSpec',
             component: RouteView,
-            meta: { title: '药品说明书', multistage: true  },
-            children:[
+            meta: { title: '药品说明书', multistage: true },
+            children: [
               {
                 path: '/baseData/drugSpec/index',
                 name: 'drugSpecIndex',
                 component: () => import( '@/views/baseData/drugSpec/index.vue'),
-                meta: { title: '药品说明书',hiddenHeaderContent: true, index: true,}
+                meta: { title: '药品说明书', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/baseData/drugSpec/detail',
                 name: 'drugSpecDetail',
                 hidden: true,
                 component: () => import( '@/views/baseData/drugSpec/detail.vue'),
-                meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
-              },
+                meta: { title: '药品说明书', hiddenHeaderContent: true, detail: true }
+              }
             ]
           },
           {
             path: '/baseData/dictionary',
             name: 'dictionary',
             component: RouteView,
-            meta: { title: '基础字典', multistage: true  },
-            children:[
+            meta: { title: '基础字典', multistage: true },
+            children: [
               {
                 path: '/baseData/dictionary/index',
                 name: 'dictionaryIndex',
                 component: () => import( '@/views/baseData/dictionary/index.vue'),
-                meta: { title: '基础字典数据',hiddenHeaderContent: true, index: true,}
-              },
+                meta: { title: '基础字典数据', hiddenHeaderContent: true, index: true }
+              }
               // {
               //   path: '/baseData/drugSpec/detail',
               //   name: 'drugAdministration',
@@ -507,14 +507,14 @@ export const asyncRouterMap = [
             path: '/baseData/drugAdministration',
             name: 'drugAdministration',
             component: RouteView,
-            meta: { title: '药品组管理', multistage: true  },
-            children:[
+            meta: { title: '药品组管理', multistage: true },
+            children: [
               {
                 path: '/baseData/drugAdministration/index',
                 name: 'drugAdminIndex',
                 component: () => import( '@/views/baseData/drugAdministration/index.vue'),
-                meta: { title: '药品组管理',hiddenHeaderContent: true, index: true,}
-              },
+                meta: { title: '药品组管理', hiddenHeaderContent: true, index: true }
+              }
               // {
               //   path: '/baseData/drugSpec/detail',
               //   name: 'drugAdministration',
@@ -523,7 +523,7 @@ export const asyncRouterMap = [
               //   meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
               // },
             ]
-          },
+          }
         ]
       },
 
@@ -575,20 +575,29 @@ export const asyncRouterMap = [
         component: PageView,
         redirect: '/sys/org',
         meta: { title: '系统设置', icon: 'check-circle-o', permission: ['result'] },
+
         children: [
           {
             path: '/sys/org',
             name: 'sys_org',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index'),
-            meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'],index:true }
-          },
-          {
-            path: '/sys/org/detail',
-            name: 'sys_org_detail',
-            hidden: true,
-            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail'),
-            meta: { title: '机构维护详情', hiddenHeaderContent: true, permission: ['result'],detail:true }
-          },
+            component: RouteView,
+            meta: { title: '机构维护', multistage: true },
+            children: [
+              {
+                path: '/sys/org',
+                name: 'sys_org_index',
+                component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index.vue'),
+                meta: { title: '机构维护', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/sys/org/detail',
+                name: 'sys_org_detail',
+                hidden: true,
+                component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail.vue'),
+                meta: { title: '机构维护详情', hiddenHeaderContent: true, detail: true }
+              }
+            ]
+          }
         ]
       }
     ]

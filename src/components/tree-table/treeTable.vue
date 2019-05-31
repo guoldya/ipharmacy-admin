@@ -5,20 +5,21 @@
     :row-style="showRow"
     v-bind="$attrs"
     border
-    @selection-change="selectChange"
+    highlight-current-row
+    @row-click="selectTreeList"
   >
     <el-table-column type="selection" align="center" v-if="checkbox" width="55"></el-table-column>
     <el-table-column fixed="right" label="操作" :width="opColWidth" align="center" v-if="isOpcol">
       <template slot-scope="scope">
-        <opcol :items="items" :more="moreOp" :data="scope.row"></opcol>
+        <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
       </template>
     </el-table-column>
     <el-table-column v-if="columns.length === 0" width="150">
       <template slot-scope="scope">
         <span v-for="space in scope.row._level" class="ms-tree-space" :key="space"></span>
         <span class="tree-ctrl" v-if="iconShow(0,scope.row)" @click="toggleExpanded(scope.$index)" style="" >
-          <a-icon v-if="!scope.row._expanded" type="caret-right"/>
-          <a-icon v-else type="caret-down"/>
+          <i v-if="!scope.row._expanded" class="iconfont action action-caretright" style="color: #666"></i>
+           <i v-else class="iconfont action action-caretdown" style="color: #666"></i>
         </span>
         {{scope.$index}}
       </template>
@@ -45,8 +46,8 @@
           v-if="iconShow(index,scope.row)"
           @click="toggleExpanded(scope.$index)"
         >
-          <a-icon v-if="!scope.row._expanded" type="right"></a-icon>
-          <a-icon v-else type="down"></a-icon>
+          <i v-if="!scope.row._expanded" class="iconfont action action-caretright" style="color: #666"></i>
+           <i v-else class="iconfont action action-caretdown" style="color: #666"></i>
         </span>
         <span v-if="column.value == 'status'">
           <a-badge
@@ -116,14 +117,16 @@ export default {
       default: () => {
         return 100
       }
-    }
+    },
+    selectTreeList: Function,
   },
   data() {
     return {
       selectData: []
     }
   },
-  mounted() {},
+  mounted() {
+  },
   computed: {
     // 格式化数据源
     formatData: function() {
@@ -146,9 +149,9 @@ export default {
     iconShow(index, record) {
       return index === 0 && record.items && record.items.length > 0
     },
-    selectChange(val) {
-      this.selectData = val
-    },
+    // selectTreeList(val) {
+    //   this.selectData = val
+    // },
     
   }
 }
