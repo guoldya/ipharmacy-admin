@@ -1,4 +1,5 @@
 <template>
+   
   <el-table
     ref="multipleTable"
     :data="formatData"
@@ -21,10 +22,12 @@
           <i v-if="!scope.row._expanded" class="iconfont action action-caretright" style="color: #666"></i>
            <i v-else class="iconfont action action-caretdown" style="color: #666"></i>
         </span>
+   
         {{scope.$index}}
       </template>
     </el-table-column>
 
+    
     <el-table-column
       v-else
       :show-overflow-tooltip="true"
@@ -36,11 +39,13 @@
     >
       <template slot-scope="scope">
         <span
+       
           v-for="space in scope.row._level"
           v-if="index == 0"
           class="ms-tree-space"
           :key="space"
         ></span>
+    
         <span
           class="tree-ctrl"
           v-if="iconShow(index,scope.row)"
@@ -55,6 +60,7 @@
             :text="scope.row.status==0?'停用':'启用'"
           />
         </span>
+
         <!-- //<span v-else-if="column.value == 'clientClass'" v-html="classFormatter(scope.row)"></span> -->
         <span v-else-if="column.format !=null " v-html="column.format(scope.row)"></span>
         <span v-else>{{scope.row[column.value]}}</span>
@@ -65,6 +71,7 @@
 </template>
 
 <script>
+
 /*
  * @param items 操作列展示项
  * @param moreOp 操作列是否展示更多
@@ -157,6 +164,7 @@ export default {
 }
 </script>
 <style rel="stylesheet/css">
+
 @keyframes treeTableShow {
   from {
     opacity: 0;

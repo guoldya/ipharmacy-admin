@@ -1,6 +1,7 @@
 <template>
   <div>
 
+
     <template v-if="!more">
       <div style="display: inline-block" v-for="(op,index) in items" :key="index">
         <a v-if="(op.showtip==false)" @click="op.click(data)" :style="{'color':op.color?op.color:'#2D8cF0'}">{{op.text}}</a>
@@ -41,6 +42,7 @@
   </div>
 </template>
 <script>
+
   /*
    * items 为显示操作的数据
    * more （true 操作超过2个时）
@@ -90,6 +92,7 @@
             if(this.data[this.filterItem[j]] == item[this.filterItem[j]]){
               break;
             }
+ 
             num++
           }
           if(num == len1){
@@ -100,6 +103,7 @@
       }
     },
     mounted(){
+
 
     },
     methods:{
@@ -138,6 +142,7 @@
   }
 </script>
 <style>
+
   .more{
     position: relative;
   }
