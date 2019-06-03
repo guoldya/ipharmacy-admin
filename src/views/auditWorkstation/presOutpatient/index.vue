@@ -220,6 +220,9 @@
     },
     data() {
       return {
+        api: {
+          updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
+        },
         labelCol: {
           xs: { span: 24 },
           sm: { span: 3 }
@@ -382,23 +385,71 @@
       },
       //批量通过
       pass() {
+        let params = {};
+        let reviewIds = [];
         if ($.trim(this.selections).length <= 0) {
           this.warn('请选择处方')
           return
         } else {
+          console.log(this.selections);
+          for (let key in this.selections){
+            reviewIds[key] = this.selections[key].reviewId;
+          }
+          params.auditType = '1';
+          params.passType = '1';
+          params.reviewOpinion = '通过';
+          params.reviewVerdict = '1';
+          params.reviewIds = reviewIds;
+          this.$axios({
+            url: this.api.updateReviewStatus,
+            method: 'put',
+            data: params
+          }).then(res => {
+            if (res.code == '200') {
+              this.success(res.msg)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+            .catch(err => {
+              this.error(err)
+            })
         }
       },
       //批量驳回
       rejected() {
+        let params = {};
+        let reviewIds = [];
         if ($.trim(this.selections).length <= 0) {
           this.warn('请选择处方')
           return
         } else {
+          for (let key in this.selections){
+            reviewIds[key] = this.selections[key].reviewId;
+          }
+          params.auditType = '1';
+          params.passType = '1';
+          params.reviewOpinion = '驳回';
+          params.reviewVerdict = '2';
+          params.reviewIds = reviewIds;
+          this.$axios({
+            url: this.api.updateReviewStatus,
+            method: 'put',
+            data: params
+          }).then(res => {
+            if (res.code == '200') {
+              this.success(res.msg)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+            .catch(err => {
+              this.error(err)
+            })
         }
       },
       //单个通过
       passSingle(data) {
-        console.log(data);
         let params = {};
         params.auditType = '1';
         params.passType = "1";
@@ -406,6 +457,20 @@
         params.reviewVerdict = '1';
         params.reviewIds = [];
         params.reviewIds[0] = data.reviewId;
+        this.$axios({
+          url: this.api.updateReviewStatus,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
       },
       //单个驳回
       rejectedSingle(data) {
@@ -414,6 +479,27 @@
         for (let key in this.problemsData) {
           this.problemsData[key].rejectReason = '病入膏肓'
         }
+        let params = {};
+        params.auditType = '1';
+        params.passType = "1";
+        params.reviewOpinion = '驳回'
+        params.reviewVerdict = '2';
+        params.reviewIds = [];
+        params.reviewIds[0] = data.reviewId;
+        this.$axios({
+          url: this.api.updateReviewStatus,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
       },
       //弹窗提交
       handleOk() {
@@ -437,7 +523,6 @@
       },
       //TODO:处方单数据暂未处理
       mouseHover(data) {
-        console.log(data);
         let tabsOne = {}
         let columns2 = [
           { title: '序号', prop: 'seqNum', width: 50, align: 'right' },

@@ -164,7 +164,7 @@
                   <template slot="title" style="width: 100px">{{tt.titles}}</template>
                   <a-tag
                     class="problemTag saveButton"
-                    v-if="index<3 && tt.bgColor == '#2eabff'"
+                    v-if="index<7 && tt.bgColor == '#2eabff'"
                     :key="index"
                     @click="tagsClick(tt)"
                     color="#2eabff"
@@ -172,7 +172,7 @@
                   </a-tag>
                   <a-tag
                     class="problemTag saveButton"
-                    v-else-if="index<4"
+                    v-else-if="index<7"
                     :key="index"
                     @click="tagsClick(tt)"
                   >{{tt.updateTitles}}
@@ -180,7 +180,7 @@
                 </a-tooltip>
                 <a-dropdown :trigger="['hover']">
                 <a-menu slot="overlay">
-                <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=4"
+                <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"
                 :key="index">
                 {{gd.updateTitles}}
                 </a-menu-item>
@@ -195,26 +195,10 @@
             </a-tab-pane>
             <a-tab-pane tab="干预记录" key="2">
               <a-timeline style="margin-top: 20px">
-                <a-timeline-item color="green" class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>有接触隔离医嘱 1</p>
-                  <p>有隔离措施 2</p>
-                </a-timeline-item>
-                <a-timeline-item color="green" class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>请医生再次审核 </p>
-                </a-timeline-item>
-                <a-timeline-item color="red" class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>有接触隔离医嘱 1</p>
-                  <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3 </p>
-                </a-timeline-item>
-                <a-timeline-item class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>离开病区检查是否通知相关科室做好防护等 1</p>
-                  <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3 </p>
+                <a-timeline-item v-for="(rd,index) in recordList" color="green" class="timelineItem" :key="index">
+                  <p><a-tag>{{rd.eventPerson}}</a-tag>{{rd.eventTime}}</p>
+                  <p>{{rd.event}}</p>
+                  <p>{{rd.eventText}}</p>
                 </a-timeline-item>
               </a-timeline>
             </a-tab-pane>
@@ -306,6 +290,7 @@
           selectWithReviewId:'/sys/reviewTemplate/selectReviewTemplateWithReviewId',
           selectVisId:'/sys/reviewOrderissue/selectInterventionRecordWithVisId',
           selectReviewTemplateDetail:'sys/reviewTemplate/selectReviewTemplateDetail',
+          selectWithVisId:'sys/reviewOrderissue/selectInterventionRecordWithVisId',
     },
         Modal: {
           visible: false
@@ -321,6 +306,7 @@
         tagsData: [],
         reviewTemplates:[],
         templateTags:[],
+        recordList:[],
         columns: [{ title: '序号', prop: 'seqNum', width: 50, align: 'right' },
           { title: '', prop: 'mark', width: 20, align: 'left' },
           { title: '药品', prop: 'drugName' },
@@ -339,6 +325,7 @@
     mounted() {
       this.getDetailData();
       this.getTemplate();
+      this.getRecord();
     },
     methods: {
       getDetailData() {
@@ -402,7 +389,7 @@
           data: params
         }).then(res => {
             if (res.code == '200') {
-              // this.enumList = res.data
+              this.success(res.msg)
             } else {
               this.warn(res.msg)
             }
@@ -436,7 +423,7 @@
         })
           .then(res => {
             if (res.code == '200') {
-              // this.enumList = res.data
+              this.success(res.msg)
             } else {
               this.warn(res.msg)
             }
@@ -457,6 +444,7 @@
         // } else {
         //   event.cancelBubble = true   //ie兼容
         // }
+        console.log(pd);
           let list = this.templateTags
           for (let i in list) {
             if (list[i].id == pd.id) {
@@ -610,7 +598,27 @@
       },
       handleCancel() {
         this.Modal.visible = false
-      }
+      },
+
+      //获取记录
+      getRecord(){
+        let params = this.$route.query
+        this.$axios({
+          url: this.api.selectWithVisId,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.recordList = res.rows;
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
     },
     filters: {
       control_type(value) {
@@ -694,8 +702,9 @@
     background-repeat: no-repeat;
     /*background-size: 50% 50%;*/
     position: absolute;
-    right: 30%;
+    right: 16%;
     top: 15%;
+    opacity: 0.8;
     /*background-repeat:no-repeat;*/
   }
 
@@ -707,8 +716,9 @@
     background-repeat: no-repeat;
     /*background-size: 50% 50%;*/
     position: absolute;
-    right: 30%;
+    right: 16%;
     top: 15%;
+    opacity: 0.8;
   }
 
   .cardRight {
