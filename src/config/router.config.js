@@ -14,6 +14,7 @@ export const asyncRouterMap = [
       {
         path: '/dashboard',
         name: 'dashboard',
+        hidden: true,
         redirect: '/dashboard/workplace',
         component: RouteView,
         meta: { title: '仪表盘', keepAlive: true, icon: 'dashboard' },
@@ -572,29 +573,62 @@ export const asyncRouterMap = [
       {
         path: '/sys',
         name: 'sys',
-        component: PageView,
+        component: RouteView,
         redirect: '/sys/org',
         meta: { title: '系统设置', icon: 'check-circle-o', permission: ['result'] },
-
         children: [
           {
             path: '/sys/org',
             name: 'sys_org',
-            component: RouteView,
-            meta: { title: '机构维护', multistage: true },
-            children: [
+            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index'),
+            meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'], index: true }
+          },
+          {
+            path: '/sys/org/detail',
+            name: 'sys_org_detail',
+            hidden: true,
+            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail'),
+            meta: { title: '机构维护详情', hiddenHeaderContent: true, permission: ['result'], detail: true }
+          },
+          {
+            path: '/sys/org_dept',
+            name:'org_dept_route',
+            component:RouteView,
+            meta: { title: '科室维护', keepAlive:false, multistage: true },
+            children:[
               {
-                path: '/sys/org',
-                name: 'sys_org_index',
-                component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index.vue'),
-                meta: { title: '机构维护', hiddenHeaderContent: true, index: true }
+                path: '/sys/org_dept/index',
+                name:'org_dept',
+                component: () => import('@/views/sys/org_dept/org_dept.vue'),
+                meta: { title: '科室维护', index: true }
               },
               {
-                path: '/sys/org/detail',
-                name: 'sys_org_detail',
-                hidden: true,
-                component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail.vue'),
-                meta: { title: '机构维护详情', hiddenHeaderContent: true, detail: true }
+                path: '/sys/org_dept/dept/:deptId/:orgId',
+                name:'deptDetail',
+                hidden:true,
+                component: () => import('@/views/sys/org_dept/dept.vue'),
+                meta: { title: '部门详情', detail: true }
+              }
+            ]
+          },
+          {
+            path: '/sys/org_user',
+            name:'org_user_route',
+            component:RouteView,
+            meta: { title: '用户维护', keepAlive:false, multistage: true },
+            children:[
+              {
+                path: '/sys/org_user/index',
+                name:'org_user',
+                component: () => import('@/views/sys/org_user/user.vue'),
+                meta: { title: '用户维护', index: true }
+              },
+              {
+                path: '/sys/org_user/user/:id/',
+                name:'userDetail',
+                hidden:true,
+                component: () => import('@/views/sys/org_user/userDetail.vue'),
+                meta: { title: '用户详情', detail: true }
               }
             ]
           }
