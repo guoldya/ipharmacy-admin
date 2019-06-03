@@ -2,14 +2,14 @@
     <div>
 
         <template v-if="!more">
-            <div style="display: inline-block" v-for="(op,index) in items" :key="index">
+            <div style="display: inline-block" v-for="(op,index) in newItem" :key="index">
                 <a v-if="(op.showtip==false)" @click="op.click(data)" :style="{'color':op.color?op.color:'#2D8cF0'}">{{op.text}}</a>
                 <a-popconfirm v-if="(op.showtip==true)"
                               :title=op.tip
                               @confirm=op.click(data)>
                     <a :style="'color:'+op.color">{{op.text}}</a>
                 </a-popconfirm>
-                <a-divider v-if="(index!=items.length-1)" type="vertical" />
+                <a-divider v-if="(index!=newItem.length-1)" type="vertical" />
             </div>
         </template>
         <template v-else>

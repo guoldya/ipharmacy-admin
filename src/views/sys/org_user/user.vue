@@ -7,7 +7,7 @@
                     <a-button class="margin-left-5" @click="resetForm">重置</a-button>
                 </div>
             </Searchpanel>
-            <a-button type="primary" @click="addUser">新增用户</a-button>
+            <a-button type="primary" @click="addUser" class="margin-top-10">新增用户</a-button>
             <a-spin tip="加载中..." :spinning="spinning">
                 <el-table
                         class="margin-top-10"
@@ -18,7 +18,7 @@
                     <el-table-column
                             fixed="right"
                             label="操作"
-                            width="120"
+                            width="150"
                             align="center"
                     >
                         <template slot-scope="scope">
@@ -30,6 +30,16 @@
                             <a-divider type="vertical"/>
                             <a v-if="scope.row.status == '0'" @click="changeStatus(scope.row,true)">启用</a>
                             <a v-else @click="changeStatus(scope.row,false)">停用</a>
+                        </template>
+                    </el-table-column>
+                    <el-table-column type="expand">
+                        <template slot-scope="props">
+                            <detail-list :col="4">
+                                <detail-list-item term="身份证">{{ props.row.idCard }}</detail-list-item>
+                                <detail-list-item term="资格证书号">{{ props.row.certificateNo }}</detail-list-item>
+                                <detail-list-item term="电子邮箱">{{ props.row.email }}</detail-list-item>
+                                <detail-list-item term="出生日期">{{ props.row.birthday }}</detail-list-item>
+                            </detail-list>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -48,7 +58,7 @@
                         </span>
                             <span v-else-if="item.prop == 'sex'">
                             <a-badge :status="scope.row.sex == 1? 'default':'processing'"
-                                     :text="scope.row.sex ==1?'男':'女'"/>
+                                     :text="scope.row.sex == 1?'男':'女'"/>
                         </span>
                             <span v-else>
                             {{scope.row[item.prop]}}
@@ -73,6 +83,8 @@
     </div>
 </template>
 <script>
+    import DetailList from '@/components/tools/DetailList';
+    const DetailListItem = DetailList.Item;
     export default {
         data(){
             return{
@@ -85,19 +97,21 @@
                     { title: '人员编号', prop: 'code', width: 100 },
                     { title: '机构', prop: 'orgName' },
                     { title: '姓名', prop: 'name' },
-                    { title: '性别', prop: 'sex', align: 'center', width: 100 },
-                    { title: '职称', prop: 'titles', width: 100 },
-                    { title: '电话', prop: 'phone', width: 100 },
-                    { title: '身份证', prop: 'idCard', width: 100 },
-                    { title: '电子邮箱', prop: 'email', width: 100 },
-                    { title: '出生日期', prop: 'birthday', width: 100 },
+                    { title: '性别', prop: 'sex', align: 'center', width: 80 },
+                    { title: '职称', prop: 'titlesName', width: 100 },
+                    { title: '管理职务', prop: 'mentPosition', width: 100 },
+                    { title: '电话', prop: 'phone', width: 120 },
                     { title: '创建日期', prop: 'createDate', width: 150 },
                     { title: '更新日期', prop: 'upgateDate', width: 150 },
-                    { title: '状态', prop: 'status', align: 'center', width: 100 }
+                    { title: '状态', prop: 'status', align: 'center', width: 80 }
                 ],
                 total:0,
                 current:1
             }
+        },
+        components:{
+            DetailList,
+            DetailListItem
         },
         computed: {
             list() {
@@ -107,35 +121,6 @@
                         dataField: 'name',
                         type: 'text'
                     },
-                    {
-                        name: '机构代码',
-                        dataField: 'orgCode',
-                        type: 'text'
-                    },
-                    {
-                        name: '机构类型',
-                        dataField: 'orgType',
-                        type: 'select',
-                        keyExpr: 'id',
-                        valueExpr: 'text',
-                        dataSource: this.enum.orgType
-                    },
-                    {
-                        name: '医院分类',
-                        dataField: 'orgClass',
-                        type: 'select',
-                        keyExpr: 'id',
-                        valueExpr: 'name',
-                        dataSource: this.enumList['33']
-                    },
-                    {
-                        name: '医院等级',
-                        dataField: 'orgGrade',
-                        type: 'select',
-                        keyExpr: 'id',
-                        valueExpr: 'name',
-                        dataSource: this.enumList['34']
-                    }
                 ]
             }
         },

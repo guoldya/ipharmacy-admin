@@ -5,6 +5,7 @@
             :row-style="showRow"
             v-bind="$attrs"
             style="max-height: 500px"
+            height="500"
             border
             highlight-current-row
             @selection-change="selectChange"

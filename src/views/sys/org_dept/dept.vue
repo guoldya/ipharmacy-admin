@@ -22,7 +22,7 @@
                         </a-select>
                     </a-form-item>
                     <a-form-item
-                            label="机构"
+                            label="父级部门"
                             v-bind="formItemLayout"
                     >
                         <a-select placeholder="请选择..." v-decorator="[
@@ -45,7 +45,7 @@
                         <a-input
                                 placeholder="请输入..."
                                 v-decorator="[
-                                'deptId',
+                                'code',
                                 {rules: [{ required: true, message: '请输入部门编码' },{ max:15 }]}
                                 ]"
                         />
@@ -117,6 +117,11 @@
                         sm: { span: 17 },
                     },
                 },
+                api: {
+                    orgUrl: '/sys/sysOrgs/selectList',
+                    updateUrl:'/sys/sysDepts/update',
+                    detail:'/sys/sysDepts/selectOne'
+                },
                 loading:false,
                 form:this.$form.createForm(this),
                 isNew:true,
@@ -126,11 +131,38 @@
             }
         },
         mounted(){
+            this.getOrgData();
             this.init();
         },
         methods:{
             init(){
-
+                this.spinning = true;
+                let id = this.$route.params.deptId;
+                if(id == 0){
+                    this.isNew = true;
+                    this.form.setFieldsValue({ orgId: this.$route.params.orgId });
+                    this.spinning = false;
+                }else{
+                    this.isNew = false;
+                    this.$axios({
+                        url: this.api.detail,
+                        method: 'put',
+                        data: {deptId:id}
+                    }).then(res => {
+                        if (res.code == '200') {
+                            let {code,orgId,parentId,status,title,type,note} = res.data
+                                ,formData = {code,orgId,parentId,status,title,type,note};
+                            this.form.setFieldsValue(formData);
+                            this.spinning = false;
+                        } else {
+                            this.spinning = false;
+                            this.warn(res.msg);
+                        }
+                    }).catch(err => {
+                        this.spinning = false;
+                        this.error(err);
+                    })
+                }
             },
             cancel(){
                 this.$router.push({
@@ -142,12 +174,48 @@
                 this.loading = true;
                 this.form.validateFields((err, values) => {
                     if (!err) {
-
+                        let params = values;
+                        if(!this.isNew){
+                            params.deptId = this.$route.params.deptId;
+                        }
+                        this.$axios({
+                            url: this.api.updateUrl,
+                            method: 'post',
+                            data: params
+                        }).then(res => {
+                            if (res.code == '200') {
+                                this.success('保存成功!',()=>{
+                                    this.cancel();
+                                    this.loading = false;
+                                })
+                            } else {
+                                this.loading = false;
+                                this.warn(res.msg);
+                            }
+                        }).catch(err => {
+                            this.loading = false;
+                            this.error(err);
+                        })
                     }else {
-
+                        this.loading = false;
                     }
                 });
-            }
+            },
+            getOrgData(obj = {}) {
+                this.$axios({
+                    url: this.api.orgUrl,
+                    method: 'put',
+                    data: obj
+                }).then(res => {
+                    if (res.code == '200') {
+                        this.orgData = res.rows;
+                    } else {
+                        this.warn(res.msg);
+                    }
+                }).catch(err => {
+                        this.error(err);
+                    })
+            },
         }
     }
 </script>

@@ -20,10 +20,9 @@
                             class="margin-top-10"
                             :columns="deptColumns"
                             :data="deptData"
-                            :opColWidth="120"
+                            :opColWidth="150"
                             ref="deptTable"
                             :filterItem="['status']"
-                            :moreOp="true"
                             :items="items"
                             :handleCurrentChange="deptCurrentChange"
                     ></a-treeTable>
@@ -91,7 +90,9 @@
             return {
                 api: {
                     orgUrl: '/sys/sysOrgs/selectList',
-                    deptUrl:'/sys/sysOrgs/selectOne',
+                    deptUrl:'/sys/sysOrgs/selectDeptsByOrgId',
+                    updateUrl:'/sys/sysDepts/update',
+                    delDeptUrl:'/sys/sysDepts/delete',
                     orgUserUrl: '/sys/sysDeptpersons/selectPersonsListWithDeptId'
                 },
                 dataSource:[],
@@ -112,7 +113,7 @@
                 ],
                 items: [
                     { text: '编辑', showtip: false, click: this.editDept },
-                    { text: '删除', showtip: true, tip: '确认删除吗？', click: this.delDept },
+                    { text: '删除', showtip: true, color: '#ff9900', tip: '确认删除吗？', click: this.delDept },
                     { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status:'1' },
                     { text: '停用', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status:'0' }
                 ],
@@ -122,8 +123,8 @@
                     { title: '人员编号', prop: 'code', width: 100 },
                     { title: '姓名', prop: 'name' },
                     { title: '性别', prop: 'sex', align: 'center', width: 100 },
-                    { title: '职称', prop: 'titles', width: 100 },
-                    { title: '电话', prop: 'phone', width: 100 },
+                    { title: '职称', prop: 'titlesName', width: 100 },
+                    { title: '电话', prop: 'phone', width: 120 },
                     { title: '出生日期', prop: 'birthday', width: 100 },
                     { title: '创建日期', prop: 'createDate', width: 150 },
                     { title: '更新日期', prop: 'upgateDate', width: 150 },
@@ -148,13 +149,52 @@
                 })
             },
             delDept(row){
-
+                if(row.status == '1'){
+                    this.warn('请先停用该部门，再删除!');
+                    return;
+                }
+                this.$axios({
+                    url: this.api.delDeptUrl,
+                    method: 'delete',
+                    data: {deptId:row.deptId}
+                }).then(res => {
+                    if (res.code == '200') {
+                        this.success('删除成功!',()=>{
+                            this.getDeptData({ orgId:this.orgId });
+                        })
+                    } else {
+                        this.warn(res.msg)
+                    }
+                }).catch(err => {
+                    this.error(err)
+                })
             },
             delUser(row){
 
             },
             changeStatus(row){
-
+                let params = {};
+                params.deptId = row.deptId;
+                if(row.status == '1'){
+                    params.status = '0'
+                }else{
+                    params.status = '1'
+                }
+                this.$axios({
+                    url: this.api.updateUrl,
+                    method: 'post',
+                    data: params
+                }).then(res => {
+                    if (res.code == '200') {
+                        this.success('操作成功!',()=>{
+                            this.getDeptData({ orgId:this.orgId });
+                        })
+                    } else {
+                        this.warn(res.msg)
+                    }
+                }).catch(err => {
+                        this.error(err)
+                    })
             },
             addDept() {
                 this.$router.push({
@@ -196,7 +236,7 @@
                     this.deptId = val.deptId
                     this.getUserData({ deptId:val.deptId, orgId:this.orgId })
                 } else {
-                    this.deptData = []
+                    this.userData = []
                 }
             },
             typeFormat(row){
