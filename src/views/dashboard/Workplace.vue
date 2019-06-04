@@ -189,10 +189,10 @@
       this.avatar = this.userInfo.avatar
     },
     mounted () {
-      // this.getProjects()
-      // this.getActivity()
-      // this.getTeams()
-      // this.initRadar()
+      this.getProjects()
+      this.getActivity()
+      this.getTeams()
+      this.initRadar()
     },
     methods: {
       ...mapGetters(['nickname', 'welcome']),

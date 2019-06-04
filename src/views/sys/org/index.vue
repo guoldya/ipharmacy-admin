@@ -8,7 +8,7 @@
     </Searchpanel>
     <a-button class="margin-top-10" type="primary" @click="adds">新增</a-button>
     <a-spin :spinning="loading" tip="加载中...">
-      <a-treeTable :columns="columns" :data="dataSource" :items="items" :opColWidth="110" :moreOp="true"></a-treeTable>
+      <a-treeTable :columns="columns" :data="dataSource" :items="items" :selectTreeList="selectTreeList" :opColWidth="110" :moreOp="true"></a-treeTable>
     </a-spin>
     <a-modal
       title="分配药师"
@@ -83,12 +83,12 @@
         ],
         items: [
           { text: '编辑', showtip: false, click: this.edits },
-          { text: '删除', showtip: true, tip: '确认删除吗？', click: this.delRow },
-          { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus },
-          { text: '停用', showtip: true, tip: '确认停用吗？', click: this.changeStatus }
+          {text:'启用',color:'#2D8cF0',showtip:true,tip:'确认启用吗？',click:this.changeStatus,status:'1'},
+          {text:'停用',color:'#E6A23C',showtip:true,tip:'确认停用吗？',click:this.changeStatus,status:'0'},
         ],
         colors: '#ffffff',
-        dataSource: []
+        dataSource: [],
+        parentId:'',
       }
     },
     computed: {
@@ -216,14 +216,10 @@
       },
       //新增
       adds() {
-        console.log(1)
         this.$router.push({
           name: 'sys_org_detail'
           // params:data,
         })
-      },
-      //停用
-      ban(data) {
       },
       edits(data) {
         this.$router.push({
@@ -231,7 +227,10 @@
           query: data
         })
       },
+      //启用停用
+      changeStatus(){
 
+      },
       checkRol(data) {
         this.visible = true
         // let rolePass = { account: data.row.account, centerId: data.row.centerId }
@@ -305,6 +304,9 @@
           if (new RegExp('(' + k + ')').test(fmt))
             fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
         return fmt
+      },
+      selectTreeList(selection){
+        console.log(selection,'selection');
       }
     }
   }

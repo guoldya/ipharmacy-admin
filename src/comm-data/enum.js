@@ -91,5 +91,9 @@ const Enum={
     { text: '药店', id: '4' },
     { text: '互联网医院', id: '5' },
   ],
+  templateType:[
+    { text: '通用', id: '0' },
+    { text: '个人', id: '1' },
+  ],
 };
 export default Enum;

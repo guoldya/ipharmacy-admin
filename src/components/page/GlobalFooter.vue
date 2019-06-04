@@ -1,7 +1,7 @@
 <template>
     <div class="footer">
         <div class="copyright">
-          <span>当前版本: {{productInfo}}</span>
+          <span>临床药学</span>
         </div>
     </div>
 </template>
