@@ -30,6 +30,7 @@
                 previewVisible: false,
                 previewImage: '',
                 fileList: [],
+                imgArr:[]
             }
         },
         methods: {
@@ -55,7 +56,7 @@
                         this.fileList = fileList;
                     }
                 })
-
+                this.imgArr = imgUrls;
             },
         },
     }
