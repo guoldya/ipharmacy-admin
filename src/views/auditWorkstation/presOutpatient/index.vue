@@ -159,48 +159,48 @@
       >
         <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
-            <a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">
-              <div class="margin-top-10">
-                <p class="dealP margin-top-10" style="float: left">审核意见：</p>
-                <a-button type="primary" class="saveButton" size="small" @click="saveTemplate()">存为模板</a-button>
-                <a-select class="saveButton"  size="small" style="width: 150px" @change="selectTemp" v-model="problemType">
-                  <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates"  :key="index" >
-                    {{op.tabooTitle}}
-                  </a-select-option>
-                </a-select>
-                <a-tooltip  placement="top" :key="index" v-for="(tt,index) in templateTags">
-                  <template slot="title" style="width: 100px">{{tt.titles}}</template>
-                  <a-tag
-                    class="problemTag saveButton"
-                    v-if="index<7 && tt.bgColor == '#2eabff'"
-                    :key="index"
-                    @click="tagsClick(tt)"
-                    color="#2eabff"
-                  >{{tt.updateTitles}}
-                  </a-tag>
-                  <a-tag
-                    class="problemTag saveButton"
-                    v-else-if="index<7"
-                    :key="index"
-                    @click="tagsClick(tt)"
-                  >{{tt.updateTitles}}
-                  </a-tag>
-                </a-tooltip>
-                <a-dropdown :trigger="['hover']">
-                  <a-menu slot="overlay">
-                    <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"
-                                 :key="index">
-                      {{gd.updateTitles}}
-                    </a-menu-item>
-                  </a-menu>
-                  <a v-if="templateTags.length>3" class="margin-left-5 saveButton">更多
-                    <a-icon type="down"/>
-                  </a>
-                  <a v-else></a>
-                </a-dropdown>
-                <a-textarea :rows="4" v-model="templateText"></a-textarea>
-              </div>
-            </a-card>
+            <!--<a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">-->
+              <!--<div class="margin-top-10">-->
+                <!--<p class="dealP margin-top-10" style="float: left">审核意见：</p>-->
+                <!--<a-button type="primary" class="saveButton" size="small" @click="saveTemplate()">存为模板</a-button>-->
+                <!--<a-select class="saveButton"  size="small" style="width: 150px" @change="selectTemp" v-model="problemType">-->
+                  <!--<a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates"  :key="index" >-->
+                    <!--{{op.tabooTitle}}-->
+                  <!--</a-select-option>-->
+                <!--</a-select>-->
+                <!--<a-tooltip  placement="top" :key="index" v-for="(tt,index) in templateTags">-->
+                  <!--<template slot="title" style="width: 100px">{{tt.titles}}</template>-->
+                  <!--<a-tag-->
+                    <!--class="problemTag saveButton"-->
+                    <!--v-if="index<7 && tt.bgColor == '#2eabff'"-->
+                    <!--:key="index"-->
+                    <!--@click="tagsClick(tt)"-->
+                    <!--color="#2eabff"-->
+                  <!--&gt;{{tt.updateTitles}}-->
+                  <!--</a-tag>-->
+                  <!--<a-tag-->
+                    <!--class="problemTag saveButton"-->
+                    <!--v-else-if="index<7"-->
+                    <!--:key="index"-->
+                    <!--@click="tagsClick(tt)"-->
+                  <!--&gt;{{tt.updateTitles}}-->
+                  <!--</a-tag>-->
+                <!--</a-tooltip>-->
+                <!--<a-dropdown :trigger="['hover']">-->
+                  <!--<a-menu slot="overlay">-->
+                    <!--<a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"-->
+                                 <!--:key="index">-->
+                      <!--{{gd.updateTitles}}-->
+                    <!--</a-menu-item>-->
+                  <!--</a-menu>-->
+                  <!--<a v-if="templateTags.length>3" class="margin-left-5 saveButton">更多-->
+                    <!--<a-icon type="down"/>-->
+                  <!--</a>-->
+                  <!--<a v-else></a>-->
+                <!--</a-dropdown>-->
+                <!--<a-textarea :rows="4" v-model="templateText"></a-textarea>-->
+              <!--</div>-->
+            <!--</a-card>-->
           </a-tab-pane>
           <a-tab-pane tab="干预记录" key="2">
             <a-timeline>
@@ -482,7 +482,7 @@
         params.reviewOpinion = '通过'
         params.reviewVerdict = '1';
         params.reviewIds = [];
-        params.reviewIds[0] = data.reviewId;
+        params.reviewIds[0] = data.row.reviewId;
         this.$axios({
           url: this.api.updateReviewStatus,
           method: 'put',
@@ -500,6 +500,7 @@
       },
       //单个驳回
       rejectedSingle(data) {
+        console.log(data.row,'data');
         this.Modal.visible = true
         this.problemsData = data.row.orderissueVOS
         for (let key in this.problemsData) {
@@ -511,21 +512,22 @@
         params.reviewOpinion = '驳回'
         params.reviewVerdict = '2';
         params.reviewIds = [];
-        params.reviewIds[0] = data.reviewId;
-        this.$axios({
-          url: this.api.updateReviewStatus,
-          method: 'put',
-          data: params
-        }).then(res => {
-          if (res.code == '200') {
-            this.success(res.msg)
-          } else {
-            this.warn(res.msg)
-          }
-        })
-          .catch(err => {
-            this.error(err)
-          })
+        params.reviewIds[0] = data.row.reviewId;
+        console.log(params,'params');
+        // this.$axios({
+        //   url: this.api.updateReviewStatus,
+        //   method: 'put',
+        //   data: params
+        // }).then(res => {
+        //   if (res.code == '200') {
+        //     this.success(res.msg)
+        //   } else {
+        //     this.warn(res.msg)
+        //   }
+        // })
+        //   .catch(err => {
+        //     this.error(err)
+        //   })
       },
       //弹窗提交
       handleOk() {

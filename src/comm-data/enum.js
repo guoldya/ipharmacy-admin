@@ -99,5 +99,33 @@ const Enum={
     { text: '通用', id: '0' },
     { text: '个人', id: '1' },
   ],
+  drugGrade:[
+    { TITLE: '非限制使用级', ID: '1' },
+    { TITLE: '限制使用级', ID: '2' },
+    { TITLE: '特殊使用级', ID: '3' },
+  ],
+  purposeDrug:[
+    { TITLE: '预防', ID: '1' },
+    { TITLE: '治疗', ID: '2' },
+    { TITLE: '预防和治疗', ID: '3' },
+  ],
+  drugType:[
+    { TITLE: '西药', ID: '1' },
+    { TITLE: '中成药', ID: '2' },
+    { TITLE: '中药', ID: '3' },
+  ],
+  patientType:[
+    { TITLE: '门诊', ID: '1' },
+    { TITLE: '急诊', ID: '2' },
+    { TITLE: '住院', ID: '3' },
+    { TITLE: '体检', ID: '4' },
+    { TITLE: '转院', ID: '5' },
+  ],
+  ageType:[
+    { text: '天', id: '1' },
+    { text: '月', id: '2' },
+    { text: '岁', id: '3' },
+  ]
+
 };
 export default Enum;
