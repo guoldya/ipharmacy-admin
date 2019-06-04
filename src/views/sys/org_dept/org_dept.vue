@@ -160,6 +160,7 @@
                 }).then(res => {
                     if (res.code == '200') {
                         this.success('删除成功!',()=>{
+
                             this.getDeptData({ orgId:this.orgId });
                         })
                     } else {
@@ -300,8 +301,8 @@
                     data: obj
                 }).then(res => {
                     if (res.code == '200') {
-                        this.deptData = this.getDeptChildren(res.rows, undefined)
-                        this.setDeptCurrent()
+                        this.deptData = this.getDeptChildren(res.rows, undefined);
+                        this.setDeptCurrent();
                         this.spinning = false
                     } else {
                         this.spinning = false

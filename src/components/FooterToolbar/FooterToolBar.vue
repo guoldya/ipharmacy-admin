@@ -22,7 +22,7 @@
       },
       extra: {
         type: Boolean,
-        default: ''
+        default: false
       },
       clickOne:{
         type: Function,

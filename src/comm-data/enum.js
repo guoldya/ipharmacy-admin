@@ -4,8 +4,9 @@ const Enum={
         {id: 1, text: '是'}
     ],
   sex:[
-    {id:'1',text:'女'},
-    {id:'0',text:'男'},
+    {id:'1',text:'男'},
+    {id:'2',text:'女'},
+    {id:'0',text:'未知'},
   ],
   status:[
     {id: 0, text: '停用'},

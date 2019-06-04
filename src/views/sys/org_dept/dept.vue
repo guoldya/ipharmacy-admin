@@ -7,7 +7,10 @@
                             label="机构"
                             v-bind="formItemLayout"
                     >
-                        <a-select placeholder="请选择..." v-decorator="[
+                        <a-select
+                                :disabled="true"
+                                placeholder="请选择..."
+                                v-decorator="[
                                 'orgId',
                                 {rules: [{ required: true, message: '请输选择机构' }]}
                                 ]"
@@ -119,6 +122,7 @@
                 },
                 api: {
                     orgUrl: '/sys/sysOrgs/selectList',
+                    deptUrl:'/sys/sysOrgs/selectDeptsByOrgId',
                     updateUrl:'/sys/sysDepts/update',
                     detail:'/sys/sysDepts/selectOne'
                 },
@@ -132,6 +136,7 @@
         },
         mounted(){
             this.getOrgData();
+            this.getDeptData();
             this.init();
         },
         methods:{
@@ -215,6 +220,21 @@
                 }).catch(err => {
                         this.error(err);
                     })
+            },
+            getDeptData(val) {
+                this.$axios({
+                    url: this.api.deptUrl,
+                    method: 'put',
+                    data: { orgId:this.$route.params.orgId }
+                }).then(res => {
+                    if (res.code == '200') {
+                        this.parentData = res.rows;
+                    } else {
+                        this.warn(res.msg);
+                    }
+                }).catch(err => {
+                    this.error(err);
+                })
             },
         }
     }
