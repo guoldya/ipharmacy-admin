@@ -8,14 +8,18 @@ const Enum={
     {id:'0',text:'男'},
   ],
   status:[
-    {id: 0, text: '停用'},
-      {id: 1, text: '启用'}
+    {id: '0', text: '停用'},
+      {id: '1', text: '启用'}
     ],
   clientClass:[
-    {id:'1',text:'大于'},
-    {id:'2',text:'小于'},
-    {id:'3',text:'包含'},
-    {id:'4',text:'区间'},
+    {id:'0',text:'等于'},
+    {id:'1',text:'存在'},
+    {id:'2',text:'包含'},
+    {id:'3',text:'大于'},
+    {id:'4',text:'大于等于'},
+    {id:'5',text:'小于'},
+    {id:'6',text:'小于等于'},
+    {id:'7',text:'区间'},
   ],
   clientLevel:[
     {id:'1',text:'文本'},
@@ -55,12 +59,12 @@ const Enum={
     { text: '自定义', id: 0 },
   ],
   handleType:[
-    { text: '记录', id:1 },
-    { text: '提示', id: 2 },
-    { text: '医师确认', id: 3 },
-    { text: '双签确认', id: 4 },
-    { text: '药师确认', id: 5 },
-    { text: '驳回', id: 9 },
+    { text: '记录', id:'1'},
+    { text: '提示', id: '2' },
+    { text: '医师确认', id: '3' },
+    { text: '双签确认', id: '4' },
+    { text: '药师确认', id: '5' },
+    { text: '驳回', id: '9' },
   ],
   packageType:[
     { text: '药师审方', id: '1' },

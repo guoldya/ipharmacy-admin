@@ -12,7 +12,9 @@
         <a-col :span="10" style="padding-top: 15px">
           <a-button class=" margin-left-5" :type="buttonType" @click="buttonClick">{{buttonText}}</a-button>
           <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
-          <a-button class="margin-left-5" @click="rejected" :disabled="disable">批量驳回</a-button>
+          <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
+            <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
+          </a-popconfirm>
           <a-select style="width: 100px"  class="margin-left-5"  placeholder="刷新频率" @change="rateChange">
             <a-select-option :value='op.id' v-for="(op,index) in this.enum.refreshRate" :key="index">
               {{op.text}}
@@ -158,26 +160,46 @@
         <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
             <a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">
-              <a-tag :color="op.levelColor" style="cursor: default;font-weight: bold"> {{op.auditLevel }}级</a-tag>
-              <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
-              <div class="lineText opacity8">
-                {{op.auditDescription}}
+              <div class="margin-top-10">
+                <p class="dealP margin-top-10" style="float: left">审核意见：</p>
+                <a-button type="primary" class="saveButton" size="small" @click="saveTemplate()">存为模板</a-button>
+                <a-select class="saveButton"  size="small" style="width: 150px" @change="selectTemp" v-model="problemType">
+                  <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates"  :key="index" >
+                    {{op.tabooTitle}}
+                  </a-select-option>
+                </a-select>
+                <a-tooltip  placement="top" :key="index" v-for="(tt,index) in templateTags">
+                  <template slot="title" style="width: 100px">{{tt.titles}}</template>
+                  <a-tag
+                    class="problemTag saveButton"
+                    v-if="index<7 && tt.bgColor == '#2eabff'"
+                    :key="index"
+                    @click="tagsClick(tt)"
+                    color="#2eabff"
+                  >{{tt.updateTitles}}
+                  </a-tag>
+                  <a-tag
+                    class="problemTag saveButton"
+                    v-else-if="index<7"
+                    :key="index"
+                    @click="tagsClick(tt)"
+                  >{{tt.updateTitles}}
+                  </a-tag>
+                </a-tooltip>
+                <a-dropdown :trigger="['hover']">
+                  <a-menu slot="overlay">
+                    <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"
+                                 :key="index">
+                      {{gd.updateTitles}}
+                    </a-menu-item>
+                  </a-menu>
+                  <a v-if="templateTags.length>3" class="margin-left-5 saveButton">更多
+                    <a-icon type="down"/>
+                  </a>
+                  <a v-else></a>
+                </a-dropdown>
+                <a-textarea :rows="4" v-model="templateText"></a-textarea>
               </div>
-              <a-row class="margin-top-10 selectInput ">
-                <a-col :span="3" style="line-height: 24px">驳回理由:</a-col>
-                <a-col :span="18">
-                  <a-input size="small">
-                    <a-select slot="addonBefore" :dropdownMatchSelectWidth="false" size="small" defaultValue="+86">
-                      <a-select-option value="+86">药房库存不足</a-select-option>
-                      <a-select-option value="+87">药房库存不足</a-select-option>
-                    </a-select>
-                  </a-input>
-                </a-col>
-                <a-col :span="3">
-                  <a-button size="small">存为模板</a-button>
-                </a-col>
-              </a-row>
-
             </a-card>
           </a-tab-pane>
           <a-tab-pane tab="干预记录" key="2">
@@ -268,6 +290,9 @@
         tabsData: {},
         problemsData: [],
         rateTime:10000000000,
+
+        problemType:'',
+        reviewTemplates:[],
       }
     },
     computed: {
@@ -296,7 +321,8 @@
       this.fetchYJSMapData()
       //获取头部数据
       this.getCountText();
-
+      //获取模板
+      // this.getTemplate();
 
 
     },
@@ -397,7 +423,7 @@
           }
           params.auditType = '1';
           params.passType = '1';
-          params.reviewOpinion = '通过';
+          params.reviewOpinion = '批量通过';
           params.reviewVerdict = '1';
           params.reviewIds = reviewIds;
           this.$axios({
@@ -429,7 +455,7 @@
           }
           params.auditType = '1';
           params.passType = '1';
-          params.reviewOpinion = '驳回';
+          params.reviewOpinion = '批量驳回';
           params.reviewVerdict = '2';
           params.reviewIds = reviewIds;
           this.$axios({
@@ -572,7 +598,32 @@
         setInterval(()=>{
           this.fetchYJSMapData();
         },this.rateTime)
-      }
+      },
+
+      //获取模板
+      getTemplate(){
+        this.$axios({
+          url: this.api.selectWithReviewId,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.reviewTemplates = res.rows;
+            console.log(1);
+            if (this.reviewTemplates.length>0){
+              this.problemType = this.reviewTemplates[0].tabooId;
+              this.getTemplateDetail();
+            }
+            this.reviewTemplates.push({tabooId:'-1',tabooTitle:'----通用----'});
+            console.log(this.reviewTemplates);
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
+      },
     },
   }
 </script>

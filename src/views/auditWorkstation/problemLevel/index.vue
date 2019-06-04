@@ -17,10 +17,13 @@
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
           <template slot-scope="props">
+            <!--<span v-if="item.dataIndex == 'action'">-->
+              <!--<a @click="edits(props.row)">编辑</a>-->
+              <!--<a-divider type="vertical"/>-->
+              <!--<a @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>-->
+            <!--</span>-->
             <span v-if="item.dataIndex == 'action'">
-              <a @click="edits(props.row)">编辑</a>
-              <a-divider type="vertical"/>
-              <a @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>
+              <opcol :items="items" :more="false" :data="props.row" :filterItem="['status']"></opcol>
             </span>
             <span v-if="item.dataIndex == 'levelName'">
               <a-tag :color="props.row.levelColor" style="cursor: default;"> {{props.row.levelName}}</a-tag>
@@ -64,6 +67,9 @@
     name: 'index',
     data() {
       return {
+        api:{
+          reviewAuditlevelUpdate:'sys/reviewAuditlevel/update',
+        },
         loading: false,
         total: null,
         curent: 1,
@@ -76,6 +82,11 @@
           { title: '等级说明', dataIndex: 'levelDescription' },
           { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
           { title: '操作', width: 100, dataIndex: 'action', align: 'center' }
+        ],
+        items:[
+          {text:'编辑',showtip:false,click:this.edits},
+          {text:'启用',showtip:true,tip:'确认启用吗？',click:this.user,status:'1'},
+          {text:'停用',showtip:true,tip:'确认停用吗？',click:this.user,status:'0'},
         ],
         levelColor: '#ffffff',
         dataSource: []
@@ -141,7 +152,29 @@
         this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
       },
       //启用停用
-      user() {
+      user(data) {
+        console.log(data);
+        if (data.status){
+          data.status = 0
+        } else{
+          data.status = 1
+        }
+        this.$axios({
+          url: this.api.reviewAuditlevelUpdate,
+          method: 'post',
+          data: data
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success(res.msg);
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+
 
       },
       //停用

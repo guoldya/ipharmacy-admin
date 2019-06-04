@@ -368,7 +368,7 @@ export const asyncRouterMap = [
                 meta: { title: '审方方案设置', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/auditWorkstation/PrescriptionsSetting/detail',
+                path: '/auditWorkstation/PrescriptionsSetting/detail/:planId',
                 name: 'PrescriptionsDetail',
                 hidden: true,
                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/detail.vue'),
@@ -579,17 +579,38 @@ export const asyncRouterMap = [
         children: [
           {
             path: '/sys/org',
-            name: 'sys_org',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index'),
-            meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'], index: true }
+            name:'org_org_route',
+            component:RouteView,
+            meta: { title: '机构维护', keepAlive:false, multistage: true },
+            children:[
+              {
+                path: '/sys/org/index',
+                name:'sys_org',
+                component: () => import('@/views/sys/org/index.vue'),
+                meta: { title: '机构维护', index: true }
+              },
+              {
+                path: '/sys/org/detail',
+                name:'sys_org_detail',
+                hidden:true,
+                component: () => import('@/views/sys/org/detail.vue'),
+                meta: { title: '机构详情', detail: true }
+              }
+            ]
           },
-          {
-            path: '/sys/org/detail',
-            name: 'sys_org_detail',
-            hidden: true,
-            component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail'),
-            meta: { title: '机构维护详情', hiddenHeaderContent: true, permission: ['result'], detail: true }
-          },
+          // {
+          //   path: '/sys/org',
+          //   name: 'sys_org',
+          //   component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index'),
+          //   meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'], index: true }
+          // },
+          // {
+          //   path: '/sys/org/detail',
+          //   name: 'sys_org_detail',
+          //   hidden: true,
+          //   component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail'),
+          //   meta: { title: '机构维护详情', hiddenHeaderContent: true, permission: ['result'], detail: true }
+          // },
           {
             path: '/sys/org_dept',
             name:'org_dept_route',

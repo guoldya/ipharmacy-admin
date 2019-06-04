@@ -179,7 +179,7 @@
       add(){
         this.$router.push({
           name: 'PrescriptionsDetail',
-          // params:data,
+          params:{planId:0},
         })
       },
       //停用
@@ -188,7 +188,7 @@
       edits(data){
         this.$router.push({
           name: 'PrescriptionsDetail',
-          query:data,
+          params:{planId:data.planId},
         })
       },
 

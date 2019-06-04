@@ -35,6 +35,15 @@
         </a-select>
       </a-form-item>
       <a-form-item
+        label="状态"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
+        <a-select v-decorator="[ 'status']">
+          <a-select-option v-for="(op,index) in this.enum.status" :value="op.id" :key="index">{{op.text}}</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item
         label="显示颜色"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
@@ -86,6 +95,7 @@
             levelName:_this.listData.levelName,
             handleType:_this.listData.handleType,
             levelDescription:_this.listData.levelDescription,
+            status:_this.listData.status,
           });
           this.readOnly = this.$route.query.levelType == 1 ? true:false;
           if (this.$route.query.levelColor){

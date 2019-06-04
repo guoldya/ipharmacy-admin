@@ -27,11 +27,12 @@
           <detail-list-item term="体重"><span class="opacity8">{{leftData.weight}}Kg</span></detail-list-item>
           <detail-list-item term="体表面积"><span class="opacity8">{{leftData.bSA}}㎡</span></detail-list-item>
           <detail-list-item term="过敏史"><span class="opacity8">无</span></detail-list-item>
-          <detail-list-item term="临床诊断"><span class="opacity8">{{leftData.diseaseName}}</span></detail-list-item>
           <detail-list-item term="处方医生">
           <span class="opacity8"><a href="">
           {{leftData.attendingDocName}}&nbsp;<a-icon type="message"/>&nbsp;{{leftData.attendingDocPhone}}</a>
           </span></detail-list-item>
+          <detail-list-item term="临床诊断"><span class="opacity8">{{leftData.diseaseName}}</span></detail-list-item>
+
         </detail-list>
       </a-card>
       <a-card class="cardHeight">
@@ -50,8 +51,8 @@
                 </a-row>
                 <a-row v-if="op.auditingStatus != 0">
                   <a-col :span="7">审核状态：<span class="font-bold">{{op.auditingStatus==1? '通过':'未通过'}}</span></a-col>
-                  <a-col :span="7">审核人：<span class="font-bold">{{op.deptName}}</span></a-col>
-                  <a-col :span="6">审核时间：<span class="font-bold">{{op.prescDocName}}</span></a-col>
+                  <a-col :span="7">审核人：<span class="font-bold">{{op.reviewDocName}}</span></a-col>
+                  <a-col :span="6">审核时间：<span class="font-bold">{{op.reviewTime}}</span></a-col>
                 </a-row>
                 <a-row class="dealRow">
                   <el-table
@@ -194,11 +195,11 @@
               </div>
             </a-tab-pane>
             <a-tab-pane tab="干预记录" key="2">
-              <a-timeline style="margin-top: 20px">
-                <a-timeline-item v-for="(rd,index) in recordList" color="green" class="timelineItem" :key="index">
+              <a-timeline style="margin-top: 20px;margin-left: 10px">
+                <a-timeline-item v-for="(rd,index) in recordList" class="timelineItem" :key="index">
+                  <a-icon v-if="index+1 == recordList.length" slot="dot" type="clock-circle-o" style="font-size: 16px;" />
                   <p><a-tag>{{rd.eventPerson}}</a-tag>{{rd.eventTime}}</p>
-                  <p>{{rd.event}}</p>
-                  <p>{{rd.eventText}}</p>
+                  <p><span class="font-bold">{{rd.event}}:</span><span>{{rd.eventText}}</span></p>
                 </a-timeline-item>
               </a-timeline>
             </a-tab-pane>
@@ -208,7 +209,7 @@
     </a-col>
 
     <a-modal
-      title="选择问题"
+      title="另存为模板"
       :visible="Modal.visible"
       @ok="handleOk"
       @cancel="handleCancel"
@@ -218,7 +219,7 @@
         <a-form-item label="分类"
                      :label-col="{ span: 4 }"
                      :wrapper-col="{ span: 17 }">
-          <a-select v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择问题'  }]}  ]"
+          <a-select v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
                     placeholder="请选择分类">
             <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates" :key="index">
               {{op.tabooTitle}}
@@ -228,7 +229,7 @@
         <a-form-item label="类型"
                      :label-col="{ span: 4 }"
                      :wrapper-col="{ span: 17 }">
-          <a-select v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择问题'  }]}  ]"
+          <a-select v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
                     placeholder="请选择类型">
             <a-select-option :value='op.id' v-for="(op,index) in this.enum.templateType" :key="index">
               {{op.text}}
@@ -238,7 +239,7 @@
         <a-form-item label="标题"
                      :label-col="{ span: 4 }"
                      :wrapper-col="{ span: 17 }">
-         <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  },{len:10}]}  ]"></a-input>
+         <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
         </a-form-item>
         <a-form-item label="内容"
                      :label-col="{ span: 4 }"
@@ -291,6 +292,7 @@
           selectVisId:'/sys/reviewOrderissue/selectInterventionRecordWithVisId',
           selectReviewTemplateDetail:'sys/reviewTemplate/selectReviewTemplateDetail',
           selectWithVisId:'sys/reviewOrderissue/selectInterventionRecordWithVisId',
+          reviewTemplateUpdate:'sys/reviewTemplate/update',
     },
         Modal: {
           visible: false
@@ -518,11 +520,13 @@
         }).then(res => {
           if (res.code == '200') {
             this.reviewTemplates = res.rows;
-            if (this.reviewTemplates){
+            console.log(1);
+            if (this.reviewTemplates.length>0){
               this.problemType = this.reviewTemplates[0].tabooId;
               this.getTemplateDetail();
             }
             this.reviewTemplates.push({tabooId:'-1',tabooTitle:'----通用----'});
+            console.log(this.reviewTemplates);
           } else {
             this.warn(res.msg)
           }
@@ -577,21 +581,25 @@
         }
       },
       handleOk() {
-        this.Modal.visible = false;
         this.form.validateFields((err, values) => {
             if (!err) {
-              console.log(values);
-              // coreRuleUpdate(params).then(res => {
-              //   if (res.code == '200') {
-              //     this.getPageData()
-              //     this.success(res.msg)
-              //   } else {
-              //     this.warn(res.msg)
-              //   }
-              // }).catch(err => {
-              //   this.error(err)
-              // })
-              this.Modal.visible = false
+              console.log(values,'1');
+              this.$axios({
+                url: this.api.reviewTemplateUpdate,
+                method: 'post',
+                data: values
+              }).then(res => {
+                if (res.code == '200') {
+                  this.success(res.msg);
+                  this.getTemplateDetail();
+                  this.Modal.visible = false
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+                .catch(err => {
+                  this.error(err)
+                })
             }
           }
         )

@@ -161,7 +161,24 @@
     computed: {},
     mounted() {
       this.getEnumList()
-      this.getOrgList()
+      this.getOrgList();
+      if (this.$store.state.routerData){
+        let list = {};
+        list.orgId = this.$store.state.routerData.orgId;
+        list.title = this.$store.state.routerData.title;
+        list.parentId = this.$store.state.routerData.parentId;
+        list.orgCode = this.$store.state.routerData.orgCode;
+        list.orgType = this.$store.state.routerData.orgType;
+        list.orgClass = this.$store.state.routerData.orgClass;
+        list.orgGrade = this.$store.state.routerData.orgId;
+        list.phone = this.$store.state.routerData.phone;
+        list.adress = this.$store.state.routerData.adress;
+        list.remarks = this.$store.state.routerData.remarks;
+        list.status = this.$store.state.routerData.status;
+        this.form.setFieldsValue(list);
+      }
+
+      console.log(this.$store.state.routerData,'1');
     },
     methods: {
       //验证手机号

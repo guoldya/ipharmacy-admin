@@ -8,7 +8,7 @@
     </Searchpanel>
     <a-button class="margin-top-10" type="primary" @click="adds">新增</a-button>
     <a-spin :spinning="loading" tip="加载中...">
-      <a-treeTable :columns="columns" :data="dataSource" :items="items" :selectTreeList="selectTreeList" :opColWidth="110" :moreOp="true"></a-treeTable>
+      <a-treeTable :columns="columns" :data="dataSource" :items="items" :selectTreeList="selectTreeList" :opColWidth="110" :moreOp="false"></a-treeTable>
     </a-spin>
     <a-modal
       title="分配药师"
@@ -222,9 +222,9 @@
         })
       },
       edits(data) {
+        this.$store.state.routerData = data;
         this.$router.push({
           name: 'sys_org_detail',
-          query: data
         })
       },
       //启用停用
