@@ -466,13 +466,13 @@ export const asyncRouterMap = [
             path: '/baseData/drugSpec',
             name: 'DrugSpec',
             component: RouteView,
-            meta: { title: '药品说明书', multistage: true },
+            meta: { title: '药品字典管理', multistage: true },
             children: [
               {
                 path: '/baseData/drugSpec/index',
                 name: 'drugSpecIndex',
                 component: () => import( '@/views/baseData/drugSpec/index.vue'),
-                meta: { title: '药品说明书', hiddenHeaderContent: true, index: true }
+                meta: { title: '药品字典管理', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/baseData/drugSpec/detail',
@@ -494,14 +494,14 @@ export const asyncRouterMap = [
                 name: 'dictionaryIndex',
                 component: () => import( '@/views/baseData/dictionary/index.vue'),
                 meta: { title: '基础字典数据', hiddenHeaderContent: true, index: true }
-              }
-              // {
-              //   path: '/baseData/drugSpec/detail',
-              //   name: 'drugAdministration',
-              //   hidden: true,
-              //   component: () => import( '@/views/baseData/drugSpec/detail.vue'),
-              //   meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
-              // },
+              },
+              {
+                path: '/baseData/dictionary/detailBaseClass',
+                name: 'detailBaseClass',
+                hidden: true,
+                component: () => import( '@/views/baseData/dictionary/detailBaseClass.vue'),
+                meta: { title: '分类详情',hiddenHeaderContent: true, detail: true,}
+              },
             ]
           },
           {

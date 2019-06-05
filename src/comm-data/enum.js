@@ -125,6 +125,10 @@ const Enum={
     { text: '天', id: '1' },
     { text: '月', id: '2' },
     { text: '岁', id: '3' },
+  ],
+  classType:[
+    { text: '系统分类', id: 1 },
+    { text: '自定义', id: 2 },
   ]
 
 };

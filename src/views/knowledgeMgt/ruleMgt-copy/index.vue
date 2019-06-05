@@ -514,7 +514,8 @@
       //查看炒作
       look(data){
         let newPage = this.$router.resolve({
-          name: 'flowChartEditor'
+          name: 'flowChartEditor',
+          query:{id:data.row.id},
         })
         window.open(newPage.href, '_blank')
       },

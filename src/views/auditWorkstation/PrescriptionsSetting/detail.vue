@@ -172,8 +172,7 @@
                   this.planruleList[key].inputType = '';
                   this.planruleList[key].operators = [];
                   this.planruleList[key].treeData = [];
-                  this.planruleList[key].key = 0;
-                  if (this.planruleList[key].logic == '2'){
+                  if (this.planruleList[key].logic == '1'){
                     this.planruleList[key].inputType = 'input'
                   }else if (this.planruleList[key].logic == '2'){
                     this.planruleList[key].inputType = 'dataRange'
@@ -273,7 +272,6 @@
               delete listData[key].inputType
               delete listData[key].operators
               delete listData[key].treeData
-              delete listData[key].key
             }
             params.sampling = '1'
             params.distribution = '1'
@@ -289,18 +287,20 @@
             })
               .then(res => {
                 if (res.code == '200') {
-                  this.success(res.msg)
-                  this.loading = false
+                  this.success(res.msg);
+                  setTimeout(()=>{
+                    this.$router.push({
+                      name: 'PrescriptionsSettingIndex',
+                    })
+                  },500)
                 } else {
                   this.warn(res.msg)
-                  this.loading = false
                 }
               })
               .catch(err => {
                 this.error(err)
               })
           } else {
-            this.loading = false
           }
         })
       },
@@ -317,7 +317,6 @@
           assertVal: null,
           assertVal2: null,
           values: [],
-          key:0,
         })
       },
       deleteCondition(index) {
@@ -363,8 +362,8 @@
         item.operators = []
         item.treeData = [];
         item.values = [];
-        item.assertVal = null;
-        item.assertVal2 = null;
+        item.assertVal = 0;
+        item.assertVal2 = 0;
         let data = this.getItemTreeData(item.columnId, this.treeList)
         for (let key in this.classData) {
           for (let i in data.operators) {
@@ -495,14 +494,6 @@
         }).then(res => {
           if (res.code == '200') {
              item.treeData = res.rows;
-            // this.$set(item, "treeData", res.rows);
-            // console.log(item,"更新数据")
-            //item.key +=1;
-            // for (let key in this.planruleList){
-            //   if (this.planruleList[key].columnId == code){
-            //     this.planruleList[key].treeData = res.rows;
-            //   }
-            // }
             this.planruleList.push();
             console.log(this.planruleList);
           } else {
@@ -514,7 +505,7 @@
           })
       },
       //树下拉
-      searchTreeSelect(value,data,code){
+      searchTreeSelect(value,data,code,item){
         let params = {};
         params.keyword = value;
         params.code = code;
@@ -525,13 +516,8 @@
         }).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows)
-            data = this.recursiveNodeTree(indexData, 'undefined');
-           for (let key in this.planruleList){
-             if (this.planruleList[key].columnId == code){
-               this.planruleList[key].treeData = data;
-             }
-           }
-            console.log(this.planruleList);
+            item.treeData = this.recursiveNodeTree(indexData, 'undefined');
+            this.planruleList.push()
           } else {
             this.warn(res.msg)
           }

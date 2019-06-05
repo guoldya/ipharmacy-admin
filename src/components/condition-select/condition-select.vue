@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="(cd,index) in conditions" class="margin-top-10">
+    <div v-for="(cd,index) in conditions" class="condition margin-top-10">
       <a-row>
         <a-col :span="7"></a-col>
         <a-col :span="4">
@@ -49,13 +49,12 @@
           <!--树-->
           <a-tree-select
             multiple
-            @search="searchTreeSelect($event,cd.treeData,cd.columnId)"
+            @search="searchTreeSelect($event,cd.treeData,cd.columnId,cd)"
             :treeData="cd.treeData"
             v-else-if="cd.inputType=='tree'"
             class="width-100 marLeft10"
             v-model="cd.values"
-            :filterTreeNode="false"
-            :key="cd.key">
+            :filterTreeNode="false">
           </a-tree-select>
 
           <!--日期框-->
@@ -64,22 +63,30 @@
           <!--<a-range-picker class="width-100 marLeft10" v-else-if="cd.val==6" v-model="cd.list"/>-->
           <!--数字范围-->
           <div v-else-if="cd.inputType=='dataRange'" class="width-100 marLeft10">
-            <a-input-number v-model="cd.assertVal" style="width:36%"></a-input-number>
-            <span>~</span>
-            <a-input-number v-model="cd.assertVal2" style="width:36%"></a-input-number>
-            <a-select
-              style="width:20%"
-              v-if="cd.columnId =='AGE'"
-              class="margin-left-5"
-            >
-              <a-select-option
-                v-for="at in ageType"
-                :value='at.id'
-                :key="at.id"
-              >
-                {{at.text}}
-              </a-select-option>
+            <a-input-number style=" width:32%; text-align: center" placeholder="1" v-model="cd.assertVal"  />
+            <a-input style=" width: 12%; border-left: 0; pointer-events: none; backgroundColor: #fff" placeholder="~" disabled />
+            <a-input-number style="width:32%; text-align: center; border-left: 0" v-model="cd.assertVal2" />
+            <a-select defaultValue="1">
+              <a-select-option value="1">年</a-select-option>
+              <a-select-option value="2">月</a-select-option>
+              <a-select-option value="3">日</a-select-option>
             </a-select>
+            <!--<a-input style=" width:32%; text-align: center" placeholder="Minimum" v-model="cd.assertVal"/>-->
+            <!--<a-input style=" width: 4%; border-left: 0; pointer-events: none; backgroundColor: #fff" placeholder="~" disabled />-->
+            <!--<a-input style="width:32%; text-align: center; border-left: 0" v-model="cd.assertVal2"  placeholder="Maximum" />-->
+            <!--<a-select-->
+              <!--style="width:20%"-->
+              <!--v-if="cd.columnId =='AGE'"-->
+              <!--class="margin-left-5"-->
+            <!--&gt;-->
+              <!--<a-select-option-->
+                <!--v-for="at in ageType"-->
+                <!--:value='at.id'-->
+                <!--:key="at.id"-->
+              <!--&gt;-->
+                <!--{{at.text}}-->
+              <!--</a-select-option>-->
+            <!--</a-select>-->
           </div>
         </a-col>
         <a-col :span="1">
@@ -133,9 +140,20 @@
       }
     },
     mounted() {
-      console.log(this.conditions, '1')
+
     },
     methods: {
+      changeAssert1(value,data){
+        console.log(value);
+        data.assertVal = value.data;
+        // this.conditions.push();
+        console.log(data.assertVal);
+      },
+      changeAssert2(value,data){
+        data.assertVal1 = value.data;
+        // this.conditions.push();
+        console.log(data.assertVal);
+      },
       // //枚举时搜索下拉框
       // searchSelect(value,data,code){
       //   let params = {};
@@ -242,6 +260,9 @@
   .treeStyle li.ant-select-tree-treenode-disabled > span:not(.ant-select-tree-switcher), li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper, li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper span {
     color: rgba(0, 0, 0, 0.65) !important;
     cursor: not-allowed;
+  }
+  .ant-select-tree-dropdown {
+   max-height: 300px !important;
   }
 
 </style>

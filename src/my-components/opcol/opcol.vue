@@ -6,6 +6,7 @@
                 <a v-if="(op.showtip==false)" @click="op.click(data)" :style="{'color':op.color?op.color:'#2D8cF0'}">{{op.text}}</a>
                 <a-popconfirm v-if="(op.showtip==true)"
                               :title=op.tip
+                              placement="topRight"
                               @confirm=op.click(data)>
                     <a :style="'color:'+op.color">{{op.text}}</a>
                 </a-popconfirm>
