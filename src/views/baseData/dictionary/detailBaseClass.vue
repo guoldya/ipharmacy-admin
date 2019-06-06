@@ -11,46 +11,32 @@
       @submit="handleSubmit"
     >
       <a-form-item
-        label="等级名称"
+        label="分类编码"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-input read-only v-decorator="['levelName',]"/>
+        <a-input v-decorator="['classCode', {rules: [{ required: true,message: '请输入分类编码'  }]} ]"/>
       </a-form-item>
       <a-form-item
-        label="等级说明"
+        label="分类名称"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-textarea :read-only="readOnly"
-          v-decorator="['levelDescription']"/>
+        <a-input v-decorator="['name' ,{rules: [{ required: true,message: '请输入分类名称'  }]} ]"/>
       </a-form-item>
       <a-form-item
-        label="处理类型"
+        label="标准代码"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-select v-decorator="[ 'handleType']">
-          <a-select-option v-for="(op,index) in this.enum.handleType" :value="op.id" :key="index">{{op.text}}</a-select-option>
-        </a-select>
+        <a-input v-decorator="[ 'standardCode',{rules: [{ required: true,message: '请输入标准代码'  }]} ]"/>
       </a-form-item>
       <a-form-item
-        label="状态"
+        label="备注"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-select v-decorator="[ 'status']">
-          <a-select-option v-for="(op,index) in this.enum.status" :value="op.id" :key="index">{{op.text}}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item
-        label="显示颜色"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-        <a-col :span="2">
-          <colorPicker @change="handlesColor" class="colorPick" v-model="levelColor"/>
-        </a-col>
+        <a-textarea v-decorator="[ 'remark']"/>
       </a-form-item>
       <a-form-item
         :wrapper-col="{ span: 24, offset: 10 }"
@@ -78,34 +64,11 @@
           sm: { span: 8 }
         },
         form: this.$form.createForm(this),
-        roleCode: '',
-        loadData: [],
-        levelColor:'#000',
-        listData:{},
-        readOnly:false,
       }
     },
     computed: {},
     mounted() {
-      let _this = this;
-      if (this.$route.query){
-        if (this.$route.query.msg == 'old'){
-          _this.listData = this.$route.query;
-          _this.form.setFieldsValue({
-            levelName:_this.listData.levelName,
-            handleType:_this.listData.handleType,
-            levelDescription:_this.listData.levelDescription,
-            status:_this.listData.status,
-          });
-          this.readOnly = this.$route.query.levelType == 1 ? true:false;
-          if (this.$route.query.levelColor){
-            _this.levelColor = this.$route.query.levelColor;
-          }
-      }else {
-          this.readOnly=false;
-          _this.form.setFieldsValue({levelName:this.$route.query.length+'级'});
-        }
-      }
+
     },
     methods: {
       handleSubmit(e) {
@@ -139,12 +102,6 @@
       confirm(e) {
 
       },
-      handlesColor(data){
-        if (data) {
-          console.log(data);
-          this.listData.levelColor = data;
-        }
-      }
     }
   }
 </script>

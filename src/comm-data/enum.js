@@ -9,8 +9,8 @@ const Enum = {
         { id: '0', text: '未知' }
     ],
     status: [
-        { id: 0, text: '停用' },
-        { id: 1, text: '启用' }
+        { id: '0', text: '停用' },
+        { id: '1', text: '启用' }
     ],
     clientClass: [
         { id: '1', text: '大于' },
@@ -26,6 +26,24 @@ const Enum = {
         { id: '5', text: '存在' },
         { id: '6', text: '日期范围' }
     ],
+  clientClass:[
+    {id:'0',text:'等于'},
+    {id:'1',text:'存在'},
+    {id:'2',text:'包含'},
+    {id:'3',text:'大于'},
+    {id:'4',text:'大于等于'},
+    {id:'5',text:'小于'},
+    {id:'6',text:'小于等于'},
+    {id:'7',text:'区间'},
+  ],
+  clientLevel:[
+    {id:'1',text:'文本'},
+    {id:'2',text:'枚举'},
+    {id:'3',text:'日期'},
+    {id:'4',text:'范围'},
+    {id:'5',text:'存在'},
+    {id:'6',text:'日期范围'},
+  ],
 
     patientStatus: [
         { text: '待审核', value: '0' },
@@ -56,12 +74,12 @@ const Enum = {
         { text: '自定义', id: 0 }
     ],
     handleType: [
-        { text: '记录', id: 1 },
-        { text: '提示', id: 2 },
-        { text: '医师确认', id: 3 },
-        { text: '双签确认', id: 4 },
-        { text: '药师确认', id: 5 },
-        { text: '驳回', id: 9 }
+        { text: '记录', id: '1' },
+        { text: '提示', id: '2' },
+        { text: '医师确认', id: '3' },
+        { text: '双签确认', id: '4' },
+        { text: '药师确认', id: '5' },
+        { text: '驳回', id: '9' }
     ],
     packageType: [
         { text: '药师审方', id: '1' },
@@ -94,6 +112,37 @@ const Enum = {
     templateType: [
         { text: '通用', id: '0' },
         { text: '个人', id: '1' }
+    ],
+    drugGrade:[
+        { TITLE: '非限制使用级', ID: '1' },
+        { TITLE: '限制使用级', ID: '2' },
+        { TITLE: '特殊使用级', ID: '3' },
+    ],
+    purposeDrug:[
+        { TITLE: '预防', ID: '1' },
+        { TITLE: '治疗', ID: '2' },
+        { TITLE: '预防和治疗', ID: '3' },
+    ],
+    drugType:[
+        { TITLE: '西药', ID: '1' },
+        { TITLE: '中成药', ID: '2' },
+        { TITLE: '中药', ID: '3' },
+    ],
+    patientType:[
+        { TITLE: '门诊', ID: '1' },
+        { TITLE: '急诊', ID: '2' },
+        { TITLE: '住院', ID: '3' },
+        { TITLE: '体检', ID: '4' },
+        { TITLE: '转院', ID: '5' },
+    ],
+    ageType:[
+        { text: '天', id: '1' },
+        { text: '月', id: '2' },
+        { text: '岁', id: '3' },
+    ],
+    classType:[
+        { text: '系统分类', id: 1 },
+        { text: '自定义', id: 2 },
     ],
     paramClass:[
         { id:'0', text:'系统参数'},

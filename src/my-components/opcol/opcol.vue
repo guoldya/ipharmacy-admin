@@ -1,21 +1,21 @@
 <template>
-    <div>
-
+  <div>
 
         <template v-if="!more">
             <div style="display: inline-block" v-for="(op,index) in newItem" :key="index">
                 <a v-if="(op.showtip==false)" @click="op.click(data)" :style="{'color':op.color?op.color:'#2D8cF0'}">{{op.text}}</a>
                 <a-popconfirm v-if="(op.showtip==true)"
                               :title=op.tip
+                              placement="topRight"
                               @confirm=op.click(data)>
                     <a :style="'color:'+op.color">{{op.text}}</a>
                 </a-popconfirm>
-                <a-divider v-if="(index != newItem.length-1)" type="vertical"/>
+                <a-divider v-if="(index != newItem.length-1)" type="vertical" />
             </div>
         </template>
         <template v-else>
-            <a @click="newItem[0].click(data)" :style="{'color':items[0].color?items[0].color:'#2D8cF0'}">{{items[0].text}}</a>
-            <a-divider type="vertical"/>
+            <a @click="items[0].click(data)" :style="{'color':items[0].color?items[0].color:'#2D8cF0'}">{{items[0].text}}</a>
+            <a-divider type="vertical" />
             <!--<a-dropdown>-->
             <!--<a class="ant-dropdown-link">更多<a-icon type="down" /></a>-->
             <!--<a-menu slot="overlay" @click="handleMenuClick" ref="menu">-->
@@ -29,13 +29,11 @@
             <!--</a-menu>-->
             <!--</a-dropdown>-->
             <a-dropdown :trigger="['click']">
-                <a class="more">更多
-                    <a-icon type="down"/>
-                    <a-popconfirm :title="popTitle" @confirm="confirm" class="pop" :visible="visible"
-                                  @cancel="cancel"></a-popconfirm>
+                <a class="more">更多<a-icon type="down"/>
+                    <a-popconfirm :title="popTitle" @confirm="confirm" class="pop" :visible="visible" @cancel="cancel"></a-popconfirm>
                 </a>
                 <a-menu slot="overlay" @click="handleMenuClick" ref="menu">
-                    <a-menu-item v-for="(op,index) in newItem.slice(1)" :key="index">
+                    <a-menu-item  v-for="(op,index) in newItem.slice(1)" :key="index">
                         <a :style="'color:'+op.color">{{op.text}}</a>
                     </a-menu-item>
                 </a-menu>

@@ -1,11 +1,11 @@
 <template>
-    <a-card>
-      <Searchpanel ref="searchPanel"  :list="list">
-        <div slot="control">
-          <a-button type="primary" @click="search" >查询</a-button>
-          <a-button class="margin-left-5" @click="resetForm" >重置</a-button>
-        </div>
-      </Searchpanel>
+  <a-card>
+    <Searchpanel ref="searchPanel" :list="list">
+      <div slot="control">
+        <a-button type="primary" @click="search">查询</a-button>
+        <a-button class="margin-left-5" @click="resetForm">重置</a-button>
+      </div>
+    </Searchpanel>
     <a-spin :spinning="loading" tip="加载中...">
       <a-button class="margin-top-10" type="primary" @click="add">新增</a-button>
       <el-table
@@ -16,14 +16,10 @@
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
           <template slot-scope="props">
             <span v-if="item.dataIndex == 'action'">
-              <a @click="edits(props.row)">编辑</a>
-              <a-divider type="vertical" />
-              <a  @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>
-              <a-divider type="vertical" />
-              <a @click="edits(props.row)">删除</a>
+               <opcol :items="items" :more="false" :data="props.row" :filterItem="['status']"></opcol>
             </span>
             <span v-else-if="item.dataIndex == 'planType'" v-html="planType(props.row.planType)"></span>
-            <span v-else-if="item.dataIndex == 'planScope'" >
+            <span v-else-if="item.dataIndex == 'planScope'">
               {{props.row.planScope=='1'?'门诊':'住院' }}
             </span>
             <span v-else-if="item.dataIndex == 'status'">
@@ -61,59 +57,80 @@
       :confirmLoading="confirmLoading"
       width="690px"
     >
-      <a-row>
-        <a-col :span="10"><p class="userModel-p">待分配药师</p></a-col>
-        <a-col :span="11" :offset="3"><p class="userModel-p">已分配药师</p></a-col>
-      </a-row>
-      <a-transfer
-        :dataSource="mockData"
-        :listStyle="{
-                width: '280px',
-                height: '300px',
-                }"
-        :titles="['源列表', '目标列表']"
-        :targetKeys="targetKeys"
-        @change="handleChange"
-        :render="item=>item.title"
-        :operations="['添加', '移除']"
+      <a-select style="width: 400px" class="margin-left-5">
+        <a-select-option
+          v-for="item in this.enum.clientClass"
+          :value='item.id'
+          :key="index"
+        >
+          {{item.text}}
+        </a-select-option>
+      </a-select>
+      <a-button type="primary" class="margin-left-5">分配</a-button>
+
+      <el-table
+        class="margin-top-10"
+        :data="dataSource" border
+        :highlight-current-row="true">
+        <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
+                         :prop="item.dataIndex" :width="item.width" :align="item.align">
+          <template slot-scope="props">
+            <span>{{props.row[item.dataIndex]}}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <a-pagination
+        showSizeChanger
+        showQuickJumper
+        :total="total"
+        class="pnstyle"
+        :defaultPageSize="pageSize"
+        :pageSizeOptions="['10', '20','50']"
+        @showSizeChange="pageChangeSize"
+        @change="pageChange"
+        size="small"
       >
-      </a-transfer>
+      </a-pagination>
     </a-modal>
-    </a-card>
+  </a-card>
 </template>
 
 <script>
   import { reviewPlanPage } from '@/api/login'
+
   export default {
     name: 'index',
-    data(){
-      return{
-        loading:false,
-        total:10,
-        curent:1,
-        pageSize:10,
+    data() {
+      return {
+        api: {
+          reviewPlanUpdate: 'sys/reviewPlan/update',
+          updateStatus: 'sys/reviewPlan/updateStatus'
+        },
+        loading: false,
+        total: 10,
+        curent: 1,
+        pageSize: 10,
         visible: false,
         confirmLoading: false,
         //穿梭狂数据
         targetKeys: [],
-        mockData:[],
+        mockData: [],
         columns: [
-          {title: '方案名称',dataIndex: 'planName',width:250},
-          {title: '方案类型',dataIndex: 'planType',align: 'center',width:80},
-          {title: '方案范围',dataIndex: 'planScope',align: 'center',width:80},
-          {title: '方案描述',dataIndex: 'describe'},
-          { title: '分配', dataIndex: 'userNum', align: 'center',width:80 },
-          {title: '状态',dataIndex: 'status',width:80,align:'center'},
-          {title: '操作',dataIndex: 'action',align:'center',width:140,}
+          { title: '方案名称', dataIndex: 'planName', width: 250 },
+          { title: '方案类型', dataIndex: 'planType', align: 'center', width: 80 },
+          { title: '方案范围', dataIndex: 'planScope', align: 'center', width: 80 },
+          { title: '方案描述', dataIndex: 'describe' },
+          { title: '分配', dataIndex: 'userNum', align: 'center', width: 80 },
+          { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
+          { title: '操作', dataIndex: 'action', align: 'center', width: 140 }
         ],
-        items:[
-          {text:'编辑',showtip:false,click:this.edits},
-          {text:'删除',showtip:true,tip:'确认删除吗？',click:this.delRow},
-          {text:'启用',color:'#2D8cF0',showtip:true,tip:'确认启用吗？',click:this.changeStatus},
-          {text:'停用',showtip:true,tip:'确认停用吗？',click:this.changeStatus},
+        items: [
+          { text: '编辑', showtip: false, click: this.edits },
+          { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status: '1' },
+          { text: '停用', color: '#E6A23C', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status: '0' }
         ],
-        colors:'#ffffff',
-        dataSource:[],
+        colors: '#ffffff',
+        dataSource: []
       }
     },
     computed: {
@@ -124,22 +141,23 @@
             dataField: 'clientId',
             type: 'text',
             keyExpr: 'clientId',
-            valueExpr: 'clientName',
+            valueExpr: 'clientName'
           },
-          { name: '方案类型',
+          {
+            name: '方案类型',
             dataField: 'drugName',
             type: 'select',
             keyExpr: 'id',
             valueExpr: 'text',
-            dataSource:this.enum.packageType,
-          },
+            dataSource: this.enum.packageType
+          }
         ]
       }
     },
-    mounted(){
-      this.getData();
+    mounted() {
+      this.getData()
     },
-    methods:{
+    methods: {
       //搜索
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue()
@@ -158,7 +176,7 @@
         reviewPlanPage(params).then(res => {
           if (res.code == '200') {
             this.dataSource = res.rows
-            this.total = res.total;
+            this.total = res.total
             this.loading = false
           } else {
             this.loading = false
@@ -169,26 +187,58 @@
           this.error(err)
         })
       },
-      pageChangeSize(){
-
+      pageChange(page, pageSize) {
+        this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
       },
-      pageChange(){
-
+      pageChangeSize(page, pageSize){
+        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
       },
       //新增
-      add(){
+      add() {
         this.$router.push({
           name: 'PrescriptionsDetail',
-          // params:data,
+          params: { planId: 0 }
         })
       },
       //停用
-      ban(data){
+      changeStatus(data) {
+        let params = {}
+        if (data.status == '1') {
+          params.status = 0
+        } else {
+          params.status = 1
+        }
+        params.planId = data.planId
+        console.log(params)
+        this.$axios({
+          url: this.api.updateStatus,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              if (data.status == '1') {
+                this.success('停用成功')
+              } else {
+                this.success('启用成功')
+              }
+              this.getData()
+            } else {
+              if (data.status == '1') {
+                this.warn('停用失败')
+              } else {
+                this.warn('启用失败')
+              }
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       },
-      edits(data){
+      edits(data) {
         this.$router.push({
           name: 'PrescriptionsDetail',
-          query:data,
+          params: { planId: data.planId }
         })
       },
 
@@ -199,19 +249,19 @@
         // this.getUserRole(rolePass)
       },
       //确认分配药师
-      handleOk(){
+      handleOk() {
 
       },
-      handleCancel(){
+      handleCancel() {
         this.visible = false
       },
-      handleChange(){
+      handleChange() {
 
       },
-      planType(value){
-        if(value=='1'){
+      planType(value) {
+        if (value == '1') {
           return '药师审方'
-        }else if(value == '2'){
+        } else if (value == '2') {
           return '处方点评'
         }
       }

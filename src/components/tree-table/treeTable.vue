@@ -12,7 +12,7 @@
     <el-table-column type="selection" align="center" v-if="checkbox" width="55"></el-table-column>
     <el-table-column fixed="right" label="操作" :width="opColWidth" align="center" v-if="isOpcol">
       <template slot-scope="scope">
-        <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="filterItem"></opcol>
+        <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
       </template>
     </el-table-column>
     <el-table-column v-if="columns.length === 0" width="150">
@@ -162,6 +162,9 @@ export default {
     iconShow(index, record) {
       return index === 0 && record.items && record.items.length > 0
     },
+    // selectTreeList(val) {
+    //   this.selectData = val
+    // },
     
   }
 }

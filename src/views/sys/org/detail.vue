@@ -30,10 +30,11 @@
         </a-form-item>
         <a-form-item
           label="上级机构"
+
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-select v-decorator="[ 'parentId',{rules: [{ required: true, message: '请选择上级机构' }]}]">
+          <a-select allowClear v-decorator="[ 'parentId',]">
             <a-select-option
               v-for="(op,index) in listData"
               :value="op.orgId"
@@ -115,10 +116,10 @@
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-select v-decorator="[ 'status']">
-            <a-select-option v-for="(op,index) in this.enum.status" :value="op.id" :key="index">{{op.text}}
-            </a-select-option>
-          </a-select>
+          <a-radio-group v-decorator="['status',{initialValue: '1'}]">
+            <a-radio value="1">启用</a-radio>
+            <a-radio value="0">停用</a-radio>
+          </a-radio-group>
         </a-form-item>
         <a-form-item
           :wrapper-col="{ span: 20, offset: 10 }"
@@ -140,7 +141,8 @@
       return {
         api: {
           selectClassListWithMoreParam: '/sys/dicBase/selectClassListWithMoreParam',
-          selectOrgList: 'sys/sysOrgs/selectList'
+          selectOrgList: 'sys/sysOrgs/selectList',
+          selectOrgUpdate: 'sys/sysOrgs/update',
         },
         labelCol: {
           xs: { span: 8 },
@@ -161,7 +163,25 @@
     computed: {},
     mounted() {
       this.getEnumList()
-      this.getOrgList()
+      this.getOrgList();
+      console.log(this.$store.state.routerData,'data');
+      if (this.$store.state.routerData){
+        let list = {};
+        list.orgId = this.$store.state.routerData.orgId;
+        list.title = this.$store.state.routerData.title;
+        list.parentId = this.$store.state.routerData.parentId;
+        list.orgCode = this.$store.state.routerData.orgCode;
+        list.orgType = this.$store.state.routerData.orgType;
+        list.orgClass = this.$store.state.routerData.orgClass;
+        list.orgGrade = this.$store.state.routerData.orgId;
+        list.phone = this.$store.state.routerData.phone;
+        list.adress = this.$store.state.routerData.adress;
+        list.remarks = this.$store.state.routerData.remarks;
+        list.status = this.$store.state.routerData.status;
+        this.form.setFieldsValue(list);
+      }
+
+      console.log(this.$store.state.routerData,'1');
     },
     methods: {
       //验证手机号
@@ -230,17 +250,29 @@
         e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
-            reviewAuditlevelUpdate(values).then(res => {
-              if (res.code == '200') {
-                this.$message.info('保存成功!')
-                this.backTo()
-              } else {
-                this.$message.error('保存失败!')
-                this.warn(res.msg)
-              }
-            }).catch(err => {
-              this.error(err)
+            console.log(JSON.stringify(values))
+            this.$axios({
+              url: this.api.selectOrgUpdate,
+              method: 'post',
+              data: values
             })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success('保存成功');
+                  setTimeout(()=>{
+                    this.$router.push({
+                      name: 'sys_org'
+                    })
+                  },500)
+
+                } else {
+                  this.warn('保存失败');
+                }
+              })
+              .catch(err => {
+                this.loading = false
+                this.error(err)
+              })
           }
         })
       },

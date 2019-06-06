@@ -466,13 +466,13 @@ export const asyncRouterMap = [
                         path: '/baseData/drugSpec',
                         name: 'DrugSpec',
                         component: RouteView,
-                        meta: { title: '药品说明书', multistage: true },
+                        meta: { title: '药品字典管理', multistage: true },
                         children: [
                             {
                                 path: '/baseData/drugSpec/index',
                                 name: 'drugSpecIndex',
                                 component: () => import( '@/views/baseData/drugSpec/index.vue'),
-                                meta: { title: '药品说明书', hiddenHeaderContent: true, index: true }
+                                meta: { title: '药品字典管理', hiddenHeaderContent: true, index: true }
                             },
                             {
                                 path: '/baseData/drugSpec/detail',
@@ -494,14 +494,14 @@ export const asyncRouterMap = [
                                 name: 'dictionaryIndex',
                                 component: () => import( '@/views/baseData/dictionary/index.vue'),
                                 meta: { title: '基础字典数据', hiddenHeaderContent: true, index: true }
-                            }
-                            // {
-                            //   path: '/baseData/drugSpec/detail',
-                            //   name: 'drugAdministration',
-                            //   hidden: true,
-                            //   component: () => import( '@/views/baseData/drugSpec/detail.vue'),
-                            //   meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
-                            // },
+                            },
+                            {
+                                path: '/baseData/dictionary/detailBaseClass',
+                                name: 'detailBaseClass',
+                                hidden: true,
+                                component: () => import( '@/views/baseData/dictionary/detailBaseClass.vue'),
+                                meta: { title: '分类详情',hiddenHeaderContent: true, detail: true,}
+                            },
                         ]
                     },
                     {
@@ -579,17 +579,38 @@ export const asyncRouterMap = [
                 children: [
                     {
                         path: '/sys/org',
-                        name: 'sys_org',
-                        component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index'),
-                        meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'], index: true }
+                        name:'org_org_route',
+                        component:RouteView,
+                        meta: { title: '机构维护', keepAlive:false, multistage: true },
+                        children:[
+                            {
+                                path: '/sys/org/index',
+                                name:'sys_org',
+                                component: () => import('@/views/sys/org/index.vue'),
+                                meta: { title: '机构维护', index: true }
+                            },
+                            {
+                                path: '/sys/org/detail',
+                                name:'sys_org_detail',
+                                hidden:true,
+                                component: () => import('@/views/sys/org/detail.vue'),
+                                meta: { title: '机构详情', detail: true }
+                            }
+                        ]
                     },
-                    {
-                        path: '/sys/org/detail',
-                        name: 'sys_org_detail',
-                        hidden: true,
-                        component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail'),
-                        meta: { title: '机构维护详情', hiddenHeaderContent: true, permission: ['result'], detail: true }
-                    },
+                    // {
+                    //     path: '/sys/org',
+                    //     name: 'sys_org',
+                    //     component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/index'),
+                    //     meta: { title: '机构维护', hiddenHeaderContent: true, permission: ['result'], index: true }
+                    // },
+                    // {
+                    //     path: '/sys/org/detail',
+                    //     name: 'sys_org_detail',
+                    //     hidden: true,
+                    //     component: () => import(/* webpackChunkName: "result" */ '@/views/sys/org/detail'),
+                    //     meta: { title: '机构维护详情', hiddenHeaderContent: true, permission: ['result'], detail: true }
+                    // },
                     {
                         path: '/sys/org_dept',
                         name: 'org_dept_route',
