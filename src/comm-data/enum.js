@@ -1,7 +1,7 @@
 const Enum={
     yesNo: [
-        {id: 0, text: '否'},
-        {id: 1, text: '是'}
+        {id: '0', text: '否'},
+        {id: '1', text: '是'}
     ],
   sex:[
     {id:'1',text:'男'},

@@ -59,7 +59,7 @@
     >
       <a-select style="width: 400px" class="margin-left-5">
         <a-select-option
-          v-for="item in this.enum.clientClass"
+          v-for="(item,index) in this.enum.clientClass"
           :value='item.id'
           :key="index"
         >
@@ -127,7 +127,7 @@
         items: [
           { text: '编辑', showtip: false, click: this.edits },
           { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status: '1' },
-          { text: '停用', color: '#E6A23C', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status: '0' }
+          { text: '停用', color: '#ff9900', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status: '0' }
         ],
         colors: '#ffffff',
         dataSource: []
