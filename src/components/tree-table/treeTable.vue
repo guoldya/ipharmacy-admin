@@ -7,12 +7,12 @@
     v-bind="$attrs"
     border
     highlight-current-row
-    @row-click="selectTreeList"
+    @current-change="currentChange"
   >
     <el-table-column type="selection" align="center" v-if="checkbox" width="55"></el-table-column>
     <el-table-column fixed="right" label="操作" :width="opColWidth" align="center" v-if="isOpcol">
       <template slot-scope="scope">
-        <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
+        <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="filterItem"></opcol>
       </template>
     </el-table-column>
     <el-table-column v-if="columns.length === 0" width="150">
@@ -125,7 +125,13 @@ export default {
         return 100
       }
     },
-    selectTreeList: Function,
+      filterItem:{
+          type:Array,
+          default(){
+              return []
+          }
+      },
+      currentChange: Function,
   },
   data() {
     return {
@@ -156,9 +162,6 @@ export default {
     iconShow(index, record) {
       return index === 0 && record.items && record.items.length > 0
     },
-    // selectTreeList(val) {
-    //   this.selectData = val
-    // },
     
   }
 }
