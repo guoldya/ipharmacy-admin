@@ -230,7 +230,7 @@
                     data: params
                 }).then(res => {
                     if (res.code == '200') {
-                        this.dataSource = res.rows;
+                        this.dataSource = this.$dateFormat(res.rows,['createDate','updateDate']);
                         this.total = res.total;
                         if(!params.offset){
                             this.current = 1
@@ -240,8 +240,7 @@
                         this.spinning = false;
                         this.warn(res.msg);
                     }
-                })
-                    .catch(err => {
+                }).catch(err => {
                         this.spinning = false;
                         this.error(err);
                     })
