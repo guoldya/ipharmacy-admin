@@ -198,7 +198,7 @@
                 total:0,
                 current:1,
                 api:{
-                    paramUrl:'',
+                    paramUrl:'/sys/sysParams/selectPage',
                     clientUrl:'',
                     updateUrl:'',
                     delUrl:''
@@ -230,6 +230,7 @@
             }
         },
         mounted(){
+            this.getData();
             this.getClientData();
         },
         methods:{
@@ -333,7 +334,7 @@
                 params.pageSize = size;
                 this.getData(params)
             },
-            getData(){
+            getData( obj = {}){
                 this.spinning = true;
                 let params = {};
                 params.pageSize = obj.pageSize || 10;

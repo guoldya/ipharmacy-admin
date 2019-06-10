@@ -673,6 +673,12 @@ export const asyncRouterMap = [
                         meta: { title: '角色管理', keepAlive: false }
                     },
                     {
+                        path: '/sys/roleFunc',
+                        name: 'roleFunc',
+                        component: () => import('@/views/sys/roleFunc/roleFunc.vue'),
+                        meta: { title: '权限管理', keepAlive: false }
+                    },
+                    {
                         path: '/sys/log',
                         name: 'log',
                         component: () => import('@/views/sys/log/log.vue'),
@@ -683,6 +689,12 @@ export const asyncRouterMap = [
                         name: 'param',
                         component: () => import('@/views/sys/param/param.vue'),
                         meta: { title: '参数管理', keepAlive: false }
+                    },
+                    {
+                        path: '/sys/modules',
+                        name: 'modules',
+                        component: () => import('@/views/sys/modules/modules.vue'),
+                        meta: { title: '模块管理', keepAlive: false }
                     }
                 ]
             }
