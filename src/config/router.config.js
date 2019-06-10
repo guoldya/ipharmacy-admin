@@ -676,6 +676,12 @@ export const asyncRouterMap = [
                         name: 'param',
                         component: () => import('@/views/sys/param/param.vue'),
                         meta: { title: '参数管理', keepAlive: false }
+                    },
+                    {
+                        path: '/sys/modules',
+                        name: 'modules',
+                        component: () => import('@/views/sys/modules/modules.vue'),
+                        meta: { title: '模块管理', keepAlive: false }
                     }
                 ]
             }

@@ -7,7 +7,7 @@
     v-bind="$attrs"
     border
     highlight-current-row
-    @current-change="currentChange"
+    @current-change="currentChange?currentChange:''"
   >
     <el-table-column type="selection" align="center" v-if="checkbox" width="55"></el-table-column>
     <el-table-column fixed="right" label="操作" :width="opColWidth" align="center" v-if="isOpcol">
