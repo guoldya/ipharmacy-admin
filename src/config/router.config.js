@@ -666,6 +666,12 @@ export const asyncRouterMap = [
                         meta: { title: '角色管理', keepAlive: false }
                     },
                     {
+                        path: '/sys/roleFunc',
+                        name: 'roleFunc',
+                        component: () => import('@/views/sys/roleFunc/roleFunc.vue'),
+                        meta: { title: '权限管理', keepAlive: false }
+                    },
+                    {
                         path: '/sys/log',
                         name: 'log',
                         component: () => import('@/views/sys/log/log.vue'),

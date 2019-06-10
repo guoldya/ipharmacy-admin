@@ -6,6 +6,7 @@
                         :columns="columns"
                         :data="dataSource"
                         :isOpcol="false"
+                        :currentChange="()=>{return null}"
                 ></a-treeTable>
             </a-spin>
         </a-card>
@@ -56,7 +57,6 @@
                 }).then(res => {
                         if (res.code == '200') {
                             this.dataSource = this.getDataChildren(res.rows, '&');
-                            console.log(this.dataSource)
                             this.spinning = false
                         } else {
                             this.spinning = false
