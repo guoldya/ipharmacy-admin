@@ -475,12 +475,19 @@ export const asyncRouterMap = [
                                 meta: { title: '药品字典管理', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/baseData/drugSpec/detail',
+                                path: '/baseData/drugSpec/detail/:drugCode/',
                                 name: 'drugSpecDetail',
                                 hidden: true,
                                 component: () => import( '@/views/baseData/drugSpec/detail.vue'),
                                 meta: { title: '药品说明书', hiddenHeaderContent: true, detail: true }
-                            }
+                            },
+                          {
+                            path: '/baseData/drugSpec/updateDetail/:drugCode/',
+                            name: 'drugSpecUpdateDetail',
+                            hidden: true,
+                            component: () => import( '@/views/baseData/drugSpec/updateDetail.vue'),
+                            meta: { title: '药品说明书详情', hiddenHeaderContent: false, detail: true, }
+                          },
                         ]
                     },
                     {

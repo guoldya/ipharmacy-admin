@@ -63,8 +63,9 @@
         },
         dictionary: {
           drugDictionaryData: [],
-          total: null,
-          disable: true
+          total: 0,
+          disable: true,
+          varietyCode:null,
         }
       }
     },
@@ -86,12 +87,15 @@
     methods: {
       //左侧点击事件
       onSelect(selectedKeys, e) {
-        console.log(e.node.dataRef)
         this.nodeData = e.node.dataRef
         this.variety.categoryId = e.node.dataRef.key
         if (this.variety.categoryId) {
-          this.getVarietiesData({ categoryId: this.variety.categoryId })
+          this.getVarietiesData({ categoryId: this.variety.categoryId });
+          this.dictionary.drugDictionaryData = [];
+          this.dictionary.disable = true;
+          this.dictionary.total = 0;
         }
+        console.log(e.node.dataRef)
         this.disable = false
       },
       getVarietiesData(params = {}) {
@@ -143,9 +147,9 @@
       },
       //品种网格列点击事件
       clickRow(row, event, column) {
-        console.log(row)
-        this.varietyCode = row.varietyCode
-        this.dictionary.disable = false
+        this.varietyCode = row.varietyCode;
+        this.dictionary.disable = false;
+        this.dictionary.varietyCode = row.varietyCode;
         this.getDictionary({ varietyCode: row.varietyCode })
       },
       getDictionary(params = {}) {

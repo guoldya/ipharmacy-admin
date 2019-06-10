@@ -43,6 +43,7 @@
       :confirmLoading="Modal.confirmLoading"
       @cancel="handleCancel"
       class="ruleModal"
+      :maskClosable="false"
     >
       <a-form :form="form">
         <a-form-item style="padding-top: 20px" label="分类名称"
@@ -86,14 +87,14 @@
     components: {
       'a-treeTable': treeTable
     },
-    props:{
-      onSelect:{
+    props: {
+      onSelect: {
         Function
       },
-      nodeData:{
+      nodeData: {
         Object
       },
-      disable:{
+      disable: {
         Boolean
       }
     },
@@ -102,31 +103,30 @@
         api: {
           drugCategoryList: 'sys/dicDrugcategory/selectList',
           dicDrugSelectList: 'sys/dicBase/selectClassList',
-          drugCategoryUpdate:'sys/dicDrugcategory/update',
-    },
+          drugCategoryUpdate: 'sys/dicDrugcategory/update'
+        },
         columns: [],
         baseData: [],
         items: [],
         isOpcol: true,
         loading: false,
-        // disable: true,
-        // nodeData:{}
         gData: [],
-        codeClassData:[],
+        codeClassData: [],
         visible: false,
         popTitle: '',
         clickItem: '',
-        Modal:{
-          title:'',
-          visible:false,
-          confirmLoading:false,
+        newDataId:'',
+        Modal: {
+          title: '',
+          visible: false,
+          confirmLoading: false
         },
-        form: this.$form.createForm(this),
+        form: this.$form.createForm(this)
       }
     },
     mounted() {
-      this.getData();
-      this.getDicBase();
+      this.getData()
+      this.getDicBase()
     },
     methods: {
       getData(params = { pid: -1 }) {
@@ -149,16 +149,16 @@
             this.loading = false
           })
       },
-      getDicBase(){
-        let params = {};
-        params.codeClass = 38;
+      getDicBase() {
+        let params = {}
+        params.codeClass = 38
         this.$axios({
           url: this.api.dicDrugSelectList,
           method: 'put',
           data: params
         }).then(res => {
           if (res.code == '200') {
-            this.codeClassData = res.rows;
+            this.codeClassData = res.rows
           } else {
             this.warn(res.msg)
           }
@@ -181,9 +181,9 @@
             isLeaf: isleaf,
             status: data[i].status,
             categoryCode: data[i].categoryCode,
-            spellCode:data[i].spellCode,
-            categoryProperty:data[i].categoryProperty,
-            pid:data[i].pid,
+            spellCode: data[i].spellCode,
+            categoryProperty: data[i].categoryProperty,
+            pid: data[i].pid
           })
         }
       },
@@ -228,9 +228,9 @@
                     isLeaf: isLeaf,
                     status: res.rows[i].status,
                     categoryCode: res.rows[i].categoryCode,
-                    spellCode:res.rows[i].spellCode,
-                    categoryProperty:res.rows[i].categoryProperty,
-                    pid:res.rows[i].pid,
+                    spellCode: res.rows[i].spellCode,
+                    categoryProperty: res.rows[i].categoryProperty,
+                    pid: res.rows[i].pid
                   })
                 }
                 this.gData = [...this.gData]
@@ -245,21 +245,21 @@
         })
       },
       newTreeNode() {
-        this.Modal.visible = true;
-        this.Modal.title = '新增分类';
-        this.form.resetFields();
+        this.Modal.visible = true
+        this.Modal.title = '新增分类'
+        this.form.resetFields()
       },
       updateTreeNode() {
-        this.Modal.visible = true;
-        this.Modal.title = '编辑分类';
-        setTimeout(()=>{
+        this.Modal.visible = true
+        this.Modal.title = '编辑分类'
+        setTimeout(() => {
           this.form.setFieldsValue({
             categoryName: this.nodeData.title,
             spellCode: this.nodeData.spellCode,
-            categoryProperty:this.nodeData.categoryProperty,
-            status:this.nodeData.status,
+            categoryProperty: this.nodeData.categoryProperty,
+            status: this.nodeData.status
           })
-        },0)
+        }, 0)
       },
       enableTreeNode() {
 
@@ -268,17 +268,17 @@
 
       },
       //modal 提交
-      handleOk(e){
-        e.preventDefault();
+      handleOk(e) {
+        e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
             console.log(this.nodeData)
-            if (this.Modal.title == '编辑分类'){
-              values.categoryCode = this.nodeData.categoryCode;
-              values.categoryId = this.nodeData.key;
-              values.pid = this.nodeData.pid;
-            }else{
-              values.pid = this.nodeData.key;
+            if (this.Modal.title == '编辑分类') {
+              values.categoryCode = this.nodeData.categoryCode
+              values.categoryId = this.nodeData.key
+              values.pid = this.nodeData.pid
+            } else {
+              values.pid = this.nodeData.key
             }
             this.$axios({
               url: this.api.drugCategoryUpdate,
@@ -288,11 +288,13 @@
               if (res.code == '200') {
                 if (this.Modal.title == '编辑分类') {
                   this.updateGdata(values, this.gData)
-                }else if (this.Modal.title == '新增分类'&& this.nodeData.children) {
-                  this.addGdata(values, this.gData);
-                  console.log(values);
+                } else if (this.Modal.title == '新增分类' && this.nodeData.children) {
+                  this.newDataId = res.data;
+                  values.categoryId = this.newDataId;
+                  this.addGdata(values, this.gData)
+                  console.log(values,'values');
                 }
-                this.Modal.visible = false;
+                this.Modal.visible = false
                 this.success(res.msg)
               } else {
                 this.warn(res.msg)
@@ -316,17 +318,18 @@
           }
         }
       },
-      addGdata(params, gdata){
-        let obj = {};
-        obj.key = params.categoryCode;
-        obj.title = params.categoryName;
-        obj.pid = params.pid;
-        obj.spellCode = params.spellCode;
-        obj.status =  params.status;
+      addGdata(params, gdata) {
+        let obj = {}
+        obj.key =  params.categoryId
+        obj.title = params.categoryName
+        obj.pid = params.pid
+        obj.spellCode = params.spellCode
+        obj.status = params.status
+        obj.isLeaf = true;
         for (let i in gdata) {
           let item = gdata[i]
           if (item.key == params.pid) {
-            // item.children.push(obj);
+            item.children.push(obj);
             return
           } else if (item.children) {
             this.addGdata(params, item.children)
@@ -334,8 +337,8 @@
         }
       },
       //modal 取消
-      handleCancel(){
-        this.Modal.visible = false;
+      handleCancel() {
+        this.Modal.visible = false
       },
       // onSelect(selectedKeys, e) {
       //   this.nodeData = e.node.dataRef
