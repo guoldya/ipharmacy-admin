@@ -3,60 +3,33 @@
     <a-row class="ruleRow">
       <a-col :xl="8" :xxl="6">
         <div class="ruleCow">
-          <a-card>
-            <drugClassification></drugClassification>
+          <a-card title="药品分类">
+            <drugClassification
+              :onSelect="onSelect"
+              :nodeData="nodeData"
+              :disable="disable"
+            ></drugClassification>
           </a-card>
         </div>
       </a-col>
       <a-col :xl="16" :xxl="18">
-        <a-card>
+        <a-card title="药品品种">
           <Searchpanel ref="searchPanel" :list="list">
             <div slot="control">
-              <a-button type="primary" @click="search">查询</a-button>
-              <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
+              <a-button type="primary" @click="varietiesSearch">查询</a-button>
+              <a-button style="margin-left: 5px" @click="varietiesResetForm">重置</a-button>
             </div>
           </Searchpanel>
-          <a-button class="margin-top-10" type="primary" :disabled="disable" @click="addMdc">添加药品</a-button>
-          <a-spin tip="加载中..." :spinning="loading">
-            <el-table
-              ref="table"
-              :data="loadData"
-              border
-              class="margin-top-10"
-              :highlight-current-row="true"
-            >
-              <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-                <template slot-scope="scope">
-                  <opcol :items="items" :more="false" :data="scope.row" :filterItem="['classType']"></opcol>
-                </template>
-              </el-table-column>
-              <el-table-column :show-overflow-tooltip="true" v-for="item in columns" :key="item.value"
-                               :label="item.title" :prop="item.value" :width="item.width" :align="item.align">
-                <template slot-scope="scope">
-             <span v-if="item.value == 'status'">
-              <a-badge
-                :status="scope.row.status == 0? 'default':'processing'"
-                :text="scope.row.status==0?'停用':'启用'"
-              />
-              </span>
-                  <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
-                  <span v-else>{{scope.row[item.value]}}</span>
-                </template>
-              </el-table-column>
-            </el-table>
-            <a-pagination
-              showSizeChanger
-              showQuickJumper
-              :total="total"
-              class="pnstyle"
-              :defaultPageSize="pageSize"
-              :pageSizeOptions="['10', '20','50']"
-              @showSizeChange="pageChangeSize"
-              @change="pageChange"
-              size="small"
-            >
-            </a-pagination>
-          </a-spin>
+          <drugVarieties
+            :variety="variety"
+            :disable="disable"
+            :pageChangeSize="varietiesPageSize"
+            :pageChange="varietiesPageChange"
+            :clickRow="clickRow"
+          ></drugVarieties>
+        </a-card>
+        <a-card class="margin-top-5" title="药品字典">
+          <drugDictionary :dictionary="dictionary"></drugDictionary>
         </a-card>
       </a-col>
     </a-row>
@@ -65,45 +38,34 @@
 
 <script>
   import drugClassification from '@/my-components/drug-classification/drugClassification'
+  import drugVarieties from '@/my-components/drug-varieties/drugVarieties'
+  import drugDictionary from '@/my-components/drug-dictionary/drugDictionary'
 
   export default {
     components: {
-      drugClassification
+      drugClassification,
+      drugVarieties,
+      drugDictionary
     },
     name: 'ruleMgt',
     data() {
       return {
-        expandedKeys: [],
-        searchValue: '',
-        autoExpandParent: true,
-        dataList: [],
-        loading: false,
-        loadData: [{ rule: '1', type: '1', drugName: '剂型与给药途径匹配性', status: '3', time: '2015-01-01 12:00' }],
-        columns: [
-          { title: '药品名称', value: 'drugName' },
-          { title: '商品名', value: 'type' },
-          { title: '生产厂商', value: 'ruleName' },
-          { title: '剂型', value: 'sss', align: 'center' },
-          { title: '药品类型', value: 'time' },
-          { title: '状态', value: 'status', align: 'center' },
-          { title: '操作', value: 'action', align: 'center' }
-        ],
-        items: [
-          { text: '编辑', showtip: false, click: this.edits },
-          { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status: '1' },
-          { text: '停用', color: '#E6A23C', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status: '0' }
-        ],
-        //药品数据和表格title
-        drugData: [
-          { drugId: '123456', drugName: '阿司匹林', dosage: '颗粒', manufacturer: '肛泰制药' }
-        ],
-        confirmLoading: false,
-        total: 10,
-        pageSize: 0,
-        visible: false,
-        values: '',
-        selectNode: '',
-        disable: true
+        nodeData: [],
+        disable: true,
+        api: {
+          drugVarietyPageId: 'sys/dicDrugcategory/selectDrugVarietyPageByCategoryId',
+          dicDrugSelectPage: 'sys/dicDrug/selectPage'
+        },
+        variety: {
+          drugVarietyData: [],
+          total: 0,
+          categoryId: null
+        },
+        dictionary: {
+          drugDictionaryData: [],
+          total: null,
+          disable: true
+        }
       }
     },
     mounted() {
@@ -112,62 +74,98 @@
       list() {
         return [
           {
-            name: '药品名称',
-            dataField: 'drugName',
+            name: '品种名称',
+            dataField: 'varietyName',
             type: 'text'
-          }
+          },
+          { name: '拼音码', dataField: 'drugName', type: 'text' }
 
         ]
       }
     },
     methods: {
+      //左侧点击事件
+      onSelect(selectedKeys, e) {
+        console.log(e.node.dataRef)
+        this.nodeData = e.node.dataRef
+        this.variety.categoryId = e.node.dataRef.key
+        if (this.variety.categoryId) {
+          this.getVarietiesData({ categoryId: this.variety.categoryId })
+        }
+        this.disable = false
+      },
+      getVarietiesData(params = {}) {
+        this.$axios({
+          url: this.api.drugVarietyPageId,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.variety.drugVarietyData = res.rows
+              this.variety.total = res.total
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      //页码数change事件
+      varietiesPageSize(page, pageSize) {
+        this.getVarietiesData({
+          offset: (page - 1) * pageSize,
+          pageSize: pageSize,
+          categoryId: this.variety.categoryId
+        })
+      },
+      //页码跳转事件
+      varietiesPageChange(page, pageSize) {
+        this.getVarietiesData({
+          offset: (page - 1) * pageSize,
+          pageSize: pageSize,
+          categoryId: this.variety.categoryId
+        })
+      },
       //搜索
-      search() {
+      varietiesSearch() {
         let params = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = 10
         params.offset = 0
-        // this.fetchYJSMapData(params)
+        params.categoryId = this.variety.categoryId
+        this.getVarietiesData(params)
       },
       //重置
-      resetForm() {
+      varietiesResetForm() {
         this.$refs.searchPanel.form.resetFields()
-        // this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+        this.getVarietiesData({ categoryId: this.variety.categoryId })
       },
-
-      //页码数change事件
-      pageChangeSize(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      //品种网格列点击事件
+      clickRow(row, event, column) {
+        console.log(row)
+        this.varietyCode = row.varietyCode
+        this.dictionary.disable = false
+        this.getDictionary({ varietyCode: row.varietyCode })
       },
-      //页码跳转事件
-      pageChange(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
-      },
-
-      handleOk() {
-        console.log(this.selkeys, 'this.selkeys')
-        console.log(this.selectNode, 'this.selectNode')
-        let data = this.form.getFieldsValue()
-        this.Modal.visible = false
-      },
-      handleCancel() {
-        this.Modal.visible = false
-      },
-
-      addMdc() {
-        if (!this.disable) {
-          this.drugModal.visible = true
-        } else {
-          this.warn('请选择规则')
-        }
-      },
-      edits(data) {
-        this.$router.push({
-          name: 'drugSpecDetail'
+      getDictionary(params = {}) {
+        this.$axios({
+          url: this.api.dicDrugSelectPage,
+          method: 'put',
+          data: params
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.dictionary.drugDictionaryData = res.rows
+              this.dictionary.total = res.total
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       }
-
-      //filter
-
     }
   }
 </script>
