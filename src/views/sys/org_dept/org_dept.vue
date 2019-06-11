@@ -115,7 +115,7 @@
                     { text: '编辑', showtip: false, click: this.editDept },
                     { text: '删除', showtip: true, color: '#ff9900', tip: '确认删除吗？', click: this.delDept },
                     { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status:'1' },
-                    { text: '停用', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status:'0' }
+                    { text: '停用', showtip: true, color: '#ff9900', tip: '确认停用吗？', click: this.changeStatus, status:'0' }
                 ],
                 deptData: [],
                 userData: [],

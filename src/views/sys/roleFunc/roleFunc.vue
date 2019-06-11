@@ -45,7 +45,6 @@
                             checkable
                             @expand="onExpand"
                             :expandedKeys="expandedKeys"
-                            :autoExpandParent="autoExpandParent"
                             v-model="selectKeys"
                             :treeData="treeData"
                     >
@@ -79,7 +78,6 @@
                 treeData:[],
                 selectKeys:[],
                 expandedKeys: [],
-                autoExpandParent: true,
                 disabled:true,
                 funcSpin:false,
                 loading:false
@@ -92,7 +90,6 @@
         methods:{
             onExpand (expandedKeys) {
                 this.expandedKeys = expandedKeys
-                this.autoExpandParent = false
             },
             submit(){
                 this.loading = true;
