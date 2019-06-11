@@ -329,6 +329,35 @@ export const asyncRouterMap = [
 
             // test
             {
+                path: '/knowledgebase',
+                name: 'knowledgebase',
+                component: PageView,
+                meta: { title: '知识库维护', keepAlive: false, icon: 'laptop' },
+                children:[
+                    {
+                        path: '/knowledgebase/diagnosisMgt',
+                        name: 'diagnosisMgt',
+                        component: RouteView,
+                        meta: { title: '诊断管理', multistage: true },
+                        children: [
+                            {
+                                path: '/knowledgebase/diagnosisMgt/index',
+                                name: 'diagnosisIndex',
+                                component: () => import( '@/views/knowledgebase/diagnosisMgt/index.vue'),
+                                meta: { title: '诊断管理', hiddenHeaderContent: true, index: true }
+                            },
+                            {
+                                path: '/knowledgebase/diagnosisMgt/detail',
+                                name: 'diagnosisMgtDetail',
+                                hidden: true,
+                                component: () => import( '@/views/knowledgebase/diagnosisMgt/detail.vue'),
+                                meta: { title: '诊断详情', detail: true, description: '诊断自定义设置' }
+                            },
+                        ]
+                    },
+                ]
+            },
+            {
                 path: '/auditWorkstation',
                 name: 'auditWorkstation',
                 component: PageView,
@@ -440,6 +469,8 @@ export const asyncRouterMap = [
                             }
                         ]
                     },
+                  
+                   
                     {
                         path: '/knowledgeMgt/ruleMgt-copy',
                         name: 'ruleMgt-copy',
