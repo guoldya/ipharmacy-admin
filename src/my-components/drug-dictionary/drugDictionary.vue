@@ -151,11 +151,11 @@
             <a-form-item label="状态"
                          :label-col="{ span: 6 }"
                          :wrapper-col="{ span: 15 }">
-              <a-select v-decorator="[ 'status' ]">
-                <a-select-option :value='op.id' v-for="(op,index) in this.enum.status" :key="index">
+              <a-radio-group v-decorator="[ 'status' ]">
+                <a-radio :value='op.id' v-for="(op,index) in this.enum.status" :key="index">
                   {{op.text}}
-                </a-select-option>
-              </a-select>
+                </a-radio>
+              </a-radio-group>
             </a-form-item>
           </a-col>
         </a-row>
@@ -481,7 +481,7 @@
         console.log(data);
         this.$router.push({
           name: 'drugSpecUpdateDetail',
-          params:{drugCode:data.drugCode},
+          params:{drugCode:data.drugCode, drugName:data.drugName},
         })
       },
       //处理模型字段

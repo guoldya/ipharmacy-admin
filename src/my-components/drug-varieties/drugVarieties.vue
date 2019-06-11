@@ -105,11 +105,11 @@
             <a-form-item label="合成药"
                          :label-col="{ span: 6 }"
                          :wrapper-col="{ span: 15 }">
-              <a-select v-decorator="[ 'iscompound' ]">
-                <a-select-option :value='op.id' v-for="(op,index) in this.enum.yesNo" :key="index">
+              <a-radio-group v-decorator="[ 'iscompound' ]">
+                <a-radio :value='op.id' v-for="(op,index) in this.enum.yesNo" :key="index">
                   {{op.text}}
-                </a-select-option>
-              </a-select>
+                </a-radio>
+              </a-radio-group>
             </a-form-item>
           </a-col>
         </a-row>

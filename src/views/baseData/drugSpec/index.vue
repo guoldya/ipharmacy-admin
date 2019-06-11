@@ -1,18 +1,19 @@
 <template>
   <a-card>
     <a-row class="ruleRow">
-      <a-col :xl="8" :xxl="6">
+      <a-col :xl="5" :xxl="5">
         <div class="ruleCow">
           <a-card title="药品分类">
             <drugClassification
               :onSelect="onSelect"
               :nodeData="nodeData"
               :disable="disable"
+              :classification="classification"
             ></drugClassification>
           </a-card>
         </div>
       </a-col>
-      <a-col :xl="16" :xxl="18">
+      <a-col :xl="19" :xxl="19">
         <a-card title="药品品种">
           <Searchpanel ref="searchPanel" :list="list">
             <div slot="control">
@@ -50,11 +51,15 @@
     name: 'ruleMgt',
     data() {
       return {
-        nodeData: [],
+        nodeData: {},
         disable: true,
         api: {
           drugVarietyPageId: 'sys/dicDrugcategory/selectDrugVarietyPageByCategoryId',
-          dicDrugSelectPage: 'sys/dicDrug/selectPage'
+          dicDrugSelectPage: 'sys/dicDrug/selectPage',
+          dicBaseSelectList: 'sys/dicBase/selectClassList',
+        },
+        classification:{
+          disable: false,
         },
         variety: {
           drugVarietyData: [],
@@ -66,10 +71,12 @@
           total: 0,
           disable: true,
           varietyCode:null,
-        }
+        },
+        toxicologyData:[],
       }
     },
     mounted() {
+      this.getDicBase();
     },
     computed: {
       list() {
@@ -79,15 +86,20 @@
             dataField: 'varietyName',
             type: 'text'
           },
-          { name: '拼音码', dataField: 'drugName', type: 'text' }
-
+          // { name: '药品名称', dataField: 'drugName', type: 'text' },
+          // { name: '生产厂商', dataField: 'drugProducBy', type: 'text' },
+          { name: '合成药', dataField: 'iscompound', type: 'select',dataSource:this.enum.yesNo ,keyExpr:'id',valueExpr:'text'},
+          { name: '毒理分类', dataField: 'toxicology', type: 'select',dataSource:this.toxicologyData,keyExpr:'id',valueExpr:'name' }
         ]
       }
     },
     methods: {
       //左侧点击事件
       onSelect(selectedKeys, e) {
+        console.log(1);
+        this.classification.disable = true;
         this.nodeData = e.node.dataRef
+        console.log(this.nodeData,'nodeData');
         this.variety.categoryId = e.node.dataRef.key
         if (this.variety.categoryId) {
           this.getVarietiesData({ categoryId: this.variety.categoryId });
@@ -95,7 +107,6 @@
           this.dictionary.disable = true;
           this.dictionary.total = 0;
         }
-        console.log(e.node.dataRef)
         this.disable = false
       },
       getVarietiesData(params = {}) {
@@ -138,7 +149,7 @@
         params.pageSize = 10
         params.offset = 0
         params.categoryId = this.variety.categoryId
-        this.getVarietiesData(params)
+        this.getVarietiesData(params);
       },
       //重置
       varietiesResetForm() {
@@ -169,7 +180,25 @@
           .catch(err => {
             this.error(err)
           })
-      }
+      },
+      getDicBase(){
+        let params = {};
+        params.codeClass = 39;
+        this.$axios({
+          url: this.api.dicBaseSelectList,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.toxicologyData = res.rows;
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
+      },
     }
   }
 </script>
@@ -185,7 +214,7 @@
   }
 
   .ruleRow .ant-card-body {
-    padding: 24px 20px !important;
+    padding: 15px !important;
   }
 
   .ruleModal .ant-modal-body {
