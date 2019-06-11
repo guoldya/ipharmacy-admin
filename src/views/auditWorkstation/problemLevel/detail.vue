@@ -30,7 +30,7 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-select v-decorator="[ 'handleType']">
+        <a-select v-decorator="[ 'handleType',{rules: [{ required: true, message: '请输入药品名称' }]} ]">
           <a-select-option v-for="(op,index) in this.enum.handleType" :value="op.id" :key="index">{{op.text}}</a-select-option>
         </a-select>
       </a-form-item>
@@ -40,7 +40,7 @@
         :wrapper-col="wrapperCol"
       >
         <a-select v-decorator="[ 'status']">
-          <a-select-option v-for="(op,index) in this.enum.status" :value="op.id" :key="index">{{op.text}}</a-select-option>
+          <a-select-option v-for="(op,index) in status" :value="op.id" :key="index">{{op.text}}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item
@@ -77,6 +77,10 @@
           xs: { span: 8 },
           sm: { span: 8 }
         },
+        status:[
+          { id: 0, text: '停用' },
+          { id: 1, text: '启用' }
+        ],
         form: this.$form.createForm(this),
         roleCode: '',
         loadData: [],

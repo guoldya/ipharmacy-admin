@@ -65,12 +65,12 @@ const Enum = {
         { text: '自定义', id: 0 }
     ],
     handleType: [
-        { text: '记录', id: '1' },
-        { text: '提示', id: '2' },
-        { text: '医师确认', id: '3' },
-        { text: '双签确认', id: '4' },
-        { text: '药师确认', id: '5' },
-        { text: '驳回', id: '9' }
+        { text: '记录', id: 1 },
+        { text: '提示', id: 2 },
+        { text: '医师确认', id: 3 },
+        { text: '双签确认', id: 4},
+        { text: '药师确认', id: 5 },
+        { text: '驳回', id: 9 }
     ],
     packageType: [
         { text: '药师审方', id: '1' },

@@ -50,6 +50,7 @@
       @cancel="handleCancel"
       class="ruleModal"
       width="680px"
+      :maskClosable="false"
     >
       <a-form :form="form">
         <a-row>
@@ -275,6 +276,7 @@
         e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
+            values.dicId =this.variety.categoryId;
             if (this.Modal.title=='编辑品种'){
               values.varietyCode = this.editData.varietyCode;
             }

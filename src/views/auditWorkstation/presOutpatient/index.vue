@@ -293,6 +293,8 @@
 
         problemType:'',
         reviewTemplates:[],
+        //初始化定时器
+        timeInitialize:null,
       }
     },
     computed: {
@@ -597,11 +599,15 @@
       //频率事件
       rateChange(value){
         this.rateTime = value;
-        setInterval(()=>{
+        clearInterval(this.timeInitialize);
+        this.setTimeRval(this.rateTime);
+      },
+      //定时器
+      setTimeRval(){
+        this.timeInitialize = setInterval(()=>{
           this.fetchYJSMapData();
         },this.rateTime)
       },
-
       //获取模板
       getTemplate(){
         this.$axios({
@@ -627,6 +633,11 @@
           })
       },
     },
+    beforeDestroy(){
+      if (this.timeInitialize){
+        clearInterval(this.timeInitialize);
+      }
+    }
   }
 </script>
 <style>

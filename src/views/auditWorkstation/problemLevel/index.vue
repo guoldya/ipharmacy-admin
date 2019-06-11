@@ -155,9 +155,9 @@
       user(data) {
         console.log(data);
         if (data.status){
-          data.status = 0
+          data.status = '0'
         } else{
-          data.status = 1
+          data.status = '1'
         }
         this.$axios({
           url: this.api.reviewAuditlevelUpdate,

@@ -26,7 +26,7 @@
                                 <detail-list-item term="消息">{{ props.row.logMessage }}</detail-list-item>
                             </detail-list>
                             <detail-list :col="1">
-                                <detail-list-item term="异常">{{ props.row.logException }}</detail-list-item>
+                                <detail-list-item term="异常">{{ props.row.logException?props.row.logException:'无' }}</detail-list-item>
                             </detail-list>
                         </template>
                     </el-table-column>
