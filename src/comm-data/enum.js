@@ -12,6 +12,10 @@ const Enum = {
         { id: '0', text: '停用' },
         { id: '1', text: '启用' }
     ],
+    statu: [
+        { id: 0, text: '停用' },
+        { id: 1, text: '启用' }
+    ],
 
   clientClass:[
     {id:'0',text:'等于'},
@@ -146,6 +150,11 @@ const Enum = {
         { id:'5', text:'DateTime日期时间'},
         { id:'6', text:'ComboBox选项'},
         { id:'7', text:'Boolean布尔值'},
+    ],
+    icdType:[
+        { text: 'icd10', id: '1' },
+        { text: 'icd9', id: '0' },
+        { text: 'icd11', id: '2' },
     ]
 }
 export default Enum
