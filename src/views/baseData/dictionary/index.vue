@@ -1,6 +1,5 @@
 <template>
   <a-card>
-    <a-card>
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
           <a-button type="primary" @click="search">查询</a-button>
@@ -49,11 +48,9 @@
         >
         </a-pagination>
       </a-spin>
-    </a-card>
-    <a-card class="margin-top-10">
+    <a-card class="margin-top-10 codeClass" title="字典值域">
       <a-spin tip="加载中..." :spinning="codeLoading">
         <a-treeTable
-          class="margin-top-10"
           :columns="columns2"
           :data="baseData"
           :items="items2"
@@ -101,8 +98,8 @@
           {text:'停用',color:'#ff9900',showtip:true,tip:'确认停用吗？',click:this.changeStatus,status:'0'},
         ],
         columns2: [
-          { text: '编码', value: 'code', width: 80 },
-          { text: '字典名称', value: 'name' },
+          { text: '编码', value: 'code', width: 150 },
+          { text: '字典名称', value: 'name', width: 80  },
           { text: '编码值', value: 'codeValues' },
           { text: '拼音码', value: 'spellCode' },
           { text: '备注', value: 'remark' },
@@ -123,11 +120,10 @@
       list() {
         return [
           {
-            name: '药品名称',
+            name: '分类名称',
             dataField: 'drugName',
             type: 'text'
           },
-          { name: '生产厂商', dataField: 'drugName', type: 'select' }
 
         ]
       }
@@ -273,6 +269,8 @@
   }
 </script>
 
-<style>
-
+<style >
+.codeClass .ant-card-body{
+  padding: 0px!important;
+}
 </style>

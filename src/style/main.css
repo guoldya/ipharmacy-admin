@@ -16,7 +16,7 @@
 }
 
 ant-card-wider-padding .ant-card-body{
-  padding: 16px;
+  padding: 10px;
 }
 .margin-left-5{
   margin-left: 5px;
@@ -209,3 +209,4 @@ padding: 0 32px;
   background-color: #fafafa !important;
   line-height: 13px;
 }
+
