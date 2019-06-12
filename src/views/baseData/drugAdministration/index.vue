@@ -220,7 +220,7 @@
       addClass() {
         this.$router.push({
           name: 'drugAdminDetail',
-          params:{id:0}
+          params: {id:0},
         })
       },
       //

@@ -2,12 +2,12 @@
   <div class="detailPres">
     <a-col :span="14">
       <a-card>
-        <div class="cardHead">
-          <a href="#" @click.prevent="cancle">
-            <a-icon type="left"></a-icon>
-            返回
-          </a>
-        </div>
+        <!--<div class="cardHead">-->
+          <!--<a href="#" @click.prevent="cancle">-->
+            <!--<a-icon type="left"></a-icon>-->
+            <!--返回-->
+          <!--</a>-->
+        <!--</div>-->
         <a-row class=" margin-top-10">
           <a-col class="titleText" :md="4" :lg="3" :xxl="2">
             {{leftData.patientDeptName}}：
@@ -251,9 +251,10 @@
     <footer-tool-bar
       :extra="false"
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
-      <a-button @click="submit" :loading="loading">上一个</a-button>
-      <a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>
-      <a-button @click="refuse" style="margin-left: 20px" :loading="loading">驳回</a-button>
+      <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
+      <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
+      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
+      <a-button @click="refuse" style="margin-left: 5px" :loading="loading">驳回</a-button>
       <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
     </footer-tool-bar>
   </div>

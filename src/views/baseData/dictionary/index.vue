@@ -1,66 +1,81 @@
 <template>
   <a-card>
-      <Searchpanel ref="searchPanel" :list="list">
-        <div slot="control">
-          <a-button type="primary" @click="search">查询</a-button>
-          <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
-        </div>
-      </Searchpanel>
-      <a-button class="margin-top-10" type="primary" @click="classCode">添加分类</a-button>
-      <a-spin tip="加载中..." :spinning="loading">
-        <el-table
-          ref="table"
-          :data="loadData"
-          border
-          class="margin-top-10"
-          :highlight-current-row="true"
-          @row-click="clickRow"
-        >
-          <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-            <template slot-scope="scope">
-              <opcol :items="items" :more="false" :data="scope.row" :filterItem="['classType']"></opcol>
-            </template>
-          </el-table-column>
-          <el-table-column :show-overflow-tooltip="true" v-for="item in columns" :key="item.value"
-                           :label="item.title" :prop="item.value" :width="item.width" :align="item.align">
-            <template slot-scope="scope">
+    <a-row>
+      <a-col :span="4">
+        <!--<Searchpanel ref="searchPanel" :list="list">-->
+          <!--<div slot="control">-->
+            <!--<a-button type="primary" @click="search">查询</a-button>-->
+            <!--<a-button style="margin-left: 5px" @click="resetForm">重置</a-button>-->
+          <!--</div>-->
+        <!--</Searchpanel>-->
+        <!--<a-button class="margin-top-10" type="primary" @click="classCode">添加分类</a-button>-->
+        <a-spin tip="加载中..." :spinning="loading">
+          <el-table
+            ref="table"
+            :data="loadData"
+            border
+            :highlight-current-row="true"
+            @row-click="clickRow"
+          >
+            <!--<el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">-->
+            <!--<template slot-scope="scope">-->
+            <!--<opcol :items="items" :more="false" :data="scope.row" :filterItem="['classType']"></opcol>-->
+            <!--</template>-->
+            <!--</el-table-column>-->
+            <el-table-column :show-overflow-tooltip="true" v-for="item in columns" :key="item.value"
+                             :label="item.title" :prop="item.value" :width="item.width" :align="item.align">
+              <template slot-scope="scope">
              <span v-if="item.value == 'status'">
               <a-badge
                 :status="scope.row.status == 0? 'default':'processing'"
                 :text="scope.row.status==0?'停用':'启用'"
               />
               </span>
-              <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
-              <span v-else>{{scope.row[item.value]}}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <a-pagination
-          showSizeChanger
-          showQuickJumper
-          :total="total"
-          class="pnstyle"
-          :defaultPageSize="pageSize"
-          :pageSizeOptions="['10', '20','50']"
-          @showSizeChange="pageChangeSize"
-          @change="pageChange"
-          size="small"
-        >
-        </a-pagination>
-      </a-spin>
-    <a-card class="margin-top-10 codeClass" title="字典值域">
-      <a-spin tip="加载中..." :spinning="codeLoading">
-        <a-treeTable
-          :columns="columns2"
-          :data="baseData"
-          :items="items2"
-          :opColWidth="110"
-          :moreOp="false"
-          :isOpcol="isOpcol"
-        >
-        </a-treeTable>
-      </a-spin>
-    </a-card>
+                <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
+                <span v-else>{{scope.row[item.value]}}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+          <a-pagination
+            showSizeChanger
+            showQuickJumper
+            :total="total"
+            class="pnstyle"
+            :defaultPageSize="pageSize"
+            :pageSizeOptions="['10', '20','50']"
+            @showSizeChange="pageChangeSize"
+            @change="pageChange"
+            size="small"
+          >
+          </a-pagination>
+        </a-spin>
+      </a-col>
+      <a-col :span="20">
+        <a-card class="margin-left-5 codeClass" title="字典值域">
+          <Searchpanel ref="searchPanel" :list="list">
+          <div slot="control">
+          <a-button type="primary" @click="search">查询</a-button>
+          <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
+          </div>
+          </Searchpanel>
+          <a-spin tip="加载中..." :spinning="codeLoading">
+            <a-treeTable
+              :columns="columns2"
+              :data="baseData"
+              :items="items2"
+              :opColWidth="110"
+              :moreOp="false"
+              :isOpcol="isOpcol"
+              class="margin-top-10"
+              :currentChange="currentChange"
+            >
+            </a-treeTable>
+          </a-spin>
+        </a-card>
+      </a-col>
+    </a-row>
+
+
   </a-card>
 </template>
 
@@ -83,11 +98,11 @@
         loadData: [],
         baseData: [],
         columns: [
-          { title: '分类编码', value: 'id',align:'right',width:80 },
+          { title: '编码', value: 'id',align:'right',width:50 },
           { title: '分类名称', value: 'name' },
-          { title: '标准代码', value: 'standardCode' },
-          { title: '分类类型', value: 'classType', align: 'center', width: 100 , format:this.classTypeFormat },
-          { title: '备注', value: 'remark' },
+          // { title: '标准代码', value: 'standardCode' },
+          // { title: '分类类型', value: 'classType', align: 'center', width: 100 , format:this.classTypeFormat },
+          // { title: '备注', value: 'remark' },
         ],
         items: [
           {text:'编辑', showtip: false, click: this.edits,classType:'1' },
@@ -110,6 +125,7 @@
         curent: 1,
         pageSize: 10,
         baseClassList:[],
+        baseId:null,
       }
     },
     mounted() {
@@ -132,14 +148,16 @@
       //搜索
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue()
-        params.pageSize = 10
-        params.offset = 0
-        // this.fetchYJSMapData(params)
+        params.pageSize = 10;
+        params.offset = 0;
+        params.codeClass =  this.baseId;
+        this.getTreeData(params)
       },
       //重置
       resetForm() {
-        this.$refs.searchPanel.form.resetFields()
-        // this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+        this.$refs.searchPanel.form.resetFields();
+        params.codeClass =  this.baseId;
+        this.getTreeData(params);
       },
       getData(params = {}) {
         this.loading = true;
@@ -231,7 +249,8 @@
       },
       edits(data) {
         this.$router.push({
-          name: 'drugSpecDetail'
+          name: 'drugSpecDetail',
+          params:{code:data.code},
         })
       },
       changeStatus(data){
@@ -240,8 +259,8 @@
       //添加分类
       classCode() {
         this.$router.push({
-          name: 'detailBaseClass'
-          // params:data,
+          name: 'detailBaseClass',
+          params:{code:0},
         })
       },
       //点击第一个table列事件
@@ -249,6 +268,7 @@
         console.log(row);
         let params = {};
         params.codeClass = row.id;
+        this.baseId = row.id;
         this.getTreeData(params);
         if (row.classType == 1){
           this.isOpcol = false;
@@ -264,13 +284,16 @@
           }
         })
         return codeText
-      }
+      },
+      currentChange(){
+
+      },
     }
   }
 </script>
 
 <style >
 .codeClass .ant-card-body{
-  padding: 0px!important;
+  padding: 10px !important;
 }
 </style>
