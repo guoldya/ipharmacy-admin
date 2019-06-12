@@ -8,7 +8,7 @@
                               :title=op.tip
                               placement="topRight"
                               @confirm=op.click(data)>
-                    <a :style="'color:'+op.color">{{op.text}}</a>
+                    <a :style="{'color':op.color}">{{op.text}}</a>
                 </a-popconfirm>
                 <a-divider v-if="(index != newItem.length-1)" type="vertical" />
             </div>
@@ -134,9 +134,9 @@
         watch: {
             visible(value) {
                 if (value) {
-                    window.addEventListener('click', this.closePop)
+                    window.addEventListener('click', this.closePop,true)
                 } else {
-                    window.removeEventListener('click', this.closePop)
+                    window.removeEventListener('click', this.closePop,true)
                 }
             }
         }

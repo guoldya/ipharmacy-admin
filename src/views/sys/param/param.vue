@@ -7,7 +7,6 @@
                     <a-button class="margin-left-5" @click="resetForm">重置</a-button>
                 </div>
             </Searchpanel>
-            <a-button type="primary" class="margin-top-10" @click="addParam">新增</a-button>
             <a-spin tip="加载中..." :spinning="spinning">
                 <el-table
                         ref="table"
@@ -24,10 +23,6 @@
                     >
                         <template slot-scope="scope">
                             <a @click="edit(scope.row)">编辑</a>
-                            <a-divider type="vertical"/>
-                            <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)">
-                                <a class="delColor">删除</a>
-                            </a-popconfirm>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -63,26 +58,26 @@
                 @ok="submit"
                 :confirmLoading="loading"
                 @cancel="cancel"
-                width=""
+                :width="650"
                 centered
                 :maskClosable="false"
         >
-            <div style="width: 500px;">
+            <div>
                 <a-form :form="form">
                     <a-form-item
-                            label="客户"
+                            label="机构"
                             v-bind="formItemLayout"
                     >
                         <a-select
-                                placeholder="请选择"
+                                placeholder="不选为全局参数"
                                 v-decorator="[
-                                'clientId',
-                                {rules: [{ required: true, message: '请选择客户' }],initialValue: formData.clientId}
+                                'orgId',
+                                {initialValue: formData.orgId}
                                 ]"
                         >
-                            <a-select-option :value="item.clientId" v-for="(item,index) in clientData"
+                            <a-select-option :value="item.orgId" v-for="(item,index) in orgData"
                                              :key="index">
-                                {{item.clientName}}
+                                {{item.title}}
                             </a-select-option>
                         </a-select>
                     </a-form-item>
@@ -116,47 +111,6 @@
                         </a-select>
                     </a-form-item>
                     <a-form-item
-                            label="参数类型"
-                            v-bind="formItemLayout"
-                    >
-                        <a-select
-                                placeholder="请选择"
-                                v-decorator="[
-                                'paramClass',
-                                {rules: [{ required: true, message: '请选择参数类型' }],initialValue: formData.paramClass}
-                                ]"
-                        >
-                            <a-select-option :value="item.id" v-for="(item,index) in classData"
-                                             :key="index">
-                                {{item.text}}
-                            </a-select-option>
-                        </a-select>
-                    </a-form-item>
-                    <a-form-item
-                            label="参数单位"
-                            v-bind="formItemLayout"
-                    >
-                        <a-input
-                                placeholder="请输入..."
-                                v-decorator="[
-                                'paramUnit',
-                                {rules: [{ required: true, message: '请输入参数单位' },{ max:10,message:'最多10个字' }],initialValue: formData.paramUnit}
-                                ]"
-                        />
-                    </a-form-item>
-                    <a-form-item
-                            label="参数数据源"
-                            v-bind="formItemLayout"
-                    >
-                        <a-input
-                                placeholder="请输入..."
-                                v-decorator="[
-                                'paramDatasource',
-                                {rules: [{ required: true, message: '请输入参数数据源' },{ max:50,message:'最多50个字' }],initialValue: formData.paramDatasource}
-                                ]"
-                        />
-                    </a-form-item>
-                    <a-form-item
                             label="参数值"
                             v-bind="formItemLayout"
                     >
@@ -172,7 +126,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'remark',{rules: [{ max:255 }],initialValue: formData.remark}]"/>
+                                v-decorator="[ 'ramark',{rules: [{ max:255 }],initialValue: formData.ramark}]"/>
                     </a-form-item>
                 </a-form>
             </div>
@@ -180,6 +134,7 @@
     </div>
 </template>
 <script>
+    import moment from 'moment';
     export default {
         data(){
             return{
@@ -189,36 +144,36 @@
                     { title:'参数名称', prop:'paramName'},
                     { title:'数据类型', prop:'paramDataType', align:'center', width:150,formatter:this.setType },
                     { title:'参数值', prop:'paramValue'},
-                    { title:'参数类型', prop:'paramClass', align:'center', width:100,formatter:this.setClass },
-                    { title:'参数单位', prop:'paramUnit', width:100 },
-                    { title:'参数数据源', prop:'paramDatasource', width:150 },
-                    { title:'客户', prop:'clientId', width:100 },
-                    { title:'参数说明', prop:'remark' },
+                    // { title:'参数类型', prop:'paramClass', align:'center', width:100,formatter:this.setClass },
+                    // { title:'参数单位', prop:'paramUnit', width:100 },
+                    // { title:'参数数据源', prop:'paramDatasource', width:150 },
+                    { title:'机构', prop:'orgTitle', width:200 },
+                    { title:'参数说明', prop:'ramark' },
                 ],
                 total:0,
                 current:1,
                 api:{
                     paramUrl:'/sys/sysParams/selectPage',
-                    clientUrl:'',
-                    updateUrl:'',
+                    orgUrl:'/sys/sysOrgs/selectList',
+                    updateUrl:'/sys/sysParams/update',
                     delUrl:''
                 },
                 formItemLayout: {
                     labelCol: { span: 6 },
-                    wrapperCol: { span: 13 },
+                    wrapperCol: { span: 15 },
                 },
                 isNew:false,
                 visible:false,
                 loading:false,
                 form: this.$form.createForm(this),
-                formData:{},
-                clientData:[]
+                orgData:[],
+                formData:{}
             }
         },
         computed: {
             list() {
                 return [
-                    { name: '角色', dataField: 'title', type: 'text' },
+                    { name: '参数', dataField: 'paramName', type: 'text' },
                     { name: '机构', dataField: 'orgTitle', type: 'text' }
                 ]
             },
@@ -234,6 +189,7 @@
             this.getClientData();
         },
         methods:{
+            moment,
             search() {
                 let params = this.$refs.searchPanel.form.getFieldsValue();
                 this.getData(params)
@@ -259,12 +215,6 @@
                     }
                 })
                 return text;
-            },
-            addParam(){
-                this.isNew = true;
-                this.form.resetFields();
-                this.formData = {};
-                this.visible = true
             },
             edit(row){
                 this.isNew = false;
@@ -362,12 +312,12 @@
             },
             getClientData(){
                 this.$axios({
-                    url: this.api.clientUrl,
+                    url: this.api.orgUrl,
                     method: 'put',
                     data: {}
                 }).then(res => {
                     if (res.code == '200') {
-                        this.clientData = res.rows;
+                        this.orgData = res.rows;
                     } else {
                         this.warn(res.msg);
                     }
