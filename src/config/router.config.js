@@ -453,7 +453,7 @@ export const asyncRouterMap = [
                 path: '/knowledgeMgt',
                 name: 'knowledgeMgt',
                 component: PageView,
-                meta: { title: '知识库管理', keepAlive: false, icon: 'diff' },
+                meta: { title: '规则管理', keepAlive: false, icon: 'diff' },
                 children: [
                     {
                         path: '/knowledgeMgt/ruleMgt',
@@ -484,7 +484,28 @@ export const asyncRouterMap = [
                                 meta: { title: '规则管理副本', hiddenHeaderContent: true, index: true }
                             }
                         ]
-                    }
+                    },
+                    {
+                        path: '/knowledgeMgt/questionMgt',
+                        name: 'questionMgt',
+                        component: RouteView,
+                        meta: { title: '问题分类管理', multistage: true },
+                        children: [
+                            {
+                                path: '/knowledgeMgt/questionMgt/index',
+                                name: 'questionIndex',
+                                component: () => import( '@/views/knowledgeMgt/questionMgt/index.vue'),
+                                meta: { title: '问题分类管理', hiddenHeaderContent: true, index: true }
+                            },
+                            {
+                                path: '/knowledgeMgt/questionMgt/detail',
+                                name: 'questionMgtDetail',
+                                hidden: true,
+                                component: () => import( '@/views/knowledgeMgt/questionMgt/detail.vue'),
+                                meta: { title: '问题分类详情', detail: true, description: '问题分类自定义设置' }
+                            },
+                        ]
+                    },
                 ]
             },
             {

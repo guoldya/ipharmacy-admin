@@ -424,12 +424,11 @@ export default {
   line-height: 32px;
 }
 
-:global {
+
 .ant-tree li{
 max-width: 100%;
 overflow: hidden;
  text-overflow: ellipsis;
   white-space: nowrap;
-}
 }
 </style>
