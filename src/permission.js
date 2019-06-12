@@ -15,35 +15,36 @@ const whiteList = ['login', 'register', 'registerResult','lock'] // 不重定向
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   //判断cookie是否存在access-token
-  const accessToken = Vue.ls.get(ACCESS_TOKEN)
-  const token = util.cookies.get('token')
+  // const accessToken = Vue.ls.get(ACCESS_TOKEN)
+  // const token = util.cookies.get('token')
+  const token = util.cookies.get('user')
   let isLock = getSessionStore({
     name: 'isLock'
   }) || false
-next();
-  // if (token && token !== 'undefined' && accessToken) {
-  //   if (isLock && to.path !== '/user/lock') {
-  //     next({
-  //       path: '/user/lock'
-  //     })
-  //     NProgress.done()
-  //   } else {
-  //     if (to.path === '/user/login') {
-  //       next({ path: '/dashboard/workplace' })
-  //       NProgress.done()
-  //     } else {
-  //       next()
-  //     }
-  //   }
-  // } else {
-  //   if (whiteList.includes(to.name)) {
-  //     // 在免登录白名单，直接进入
-  //     next()
-  //   } else {
-  //     next({ path: '/user/login', query: { redirect: to.fullPath } })
-  //     NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
-  //   }
-  // }
+// next();
+  if (token && token !== 'undefined') {
+    if (isLock && to.path !== '/user/lock') {
+      next({
+        path: '/user/lock'
+      })
+      NProgress.done()
+    } else {
+      if (to.path === '/user/login') {
+        next({ path: '/dashboard/workplace' })
+        NProgress.done()
+      } else {
+        next()
+      }
+    }
+  } else {
+    if (whiteList.includes(to.name)) {
+      // 在免登录白名单，直接进入
+      next()
+    } else {
+      next({ path: '/user/login', query: { redirect: to.fullPath } })
+      NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
+    }
+  }
 })
 
 router.afterEach((to) => {

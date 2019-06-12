@@ -334,7 +334,7 @@
                     .avatar {
                         margin: 20px 8px 20px 0;
                         color: #1890ff;
-                        background: hsla(0, 0%, 100%, .85);
+                        /*background: hsla(0, 0%, 100%, .85);*/
                         vertical-align: middle;
                     }
 

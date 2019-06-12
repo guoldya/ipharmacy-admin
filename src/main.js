@@ -96,6 +96,7 @@ new Vue({
         this.$store.commit('releases/versionShow')
         // 获取并记录用户 UA
         this.$store.commit('ua/get')
-        this.$store.commit('SET_NAME', { name: this.userName })
+        // this.$store.commit('SET_NAME', { name: this.userName })
+        this.$store.commit('updateMenulist');
     }
 }).$mount('#app')

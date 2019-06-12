@@ -131,7 +131,10 @@
                     return []
                 }
             },
-            currentChange: Function
+            currentChange: {
+                type:Function,
+                default: ()=>{}
+            }
         },
         data() {
             return {
