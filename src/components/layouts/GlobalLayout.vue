@@ -96,7 +96,6 @@
     data() {
       return {
         collapsed: false,
-        menus: [],
         breadcrumblist:[],
         name:''
       }
@@ -116,7 +115,10 @@
       },
       tagNavList(){
         return this.$store.state.app.tagNavList
-      }
+      },
+        menus() {
+            return this.$store.state.user.menuList
+        }
     },
     watch: {
       sidebarOpened(val) {
@@ -127,7 +129,7 @@
       }
     },
     created() {
-      this.menus = asyncRouterMap.find((item) => item.path === '/').children
+      // this.menus = asyncRouterMap.find((item) => item.path === '/').children
       this.collapsed = !this.sidebarOpened
       this.getBreadcrumb()
     },
@@ -318,7 +320,7 @@
           .avatar {
             margin: 20px 8px 20px 0;
             color: #1890ff;
-            background: hsla(0, 0%, 100%, .85);
+            /*background: hsla(0, 0%, 100%, .85);*/
             vertical-align: middle;
           }
 

@@ -324,7 +324,7 @@ export const asyncRouterMap = [
                                 meta: { title: '基础字典数据', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/baseData/dictionary/detailBaseClass',
+                                path: '/baseData/dictionary/detailBaseClass/:code/',
                                 name: 'detailBaseClass',
                                 hidden: true,
                                 component: () => import( '@/views/baseData/dictionary/detailBaseClass.vue'),

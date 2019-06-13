@@ -198,11 +198,24 @@
         </div>
       </a-col>
     </a-card>
+    <footer-tool-bar
+      :extra="false"
+      :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
+      <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
+      <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
+      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
+    </footer-tool-bar>
   </div>
 </template>
 
 <script>
+  import FooterToolBar from '@/components/FooterToolbar'
+  import { mixin, mixinDevice } from '@/utils/mixin'
   export default {
+    components: {
+      FooterToolBar
+    },
+    mixins: [mixin, mixinDevice],
     data() {
       return {
         api:{
@@ -253,6 +266,11 @@
         } else if (value == '4') {
           return '通用规则'
         }
+      },
+      cancle(){
+        this.$router.push({
+          name: 'drugSpecIndex'
+        })
       }
     }
   }

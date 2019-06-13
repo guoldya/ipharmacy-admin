@@ -55,6 +55,10 @@
     components: { ATextarea },
     data() {
       return {
+        api:{
+        dicBaseClassUpdate:'sys/dicBaseclass/update',
+        dicBaseClassSelectOne:'sys/dicBaseclass/selectOne',
+        },
         labelCol: {
           xs: { span: 8 },
           sm: { span: 8 }
@@ -64,39 +68,64 @@
           sm: { span: 8 }
         },
         form: this.$form.createForm(this),
+        isNew:true,
       }
     },
     computed: {},
     mounted() {
-
+      this.init();
     },
     methods: {
+      init(){
+        if (this.$route.params.code == 0 ){
+          this.isNew = true;
+        } else{
+          this.isNew = false;
+          let params = this.$route.params;
+          this.$axios({
+            url: this.api.dicBaseClassSelectOne,
+            method: 'put',
+            data: params
+          })
+            .then(res => {
+              if (res.code == '200') {
+                // this.listData = res.data;
+                this.form.setFieldsValue(res.data)
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
+        }
+      },
       handleSubmit(e) {
         e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
-            values.levelColor = this.levelColor;
-            values.auditLevel = this.$route.query.auditLevel;
-            if (this.$route.query.msg == 'new'){
-              values.levelType = 0;
-            }
-            reviewAuditlevelUpdate(values).then(res => {
-              if (res.code == '200') {
-                this.$message.info('保存成功!')
-                this.backTo()
-              } else {
-                this.$message.error('保存失败!')
-                this.warn(res.msg)
-              }
-            }).catch(err => {
-              this.error(err)
+            this.$axios({
+              url: this.api.dicBaseClassUpdate,
+              method: 'put',
+              data: values
             })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success('保存成功!');
+                  this.backTo();
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.error(err)
+              })
           }
         })
       },
       backTo() {
         this.$router.push({
-          name: 'problemLevelIndex'
+          name: 'dictionaryIndex'
         })
       },
       confirm(e) {
