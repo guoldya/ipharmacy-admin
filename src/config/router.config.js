@@ -212,7 +212,7 @@ export const asyncRouterMap = [
                                 name: 'presHospitalizedDetail',
                                 hidden: true,
                                 component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
-                                meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
+                                // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
                             }
                         ]
                     }

@@ -36,6 +36,10 @@
               v-else-if="item.dataIndex == 'resultType'"
               v-html="resultTypeFormatter(props.row.resultType)"
             ></span>
+            <span
+              v-else-if="item.dataIndex == 'resultType'"
+              v-html="resultTypeFormatter(props.row.resultType)"
+            ></span>
             <span v-else-if="item.dataIndex == 'isCalc'" v-html="isCalcFormatter(props.row.isCalc)"></span>
 
             <span v-else>{{props.row[item.dataIndex]}}</span>
