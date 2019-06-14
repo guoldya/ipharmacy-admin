@@ -51,7 +51,7 @@
           style="padding-top: 20px" label="上级分类"
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 15 }">
-          <a-input disabled v-model="nodeData.title"  >
+          <a-input disabled v-model="fatherTitle"  >
           </a-input>
         </a-form-item>
         <a-form-item
@@ -59,7 +59,7 @@
           style="padding-top: 20px" label="上级分类"
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 15 }">
-          <a-input disabled v-model="nodeData.title">
+          <a-input disabled v-model="fatherTitle">
             <!--<a-tooltip placement="top">-->
               <!--<template slot="title" style="width: 100px">-->
                 <!--选择为顶级分类-->
@@ -154,6 +154,8 @@
           visible: false,
           confirmLoading: false
         },
+        fatherTitle:'',
+        fatherId:null,
         form: this.$form.createForm(this)
       }
     },
@@ -278,6 +280,8 @@
         })
       },
       newTreeNode() {
+        this.fatherTitle = this.nodeData.title;
+        this.fatherId = this.nodeData.key;
         this.Modal.visible = true
         this.Modal.title = '新增分类'
         this.form.resetFields();
@@ -300,9 +304,32 @@
         }, 0)
       },
       enableTreeNode() {
-
-      },
-      disableTreeNode() {
+        let params = {};
+        if (this.nodeData.status == '1'){
+          params.status = '0'
+        } else{
+          params.status = '1'
+        }
+        params.categoryId = this.nodeData.key;
+        params.categoryName = this.nodeData.title;
+        params.categoryCode = this.nodeData.categoryCode;
+        params.spellCode = this.nodeData.spellCode;
+        this.$axios({
+          url: this.api.drugCategoryUpdate,
+          method: 'post',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+              this.updateGdata(params, this.gData)
+            this.Modal.visible = false
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
 
       },
       //modal 提交
@@ -316,7 +343,7 @@
               values.categoryId = this.nodeData.key
               values.pid = this.nodeData.pid
             } else {
-              values.pid = this.nodeData.key
+              values.pid = this.fatherId
             }
             this.$axios({
               url: this.api.drugCategoryUpdate,
@@ -353,7 +380,8 @@
         for (let i in gdata) {
           let item = gdata[i]
           if (item.key == params.categoryId) {
-            item.title = params.categoryName
+            item.title = params.categoryName;
+            item.status = params.status
             return
           } else if (item.children) {
             this.updateGdata(params, item.children)
@@ -419,18 +447,14 @@
       },
       //删除父级
       deleteFather(){
-        this.nodeData.title = '';
-        this.nodeData.key = null;
+        this.fatherTitle = '';
+        this.fatherId = null;
       },
       cancel() {
         this.visible = false
       },
       confirm() {
-        if (this.clickItem == 'enable') {
-          this.enableTreeNode()
-        } else if (this.clickItem == 'disable') {
-          this.disableTreeNode()
-        }
+        this.enableTreeNode()
         this.visible = false
       }
     }

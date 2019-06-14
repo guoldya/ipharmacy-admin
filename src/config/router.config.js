@@ -103,6 +103,27 @@ export const asyncRouterMap = [
                             },
                         ]
                     },
+                    {
+                      path: '/knowledgebase/indicatorsMgt',
+                      name: 'indicatorsMgt',
+                      component: RouteView,
+                      meta: { title: '检验指标管理', multistage: true },
+                      children: [
+                          {
+                              path: '/knowledgebase/indicatorsMgt/index',
+                              name: 'indicatorsIndex',
+                              component: () => import( '@/views/knowledgebase/indicatorsMgt/index.vue'),
+                              meta: { title: '检验指标管理', hiddenHeaderContent: true, index: true }
+                          },
+                          {
+                              path: '/knowledgebase/indicatorsMgt/detail',
+                              name: 'indicatorsMgtDetail',
+                              hidden: true,
+                              component: () => import( '@/views/knowledgebase/indicatorsMgt/detail.vue'),
+                              meta: { title: '检验指标详情', detail: true, description: '检验指标自定义设置' }
+                          },
+                      ]
+                  },
                 ]
             },
             {
@@ -303,7 +324,7 @@ export const asyncRouterMap = [
                                 meta: { title: '基础字典数据', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/baseData/dictionary/detailBaseClass',
+                                path: '/baseData/dictionary/detailBaseClass/:code/',
                                 name: 'detailBaseClass',
                                 hidden: true,
                                 component: () => import( '@/views/baseData/dictionary/detailBaseClass.vue'),

@@ -155,6 +155,23 @@ const Enum = {
         { text: 'icd10', id: '1' },
         { text: 'icd9', id: '0' },
         { text: 'icd11', id: '2' },
-    ]
+    ],
+    testItemType:[
+        { text: '普通项目', id: '1' },
+        { text: '计算项目', id: '3' },
+        { text: '酶标项目', id: '4' },
+    ],
+    resultType:[
+        { text: '定量', id: '1' },
+        { text: '定性', id: '2' },
+        { text: '半定量', id: '3' },
+    ],
+    isCalc:[
+        { text: '否', id: '0' },
+        { text: '是', id: '1' },
+       
+    ],
+    isPrivacy:[ { text: '否', id: '0' },
+    { text: '是', id: '1' },]
 }
 export default Enum

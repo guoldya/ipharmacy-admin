@@ -83,7 +83,7 @@
         return [
           {
             name: '品种名称',
-            dataField: 'varietyName',
+            dataField: 'drugvarietyCode',
             type: 'text'
           },
           // { name: '药品名称', dataField: 'drugName', type: 'text' },

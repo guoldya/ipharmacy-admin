@@ -32,7 +32,7 @@
                                         treeDefaultExpandAll
                                         v-decorator="[
                                             'orgId',
-                                            {rules: [{ required: true, message: '请输选择机构' }]}
+                                            {rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}
                                         ]"
                                 >
                                 </a-tree-select>
@@ -65,8 +65,8 @@
                                         placeholder='请选择...'
                                         treeDefaultExpandAll
                                         v-decorator="[
-                                            'deptId',
-                                            {rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptId}
+                                            'deptIds',
+                                            {rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptIds}
                                         ]"
                                 >
                                 </a-tree-select>
@@ -371,6 +371,7 @@
                         data: { personId: id }
                     }).then(res => {
                         if (res.code == '200') {
+                            let that = this;
                             this.getDeptData(res.data.orgId);
                             this.formData = JSON.parse(JSON.stringify(res.data));
                             this.formData.birthday = moment(res.data.birthday,'YYYY-MM-DD');
@@ -381,11 +382,12 @@
                                     name:res.data.signPic,
                                     fileName:res.data.signPic
                                 };
-                            this.$refs.upload.fileList = [obj];
-                            this.$refs.upload.imgArr = [obj];
-                            setTimeout(()=>{
-                                this.form.setFieldsValue({ deptIds:res.data.deptIds });
-                            })
+                            if(res.data.signPic){
+                                setTimeout(()=>{
+                                    that.$refs.upload.fileList = [obj];
+                                    that.$refs.upload.imgArr = [obj];
+                                })
+                            }
                             this.spinning = false;
                         } else {
                             this.spinning = false;
