@@ -8,44 +8,68 @@
                             <a-form-item
                                     label="所属机构"
                             >
-                                <a-select
+                                <!--<a-select-->
+                                        <!--@change="orgChange"-->
+                                        <!--placeholder="请选择..."-->
+                                        <!--v-decorator="[-->
+                                <!--'orgId',-->
+                                <!--{rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}-->
+                                <!--]"-->
+                                <!--&gt;-->
+                                    <!--<a-select-option-->
+                                            <!--v-for="(item,index) in orgData"-->
+                                            <!--:value="item.orgId"-->
+                                            <!--:key="index"-->
+                                    <!--&gt;-->
+                                        <!--{{item.title}}-->
+                                    <!--</a-select-option>-->
+                                <!--</a-select>-->
+                                <a-tree-select
                                         @change="orgChange"
-                                        placeholder="请选择..."
+                                        :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                                        :treeData="orgData"
+                                        placeholder='请选择...'
+                                        treeDefaultExpandAll
                                         v-decorator="[
-                                'orgId',
-                                {rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}
-                                ]"
+                                            'orgId',
+                                            {rules: [{ required: true, message: '请输选择机构' }]}
+                                        ]"
                                 >
-                                    <a-select-option
-                                            v-for="(item,index) in orgData"
-                                            :value="item.orgId"
-                                            :key="index"
-                                    >
-                                        {{item.title}}
-                                    </a-select-option>
-                                </a-select>
+                                </a-tree-select>
                             </a-form-item>
                         </a-col>
                         <a-col :span="col">
                             <a-form-item
                                     label="所属部门"
                             >
-                                <a-select
-                                        mode="multiple"
-                                        placeholder="请选择..."
+                                <!--<a-select-->
+                                        <!--mode="multiple"-->
+                                        <!--placeholder="请选择..."-->
+                                        <!--v-decorator="[-->
+                                <!--'deptIds',-->
+                                <!--{rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptId}-->
+                                <!--]"-->
+                                <!--&gt;-->
+                                    <!--<a-select-option-->
+                                            <!--v-for="(item,index) in deptData"-->
+                                            <!--:value="item.deptId"-->
+                                            <!--:key="index"-->
+                                    <!--&gt;-->
+                                        <!--{{item.title}}-->
+                                    <!--</a-select-option>-->
+                                <!--</a-select>-->
+                                <a-tree-select
+                                        :multiple="true"
+                                        :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                                        :treeData="deptData"
+                                        placeholder='请选择...'
+                                        treeDefaultExpandAll
                                         v-decorator="[
-                                'deptIds',
-                                {rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptId}
-                                ]"
+                                            'deptId',
+                                            {rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptId}
+                                        ]"
                                 >
-                                    <a-select-option
-                                            v-for="(item,index) in deptData"
-                                            :value="item.deptId"
-                                            :key="index"
-                                    >
-                                        {{item.title}}
-                                    </a-select-option>
-                                </a-select>
+                                </a-tree-select>
                             </a-form-item>
                         </a-col>
                         <a-col :span="col">
@@ -436,13 +460,26 @@
                     data: obj
                 }).then(res => {
                     if (res.code == '200') {
-                        this.orgData = res.rows;
+                        this.orgData = this.getOrgTreeData(res.rows, undefined)
                     } else {
                         this.warn(res.msg);
                     }
                 }).catch(err => {
                     this.error(err);
                 })
+            },
+            getOrgTreeData(data, pid) {
+                let tree = [];
+                data.forEach(item => {
+                    let row = item;
+                    row.key = item.orgId;
+                    row.value = item.orgId;
+                    if (pid == item.parentId) {
+                        row.children = this.getOrgTreeData(data, item.orgId)
+                        tree.push(row)
+                    }
+                })
+                return tree
             },
             getDeptData(val) {
                 this.$axios({
@@ -451,13 +488,26 @@
                     data: { orgId:val }
                 }).then(res => {
                     if (res.code == '200') {
-                        this.deptData = res.rows;
+                        this.deptData = this.getDeptTreeData(res.rows, undefined)
                     } else {
                         this.warn(res.msg);
                     }
                 }).catch(err => {
                     this.error(err);
                 })
+            },
+            getDeptTreeData(data, pid) {
+                let tree = [];
+                data.forEach(item => {
+                    let row = item;
+                    row.key = item.deptId;
+                    row.value = item.deptId;
+                    if (pid == item.parentId) {
+                        row.children = this.getDeptTreeData(data, item.deptId)
+                        tree.push(row)
+                    }
+                })
+                return tree
             },
             getTitleData() {
                 this.$axios({
