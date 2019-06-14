@@ -1,13 +1,12 @@
 <template>
   <a-card>
-    <a-card>
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
           <a-button type="primary" @click="search">查询</a-button>
           <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
         </div>
       </Searchpanel>
-      <a-button class="margin-top-10" type="primary" @click="addClass">添加分类</a-button>
+      <a-button class="margin-top-10" type="primary" @click="addClass">新增</a-button>
       <a-spin tip="加载中..." :spinning="loading">
         <el-table
           ref="table"
@@ -15,6 +14,7 @@
           border
           class="margin-top-10"
           :highlight-current-row="true"
+          @row-click="checkRol"
         >
           <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
             <template slot-scope="scope">
@@ -30,10 +30,10 @@
                 :text="scope.row.status==0?'停用':'启用'"
               />
               </span>
-              <span v-else-if="item.value=='limitedNum'">
-          <a-badge :showZero="true" :count="scope.row.limitedNum" @click="checkRol(scope)"
-                   :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>
-          </span>
+              <!--<span v-else-if="item.value=='limitedNum'">-->
+          <!--<a-badge :showZero="true" :count="scope.row.limitedNum"-->
+                   <!--:numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>-->
+          <!--</span>-->
               <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
               <span v-else>{{scope.row[item.value]}}</span>
             </template>
@@ -52,29 +52,17 @@
         >
         </a-pagination>
       </a-spin>
-      <a-modal
-        title="分配药品"
-        :visible="Modal.visible"
-        @ok="handleOk"
-        :maskClosable="false"
-        @cancel="handleCancel"
-        width="700px"
-      >
-        <a-select style="width: 400px" class="margin-left-5">
-          <a-select-option
-            v-for="(item,index) in this.enum.clientClass"
-            :value='item.id'
-            :key="index"
-          >
-            {{item.text}}
-          </a-select-option>
-        </a-select>
-        <a-button type="primary" class="margin-left-5">分配</a-button>
-
+    <a-button class="margin-top-10" type="primary" @click="addDrug">新增</a-button>
+      <a-spin tip="加载中..." :spinning="spinLoading">
         <el-table
           class="margin-top-10"
           :data="drugData" border
           :highlight-current-row="true">
+          <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
+            <template slot-scope="scope">
+              <opcol :items="items2" :more="false" :data="scope.row"></opcol>
+            </template>
+          </el-table-column>
           <el-table-column v-for="item in columns2" :show-overflow-tooltip="true" :key="item.value" :label="item.title"
                            :prop="item.value" :width="item.width" :align="item.align">
             <template slot-scope="props">
@@ -89,37 +77,116 @@
           class="pnstyle"
           :defaultPageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
-          @showSizeChange="pageChangeSize"
-          @change="pageChange"
+          @showSizeChange="drugPageChangeSize"
+          @change="drugPageChange"
           size="small"
         >
         </a-pagination>
+      </a-spin>
+      <a-modal
+        :title="addModal.title"
+        :visible="addModal.visible"
+        @ok="addOk"
+        :confirmLoading="addModal.confirmLoading"
+        @cancel="addCancel"
+        class="ruleModal"
+        width="680px"
+        :maskClosable="false"
+      >
+        <a-form :form="form">
+              <a-form-item style="padding-top: 20px" label="名称"
+                           :label-col="{ span: 5 }"
+                           :wrapper-col="{ span: 15 }">
+                <a-input v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入名称' }]} ]"/>
+              </a-form-item>
+              <a-form-item label="备注"
+                           :label-col="{ span: 5 }"
+                           :wrapper-col="{ span: 15 }">
+                <a-textarea v-decorator="[ 'remark' ]"/>
+              </a-form-item>
+            <a-form-item label="状态"
+                         :label-col="{ span: 5 }"
+                         :wrapper-col="{ span: 15 }">
+              <a-radio-group v-decorator="[ 'status' ]">
+                <a-radio :value='op.id' v-for="(op,index) in status" :key="index">
+                  {{op.text}}
+                </a-radio>
+              </a-radio-group>
+            </a-form-item>
+        </a-form>
+      </a-modal>
+
+      <a-modal
+        title="新增药品"
+        :visible="Modal.visible"
+        @ok="handleOk"
+        :maskClosable="false"
+        @cancel="handleCancel"
+        width="600px"
+      >
+        <span>选择药品:</span>
+        <a-select style="width: 500px" class="margin-left-5 margin-top-10"
+                  showSearch
+                  allowClear
+                  mode="multiple"
+                  optionLabelProp="title"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="false"
+                  :filterOption="false"
+                  @search="handleSearch"
+                  @change="handleChange"
+                  placeholder="药品可多选"
+        >
+          <a-select-option
+            v-for="(item,index) in this.drugAllList"
+            :value='item.drugCode'
+            :key="index"
+            :title="item.drugName"
+            :producedBy="item.producedBy"
+            :spec="item.spec"
+            :spellCode="item.spellCode"
+          >
+            <a-row>
+              <a-col>
+                {{item.drugName}}
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col style="opacity: 0.6">
+                生产厂商：{{item.producedBy}}
+              </a-col>
+            </a-row>
+            <a-divider style="margin: 8px 0 0 0;"/>
+          </a-select-option>
+        </a-select>
       </a-modal>
     </a-card>
-  </a-card>
 </template>
 
 <script>
-
+  import debounce from 'lodash/debounce'
   export default {
     name: 'ruleMgt',
     data() {
+      this.handleSearch = debounce(this.handleSearch, 800)
       return {
         api: {
           coreSelectPage: 'sys/coreGroupingSpec/selectPage',
-          specSelectOne: 'sys/coreGroupingSpec/selectOne',
+          specDrugPageById: 'sys/dicDrug/selectGroupSpecDrugPage',
           coreUpdateStatus:"sys/coreGroupingSpec/updateStatus",
-          dicDrugSelectPage:'sys/dicDrug/selectPage',
-          dicDrugSelectList:'sys/dicDrug/selectList',
-        },
+          dicDrugSelectList:'sys/dicDrug/selectDrugListByKeywordAndWithOutCurrentDrug',
+          specUpdate:'sys/coreGroupingSpec/update',
+          coreGroupingInsert:'sys/coreGroupingSpecDetail/insert',
+          coreGroupingSpecDetailDelete:'sys/coreGroupingSpecDetail/delete',
+
+    },
         loading: false,
-        codeLoading: false,
+        spinLoading:false,
         tableData: [],
         drugData: [],
         drugAllList:[],
         columns: [{ title: '编码', value: 'id', width: 80, align: 'right' },
           { title: '名称', value: 'specName' },
-          { title: '药品数', value: 'limitedNum', width: 100, align: 'center' },
           { title: '备注', value: 'remark' },
           { title: '更新人', value: 'updateName', width: 100 },
           { title: '更新时间', value: 'updateTime', width: 150 },
@@ -127,18 +194,35 @@
         ],
         columns2: [{ title: '药品编码', value: 'drugCode', width: 80, align: 'right' },
           { title: '药品名称', value: 'drugName' },
-          // { title: '拼音码', value: 'spellCode', width: 100, },
-          { title: '生产厂商', value: 'producedBy', width: 150, },
-          { title: '规格', value: 'spec',width:150 },
+          { title: '拼音码', value: 'spellCode',  },
+          { title: '生产厂商', value: 'producedBy',  },
+          { title: '规格', value: 'spec' },
         ],
         items: [
           {text:'编辑', showtip: false, click: this.edits },
           {text:'启用',color:'#2D8cF0',showtip:true,tip:'确认启用吗？',click:this.changeStatus,status:'1'},
           {text:'停用',color:'#ff9900',showtip:true,tip:'确认停用吗？',click:this.changeStatus,status:'0'},
         ],
+        items2:[
+          {text:'删除',color:'#ff9900',showtip:true,tip:'确认删除吗？',click:this.deleteDrug},
+        ],
         Modal:{
           visible:false,
         },
+        addModal:{
+          title:'',
+          visible:false,
+          confirmLoading:false,
+          isNew:true,
+        },
+        editData:{},
+        selectDrugData:[],
+        classData:{},
+        status: [
+          { id: 0, text: '停用' },
+          { id: 1, text: '启用' }
+        ],
+        form: this.$form.createForm(this),
         total: null,
         total1:null,
         pageSize: 10
@@ -211,17 +295,32 @@
       },
       //编辑按钮事件
       edits(data) {
-        this.$router.push({
-          name: 'drugAdminDetail',
-          params:{id:data.id}
-        })
+        // this.$router.push({
+        //   name: 'drugAdminDetail',
+        //   params:{id:data.id}
+        // })
+        this.addModal.isNew = false;
+        this.addModal.visible = true;
+        this.addModal.title = '编辑分类';
+        this.editData = data;
+        setTimeout(()=>{
+          this.form.setFieldsValue({
+            specName: data.specName,
+            remark: data.remark,
+            status:data.status,
+          })
+        },0)
       },
       //添加分类
       addClass() {
-        this.$router.push({
-          name: 'drugAdminDetail',
-          params: {id:0},
-        })
+        // this.$router.push({
+        //   name: 'drugAdminDetail',
+        //   params: {id:0},
+        // })
+        this.form.resetFields();
+        this.addModal.visible = true;
+        this.addModal.title = '新增分类';
+        this.addModal.isNew = true;
       },
       //
       //启用停用
@@ -261,18 +360,21 @@
       },
 
       checkRol(data){
-        console.log(data,'data');
-        this.Modal.visible = true;
-        let params = {id:data.row.id};
+        this.classData = data;
         this.getDrugList();
+        this.getClassDrugData();
+      },
+      getClassDrugData(params={}){
+        params.id = this.classData.id;
         this.$axios({
-          url: this.api.specSelectOne,
+          url: this.api.specDrugPageById,
           method: 'put',
           data: params
         })
           .then(res => {
             if (res.code == '200') {
-              this.drugData = res.data.drugList;
+              this.drugData = res.rows;
+              this.total1 = res.total;
             } else {
               this.warn(res.msg)
             }
@@ -283,7 +385,7 @@
       },
       //获取药品list
       getDrugList(){
-        let params = {};
+        let params = {keyword:'',id:this.classData.id};
         this.$axios({
           url: this.api.dicDrugSelectList,
           method: 'put',
@@ -291,7 +393,7 @@
         })
           .then(res => {
             if (res.code == '200') {
-              // this.drugAllList = res.data.drugList;
+              this.drugAllList = res.rows;
             } else {
               this.warn(res.msg)
             }
@@ -300,15 +402,123 @@
             this.error(err)
           })
       },
+      //添加药品按钮
+      addDrug(){
+        this.selectDrugData = [];
+        if (this.classData.id){
+          this.Modal.visible = true;
+        } else {
+          this.warn("请选择药品组");
+        }
+      },
       //取消分配
       handleCancel(){
         this.Modal.visible = false;
       },
       //确定分配
       handleOk(){
-        this.Modal.visible = false;
-      }
+        let params = {};
+        params.id = this.classData.id;
+        params.drugCodes = this.selectDrugData;
+        this.$axios({
+          url: this.api.coreGroupingInsert,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success("保存成功!");
+              this.Modal.visible = false;
+              this.getClassDrugData();
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      addCancel(){
+        this.addModal.visible = false;
+      },
+      addOk(e){
+        e.preventDefault()
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            if (!this.addModal.isNew){
+              values.id = this.editData.id;
+            }
+            console.log(values,'values');
+            this.$axios({
+              url: this.api.specUpdate,
+              method: 'post',
+              data: values
+            })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success(res.msg);
+                  this.getData();
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.error(err)
+              })
+          }
+        })
+        this.addModal.visible = false;
+      },
 
+      handleSearch(value){
+        let params = {keyword:value};
+        this.$axios({
+          url: this.api.dicDrugSelectList,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.drugAllList = res.rows;
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      handleChange(value, option) {
+        console.log(value);
+        this.selectDrugData = value;
+      },
+      deleteDrug(data){
+        console.log(data,'data');
+        let params = {};
+        params = {drugId:data.drugCode,id:''+this.classData.id};
+        this.$axios({
+          url: this.api.coreGroupingSpecDetailDelete,
+          method: 'delete',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success("删除成功!")
+              this.getClassDrugData();
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      drugPageChangeSize(page, pageSize) {
+        this.getClassDrugData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      },
+      drugPageChange(page, pageSize) {
+        this.getClassDrugData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      },
     }
   }
 </script>

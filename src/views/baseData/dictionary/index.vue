@@ -17,11 +17,6 @@
             :highlight-current-row="true"
             @row-click="clickRow"
           >
-            <!--<el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">-->
-            <!--<template slot-scope="scope">-->
-            <!--<opcol :items="items" :more="false" :data="scope.row" :filterItem="['classType']"></opcol>-->
-            <!--</template>-->
-            <!--</el-table-column>-->
             <el-table-column :show-overflow-tooltip="true" v-for="item in columns" :key="item.value"
                              :label="item.title" :prop="item.value" :width="item.width" :align="item.align">
               <template slot-scope="scope">
@@ -92,6 +87,7 @@
           dicDrugSelectList: 'sys/dicBase/selectClassList',
           dicBaseclassList:'sys/dicBaseclass/selectList',
           baseClassPage:'sys/dicBaseclass/selectPage',
+          dicBaseUpdateStatus:'sys/dicBase/updateStatus',
         },
         loading: false,
         codeLoading: false,
@@ -108,22 +104,22 @@
           {text:'编辑', showtip: false, click: this.edits,classType:'1' },
         ],
         items2: [
-          {text:'编辑', showtip: false, click: this.edits },
+          // {text:'编辑', showtip: false, click: this.edits },
           {text:'启用',color:'#2D8cF0',showtip:true,tip:'确认启用吗？',click:this.changeStatus,status:'1'},
           {text:'停用',color:'#ff9900',showtip:true,tip:'确认停用吗？',click:this.changeStatus,status:'0'},
         ],
         columns2: [
           { text: '编码', value: 'code', width: 150 },
-          { text: '字典名称', value: 'name', width: 80  },
-          { text: '编码值', value: 'codeValues' },
-          { text: '拼音码', value: 'spellCode' },
-          { text: '备注', value: 'remark' },
+          { text: '字典名称', value: 'name', },
+          { text: '编码值', value: 'codeValues', width:150  },
+          { text: '拼音码', value: 'spellCode', width:150 },
+          { text: '备注', value: 'remark' , width:450 },
           { text: '状态', value: 'status', align: 'center', width: 100 },
         ],
         isOpcol:true,
         total: null,
         curent: 1,
-        pageSize: 10,
+        pageSize: 20,
         baseClassList:[],
         baseId:null,
       }
@@ -136,8 +132,8 @@
       list() {
         return [
           {
-            name: '分类名称',
-            dataField: 'drugName',
+            name: '名称 | 简码',
+            dataField: 'keyword',
             type: 'text'
           },
 
@@ -147,19 +143,26 @@
     methods: {
       //搜索
       search() {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
-        params.pageSize = 10;
-        params.offset = 0;
-        params.codeClass =  this.baseId;
-        this.getTreeData(params)
+        if (this.baseId){
+          let params = this.$refs.searchPanel.form.getFieldsValue()
+          params.pageSize = 10;
+          params.offset = 0;
+          params.codeClass =  this.baseId;
+          this.getTreeData(params)
+        } else{
+          this.warn("请选择分类");
+          return
+        }
+
       },
       //重置
       resetForm() {
         this.$refs.searchPanel.form.resetFields();
+        let params = {};
         params.codeClass =  this.baseId;
         this.getTreeData(params);
       },
-      getData(params = {}) {
+      getData(params = {offset:1,pageSize:20}) {
         this.loading = true;
         this.$axios({
           url: this.api.baseClassPage,
@@ -254,7 +257,29 @@
         })
       },
       changeStatus(data){
-
+        let params = {};
+        params.id = data.id;
+        if (data.status == '1'){
+          params.status = 0;
+        } else{
+          params.status = 1;
+        }
+        this.$axios({
+          url: this.api.dicBaseUpdateStatus,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              params.codeClass =  this.baseId;
+              this.getTreeData(params);
+            } else {
+              this.warn(res.msg);
+            }
+          })
+          .catch(err => {
+            this.error(err);
+          })
       },
       //添加分类
       classCode() {
@@ -265,7 +290,6 @@
       },
       //点击第一个table列事件
       clickRow(row) {
-        console.log(row);
         let params = {};
         params.codeClass = row.id;
         this.baseId = row.id;

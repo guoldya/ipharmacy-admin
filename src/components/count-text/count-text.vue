@@ -1,13 +1,13 @@
 <template>
   <a-row :gutter="20">
-    <a-col :span="3"></a-col>
+    <a-col :span="2"></a-col>
     <div v-for="op in countList">
-      <a-col class="countFor" :style="{color:op.colors}" :span="6">
-        <countTo class="countStyle" :end="op.count"></countTo>
-        <span>{{op.text}}</span>
+      <a-col class="countFor" :style="{color:op.colors}" :span="5">
+        <countTo class="countStyle" :end="op.itemCount"></countTo>
+        <span>{{op.item}}</span>
       </a-col>
     </div>
-    <a-col :span="3"></a-col>
+    <a-col :span="2"></a-col>
   </a-row>
 </template>
 

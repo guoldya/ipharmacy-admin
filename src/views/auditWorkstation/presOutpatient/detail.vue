@@ -13,7 +13,7 @@
             {{leftData.patientDeptName}}：
           </a-col>
           <a-col :md="3" :lg="4" :xxl="4">
-            {{leftData.patientName}}&nbsp;&nbsp; {{leftData.patientSex | control_type}}&nbsp;&nbsp;{{leftData.agevalue}}岁
+            <span class="font-bold fontSize14" >{{leftData.patientName}}</span>&nbsp;&nbsp; {{leftData.patientSex | control_type}}&nbsp;&nbsp;{{leftData.agevalue}}岁
           </a-col>
           <a-col class="titleText" :md="12" :lg="12" :xxl="16">
             <a-tag class="tagStyle"> 妊娠</a-tag>
@@ -244,7 +244,7 @@
         <a-form-item label="内容"
                      :label-col="{ span: 4 }"
                      :wrapper-col="{ span: 17 }">
-          <a-textarea v-decorator="[ 'contents',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"></a-textarea>
+          <a-textarea v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"></a-textarea>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -567,7 +567,7 @@
       saveTemplate() {
         if ($.trim(this.templateText).length > 0){
           setTimeout(()=>{
-            this.form.setFieldsValue({titles:this.templateTitle,contents:this.templateText,templetType:'1'});
+            this.form.setFieldsValue({titles:this.templateTitle,reviewTemplate:this.templateText,templetType:'1'});
           },100)
           this.Modal.visible = true;
         } else{
@@ -639,7 +639,10 @@
   .detailPres .ant-card-body {
     padding: 14px 32px;
   }
-
+  .fontSize14{
+    font-size: 18px;
+    line-height: 18px;
+  }
   .titleText {
     font-size: 14px;
     font-weight: bold;
