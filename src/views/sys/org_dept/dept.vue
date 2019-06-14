@@ -7,22 +7,33 @@
                             label="机构"
                             v-bind="formItemLayout"
                     >
-                        <a-select
-                                :disabled="true"
-                                placeholder="请选择..."
+                        <!--<a-select-->
+                                <!--:disabled="true"-->
+                                <!--placeholder="请选择..."-->
+                                <!--v-decorator="[-->
+                                <!--'orgId',-->
+                                <!--{rules: [{ required: true, message: '请输选择机构' }]}-->
+                                <!--]"-->
+                        <!--&gt;-->
+                            <!--<a-select-option-->
+                                    <!--v-for="(item,index) in orgData"-->
+                                    <!--:value="item.orgId"-->
+                                    <!--:key="index"-->
+                            <!--&gt;-->
+                                <!--{{item.title}}-->
+                            <!--</a-select-option>-->
+                        <!--</a-select>-->
+                        <a-tree-select
+                                :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                                :treeData="orgData"
+                                placeholder='请选择'
+                                treeDefaultExpandAll
                                 v-decorator="[
                                 'orgId',
                                 {rules: [{ required: true, message: '请输选择机构' }]}
                                 ]"
                         >
-                            <a-select-option
-                                    v-for="(item,index) in orgData"
-                                    :value="item.orgId"
-                                    :key="index"
-                            >
-                                {{item.title}}
-                            </a-select-option>
-                        </a-select>
+                        </a-tree-select>
                     </a-form-item>
                     <a-form-item
                             label="父级部门"
@@ -213,13 +224,26 @@
                     data: obj
                 }).then(res => {
                     if (res.code == '200') {
-                        this.orgData = res.rows;
+                        this.orgData = this.getTreeData(res.rows, undefined)
                     } else {
                         this.warn(res.msg);
                     }
                 }).catch(err => {
                         this.error(err);
                     })
+            },
+            getTreeData(data, pid) {
+                let tree = []
+                data.forEach(item => {
+                    let row = item;
+                    row.key = item.orgId;
+                    row.value = item.orgId;
+                    if (pid == item.parentId) {
+                        row.children = this.getTreeData(data, item.orgId)
+                        tree.push(row)
+                    }
+                })
+                return tree
             },
             getDeptData(val) {
                 this.$axios({

@@ -87,42 +87,68 @@
                             label="机构"
                             v-bind="formItemLayout"
                     >
-                        <a-select
+                        <!--<a-select-->
+                                <!--:disabled="!isNew"-->
+                                <!--placeholder="请选择"-->
+                                <!--@change="orgChange"-->
+                                <!--v-decorator="[-->
+                                <!--'orgId',-->
+                                <!--{rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}-->
+                                <!--]"-->
+                        <!--&gt;-->
+                            <!--<a-select-option :value="item.orgId" v-for="(item,index) in orgData"-->
+                                             <!--:key="index">-->
+                                <!--{{item.title}}-->
+                            <!--</a-select-option>-->
+                        <!--</a-select>-->
+                        <a-tree-select
                                 :disabled="!isNew"
-                                placeholder="请选择"
                                 @change="orgChange"
+                                :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                                :treeData="orgData"
+                                placeholder='请选择...'
+                                treeDefaultExpandAll
                                 v-decorator="[
                                 'orgId',
                                 {rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}
                                 ]"
                         >
-                            <a-select-option :value="item.orgId" v-for="(item,index) in orgData"
-                                             :key="index">
-                                {{item.title}}
-                            </a-select-option>
-                        </a-select>
+                        </a-tree-select>
                     </a-form-item>
                     <a-form-item
                             label="部门"
                             v-bind="formItemLayout"
                     >
-                        <a-select
+                        <!--<a-select-->
+                                <!--:disabled="!isNew"-->
+                                <!--placeholder="请选择..."-->
+                                <!--@change="deptChange"-->
+                                <!--v-decorator="[-->
+                                <!--'deptId',-->
+                                <!--{rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptId}-->
+                                <!--]"-->
+                        <!--&gt;-->
+                            <!--<a-select-option-->
+                                    <!--v-for="(item,index) in deptData"-->
+                                    <!--:value="item.deptId"-->
+                                    <!--:key="index"-->
+                            <!--&gt;-->
+                                <!--{{item.title}}-->
+                            <!--</a-select-option>-->
+                        <!--</a-select>-->
+                        <a-tree-select
                                 :disabled="!isNew"
-                                placeholder="请选择..."
                                 @change="deptChange"
+                                :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                                :treeData="deptData"
+                                placeholder='请选择...'
+                                treeDefaultExpandAll
                                 v-decorator="[
                                 'deptId',
                                 {rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptId}
                                 ]"
                         >
-                            <a-select-option
-                                    v-for="(item,index) in deptData"
-                                    :value="item.deptId"
-                                    :key="index"
-                            >
-                                {{item.title}}
-                            </a-select-option>
-                        </a-select>
+                        </a-tree-select>
                     </a-form-item>
                     <a-form-item
                             label="人员"
@@ -398,13 +424,26 @@
                     data: obj
                 }).then(res => {
                     if (res.code == '200') {
-                        this.orgData = res.rows;
+                        this.orgData = this.getOrgTreeData(res.rows, undefined)
                     } else {
                         this.warn(res.msg);
                     }
                 }).catch(err => {
                     this.error(err);
                 })
+            },
+            getOrgTreeData(data, pid) {
+                let tree = [];
+                data.forEach(item => {
+                    let row = item;
+                    row.key = item.orgId;
+                    row.value = item.orgId;
+                    if (pid == item.parentId) {
+                        row.children = this.getOrgTreeData(data, item.orgId)
+                        tree.push(row)
+                    }
+                })
+                return tree
             },
             getDeptData(val) {
                 this.$axios({
@@ -413,13 +452,26 @@
                     data: { orgId:val }
                 }).then(res => {
                     if (res.code == '200') {
-                        this.deptData = res.rows;
+                        this.deptData = this.getDeptTreeData(res.rows, undefined)
                     } else {
                         this.warn(res.msg);
                     }
                 }).catch(err => {
                     this.error(err);
                 })
+            },
+            getDeptTreeData(data, pid) {
+                let tree = [];
+                data.forEach(item => {
+                    let row = item;
+                    row.key = item.deptId;
+                    row.value = item.deptId;
+                    if (pid == item.parentId) {
+                        row.children = this.getDeptTreeData(data, item.deptId)
+                        tree.push(row)
+                    }
+                })
+                return tree
             },
             getPersonData(val) {
                 this.$axios({

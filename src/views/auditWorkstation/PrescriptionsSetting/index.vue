@@ -145,7 +145,7 @@
           },
           {
             name: '方案类型',
-            dataField: 'drugName',
+            dataField: 'planType',
             type: 'select',
             keyExpr: 'id',
             valueExpr: 'text',

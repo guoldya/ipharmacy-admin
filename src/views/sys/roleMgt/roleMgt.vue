@@ -123,18 +123,29 @@
                             label="机构"
                             v-bind="formItemLayout"
                     >
-                        <a-select
-                                placeholder="请选择"
+                        <!--<a-select-->
+                                <!--placeholder="请选择"-->
+                                <!--v-decorator="[-->
+                                <!--'orgId',-->
+                                <!--{rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}-->
+                                <!--]"-->
+                        <!--&gt;-->
+                            <!--<a-select-option :value="item.orgId" v-for="(item,index) in orgData"-->
+                                             <!--:key="index">-->
+                                <!--{{item.title}}-->
+                            <!--</a-select-option>-->
+                        <!--</a-select>-->
+                        <a-tree-select
+                                :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                                :treeData="orgData"
+                                placeholder='请选择...'
+                                treeDefaultExpandAll
                                 v-decorator="[
-                                'orgId',
-                                {rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}
+                                     'orgId',
+                                     {rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}
                                 ]"
                         >
-                            <a-select-option :value="item.orgId" v-for="(item,index) in orgData"
-                                             :key="index">
-                                {{item.title}}
-                            </a-select-option>
-                        </a-select>
+                        </a-tree-select>
                     </a-form-item>
                     <a-form-item
                             label="角色名称"
@@ -511,13 +522,26 @@
                     data: obj
                 }).then(res => {
                     if (res.code == '200') {
-                        this.orgData = res.rows;
+                        this.orgData = this.getOrgTreeData(res.rows, undefined)
                     } else {
                         this.warn(res.msg);
                     }
                 }).catch(err => {
                     this.error(err);
                 })
+            },
+            getOrgTreeData(data, pid) {
+                let tree = [];
+                data.forEach(item => {
+                    let row = item;
+                    row.key = item.orgId;
+                    row.value = item.orgId;
+                    if (pid == item.parentId) {
+                        row.children = this.getOrgTreeData(data, item.orgId)
+                        tree.push(row)
+                    }
+                })
+                return tree
             },
             getUserFormData(obj = {}) {
                 this.$axios({

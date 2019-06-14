@@ -52,7 +52,7 @@
             align="center"
             width="80"
             :filters="this.enum.patientStatus"
-            :filter-method="filterTag"
+            :filter-method="filterStatus"
             filter-placement="bottom"
             :show-overflow-tooltip="true"
           >
@@ -249,7 +249,9 @@
           selectWithReviewId:'/sys/reviewTemplate/selectReviewTemplateWithReviewId',
           selectReviewTemplateDetail:'sys/reviewTemplate/selectReviewTemplateDetail',
           reviewTemplateUpdate:'sys/reviewTemplate/update',
-        },
+          selectTribunalRecordNum:'sys/reviewOrderissue/selectTribunalRecordNum',
+
+    },
         labelCol: {
           xs: { span: 24 },
           sm: { span: 3 }
@@ -314,16 +316,7 @@
             dataField: 'pname',
             type: 'text'
           },
-          { name: '问题类型', dataField: 'drugName', type: 'select' },
-          // { name: '选择日期', dataField: 'factoryId', type: 'range-picker' },
           { name: '医生', dataField: 'submitName', type: 'text' },
-          // { name: '科室', dataField: 'dept', type: 'select', disable: this.dis },
-          // {
-          //   type: 'checkbox',
-          //   name: '已分配科室',
-          //   dataField: 'check',
-          //   onChange: this.changeBox
-          // }
         ]
       }
     },
@@ -334,7 +327,6 @@
       this.getCountText();
       //获取模板
       // this.getTemplate();
-
 
     },
     methods: {
@@ -350,6 +342,8 @@
         this.$refs.searchPanel.form.resetFields()
         this.fetchYJSMapData({ pageSize: 10, offset: 0 })
       },
+
+
       //翻页事件
       customerPageChange(page, pageSize) {
         let params = {}
@@ -387,10 +381,33 @@
       },
       //TODO：数据暂未获取
       getCountText() {
-        this.countText = [{ count: 1, text: '新审核处方', colors: '#32c5d2' },
-          { count: 3, text: '待确认处方', colors: '#f3c200' },
-          { count: 12, text: '已通过处方', colors: '#3598dc' }
-        ]
+        let params = {};
+        this.$axios({
+          url: this.api.selectTribunalRecordNum,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.countText = res.rows;
+              for (let key in this.countText){
+                if (this.countText[key].item == '待审核'){
+                  this.countText[key].colors = '#32c5d2'
+                } else if (this.countText[key].item == '驳回待确认'){
+                  this.countText[key].colors = '#f3c200'
+                }else if (this.countText[key].item == '已通过'){
+                  this.countText[key].colors = '#3598dc'
+                }else if (this.countText[key].item == '已驳回'){
+                  this.countText[key].colors = '#E6A23C'
+                }
+              } 
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       },
       //多选框点击事件
       selectBox(selection, row) {
@@ -648,9 +665,13 @@
         this.Modal.visible = false
       },
       //筛选
-      filterTag(row, column) {
+      filterTag(value, row) {
+        console.log(value, 'value');
+        console.log(row,'row');
       },
-
+      filterStatus(value, row){
+        return row.status == value;
+      },
       //查看
       looks(data) {
         this.$router.push({

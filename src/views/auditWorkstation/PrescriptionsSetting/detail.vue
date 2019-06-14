@@ -25,7 +25,7 @@
         >
           <a-radio-group v-decorator="['planType',{initialValue: '1'}]">
             <a-radio value="1">药师审方</a-radio>
-            <a-radio value="0">处方点评</a-radio>
+            <a-radio value="2">处方点评</a-radio>
           </a-radio-group>
         </a-form-item>
         <a-form-item

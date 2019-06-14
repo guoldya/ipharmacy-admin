@@ -343,14 +343,14 @@ export const asyncRouterMap = [
                                 name: 'drugAdminIndex',
                                 component: () => import( '@/views/baseData/drugAdministration/index.vue'),
                                 meta: { title: '药品组管理', hiddenHeaderContent: true, index: true }
-                            }
-                            // {
-                            //   path: '/baseData/drugSpec/detail',
-                            //   name: 'drugAdministration',
-                            //   hidden: true,
-                            //   component: () => import( '@/views/baseData/drugSpec/detail.vue'),
-                            //   meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
-                            // },
+                            },
+                            {
+                              path: '/baseData/drugAdministration/detail',
+                              name: 'drugAdminDetail',
+                              hidden: true,
+                              component: () => import( '@/views/baseData/drugAdministration/detail.vue'),
+                              meta: { title: '药品组管理详情',hiddenHeaderContent: true, detail: true,}
+                            },
                         ]
                     }
                 ]

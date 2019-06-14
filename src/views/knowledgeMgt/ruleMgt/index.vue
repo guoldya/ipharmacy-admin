@@ -654,7 +654,6 @@
       },
       //药品选择列搜索
       handleSearch(value) {
-        console.log(value)
         coreRuleSelectKeyword({ keyword: value }).then(res => {
           if (res.code == '200') {
             this.selectDrug = res.rows
