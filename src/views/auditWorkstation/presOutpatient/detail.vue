@@ -9,7 +9,7 @@
           <!--</a>-->
         <!--</div>-->
         <a-row class=" margin-top-10">
-          <a-col class="titleText" :md="4" :lg="3" :xxl="2">
+          <a-col class="titleText" :md="4" :lg="3" :xxl="3">
             {{leftData.patientDeptName}}：
           </a-col>
           <a-col :md="3" :lg="4" :xxl="4">
@@ -644,8 +644,9 @@
     line-height: 18px;
   }
   .titleText {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
+    line-height: 18px;
   }
 
   .detailDivider {

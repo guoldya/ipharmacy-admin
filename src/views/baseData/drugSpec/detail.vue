@@ -203,7 +203,7 @@
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
       <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
       <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
-      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
+      <a-button @click="cancle" class="margin-left-5">返回</a-button>
     </footer-tool-bar>
   </div>
 </template>

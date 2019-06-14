@@ -52,7 +52,7 @@
             align="center"
             width="80"
             :filters="this.enum.patientStatus"
-            :filter-method="filterTag"
+            :filter-method="filterStatus"
             filter-placement="bottom"
             :show-overflow-tooltip="true"
           >
@@ -316,16 +316,7 @@
             dataField: 'pname',
             type: 'text'
           },
-          { name: '问题类型', dataField: 'drugName', type: 'select' },
-          // { name: '选择日期', dataField: 'factoryId', type: 'range-picker' },
           { name: '医生', dataField: 'submitName', type: 'text' },
-          // { name: '科室', dataField: 'dept', type: 'select', disable: this.dis },
-          // {
-          //   type: 'checkbox',
-          //   name: '已分配科室',
-          //   dataField: 'check',
-          //   onChange: this.changeBox
-          // }
         ]
       }
     },
@@ -674,9 +665,13 @@
         this.Modal.visible = false
       },
       //筛选
-      filterTag(row, column) {
+      filterTag(value, row) {
+        console.log(value, 'value');
+        console.log(row,'row');
       },
-
+      filterStatus(value, row){
+        return row.status == value;
+      },
       //查看
       looks(data) {
         this.$router.push({
