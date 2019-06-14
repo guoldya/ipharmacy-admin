@@ -7,7 +7,7 @@
     </div>
     <a-form :form="form" @submit="handleSubmit">
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input  :disabled='disable' v-decorator="['id']"/>
+        <a-input  :disabled='disables' v-decorator="['id']"/>
       </a-form-item>
      <!-- <a-form-item label="问题分类" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-tree-select :treeData="datas" placeholder="请选择" v-decorator="['id']"></a-tree-select>
@@ -69,12 +69,16 @@ export default {
     }
   },
   computed: {
-     
+     disables:function(){
+        if(this.$route.query.msg !== 'new'){
+          return !!!this.disable
+      }
+     }
   },
   mounted() {
-      if(this.$route.query.msg !== 'new'){
-          this.disable=true
-      }
+      // if(this.$route.query.msg !== 'new'){
+      //     this.disable=true
+      // }
        this.getTreeList({ codeclass: 7 })
     let _this = this
     if (this.$route.query) {
