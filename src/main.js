@@ -42,6 +42,8 @@ import { Icon } from 'ant-design-vue'
 import opcol from '@/my-components/opcol/opcol.vue'
 import api from '@/api/index'
 
+import gante from "@/components/gante/gante"
+Vue.use(gante)
 
 
 // 核心插件
