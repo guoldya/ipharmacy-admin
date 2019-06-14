@@ -2,12 +2,12 @@
   <div class="detailPres">
     <a-col :span="14">
       <a-card>
-        <div class="cardHead">
-          <a href="#" @click.prevent="cancle">
-            <a-icon type="left"></a-icon>
-            返回
-          </a>
-        </div>
+        <!--<div class="cardHead">-->
+          <!--<a href="#" @click.prevent="cancle">-->
+            <!--<a-icon type="left"></a-icon>-->
+            <!--返回-->
+          <!--</a>-->
+        <!--</div>-->
         <a-row class=" margin-top-10">
           <a-col class="titleText" :md="4" :lg="3" :xxl="2">
             {{leftData.patientDeptName}}：
@@ -145,7 +145,7 @@
                   <!--<a v-else></a>-->
                 <!--</a-dropdown>-->
                 <div :rows="3" :maxRows="4" read-only class="textArea ">
-                  <a-tag>描述</a-tag>
+                  <a-tag>问题</a-tag>
                   <span class="opacity8">{{op.auditDescription}}</span>
                 </div>
                 <div :rows="3" :maxRows="4" read-only>
@@ -186,7 +186,7 @@
                 {{gd.updateTitles}}
                 </a-menu-item>
                 </a-menu>
-                <a v-if="templateTags.length>3" class="margin-left-5 saveButton">更多
+                <a v-if="templateTags.length>7" class="margin-left-5 saveButton">更多
                 <a-icon type="down"/>
                 </a>
                 <a v-else></a>
@@ -251,9 +251,10 @@
     <footer-tool-bar
       :extra="false"
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
-      <a-button @click="submit" :loading="loading">上一个</a-button>
-      <a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>
-      <a-button @click="refuse" style="margin-left: 20px" :loading="loading">驳回</a-button>
+      <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
+      <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
+      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
+      <a-button @click="refuse" style="margin-left: 5px" :loading="loading">驳回</a-button>
       <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
     </footer-tool-bar>
   </div>
@@ -320,7 +321,7 @@
         ],
         problemId: '122',
         checkedAll: true,
-        orderId: '',
+        prescOrderId: '',
         levelColor: ''
       }
     },
@@ -384,7 +385,6 @@
             params.reviewIds.push(listData[key].reviewId)
           }
         }
-        console.log(params)
         this.$axios({
           url: this.api.updateReviewStatus,
           method: 'put',
@@ -417,7 +417,6 @@
             params.reviewIds.push(listData[key].auditingStatus)
           }
         }
-        console.log(params)
         this.$axios({
           url: this.api.updateReviewStatus,
           method: 'put',
@@ -446,7 +445,6 @@
         // } else {
         //   event.cancelBubble = true   //ie兼容
         // }
-        console.log(pd);
           let list = this.templateTags
           for (let i in list) {
             if (list[i].id == pd.id) {
@@ -460,8 +458,7 @@
         this.rightData.push()
       },
       tableRowStyle({ row, rowIndex }) {
-        if (this.orderId == row.clinicPrescId) {
-          // console.log('rgb('+this.convertHexToRGB(this.levelColor).join(',')+',0.4)');
+        if (this.prescOrderId == row.clinicPrescId) {
           return { 'background': 'rgb(' + this.convertHexToRGB(this.levelColor).join(',') + ',0.3)' }
         }
       },
@@ -501,13 +498,13 @@
       },
       clickTagsCard(data) {
         for (let key in this.rightData) {
-          if (this.rightData[key].verdictId == data.verdictId) {
+          if (this.rightData[key].prescOrderId == data.prescOrderId) {
             this.rightData[key].borderColor = '#1890ff'
           } else {
             this.rightData[key].borderColor = '#d9d9d9'
           }
         }
-        this.orderId = data.orderId
+        this.prescOrderId = data.prescOrderId
         this.levelColor = data.levelColor
         this.rightData.push()
       },
@@ -520,13 +517,11 @@
         }).then(res => {
           if (res.code == '200') {
             this.reviewTemplates = res.rows;
-            console.log(1);
             if (this.reviewTemplates.length>0){
               this.problemType = this.reviewTemplates[0].tabooId;
               this.getTemplateDetail();
             }
             this.reviewTemplates.push({tabooId:'-1',tabooTitle:'----通用----'});
-            console.log(this.reviewTemplates);
           } else {
             this.warn(res.msg)
           }
@@ -555,7 +550,6 @@
           })
       },
       selectTemp(data){
-        console.log(data);
         this.problemType = data;
         this.getTemplateDetail();
       },
@@ -583,7 +577,6 @@
       handleOk() {
         this.form.validateFields((err, values) => {
             if (!err) {
-              console.log(values,'1');
               this.$axios({
                 url: this.api.reviewTemplateUpdate,
                 method: 'post',

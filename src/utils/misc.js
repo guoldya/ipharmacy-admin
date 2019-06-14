@@ -1,4 +1,4 @@
-
+import moment from 'moment';
 
 export function timeFix() {
   const time = new Date()
@@ -195,4 +195,20 @@ export function hasChild(route) {
   }else{
     return false
   }
+}
+
+/*
+** 数据里的时间格式处理
+* *@param data 数据
+* *@param props 处理的时间字段
+* *@param type 目标格式
+ */
+export function dateFormat(data = [],props = [],type = 'YYYY-MM-DD HH:mm') {
+    data.map( i => {
+        props.forEach( item => {
+            i[item] = moment(i[item]).format(type)
+        })
+        return i;
+    })
+    return data;
 }

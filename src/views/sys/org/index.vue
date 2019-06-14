@@ -8,38 +8,8 @@
     </Searchpanel>
     <a-button class="margin-top-10" type="primary" @click="adds">新增</a-button>
     <a-spin :spinning="loading" tip="加载中...">
-      <a-treeTable :columns="columns" :data="dataSource" :items="items" :selectTreeList="selectTreeList" :opColWidth="110" :moreOp="false"></a-treeTable>
+      <a-treeTable class="margin-top-10" :columns="columns" :data="dataSource" :items="items"  :opColWidth="110" :moreOp="false"></a-treeTable>
     </a-spin>
-    <a-modal
-      title="分配药师"
-      :visible="visible"
-      @ok="handleOk"
-      :maskClosable="false"
-      @cancel="handleCancel"
-      :confirmLoading="confirmLoading"
-      width="690px"
-    >
-      <a-row>
-        <a-col :span="10">
-          <p class="userModel-p">待分配药师</p>
-        </a-col>
-        <a-col :span="11" :offset="3">
-          <p class="userModel-p">已分配药师</p>
-        </a-col>
-      </a-row>
-      <a-transfer
-        :dataSource="mockData"
-        :listStyle="{
-                width: '280px',
-                height: '300px',
-                }"
-        :titles="['源列表', '目标列表']"
-        :targetKeys="targetKeys"
-        @change="handleChange"
-        :render="item=>item.title"
-        :operations="['添加', '移除']"
-      ></a-transfer>
-    </a-modal>
   </a-card>
 </template>
 
@@ -55,7 +25,8 @@
     data() {
       return {
         api: {
-          selectClassListWithMoreParam: '/sys/dicBase/selectClassListWithMoreParam'
+          selectClassListWithMoreParam: '/sys/dicBase/selectClassListWithMoreParam',
+          selectOrgUpdate: 'sys/sysOrgs/update',
         },
         loading: false,
         total: 10,
@@ -79,12 +50,12 @@
           { text: '地址', value: 'adress' },
           { text: '备注', value: 'remarks' },
           { text: '状态', value: 'status', align: 'center', width: 80 },
-          { text: '更新时间', value: 'updateDate', align: 'center', width: 140, format: this.timeFormat }
+          { text: '更新时间', value: 'updateDate', width: 140, format: this.timeFormat }
         ],
         items: [
           { text: '编辑', showtip: false, click: this.edits },
           {text:'启用',color:'#2D8cF0',showtip:true,tip:'确认启用吗？',click:this.changeStatus,status:'1'},
-          {text:'停用',color:'#E6A23C',showtip:true,tip:'确认停用吗？',click:this.changeStatus,status:'0'},
+          {text:'停用',color:'#ff9900',showtip:true,tip:'确认停用吗？',click:this.changeStatus,status:'0'},
         ],
         colors: '#ffffff',
         dataSource: [],
@@ -199,10 +170,6 @@
             this.error(err)
           })
       },
-      pageChangeSize() {
-      },
-      pageChange() {
-      },
       getDataChildren(bdata, pid) {
         var items = []
         for (var key in bdata) {
@@ -228,22 +195,39 @@
         })
       },
       //启用停用
-      changeStatus(){
-
-      },
-      checkRol(data) {
-        this.visible = true
-        // let rolePass = { account: data.row.account, centerId: data.row.centerId }
-        // this.rolePass = rolePass
-        // this.getUserRole(rolePass)
-      },
-      //确认分配药师
-      handleOk() {
-      },
-      handleCancel() {
-        this.visible = false
-      },
-      handleChange() {
+      changeStatus(data){
+        console.log(data);
+        let params = {};
+        params.orgId = data.orgId;
+        if (data.status == '1'){
+          params.status = 0;
+        }else{
+          params.status = 1;
+        }
+        this.$axios({
+          url: this.api.selectOrgUpdate,
+          method: 'post',
+          data: params
+        }).then(res => {
+            if (res.code == '200') {
+              if (data.status == '1'){
+                this.success('停用成功');
+              }else{
+                this.success('启用成功');
+              }
+              this.getData()
+            } else {
+              if (data.status == '1'){
+                this.warn('停用失败');
+              }else{
+                this.warn('启用失败');
+              }
+            }
+          })
+          .catch(err => {
+            this.loading = false
+            this.error(err)
+          })
       },
       orgTyoefFormat(data) {
         let levelText
@@ -305,9 +289,6 @@
             fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
         return fmt
       },
-      selectTreeList(selection){
-        console.log(selection,'selection');
-      }
     }
   }
 </script>

@@ -1,15 +1,16 @@
 <template>
-    <div>
+  <div>
 
         <template v-if="!more">
             <div style="display: inline-block" v-for="(op,index) in newItem" :key="index">
                 <a v-if="(op.showtip==false)" @click="op.click(data)" :style="{'color':op.color?op.color:'#2D8cF0'}">{{op.text}}</a>
                 <a-popconfirm v-if="(op.showtip==true)"
                               :title=op.tip
+                              placement="topRight"
                               @confirm=op.click(data)>
-                    <a :style="'color:'+op.color">{{op.text}}</a>
+                    <a :style="{'color':op.color}">{{op.text}}</a>
                 </a-popconfirm>
-                <a-divider v-if="(index!=newItem.length-1)" type="vertical" />
+                <a-divider v-if="(index != newItem.length-1)" type="vertical" />
             </div>
         </template>
         <template v-else>
@@ -41,6 +42,7 @@
     </div>
 </template>
 <script>
+
     /*
      * items 为显示操作的数据
      * more （true 操作超过2个时）
@@ -48,105 +50,111 @@
      * filterItem 需要过滤掉的操作
      */
     export default {
-        props:{
-            items:{
-                type:Array,
-                default(){
+        props: {
+            items: {
+                type: Array,
+                default() {
                     return []
                 }
             },
-            more:{
-                type:Boolean,
-                default(){
+            more: {
+                type: Boolean,
+                default() {
                     return false
                 }
             },
-            data:{
-                type:Object,
-                default(){
+            data: {
+                type: Object,
+                default() {
                     return {}
                 }
             },
-            filterItem:{
-                type:Array,
-                default(){
+            filterItem: {
+                type: Array,
+                default() {
                     return []
                 }
             }
         },
-        data(){
-            return{
-                visible:false,
-                popTitle:'',
-                clickItem:[]
+        data() {
+            return {
+                visible: false,
+                popTitle: '',
+                clickItem: []
             }
         },
-        computed:{
-            newItem(){
-                let i,j,len = this.items.length,len1 = this.filterItem.length,newItem=[];
-                for (i=0 ; i<len ; i++){
-                    let item = this.items[i],num = 0;
-                    for (j=0 ; j<len1 ; j++){
-                        if(this.data[this.filterItem[j]] == item[this.filterItem[j]]){
-                            break;
+        computed: {
+            newItem() {
+                let i, j, len = this.items.length, len1 = this.filterItem.length, newItem = []
+                for (i = 0; i < len; i++) {
+                    let item = this.items[i], num = 0
+                    for (j = 0; j < len1; j++) {
+                        if (this.data[this.filterItem[j]] == item[this.filterItem[j]]) {
+                            break
                         }
+
                         num++
                     }
-                    if(num == len1){
+                    if (num == len1) {
                         newItem.push(item)
                     }
                 }
-                return newItem;
+                // console.log(newItem)
+                return newItem
             }
         },
-        mounted(){
+        mounted() {
+
 
         },
-        methods:{
-            handleMenuClick(e){
-                this.clickItem = this.newItem.slice(1)[e.key];
-                if(this.clickItem.showtip){
-                    this.popTitle = this.newItem.slice(1)[e.key].tip;
-                    this.visible = true;
-                }else{
+        methods: {
+            handleMenuClick(e) {
+                this.clickItem = this.newItem.slice(1)[e.key]
+                if (this.clickItem.showtip) {
+                    this.popTitle = this.newItem.slice(1)[e.key].tip
+                    this.visible = true
+                } else {
                     this.clickItem.click(this.data)
                 }
             },
-            confirm(){
-                this.visible = false;
+            confirm() {
+                this.visible = false
                 this.clickItem.click(this.data)
             },
-            cancel(){
+            cancel() {
                 this.visible = false
             },
-            closePop(){
-                this.visible = false;
+            closePop() {
+                this.visible = false
             },
-            watchClick(){
+            watchClick() {
                 window.removeEventListener('click', this.closePop)
             }
         },
-        watch:{
-            visible(value){
-                if(value){
-                    window.addEventListener('click', this.closePop)
-                }else{
-                    window.removeEventListener('click', this.closePop)
+        watch: {
+            visible(value) {
+                if (value) {
+                    window.addEventListener('click', this.closePop,true)
+                } else {
+                    window.removeEventListener('click', this.closePop,true)
                 }
             }
         }
     }
 </script>
 <style>
-    .more{
+
+    .more {
         position: relative;
     }
-    .pop{
+
+    .pop {
         position: absolute;
-        left:50%;
+        left: 50%;
         bottom: 50%;
     }
-    .pop:before{
+
+    .pop:before {
         clear: both;
     }
 </style>

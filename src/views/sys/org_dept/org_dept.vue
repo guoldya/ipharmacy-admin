@@ -8,7 +8,7 @@
                             :data="dataSource"
                             ref="orgTable"
                             :isOpcol="false"
-                            :handleCurrentChange="orgCurrentChange"
+                            :currentChange="orgCurrentChange"
                     >
                     </a-treeTable>
                 </a-spin>
@@ -24,7 +24,7 @@
                             ref="deptTable"
                             :filterItem="['status']"
                             :items="items"
-                            :handleCurrentChange="deptCurrentChange"
+                            :currentChange="deptCurrentChange"
                     ></a-treeTable>
                 </a-spin>
             </a-col>
@@ -115,7 +115,7 @@
                     { text: '编辑', showtip: false, click: this.editDept },
                     { text: '删除', showtip: true, color: '#ff9900', tip: '确认删除吗？', click: this.delDept },
                     { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status:'1' },
-                    { text: '停用', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status:'0' }
+                    { text: '停用', showtip: true, color: '#ff9900', tip: '确认停用吗？', click: this.changeStatus, status:'0' }
                 ],
                 deptData: [],
                 userData: [],
@@ -125,9 +125,9 @@
                     { title: '性别', prop: 'sex', align: 'center', width: 100 },
                     { title: '职称', prop: 'titlesName', width: 100 },
                     { title: '电话', prop: 'phone', width: 120 },
-                    { title: '出生日期', prop: 'birthday', width: 100 },
+                    { title: '出生日期', prop: 'birthday', width: 150 },
                     { title: '创建日期', prop: 'createDate', width: 150 },
-                    { title: '更新日期', prop: 'upgateDate', width: 150 },
+                    { title: '更新日期', prop: 'updateDate', width: 150 },
                     { title: '状态', prop: 'status', align: 'center', width: 100 }
                 ],
                 userLoading: false,
@@ -301,7 +301,7 @@
                     data: obj
                 }).then(res => {
                     if (res.code == '200') {
-                        this.deptData = this.getDeptChildren(res.rows, undefined);
+                        this.deptData = this.getDeptChildren(this.$dateFormat(res.rows,['createDate','updateDate']), undefined);
                         this.setDeptCurrent();
                         this.spinning = false
                     } else {
@@ -324,7 +324,7 @@
                     data: obj
                 }).then(res => {
                     if (res.code == '200') {
-                        this.userData = res.rows
+                        this.userData = this.$dateFormat(res.rows,['birthday','createDate','updateDate']);
                         this.total = res.total
                         this.userLoading = false
                     } else {

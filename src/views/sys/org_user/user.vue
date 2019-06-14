@@ -7,7 +7,7 @@
                     <a-button class="margin-left-5" @click="resetForm">重置</a-button>
                 </div>
             </Searchpanel>
-            <a-button type="primary" @click="addUser" class="margin-top-10">新增用户</a-button>
+            <a-button type="primary" @click="addUser" class="margin-top-10">新增人员</a-button>
             <a-spin tip="加载中..." :spinning="spinning">
                 <el-table
                         class="margin-top-10"
@@ -230,7 +230,7 @@
                     data: params
                 }).then(res => {
                     if (res.code == '200') {
-                        this.dataSource = res.rows;
+                        this.dataSource = this.$dateFormat(res.rows,['createDate','updateDate','birthday']);
                         this.total = res.total;
                         if(!params.offset){
                             this.current = 1
@@ -240,8 +240,7 @@
                         this.spinning = false;
                         this.warn(res.msg);
                     }
-                })
-                    .catch(err => {
+                }).catch(err => {
                         this.spinning = false;
                         this.error(err);
                     })

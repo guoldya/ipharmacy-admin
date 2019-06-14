@@ -279,7 +279,7 @@
           { text: '编辑', showtip: false, click: this.edit },
           { text: '删除', color: '#E6A23C', showtip: true, tip: '确认删除吗？', click: this.delRow },
           { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus },
-          { text: '停用', color: '#E6A23C', showtip: true, tip: '确认停用吗？', click: this.changeStatus }
+          { text: '停用', color: '#ff9900', showtip: true, tip: '确认停用吗？', click: this.changeStatus }
         ],
         //药品数据和表格title
         drugData: [

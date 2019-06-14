@@ -107,9 +107,11 @@
                 </a-col>
                 <a-col :span="22">
                   <a-tooltip placement="top" :key="index">
-                    <template slot="title" style="width: 300px">{{op.auditClass}}：{{op.auditDescription}}</template>
+                    <template slot="title" style="width: 300px">{{op.auditClass}}：{{op.auditDescription}}<br/>
+                      建议：{{op.auditSuggest}}
+                    </template>
                     <div class="multiLineText">
-                      <span class="auditClass">{{op.auditClass}}：</span>{{op.auditDescription}}
+                      <span class="auditClass">{{op.auditClass}}：</span>{{op.auditDescription}} <span class="auditClass">建议：</span>{{op.auditSuggest}}
                     </div>
                   </a-tooltip>
                 </a-col>
@@ -159,48 +161,48 @@
       >
         <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
-            <!--<a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">-->
-              <!--<div class="margin-top-10">-->
-                <!--<p class="dealP margin-top-10" style="float: left">审核意见：</p>-->
-                <!--<a-button type="primary" class="saveButton" size="small" @click="saveTemplate()">存为模板</a-button>-->
-                <!--<a-select class="saveButton"  size="small" style="width: 150px" @change="selectTemp" v-model="problemType">-->
-                  <!--<a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates"  :key="index" >-->
-                    <!--{{op.tabooTitle}}-->
-                  <!--</a-select-option>-->
-                <!--</a-select>-->
-                <!--<a-tooltip  placement="top" :key="index" v-for="(tt,index) in templateTags">-->
-                  <!--<template slot="title" style="width: 100px">{{tt.titles}}</template>-->
-                  <!--<a-tag-->
-                    <!--class="problemTag saveButton"-->
-                    <!--v-if="index<7 && tt.bgColor == '#2eabff'"-->
-                    <!--:key="index"-->
-                    <!--@click="tagsClick(tt)"-->
-                    <!--color="#2eabff"-->
-                  <!--&gt;{{tt.updateTitles}}-->
-                  <!--</a-tag>-->
-                  <!--<a-tag-->
-                    <!--class="problemTag saveButton"-->
-                    <!--v-else-if="index<7"-->
-                    <!--:key="index"-->
-                    <!--@click="tagsClick(tt)"-->
-                  <!--&gt;{{tt.updateTitles}}-->
-                  <!--</a-tag>-->
-                <!--</a-tooltip>-->
-                <!--<a-dropdown :trigger="['hover']">-->
-                  <!--<a-menu slot="overlay">-->
-                    <!--<a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"-->
-                                 <!--:key="index">-->
-                      <!--{{gd.updateTitles}}-->
-                    <!--</a-menu-item>-->
-                  <!--</a-menu>-->
-                  <!--<a v-if="templateTags.length>3" class="margin-left-5 saveButton">更多-->
-                    <!--<a-icon type="down"/>-->
-                  <!--</a>-->
-                  <!--<a v-else></a>-->
-                <!--</a-dropdown>-->
-                <!--<a-textarea :rows="4" v-model="templateText"></a-textarea>-->
-              <!--</div>-->
-            <!--</a-card>-->
+            <div class="margin-top-10">
+              <p class="dealP margin-top-10" style="float: left">审核意见：</p>
+              <a-popconfirm title="确定存为模板?" @confirm="saveTemplate()" okText="确定" cancelText="取消">
+              <a-button type="primary" class="saveButton" size="small" >存为模板</a-button>
+              </a-popconfirm>
+              <a-select class="saveButton"  size="small" style="width: 150px" @change="selectTemp" v-model="problemType">
+                <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates"  :key="index" >
+                  {{op.tabooTitle}}
+                </a-select-option>
+              </a-select>
+              <a-tooltip  placement="top" :key="index" v-for="(tt,index) in templateTags">
+                <template slot="title" style="width: 100px">{{tt.titles}}</template>
+                <a-tag
+                  class="problemTag saveButton"
+                  v-if="index<5 && tt.bgColor == '#2eabff'"
+                  :key="index"
+                  @click="tagsClick(tt)"
+                  color="#2eabff"
+                >{{tt.updateTitles}}
+                </a-tag>
+                <a-tag
+                  class="problemTag saveButton"
+                  v-else-if="index<5"
+                  :key="index"
+                  @click="tagsClick(tt)"
+                >{{tt.updateTitles}}
+                </a-tag>
+              </a-tooltip>
+              <a-dropdown :trigger="['hover']">
+                <a-menu slot="overlay">
+                  <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=5"
+                               :key="index">
+                    {{gd.updateTitles}}
+                  </a-menu-item>
+                </a-menu>
+                <a v-if="templateTags.length>5" class="margin-left-5 saveButton">更多
+                  <a-icon type="down"/>
+                </a>
+                <a v-else></a>
+              </a-dropdown>
+              <a-textarea :rows="4" v-model="templateText"></a-textarea>
+            </div>
           </a-tab-pane>
           <a-tab-pane tab="干预记录" key="2">
             <a-timeline>
@@ -244,6 +246,9 @@
       return {
         api: {
           updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
+          selectWithReviewId:'/sys/reviewTemplate/selectReviewTemplateWithReviewId',
+          selectReviewTemplateDetail:'sys/reviewTemplate/selectReviewTemplateDetail',
+          reviewTemplateUpdate:'sys/reviewTemplate/update',
         },
         labelCol: {
           xs: { span: 24 },
@@ -293,6 +298,12 @@
 
         problemType:'',
         reviewTemplates:[],
+        //初始化定时器
+        timeInitialize:null,
+        templateTags:[],
+        reviewTemplates:[],
+        templateText:'',
+        tempRowData:{},
       }
     },
     computed: {
@@ -417,7 +428,6 @@
           this.warn('请选择处方')
           return
         } else {
-          console.log(this.selections);
           for (let key in this.selections){
             reviewIds[key] = this.selections[key].reviewId;
           }
@@ -489,7 +499,8 @@
           data: params
         }).then(res => {
           if (res.code == '200') {
-            this.success(res.msg)
+            this.success(res.msg);
+            this.fetchYJSMapData()
           } else {
             this.warn(res.msg)
           }
@@ -500,38 +511,137 @@
       },
       //单个驳回
       rejectedSingle(data) {
-        console.log(data.row,'data');
-        this.Modal.visible = true
-        this.problemsData = data.row.orderissueVOS
-        for (let key in this.problemsData) {
-          this.problemsData[key].rejectReason = '病入膏肓'
-        }
+        this.Modal.visible = true;
+        this.tempRowData = data.row;
+        this.problemsData = data.row.orderissueVOS;
+        this.getTemplate(data);
+      },
+      getTemplate(data){
         let params = {};
-        params.auditType = '1';
-        params.passType = "1";
-        params.reviewOpinion = '驳回'
-        params.reviewVerdict = '2';
-        params.reviewIds = [];
-        params.reviewIds[0] = data.row.reviewId;
-        console.log(params,'params');
-        // this.$axios({
-        //   url: this.api.updateReviewStatus,
-        //   method: 'put',
-        //   data: params
-        // }).then(res => {
-        //   if (res.code == '200') {
-        //     this.success(res.msg)
-        //   } else {
-        //     this.warn(res.msg)
-        //   }
-        // })
-        //   .catch(err => {
-        //     this.error(err)
-        //   })
+        params.visId = data.row.visId;
+        params.prescOrderNo = data.row.orderNo;
+        console.log(data,'data');
+        this.$axios({
+          url: this.api.selectWithReviewId,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.reviewTemplates = res.rows;
+            if (this.reviewTemplates.length>0){
+              this.problemType = this.reviewTemplates[0].tabooId;
+              this.getTemplateDetail();
+            }
+            this.reviewTemplates.push({tabooId:'-1',tabooTitle:'----通用----'});
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      getTemplateDetail(data){
+        let params = {};
+        params.tabooClass= this.problemType
+        this.$axios({
+          url: this.api.selectReviewTemplateDetail,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.templateTags = res.rows;
+            this.dealTemplateTags(this.templateTags);
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      dealTemplateTags(data){
+        for (let i in  data) {
+          data[i].bgColor = '#d9d9d9'
+          if ( data[i].titles.length > 5) {
+            data[i].updateTitles =  data[i].titles.substr(0, 5) + '...'
+          } else {
+            data[i].updateTitles =  data[i].titles
+          }
+        }
+      },
+      //存为模板
+      saveTemplate(){
+        if ($.trim(this.templateText).length== 0){
+          this.warn('请输入审核意见');
+          return;
+        }else {
+          let params = {};
+          params.contents = this.templateText;
+          params.tabooClass =this.problemType;
+          params.templetType = '1';
+          params.titles = this.templateText.slice(0,10);
+          this.$axios({
+            url: this.api.reviewTemplateUpdate,
+            method: 'post',
+            data: params
+          }).then(res => {
+            if (res.code == '200') {
+              this.success(res.msg);
+            } else {
+              this.warn(res.msg)
+            }
+          })
+            .catch(err => {
+              this.error(err)
+            })
+        }
+
+
+      },
+      selectTemp(data){
+        this.problemType = data;
+        this.getTemplateDetail();
+      },
+      tagsClick(data){
+        let list = this.templateTags
+        for (let i in list) {
+          if (list[i].id == data.id) {
+            list[i].bgColor = '#2eabff'
+          } else {
+            list[i].bgColor = '#d9d9d9'
+          }
+        }
+        console.log(data,'data');
+        this.templateText = data.reviewTemplate;
       },
       //弹窗提交
       handleOk() {
-        this.Modal.visible = false
+        this.problemsData
+        let params = {};
+        params.auditType = '1';
+        params.passType = "1";
+        params.reviewOpinion = this.templateText
+        params.reviewVerdict = '1';
+        params.reviewIds = [];
+        params.reviewIds[0] = this.tempRowData.reviewId;
+        this.$axios({
+          url: this.api.updateReviewStatus,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+            this.Modal.visible = false;
+            this.fetchYJSMapData();
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
+
       },
       //弹窗取消
       handleCancel() {
@@ -543,7 +653,6 @@
 
       //查看
       looks(data) {
-        console.log(data);
         this.$router.push({
           name: 'presOutpatientDetail',
           query:{visId:data.visId},
@@ -597,36 +706,21 @@
       //频率事件
       rateChange(value){
         this.rateTime = value;
-        setInterval(()=>{
+        clearInterval(this.timeInitialize);
+        this.setTimeRval(this.rateTime);
+      },
+      //定时器
+      setTimeRval(){
+        this.timeInitialize = setInterval(()=>{
           this.fetchYJSMapData();
         },this.rateTime)
       },
-
-      //获取模板
-      getTemplate(){
-        this.$axios({
-          url: this.api.selectWithReviewId,
-          method: 'put',
-          data: params
-        }).then(res => {
-          if (res.code == '200') {
-            this.reviewTemplates = res.rows;
-            console.log(1);
-            if (this.reviewTemplates.length>0){
-              this.problemType = this.reviewTemplates[0].tabooId;
-              this.getTemplateDetail();
-            }
-            this.reviewTemplates.push({tabooId:'-1',tabooTitle:'----通用----'});
-            console.log(this.reviewTemplates);
-          } else {
-            this.warn(res.msg)
-          }
-        })
-          .catch(err => {
-            this.error(err)
-          })
-      },
     },
+    beforeDestroy(){
+      if (this.timeInitialize){
+        clearInterval(this.timeInitialize);
+      }
+    }
   }
 </script>
 <style>
@@ -742,5 +836,16 @@
   }
   .countCol .countFor{
     margin-bottom: 0px !important;
+  }
+  .saveButton {
+    margin-top: 10px;
+    margin-left: 10px;
+    float: left
+  }
+
+  .problemTag {
+    font-size: 12px;
+    margin-left: 7px;
+    margin-bottom: 5px;
   }
 </style>
