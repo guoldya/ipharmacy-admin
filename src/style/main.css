@@ -159,6 +159,9 @@ ant-card-wider-padding .ant-card-body{
 .font-bold{
   font-weight: bold;
 }
+.font-normal{
+  font-weight:normal;
+}
 
 .TextIndent{
   text-indent: 2em;
