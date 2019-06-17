@@ -172,6 +172,33 @@ const Enum = {
        
     ],
     isPrivacy:[ { text: '否', id: '0' },
-    { text: '是', id: '1' },]
+    { text: '是', id: '1' },],
+    // 
+    resultStatus:[
+        { text: '阴性', id: '1' },
+        { text: '样行', id: '2' },
+    ],
+    surgerystatus:[
+        { id:'1', text:'待手术'},
+        { id:'2', text:'手术中'},
+        { id:'3', text:'待复苏'},
+        { id:'4', text:'复苏中'},
+        { id:'5', text:'已手术'},
+        { id:'6', text:'已拒绝'},
+        { id:'7', text:'已执行'},
+    ],
+    surgerysKinds:[
+        { id:'1', text:'有菌手术'},
+        { id:'2', text:'无菌手术'},
+        { id:'3', text:'凝菌手术'},
+    ],
+    infection:[
+        { id:'1', text:'是'},
+        { id:'0', text:'否'},
+    ],
+    isEnergery:[
+        { id:'1', text:'是'},
+        { id:'0', text:'否'},
+    ],
 }
 export default Enum
