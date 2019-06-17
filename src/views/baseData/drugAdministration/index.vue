@@ -471,7 +471,7 @@
       },
 
       handleSearch(value){
-        let params = {keyword:value};
+        let params = {keyword:value,id:this.classData.id};
         this.$axios({
           url: this.api.dicDrugSelectList,
           method: 'put',

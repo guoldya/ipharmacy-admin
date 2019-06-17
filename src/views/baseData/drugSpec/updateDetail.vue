@@ -4,38 +4,37 @@
       <a-form :form="form">
         <a-col :span="5">
           <a-anchor style="text-align: justify;">
-            <a-anchor-link href="#drugName" class="w4" title="基本信息">
-              <a-anchor-link href="#drugNames" class="w4" title="药品名称"/>
-              <a-anchor-link href="#genericname" class="w4" title="通用名"/>
-              <a-anchor-link href="#tradename" class="w4" title="商品名"/>
-              <a-anchor-link href="#englishname" class="w4" title="英文名称"/>
-              <a-anchor-link href="#spellCode" class="w4" title="拼音码"/>
-              <a-anchor-link href="#spec" class="w4" title="规格"/>
-              <a-anchor-link href="#drugType" class="w4" title="药品类型"/>
+            <a-anchor-link href="#drugName" class="w4 font-bold" title="基本信息">
+              <a-anchor-link href="#drugNames" class="w4 font-normal" title="药品名称"/>
+              <a-anchor-link href="#genericname" class="w4 font-normal" title="通用名"/>
+              <a-anchor-link href="#tradename" class="w4 font-normal" title="商品名"/>
+              <a-anchor-link href="#englishname" class="w4 font-normal" title="英文名称"/>
+              <a-anchor-link href="#spellCode" class="w4 font-normal" title="拼音码"/>
+              <a-anchor-link href="#spec" class="w4 font-normal" title="规格"/>
+              <a-anchor-link href="#drugType" class="w4 font-normal" title="药品类型"/>
             </a-anchor-link>
-            <a-anchor-link href="#detailMsg" class="w4" title="详细信息">
-              <a-anchor-link href="#chemicalname" class="w4" title="化学名称"/>
-              <a-anchor-link href="#molecularweight" class="w4" title="分子量"/>
-              <a-anchor-link href="#composition" class="w4" title="药品成分"/>
-              <a-anchor-link href="#molecularformula" class="w4" title="分子式"/>
-              <a-anchor-link href="#description" class="w4" title="性状"/>
-              <a-anchor-link href="#indications" class="w4" title="适应症"/>
-              <a-anchor-link href="#dosage" class="w4" title="用法用量"/>
-              <a-anchor-link href="#adversereactions" class="w4" title="不良反应"/>
-              <a-anchor-link href="#contraindications" class="w4" title="禁忌症"/>
-              <a-anchor-link href="#precautions" class="w4" title="注意事项"/>
-              <a-anchor-link href="#pregnantuse" class="w4" title="孕妇及哺乳期用药"/>
-              <a-anchor-link href="#childrenuse" class="w4" title="儿童用药"/>
-              <a-anchor-link href="#elderlyuse" class="w4" title="老年用药"/>
-              <a-anchor-link href="#interactions" class="w4" title="药物相互作用"/>
-              <a-anchor-link href="#pharmacologicalactions" class="w4" title="药理毒理"/>
-              <a-anchor-link href="#overdosage" class="w4" title="药物过量"/>
-              <a-anchor-link href="#phamacokinetics" class="w4" title="药代动力学"/>
-              <a-anchor-link href="#storage" class="w4" title="药品贮藏"/>
-              <a-anchor-link href="#approvalnumber" class="w4" title="批准文号"/>
-              <a-anchor-link href="#producedby" class="w4" title="生产企业"/>
+            <a-anchor-link href="#detailMsg" class="w4 font-bold" title="详细信息">
+              <a-anchor-link href="#chemicalname" class="w4 font-normal" title="化学名称"/>
+              <a-anchor-link href="#molecularweight" class="w4 font-normal" title="分子量"/>
+              <a-anchor-link href="#composition" class="w4 font-normal" title="药品成分"/>
+              <a-anchor-link href="#molecularformula" class="w4 font-normal" title="分子式"/>
+              <a-anchor-link href="#description" class="w4 font-normal" title="性状"/>
+              <a-anchor-link href="#indications" class="w4 font-normal" title="适应症"/>
+              <a-anchor-link href="#dosage" class="w4 font-normal" title="用法用量"/>
+              <a-anchor-link href="#adversereactions" class="w4 font-normal" title="不良反应"/>
+              <a-anchor-link href="#contraindications" class="w4 font-normal" title="禁忌症"/>
+              <a-anchor-link href="#precautions" class="w4 font-normal" title="注意事项"/>
+              <a-anchor-link href="#pregnantuse" class="w4 font-normal" title="孕妇及哺乳期用药"/>
+              <a-anchor-link href="#childrenuse" class="w4 font-normal" title="儿童用药"/>
+              <a-anchor-link href="#elderlyuse" class="w4 font-normal" title="老年用药"/>
+              <a-anchor-link href="#interactions" class="w4 font-normal" title="药物相互作用"/>
+              <a-anchor-link href="#pharmacologicalactions" class="w4 font-normal" title="药理毒理"/>
+              <a-anchor-link href="#overdosage" class="w4 font-normal" title="药物过量"/>
+              <a-anchor-link href="#phamacokinetics" class="w4 font-normal" title="药代动力学"/>
+              <a-anchor-link href="#storage" class="w4 font-normal" title="药品贮藏"/>
+              <a-anchor-link href="#approvalnumber" class="w4 font-normal" title="批准文号"/>
+              <a-anchor-link href="#producedby" class="w4 font-normal" title="生产企业"/>
             </a-anchor-link>
-
           </a-anchor>
         </a-col>
         <a-col :span="12">
@@ -394,5 +393,8 @@
 <style>
   .cardOne .ant-divider-horizontal {
     margin-top: 0px;
+  }
+  .textIndent {
+    text-indent:2em
   }
 </style>

@@ -114,36 +114,6 @@
                 <a-tag class="tagStyle" :color="op.levelColor"> {{op.auditName }}</a-tag>
                 <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
                 <span class="marLeft10"><i class="iconfont action action-yaopin1" style="color: #2eabff"/>{{op.drugName}}</span>
-                <!--<a-tooltip placement="top" :key="index" v-for="(pd,index) in op.reviewTemplateList">-->
-                  <!--<template slot="title" style="width: 100px">{{pd.titles}}</template>-->
-                  <!--<a-tag-->
-                    <!--class="problemTag"-->
-                    <!--v-if="index<3 && pd.bgColor == '#2eabff'"-->
-                    <!--:key="index"-->
-                    <!--@click="tagsClick(pd)"-->
-                    <!--color="#2eabff"-->
-                  <!--&gt;{{pd.updateTitles}}-->
-                  <!--</a-tag>-->
-                  <!--<a-tag-->
-                    <!--class="problemTag"-->
-                    <!--v-else-if="index<3"-->
-                    <!--:key="index"-->
-                    <!--@click="tagsClick(pd)"-->
-                  <!--&gt;{{pd.updateTitles}}-->
-                  <!--</a-tag>-->
-                <!--</a-tooltip>-->
-                <!--<a-dropdown :trigger="['hover']">-->
-                  <!--<a-menu slot="overlay">-->
-                    <!--<a-menu-item v-for="(gd,index) in op.reviewTemplateList" @click="tagsClick(gd)" v-if="index>=3"-->
-                                 <!--:key="index">-->
-                      <!--{{gd.updateTitles}}-->
-                    <!--</a-menu-item>-->
-                  <!--</a-menu>-->
-                  <!--<a v-if="op.reviewTemplateList.length>3" class="margin-left-5">更多-->
-                    <!--<a-icon type="down"/>-->
-                  <!--</a>-->
-                  <!--<a v-else></a>-->
-                <!--</a-dropdown>-->
                 <div :rows="3" :maxRows="4" read-only class="textArea ">
                   <a-tag>问题</a-tag>
                   <span class="opacity8">{{op.auditDescription}}</span>
@@ -248,11 +218,27 @@
         </a-form-item>
       </a-form>
     </a-modal>
+
+    <a-modal
+      title="版本对比"
+      :visible="versionModal.visible"
+      :footer="null"
+      @cancel="versionCancel"
+      width="900px"
+    >
+      <versionComp
+        :visId="visId"
+      ></versionComp>
+    </a-modal>
     <footer-tool-bar
-      :extra="false"
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
       <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
       <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
+      <template slot="back">
+        <a-button @click="versionComp" :disabled="leftData.subNo>1? false:true" class="margin-left-5" :loading="loading">版本对比</a-button>
+        <a-button  @click="cancle" class="margin-left-5" :loading="loading"><a-icon type="star" /> 关注患者</a-button>
+        <!--<a-button v-slse @click="cancle" class="margin-left-5" :loading="loading"><a-icon type="star" theme="filled" /> 关注患者</a-button>-->
+      </template>
       <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
       <a-button @click="refuse" style="margin-left: 5px" :loading="loading">驳回</a-button>
       <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
@@ -270,7 +256,7 @@
   import { mixin, mixinDevice } from '@/utils/mixin'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
   import ACol from 'ant-design-vue/es/grid/Col'
-
+  import versionComp from '@/my-components/version-comparison'
   const DetailListItem = DetailList.Item
   export default {
     components: {
@@ -281,7 +267,8 @@
       DetailList,
       DetailListItem,
       STable,
-      FooterToolBar
+      FooterToolBar,
+      versionComp
     },
     mixins: [mixin, mixinDevice],
     name: 'detail',
@@ -296,6 +283,9 @@
           reviewTemplateUpdate:'sys/reviewTemplate/update',
     },
         Modal: {
+          visible: false
+        },
+        versionModal:{
           visible: false
         },
         form: this.$form.createForm(this),
@@ -322,7 +312,8 @@
         problemId: '122',
         checkedAll: true,
         prescOrderId: '',
-        levelColor: ''
+        levelColor: '',
+        visId:null,
       }
     },
     mounted() {
@@ -332,6 +323,7 @@
     },
     methods: {
       getDetailData() {
+        this.visId = this.$route.query.visId;
         let params = this.$route.query
         selectOutDetail(params).then(res => {
           if (res.code == '200') {
@@ -619,6 +611,17 @@
           .catch(err => {
             this.error(err)
           })
+      },
+      //开始对比
+      versionComp(){
+        this.versionModal.visible = true;
+      },
+      //版本对比确认
+      versionCancel(){
+        this.versionModal.visible = false;
+      },
+      versionOk(){
+        this.versionModal.visible = false;
       },
     },
     filters: {

@@ -17,7 +17,7 @@ export const asyncRouterMap = [
         hidden: true,
         redirect: '/dashboard/workplace',
         component: RouteView,
-        meta: { title: '仪表盘', keepAlive: true, icon: 'dashboard' },
+        meta: { title: '仪表盘', keepAlive: false, icon: 'dashboard' },
         children: [
           {
             path: '/dashboard/analysis',
@@ -30,19 +30,19 @@ export const asyncRouterMap = [
             name: 'Monitor',
             hidden: true,
             component: () => import('@/views/dashboard/Monitor'),
-            meta: { title: '监控页', keepAlive: true }
+            meta: { title: '监控页', keepAlive: false }
           },
           {
             path: '/dashboard/workplace',
             name: 'Workplace',
             component: () => import('@/views/dashboard/Workplace'),
-            meta: { title: '工作台', keepAlive: true }
+            meta: { title: '工作台', keepAlive: false }
           },
           {
             path: '/dashboard/test',
             name: 'test',
             component: () => import('@/views/dashboard/test'),
-            meta: { title: '测试页面', keepAlive: true }
+            meta: { title: '测试页面', keepAlive: false }
           },
           {
             path: '/exception/Coming',
@@ -295,13 +295,13 @@ export const asyncRouterMap = [
                                 component: () => import( '@/views/baseData/drugSpec/index.vue'),
                                 meta: { title: '药品字典管理', hiddenHeaderContent: true, index: true }
                             },
-                            {
-                                path: '/baseData/drugSpec/detail/:drugCode/',
-                                name: 'drugSpecDetail',
-                                hidden: true,
-                                component: () => import( '@/views/baseData/drugSpec/detail.vue'),
-                                meta: { title: '药品说明书', hiddenHeaderContent: true, detail: true }
-                            },
+                            // {
+                            //     path: '/baseData/drugSpec/detail/:drugCode/',
+                            //     name: 'drugSpecDetail',
+                            //     hidden: true,
+                            //     component: () => import( '@/views/baseData/drugSpec/detail.vue'),
+                            //     meta: { title: '药品说明书', hiddenHeaderContent: true, detail: true }
+                            // },
                           {
                             path: '/baseData/drugSpec/updateDetail/:drugCode/',
                             name: 'drugSpecUpdateDetail',
@@ -311,6 +311,21 @@ export const asyncRouterMap = [
                           },
                         ]
                     },
+                  {
+                    path: '/baseData/instructionManual',
+                    name: 'instructionManual',
+                    component: RouteView,
+                     hidden: true,
+                    meta: { title: '药品说明书', multistage: true },
+                    children: [
+                      {
+                        path: '/baseData/drugSpec/detail/:drugCode/',
+                        name: 'drugSpecDetail',
+                        component: () => import( '@/views/baseData/drugSpec/detail.vue'),
+                        meta: { title: '药品说明书', hiddenHeaderContent: true, index: true }
+                      },
+                    ]
+                  },
                     {
                         path: '/baseData/dictionary',
                         name: 'dictionary',
