@@ -8,37 +8,45 @@
           </a>
         </div>
         <a-row class="margin-top-10">
-          <a-col class="titleText" :md="4" :lg="3" :xxl="2">消化内科:</a-col>
-          <a-col :md="4" :lg="5" :xxl="6">张力&nbsp;&nbsp;201904010001&nbsp;&nbsp;女&nbsp;&nbsp;23岁</a-col>
-          <a-col class="titleText" :md="8" :lg="8" :xxl="8">
-            <a-tag :color="problemsData[0].colors" class="tagStyle">妊娠</a-tag>
-            <a-tag :color="'#40a9ff'" class="tagStyle">哺乳</a-tag>
-            <a-tag class="tagStyle">肝肾功能</a-tag>
+          <a-col class="titleText" :md="4" :lg="3" :xxl="2">
+            <h3>消化内科:</h3>
           </a-col>
-          <a-col :md="8" :lg="8" :xxl="8">入院日期：&nbsp;2015.02.09</a-col>
+          <a-col :md="4" :lg="5" :xxl="6">
+            <span class="renming">张力</span>
+            <span class="bianhao">201904010001</span>
+            <span class="sex">女</span>
+            <span class="nianlin">23岁</span>
+          </a-col>
+          <a-col class="titleText" :md="8" :lg="8" :xxl="8">
+            <a-tag class="tagStyle">哺乳期</a-tag>
+          </a-col>
+          <a-col :md="8" :lg="8" :xxl="8">
+            <span>入院日期：&nbsp;2015.02.09</span>
+          </a-col>
         </a-row>
         <a-divider type="horizontal" class="detailDivider"/>
         <detail-list>
           <detail-list-item term="身高">
-            <span class="opacity8">175cm</span>
+            <span class="opacity8">{{RecordDelData.height}}</span>
           </detail-list-item>
           <detail-list-item term="体重">
-            <span class="opacity8">60kg</span>
+            <span class="opacity8">{{RecordDelData.weight}}</span>
           </detail-list-item>
           <detail-list-item term="体表面积">
-            <span class="opacity8">32㎡</span>
+            <span class="opacity8">{{RecordDelData.bSA}}㎡</span>
           </detail-list-item>
           <detail-list-item term="临床诊断">
-            <span class="opacity8">胃炎</span>
+            <span class="opacity8">{{RecordDelData.diseaseName}}</span>
           </detail-list-item>
           <detail-list-item term="过敏史">
-            <span class="opacity8">无</span>
+            <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
           </detail-list-item>
           <detail-list-item term="处方医生">
             <span class="opacity8">
               <a href>
-                黄磊&nbsp;
-                <a-icon type="message"/>&nbsp;18423327418
+                {{RecordDelData.attendingDocName}}&nbsp;
+                <a-icon type="message"/>
+                &nbsp;{{RecordDelData.attendingDocPhone}}
               </a>
             </span>
           </detail-list-item>
@@ -47,12 +55,7 @@
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
           <a-tab-pane tab="处方信息" key="1">
-            <el-table
-              class="margin-top-10 width-100"
-              :data="adviceData"
-              highlight-current-row
-              :cell-style="cellStyle"
-            >
+            <el-table class="margin-top-10 width-100" :data="adviceData" highlight-current-row>
               <el-table-column
                 :prop="item.prop"
                 :label="item.title"
@@ -71,15 +74,9 @@
             </el-table>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
-            <a-Row>
+            <a-Row class="text-reprot">
               <a-Col :span="8">
-                <el-table
-                  @row-click="clickrow"
-                  class="margin-top-10 width-100"
-                  :data="inspectionData"
-                  highlight-current-row
-                  border
-                >
+                <el-table @row-click="clickrow" class="width-100" :data="inspectionData">
                   <el-table-column
                     :prop="item.prop"
                     :label="item.title"
@@ -94,165 +91,60 @@
                       <span
                         v-if="item.prop == 'resultStatus'"
                       >{{resultStatusformatter(props.row.resultStatus)}}</span>
+                      <span v-else-if="item.prop == 'reportDateStr'">
+                        <a-tooltip placement="top">
+                          <template slot="title">
+                            <span>{{props.row.reportDateStr}}</span>
+                          </template>
+                          <span>{{timeFormat(props.row.reportDateStr)}}</span>
+                        </a-tooltip>
+                      </span>
                       <span v-else>{{props.row[item.prop]}}</span>
                     </template>
                   </el-table-column>
                 </el-table>
               </a-Col>
-              <a-Col :span="15" :offset="1" class="detail">
-                <div class="boxone">
-                  <p>
-                    <span>检查号：</span>
-                    {{formData.reportNo}}
-                  </p>
-                  <p>
-                    <span>检查科室：</span>
-                    {{formData.deptName}}
-                  </p>
+              <a-Col :span="15" class="detail">
+                <div class="border"></div>
+                <div class="jiancha">
+                  <div class="boxone">
+                    <p>
+                      <span>检查号：</span>
+                      {{formData.reportNo}}
+                    </p>
+                    <p>
+                      <span>检查科室：</span>
+                      {{formData.deptName}}
+                    </p>
+                  </div>
+                  <a-divider/>
+                  <div class="boxtwo">
+                    <h3>检查所见：</h3>
+                    <p class="checks">{{formData.objectiveSeen}}</p>
+                    <h3>建议：</h3>
+                    <p>{{formData.subjectivePrompt}}</p>
+                  </div>
+                  <a-divider/>
+                  <div class="boxthree">
+                    <p>
+                      <span>报告人姓名：</span>
+                      {{formData.docName}}
+                    </p>
+                    <p>
+                      <span>报告日期：</span>
+                      {{formData.checkDate}}
+                    </p>
+                  </div>
+                  <a-divider/>
                 </div>
-                <a-divider/>
-                <div class="boxtwo">
-                  <h3>检查所见：</h3>
-                  <p class="checks">{{formData.objectiveSeen}}</p>
-                  <h3>建议：</h3>
-                  <p>{{formData.subjectivePrompt}}</p>
-                </div>
-                <a-divider/>
-                <div class="boxthree">
-                  <p>
-                    <span>报告人姓名：</span>
-                    {{formData.docName}}
-                  </p>
-                  <p>
-                    <span>报告日期：</span>
-                    {{formData.checkDate}}
-                  </p>
-                </div>
-                <a-divider/>
               </a-Col>
             </a-Row>
           </a-tab-pane>
           <a-tab-pane tab="检验报告" key="3">
-            <a-Row class="testchk">
-              <a-Col :span="8">
-                <a-card>
-                  <el-table
-                    @row-click="checkclick"
-                    class="margin-top-10 width-100"
-                    :data="testDatas"
-                    highlight-current-row
-                  >
-                    <el-table-column
-                      :prop="item.prop"
-                      :label="item.title"
-                      :key="index"
-                      v-for="(item,index) in columnscheck"
-                      :width="item.width"
-                      :align="item.align"
-                      :formatter="item.formatter"
-                      :show-overflow-tooltip="true"
-                    >
-                      <template slot-scope="props">
-                        <span
-                          v-if="item.prop == 'resultStatus'"
-                        >{{resultStatusformatter(props.row.resultStatus)}}</span>
-                        <span v-else>{{props.row[item.prop]}}</span>
-                      </template>
-                    </el-table-column>
-                  </el-table>
-                </a-card>
-              </a-Col>
-
-              <a-Col :span="15" class="detail">
-                <a-card>
-                  <a-row>
-                    <a-col :span="12">
-                      日期：
-                      <span class="font-bold">{{testsDeltopdata.dateReportStr}}</span>
-                    </a-col>
-                    <a-col :span="12">
-                      条码号：
-                      <span class="font-bold">{{testsDeltopdata.reportNo}}</span>
-                    </a-col>
-                  </a-row>
-                  <a-row class="dealRowchild">
-                    <a-col :span="12">
-                      类型：
-                      <span class="font-bold">{{testsDeltopdata.sampleType}}</span>
-                    </a-col>
-                    <a-col :span="12">
-                      标本号：
-                      <span class="font-bold">{{testsDeltopdata.specimenNo}}</span>
-                    </a-col>
-                  </a-row>
-                  <a-row class="dealRow">
-                    <el-table
-                      class="margin-top-10 width-100"
-                      :data="testsDeldata"
-                      highlight-current-row
-                      height="400"
-                      :cell-style="cellStyle"
-                    >
-                      <el-table-column
-                        :prop="item.prop"
-                        :label="item.title"
-                        :key="index"
-                        v-for="(item,index) in columnscheckdtl"
-                        :width="item.width"
-                        :align="item.align"
-                        :formatter="item.formatter"
-                        :show-overflow-tooltip="true"
-                      >
-                        <template slot-scope="props">
-                          <span
-                            class="grades"
-                            v-if="item.prop == 'resultDesc'&&props.row.resultDesc&&(Number(props.row.resultSign)>=2||Number(props.row.resultSign)==1)"
-                          >
-                            <a-tag :color="getcolor(props.row.resultSign)">{{props.row.resultDesc}}</a-tag>
-                            <p>{{props.row.resultSignEng}}</p>
-                          </span>
-
-                          <span v-else>{{props.row[item.prop]}}</span>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-                  </a-row>
-                </a-card>
-              </a-Col>
-            </a-Row>
+            <DetailTest></DetailTest>
           </a-tab-pane>
           <a-tab-pane tab="手术信息" key="4">
-            <el-table
-              class="margin-top-10 width-100"
-              :data="surgeryData"
-              highlight-current-row
-              :cell-style="cellStyle"
-            >
-              <el-table-column
-                :prop="item.prop"
-                :label="item.title"
-                :key="index"
-                v-for="(item,index) in surgerycolumn"
-                :width="item.width"
-                :align="item.align"
-                :formatter="item.formatter"
-                :show-overflow-tooltip="true"
-              >
-                <template slot-scope="props">
-                  <span v-if="item.prop == 'name'">{{props.row.name}}&nbsp;&nbsp;{{props.row.spec}}</span>
-                  <span
-                   v-else-if="item.prop == 'status'"
-                     v-html="statusFormatter(props.row.status)"
-            ></span>
-              <span
-                   v-else-if="item.prop == 'isInfection'"
-                     v-html="isInfectionFormatter(props.row.isInfection)"
-            ></span>
-                  <span v-else>{{props.row[item.prop]}}</span>
-                </template>
-              </el-table-column>
-            </el-table>
-            <!-- <Surgery></Surgery> -->
+            <DetailOperate></DetailOperate>
           </a-tab-pane>
           <a-tab-pane tab="电子病历" key="5"></a-tab-pane>
         </a-tabs>
@@ -263,65 +155,56 @@
         <div class="dealRight">
           <a-tabs defaultActiveKey="1" size="small" class="width-100">
             <a-tab-pane tab="预判情况" key="1">
-              <p class="dealP">问题描述</p>
-              <a-card class="margin-top-10 antCard" v-for="(op,index) in problemsData" :key="index">
-                <a-tag :color="op.colors" class="tagStyle">{{op.problem }}级</a-tag>
-                <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
-                <a-tooltip placement="top" :key="num" v-for="(pd,num) in op.tags">
-                  <template slot="title" class="width-100">{{pd.template}}</template>
-                  <a-tag
-                    class="problemTag"
-                    :id="pd.num"
-                    v-if="num<3"
-                    :key="num"
-                    @click="tagsClick( pd.template,pd.num,pd.status,index,num,)"
-                  >{{pd.updateText}}</a-tag>
-                </a-tooltip>
-
-                <a-dropdown :trigger="['click']">
-                  <a-menu slot="overlay">
-                    <a-menu-item
-                      v-for="(pd,num) in op.tags"
-                      @click="tagsClick(pd.template)"
-                      v-if="num>=3"
-                      :key="num"
-                    >{{pd.updateText}}</a-menu-item>
-                  </a-menu>
-                  <a v-if="op.tags.length>3" class="margin-left-5">
-                    更多
-                    <a-icon type="down"/>
-                  </a>
-                  <a v-else></a>
-                </a-dropdown>
-                <div :rows="3" :maxRows="4" read-only class="textArea opacity8">{{op.text}}</div>
+              <span class="dealP">问题描述</span>
+              <span v-for="ta in tagsData " style="float: right">
+                <a-tag
+                  class="checkTag tagStyle"
+                  :style="{'background':ta.levelColor, 'color':'#fff'}"
+                >{{ta.auditName }}</a-tag>
+              </span>
+              <span style="float: right">
+                <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" style>全部</a-tag>
+                <a-tag class="checkTag tagStyle aTag2" v-else>全部</a-tag>
+              </span>
+              <a-card
+                class="margin-top-10 antCard"
+                v-for="(op,index) in rightData "
+                :style="{'borderColor':op.borderColor}"
+                :key="index"
+              >
+                <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
+                <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
+                <span class="marLeft10">
+                  <i class="iconfont action action-yaopin1" style="color: #2eabff"/>
+                  {{op.drugName}}
+                </span>
+                <div :rows="3" :maxRows="4" read-only class="textArea">
+                  <a-tag>问题</a-tag>
+                  <span class="opacity8">{{op.auditDescription}}</span>
+                </div>
+                <div :rows="3" :maxRows="4" read-only>
+                  <a-tag>建议</a-tag>
+                  {{op.audSuggest}}
+                </div>
               </a-card>
-              <p class="dealP margin-top-10" style="float: left">审核意见</p>
-              <a-button type="primary" class="saveButton" size="small">存为模板</a-button>
-              <a-textarea :rows="4" v-model="templateText"></a-textarea>
             </a-tab-pane>
-
             <a-tab-pane tab="干预记录" key="2">
-              <a-timeline style="margin-top: 20px">
-                <a-timeline-item color="green" class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>有接触隔离医嘱 1</p>
-                  <p>有隔离措施 2</p>
-                </a-timeline-item>
-                <a-timeline-item color="green" class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>请医生再次审核</p>
-                </a-timeline-item>
-                <a-timeline-item color="red" class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>有接触隔离医嘱 1</p>
-                  <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3</p>
-                </a-timeline-item>
-                <a-timeline-item class="timelineItem">
-                  <p>2015-09-01 15:00</p>
-                  <p>离开病区检查是否通知相关科室做好防护等 1</p>
-                  <p>有隔离措施 2</p>
-                  <p>医疗废物处置 3</p>
+              <a-timeline style="margin-top: 20px;margin-left: 10px">
+                <a-timeline-item v-for="(rd,index) in recordList" class="timelineItem" :key="index">
+                  <a-icon
+                    v-if="index+1 == recordList.length"
+                    slot="dot"
+                    type="clock-circle-o"
+                    style="font-size: 16px;"
+                  />
+                  <p>
+                    <a-tag>{{rd.eventPerson}}</a-tag>
+                    {{rd.eventTime}}
+                  </p>
+                  <p>
+                    <span class="font-bold">{{rd.event}}:</span>
+                    <span>{{rd.eventText}}</span>
+                  </p>
                 </a-timeline-item>
               </a-timeline>
             </a-tab-pane>
@@ -348,15 +231,18 @@
 <script>
 import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/FooterToolbar'
-// import  Surgery  from '@/my-components/sugery'
+import DetailOperate from './detailOperate.vue'
+import DetailTest from './detailTest.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
+import { selectOutDetail } from '@/api/login'
 const DetailListItem = DetailList.Item
 export default {
   components: {
     DetailList,
     DetailListItem,
     FooterToolBar,
-    // Surgery
+    DetailOperate,
+    DetailTest
   },
   mixins: [mixin, mixinDevice],
   name: 'detail',
@@ -368,9 +254,8 @@ export default {
         selectTestVisId: 'sys/reviewOrderissue/selectClinicTestListByVisId',
         selectTestVisIdDel: 'sys/reviewOrderissue/selectClinicTestDetailByTestId',
         selectsurgeryDel: 'sys/reviewOrderissue/selectHospitalOperationListByVisId',
-        // reviewOrderissue/selectHospitalizationRecordDetail
-         selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail',
-
+        selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
+        selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail'
       },
       loading: false,
       problemsData: [
@@ -396,7 +281,7 @@ export default {
           ],
           text:
             '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
-        },
+        }
       ],
       adviceData: [
         {
@@ -460,34 +345,8 @@ export default {
         { title: '开嘱时间', prop: 'time', width: 130, align: 'left' }
       ],
       columnsa: [
-        { title: '报告时间', prop: 'reportDateStr', width: 130, align: 'left' },
+        { title: '报告时间', prop: 'reportDateStr', width: 95, align: 'left' },
         { title: '检查项目', prop: 'itemName' }
-      ],
-      surgerycolumn:[
-         { title: '手术名称', prop: 'operationName', width: 130, align: 'left' },
-          { title: '手术描述', prop: 'processDescribe', align: 'left' },
-        { title: '手术日期', prop: 'operationTime',width:120 },
-         { title: '手术医生', prop: 'docName', width: 130, align: 'left' },
-        { title: '麻醉医师', prop: 'anestheslaName' },
-        { title: '手术状态', prop: 'status' },
-        { title: '手术性质', prop: 'kind',width:120 },
-        { title: '感染手术', prop: 'isInfection',width:120 },
-         { title: '紧急程度', prop: 'isEmergency',width:120 },
-        { title: '切口', prop: 'incision',width:120 },
-        { title: '愈合', prop: 'heal',width:120 },
-        { title: '更新时间', prop: 'updateTime',width:120 },
-      ],
-      columnscheck: [
-        { title: '类型', prop: 'testType', width: 60, align: 'left' },
-        { title: '报告时间', prop: 'reportDate', width: 130, align: 'left' },
-        { title: '检查项目', prop: 'itemName' }
-      ],
-      columnscheckdtl: [
-        { title: '代码', prop: 'itemCode', width: 100, align: 'left' },
-        { title: '化验项目', prop: 'itemName', width: 130, align: 'left' },
-        { title: '结果', prop: 'resultDesc' },
-        { title: '单位', prop: 'unit', width: 100, align: 'left' },
-        { title: '参考值', prop: 'limitValue', width: 100, align: 'left' }
       ],
       templateText: '',
       formData: [],
@@ -497,19 +356,60 @@ export default {
       testsDeldata: [],
       testsDeltopdata: [],
       testid: '',
-      // surgeryData:[],
+      RecordDelData: {},
+      tagsData: [],
+      rightData: [],
+      reviewTemplates: [],
+      checkedAll: false,
+      recordList: []
     }
   },
   mounted() {
-    // this.dealData()
-    // this.getdata({ visid: '1' })
-    // this.gettestData({ visid: '1' })
+    this.getdata({ visid: '1' })
+    this.gettestData({ visid: '1' })
     this.getRecordDelData({ visid: '1' })
+    this.getDetailData()
+    this.getRecord()
   },
   methods: {
+    //右边预判情况数据
+    getDetailData() {
+      let params = { visid: '2' }
+      selectOutDetail(params)
+        .then(res => {
+          if (res.code == '200') {
+            this.leftData = res.data
+            this.rightData = this.leftData.reviewOrderissueVOList
+            this.tagsData = this.leftData.levelTotalsList
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 右边干预记录
+    getRecord() {
+      let params = { visid: '1' }
+      this.$axios({
+        url: this.api.selectWithVisId,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.recordList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
     // 获取检查数据
     getdata(params = {}) {
-      console.log('xxxx')
       this.loading = true
       this.$axios({
         url: this.api.selectVisId,
@@ -520,7 +420,7 @@ export default {
           if (res.code == '200') {
             this.inspectionData = res.rows
             this.num = res.rows[0].examId
-            console.log(this.inspectionData)
+
             this.loading = false
           } else {
             this.loading = false
@@ -555,31 +455,9 @@ export default {
           this.loading = false
         })
     },
-    // 获取手术信息
-    getsurgeryData(params={}){
-     this.loading = true
-      this.$axios({
-        url: this.api.selectsurgeryDel,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.surgeryData = res.rows
-            this.loading = false
-          } else {
-            this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-          this.loading = false
-        })
-    },
-   // 获取住院信息
-    getRecordDelData(params={}){
-     this.loading = true
+    // 获取住院信息
+    getRecordDelData(params = {}) {
+      this.loading = true
       this.$axios({
         url: this.api.selectRecordDel,
         method: 'put',
@@ -587,7 +465,8 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.RecordDelData = res.rows
+            this.RecordDelData = res.data
+
             this.loading = false
           } else {
             this.loading = false
@@ -630,29 +509,13 @@ export default {
         this.templateText = this.templateText.replace('、' + data, '')
       }
     },
-    cellStyle(row) {
-      // console.log(row.row.resultSign)
-      // if (row.row.resultSign=='2') {
-      //   return 'color: blue; opacity: 0.6;'
-      // }
-      // else if (row.row.resultSign=='3') {
-      //   return 'color: red; opacity: 0.6;'
-      // }
-      //  else if (row.row.resultSign!=='2'&&row.row.resultSign!=='1') {
-      //   return 'color: red; opacity: 0.6;'
-      // }
-    },
+    cellStyle(row) {},
     //版本对比
-    versionContrast() {
-      //console.log(1)
-    },
+    versionContrast() {},
     //标记收藏
-    tagCollection() {
-      //console.log(2)
-    },
+    tagCollection() {},
     // 检查功能事件点击
     clickrow(data) {
-      //console.log('xxx')
       let params = { examId: data.examId }
       this.$axios({
         url: this.api.selectExamId,
@@ -662,7 +525,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.formData = res.data
-            //console.log(this.formData)
           } else {
             this.warn(res.msg)
           }
@@ -673,7 +535,6 @@ export default {
     },
     // 检验功能点击事件
     checkclick(data) {
-      console.log('ssss')
       let params = { testId: data.testId }
       this.$axios({
         url: this.api.selectTestVisIdDel,
@@ -684,7 +545,6 @@ export default {
           if (res.code == '200') {
             this.testsDeldata = res.data.clinicTestreportList
             this.testsDeltopdata = res.data
-            console.log(this.testsDeldata)
           } else {
             this.warn(res.msg)
           }
@@ -712,8 +572,7 @@ export default {
           .catch(err => {
             this.error(err)
           })
-      }
-      else if (key == 3) {   
+      } else if (key == 3) {
         this.$axios({
           url: this.api.selectTestVisIdDel,
           method: 'put',
@@ -731,9 +590,6 @@ export default {
             this.error(err)
           })
       }
-     else if(key==4){
-         this.getsurgeryData({ visid: '1' })
-      }
     },
 
     // 枚举
@@ -746,44 +602,22 @@ export default {
       })
       return levelText
     },
-    // 枚举状态
-    statusFormatter(data){ 
-    let levelText
-    this.enum.surgerystatus.map(item=>{
-      if(item.id=data){
-      levelText = item.text
-      }
-    })
-    return levelText
-    },
-    // 枚举
-     isInfectionFormatter(data){ 
-    let levelText
-    this.enum.surgerystatus.map(item=>{
-      if(item.id=data){
-      levelText = item.text
-      }
-    })
-    return levelText
-    },
-    // 判断颜色
-    getcolor(data) {
-      if (data == '1') {
-        return ''
-      } else if (data == '2') {
-        return 'blue'
-      } else if (Number(data) !== 1 && Number(data) !== 2) {
-        return 'red'
-      }
-    },
+
+  
     // 时间格式处理
+    timeFormat(data) {
+      let times = data.slice(5, 20)
+      return times
+    }
   }
 }
 </script>
 
 <style  lang="less">
-.detail {
-  margin-left: 10px;
+.details {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
 }
 .testchk {
   .ant-card-body {
@@ -794,7 +628,7 @@ export default {
   margin-top: 8px;
 }
 .titleText {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: bold;
 }
 
@@ -802,22 +636,23 @@ export default {
   margin-bottom: 30px;
   margin-top: 20px;
 }
-.textArea {
-  word-break: break-all;
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 100%;
-  margin-top: 5px;
-  text-indent: 2em;
-}
+// .textArea {
+//   word-break: break-all;
+//   display: -webkit-box;
+//   -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
+//   -webkit-box-orient: vertical;
+//   overflow: hidden;
+//   height: 100%;
+//   margin-top: 5px;
+//   text-indent: 2em;
+// }
 
 .tagStyle {
   cursor: default;
   font-size: 12px;
   margin-left: 7px;
   margin-bottom: 5px;
+  margin-top: 5px;
 }
 .saveButton {
   margin-top: 10px;
@@ -870,8 +705,9 @@ export default {
   opacity: 0.8;
 }
 .detail {
-  //   height: 330px;
-  //  overflow-y:auto;
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
   box-shadow: 10px 10px 5px #ffff;
   h3 {
     font-weight: 800;
@@ -903,5 +739,101 @@ export default {
     display: flex;
     flex-direction: row;
   }
+  .text-reprot {
+    .el-table_2_column_10 {
+      background-color: black !important;
+    }
+  }
+}
+.contents {
+  margin-left: 12px;
+  width: 99%;
+}
+.borders {
+  width: 0;
+  border-right: 1px solid #ebeef5;
+}
+.jiantou {
+  margin-bottom: 0em;
+  font-weight: bold;
+  font-size: 20px;
+}
+.text-reprot {
+  .el-table th {
+    background-color: white !important;
+  }
+}
+.testchk {
+  .el-table th {
+    background-color: white !important;
+  }
+}
+.border {
+  width: 0;
+  border-right: 1px solid #ebeef5;
+}
+.jiancha {
+  padding-left: 10px;
+}
+.renming {
+  font-size: 20px;
+  padding-left: 10px;
+  font-weight: bold;
+}
+.bianhao {
+  padding-left: 20px;
+}
+.sex {
+  padding-left: 20px;
+}
+.nianlin {
+  padding-left: 10px;
+}
+.cardHead {
+  .ant-ant-col-md-8-xxl-8 {
+    margin-top: 5px;
+  }
+}
+// 右边诊断样式
+.dealRight {
+  .dealP {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  .checkTag {
+    border: 1px #d9d9d9 solid;
+  }
+  .tagStyle {
+    font-size: 12px;
+    /*margin-left: 7px;*/
+    margin-bottom: 5px;
+  }
+  .aTag1 {
+    background: #2eabff;
+    color: #fff;
+  }
+  .aTag2 {
+    background: #fff;
+    color: #2eabff;
+  }
+  .textArea {
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    /*text-indent: 2em*/
+  }
+}
+.timelineItem p {
+  margin-bottom: 5px;
+}
+
+.timelineItem p:nth-child(n + 2) {
+  opacity: 0.8;
 }
 </style>
