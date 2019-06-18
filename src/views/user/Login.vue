@@ -86,12 +86,12 @@
                         :disabled="state.loginBtn"
                 >确定
                 </a-button>
-                <a-button
-                        size="large"
-                        htmlType="submit"
-                        class="login-button"
-                ><router-link class="register" :to="{ name: 'register' }">快速选择用户</router-link>
-                </a-button>
+                <!--<a-button-->
+                        <!--size="large"-->
+                        <!--htmlType="submit"-->
+                        <!--class="login-button"-->
+                <!--&gt;<router-link class="register" :to="{ name: 'register' }">快速选择用户</router-link>-->
+                <!--</a-button>-->
             </a-form-item>
 
             <!--<div class="user-login-other">-->
