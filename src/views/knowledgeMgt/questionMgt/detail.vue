@@ -7,19 +7,16 @@
     </div>
     <a-form :form="form" @submit="handleSubmit">
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input  :disabled='disables' v-decorator="['id']"/>
+        <a-input :disabled="disables" v-decorator="['id']"/>
       </a-form-item>
-     <!-- <a-form-item label="问题分类" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-tree-select :treeData="datas" placeholder="请选择" v-decorator="['id']"></a-tree-select>
-      </a-form-item> -->
       <a-form-item label="问题名称" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input v-decorator="['name']"/>
       </a-form-item>
       <a-form-item label="拼音编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input  v-decorator="['spellCode']"/>
+        <a-input v-decorator="['spellCode']"/>
       </a-form-item>
       <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-textarea  v-decorator="['remark']"/>
+        <a-textarea v-decorator="['remark']"/>
       </a-form-item>
       <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-select v-decorator="[ 'status']">
@@ -46,9 +43,9 @@ export default {
   data() {
     return {
       api: {
-          selectTitlesList: 'sys/dicBase/selectTitlesList',
-           insert: 'sys/dicBase/insert',
-         update: 'sys/dicBase/update'
+        selectTitlesList: 'sys/dicBase/selectTitlesList',
+        insert: 'sys/dicBase/insert',
+        update: 'sys/dicBase/update'
       },
       labelCol: {
         xs: { span: 8 },
@@ -65,33 +62,32 @@ export default {
       listData: {},
       disable: false,
       patientid: '',
-      datas:[]
+      datas: []
     }
   },
   computed: {
-     disables:function(){
-        if(this.$route.query.msg !== 'new'){
-          return !!!this.disable
+    disables: function() {
+      if (this.$route.query.msg !== 'new') {
+        return !!!this.disable
       }
-     }
+    }
   },
   mounted() {
-      // if(this.$route.query.msg !== 'new'){
-      //     this.disable=true
-      // }
-       this.getTreeList({ codeclass: 7 })
+    // if(this.$route.query.msg !== 'new'){
+    //     this.disable=true
+    // }
+    this.getTreeList({ codeclass: 7, id: this.$route.params.id })
     let _this = this
     if (this.$route.query) {
       if (this.$route.query.msg !== 'new') {
-        console.log('xxxx')
-        _this.listData = this.$route.query
-        _this.form.setFieldsValue({
-          id: _this.listData.id,
-          name: _this.listData.name,
-          spellCode: _this.listData.spellCode,
-          remark: _this.listData.remark,
-          status: _this.listData.status
-        })
+        // _this.listData = this.$route.query
+        // _this.form.setFieldsValue({
+        //   id: _this.listData.id,
+        //   name: _this.listData.name,
+        //   spellCode: _this.listData.spellCode,
+        //   remark: _this.listData.remark,
+        //   status: _this.listData.status
+        // })
         this.readOnly = this.$route.query.levelType == 1 ? true : false
         if (this.$route.query.levelColor) {
           _this.levelColor = this.$route.query.levelColor
@@ -109,7 +105,7 @@ export default {
         if (!err) {
           if (this.$route.query.msg == 'new') {
             let params = values
-            params.codeclass=7      
+            params.codeclass = 7
             this.$axios({
               url: this.api.insert,
               method: 'post',
@@ -118,7 +114,7 @@ export default {
               .then(res => {
                 if (res.code == '200') {
                   this.$message.info('保存成功!')
-                setTimeout(this.backTo, 1000)
+                  setTimeout(this.backTo, 1000)
                 }
               })
               .catch(err => {
@@ -136,7 +132,7 @@ export default {
               .then(res => {
                 if (res.code == '200') {
                   this.$message.info('保存成功!')
-                setTimeout(this.backTo, 1000)
+                  setTimeout(this.backTo, 1000)
                 }
               })
               .catch(err => {
@@ -160,8 +156,8 @@ export default {
         this.listData.levelColor = data
       }
     },
-     
-   // 树形初始数据
+
+    // 树形初始数据
     getTreeList(params = {}) {
       this.$axios({
         url: this.api.selectTitlesList,
@@ -170,7 +166,11 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.datas = this.getDataChildren(res.rows, undefined)
+            //this.datas = this.getDataChildren(res.rows, undefined)
+            // this.listData = res.rows
+            let { id, name, spellCode, remark, status, } = res.rows[0],
+              formData = { id, name, spellCode, status, remark, }
+            this.form.setFieldsValue(formData)
           } else {
             this.loadingTable = false
             this.warn(res.msg)
@@ -182,21 +182,21 @@ export default {
         })
     },
     // 树形结构拼接
-     getDataChildren(bdata, pid) {
-        var items = []
-        for (var key in bdata) {
-          var item = bdata[key]
-          if (pid == item.parentId) {
-             items.push({
+    getDataChildren(bdata, pid) {
+      var items = []
+      for (var key in bdata) {
+        var item = bdata[key]
+        if (pid == item.parentId) {
+          items.push({
             title: item.name,
             value: item.id,
             key: item.id,
             children: this.getDataChildren(bdata, item.id)
           })
-          }
         }
-        return items
-      },
+      }
+      return items
+    }
   }
 }
 </script>

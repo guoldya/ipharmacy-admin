@@ -149,6 +149,26 @@ export default {
           this.error(err)
         })
     },
+    // 获取初始详情
+    getBeginData(data) {
+      let params = { testId: data.testId }
+      this.$axios({
+        url: this.api.selectTestVisIdDel,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.testsDeldata = res.data.clinicTestreportList
+            this.testsDeltopdata = res.data
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
      // 获取检验数据
     gettestData(params = {}) {
       this.loading = true
@@ -161,6 +181,7 @@ export default {
           if (res.code == '200') {
             this.testDatas = res.rows
             this.testid = res.rows[0].testId
+            this.getBeginData(res.rows[0])
             this.loading = false
           } else {
             this.loading = false

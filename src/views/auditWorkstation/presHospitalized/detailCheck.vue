@@ -126,30 +126,7 @@ export default {
           this.error(err)
         })
     },
-   // 获取检查数据
-    getdata(params = {}) {
-      this.loading = true
-      this.$axios({
-        url: this.api.selectVisId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.inspectionData = res.rows
-            this.num = res.rows[0].examId
-            this.selectdata({examId:res.rows[0].examId})
-            this.loading = false
-          } else {
-            this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-          this.loading = false
-        })
-    },
+   
     // 时间格式处理
     timeFormat(data) {
       let times = data.slice(5, 20)
@@ -177,7 +154,7 @@ export default {
           if (res.code == '200') {
             this.inspectionData = res.rows
             this.num = res.rows[0].examId
-
+            this.selectdata(res.rows[0])
             this.loading = false
           } else {
             this.loading = false

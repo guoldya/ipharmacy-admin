@@ -267,7 +267,7 @@ export const asyncRouterMap = [
                                 meta: { title: '问题分类管理', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/knowledgeMgt/questionMgt/detail',
+                                path: '/knowledgeMgt/questionMgt/detail/:id',
                                 name: 'questionMgtDetail',
                                 hidden: true,
                                 component: () => import( '@/views/knowledgeMgt/questionMgt/detail.vue'),
