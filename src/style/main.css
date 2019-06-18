@@ -212,4 +212,6 @@ padding: 0 32px;
   background-color: #fafafa !important;
   line-height: 13px;
 }
-
+.padding5{
+  padding: 0px 5px;
+}

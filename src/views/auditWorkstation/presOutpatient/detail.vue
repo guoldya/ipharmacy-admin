@@ -235,8 +235,10 @@
       <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
       <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
       <template slot="back">
-        <a-button @click="versionComp" :disabled="leftData.subNo>1? false:true" class="margin-left-5" :loading="loading">版本对比</a-button>
         <a-button  @click="cancle" class="margin-left-5" :loading="loading"><a-icon type="star" /> 关注患者</a-button>
+        <a-button @click="versionComp" :disabled="leftData.subNo>1? false:true" class="margin-left-5" :loading="loading">
+          <i type="star" class="iconfont action action-tubiaozhizuomoban-"/><span class="margin-left-5">版本对比</span>
+        </a-button>
         <!--<a-button v-slse @click="cancle" class="margin-left-5" :loading="loading"><a-icon type="star" theme="filled" /> 关注患者</a-button>-->
       </template>
       <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
