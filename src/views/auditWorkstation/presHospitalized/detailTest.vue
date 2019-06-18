@@ -190,6 +190,52 @@ export default {
   }
 }
 </script>
+<style lang='less'>
+.testchk {
+  .el-table th {
+    background-color: white !important;
+  }
+  .ant-card-body {
+    padding: 2px 2px;
+  }
+}
+.details {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+}
+.borders {
+  width: 0;
+  border-right: 1px solid #ebeef5;
+}
+.contents {
+  margin-left: 12px;
+  width: 99%;
+}
+.dealRowchild {
+  margin-top: 8px;
+}
+.dealRow {
+  //margin-top: 5px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.dealRow .dealCol {
+  line-height: 25px;
+}
+
+.dealRow .sizeWeight {
+  font-size: 16px;
+  font-weight: bold;
+}
+.jiantou {
+  margin-bottom: 0em;
+  font-weight: bold;
+  font-size: 20px;
+}
+</style>
+
 
     
 
