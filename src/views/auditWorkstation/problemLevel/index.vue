@@ -181,10 +181,9 @@
       ban(data) {
       },
       edits(data) {
-        data.msg='old';
         this.$router.push({
           name: 'problemLevelDetail',
-          query: data
+          params: {auditLevel:data.auditLevel}
         })
       },
 
@@ -197,7 +196,7 @@
       add(){
         this.$router.push({
           name: 'problemLevelDetail',
-          query:{msg:'new',length:this.dataSource.length,}
+          params: {auditLevel:-1}
         })
       },
 
