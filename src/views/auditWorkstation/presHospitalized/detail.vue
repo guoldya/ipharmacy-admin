@@ -12,16 +12,16 @@
             <h3>消化内科:</h3>
           </a-col>
           <a-col :md="4" :lg="5" :xxl="6">
-            <span class="renming">张力</span>
-            <span class="bianhao">201904010001</span>
+            <span class="renming">{{RecordDelData.patientName}}</span>
+            <span class="bianhao">{{RecordDelData.admitNum}}</span>
             <span class="sex">女</span>
-            <span class="nianlin">23岁</span>
+            <span class="nianlin">{{RecordDelData.agevalue}}岁</span>
           </a-col>
           <a-col class="titleText" :md="8" :lg="8" :xxl="8">
             <a-tag class="tagStyle">哺乳期</a-tag>
           </a-col>
           <a-col :md="8" :lg="8" :xxl="8">
-            <span>入院日期：&nbsp;2015.02.09</span>
+            <span>入院日期：&nbsp;{{RecordDelData.admitDate}}</span>
           </a-col>
         </a-row>
         <a-divider type="horizontal" class="detailDivider"/>
@@ -54,7 +54,7 @@
       </a-card>
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
-          <a-tab-pane tab="处方信息" key="1">
+          <a-tab-pane tab="医嘱信息" key="1">
             <el-table class="margin-top-10 width-100" :data="adviceData" highlight-current-row>
               <el-table-column
                 :prop="item.prop"
@@ -74,71 +74,7 @@
             </el-table>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
-            <a-Row class="text-reprot">
-              <a-Col :span="8">
-                <el-table @row-click="clickrow" class="width-100" :data="inspectionData">
-                  <el-table-column
-                    :prop="item.prop"
-                    :label="item.title"
-                    :key="index"
-                    v-for="(item,index) in columnsa"
-                    :width="item.width"
-                    :align="item.align"
-                    :formatter="item.formatter"
-                    :show-overflow-tooltip="true"
-                  >
-                    <template slot-scope="props">
-                      <span
-                        v-if="item.prop == 'resultStatus'"
-                      >{{resultStatusformatter(props.row.resultStatus)}}</span>
-                      <span v-else-if="item.prop == 'reportDateStr'">
-                        <a-tooltip placement="top">
-                          <template slot="title">
-                            <span>{{props.row.reportDateStr}}</span>
-                          </template>
-                          <span>{{timeFormat(props.row.reportDateStr)}}</span>
-                        </a-tooltip>
-                      </span>
-                      <span v-else>{{props.row[item.prop]}}</span>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </a-Col>
-              <a-Col :span="15" class="detail">
-                <div class="border"></div>
-                <div class="jiancha">
-                  <div class="boxone">
-                    <p>
-                      <span>检查号：</span>
-                      {{formData.reportNo}}
-                    </p>
-                    <p>
-                      <span>检查科室：</span>
-                      {{formData.deptName}}
-                    </p>
-                  </div>
-                  <a-divider/>
-                  <div class="boxtwo">
-                    <h3>检查所见：</h3>
-                    <p class="checks">{{formData.objectiveSeen}}</p>
-                    <h3>建议：</h3>
-                    <p>{{formData.subjectivePrompt}}</p>
-                  </div>
-                  <a-divider/>
-                  <div class="boxthree">
-                    <p>
-                      <span>报告人姓名：</span>
-                      {{formData.docName}}
-                    </p>
-                    <p>
-                      <span>报告日期：</span>
-                      {{formData.checkDate}}
-                    </p>
-                  </div>
-                  <a-divider/>
-                </div>
-              </a-Col>
-            </a-Row>
+            <detailCheck></detailCheck>
           </a-tab-pane>
           <a-tab-pane tab="检验报告" key="3">
             <DetailTest></DetailTest>
@@ -157,21 +93,17 @@
             <a-tab-pane tab="预判情况" key="1">
               <span class="dealP">问题描述</span>
               <span v-for="ta in tagsData " style="float: right">
-                <a-tag
-                  class="checkTag tagStyle"
-                  :style="{'background':ta.levelColor, 'color':'#fff'}"
-                >{{ta.auditName }}</a-tag>
+                <a-tag v-if="ta.status == true" class="checkTag tagStyle"
+                       :style="{'background':ta.levelColor, 'color':'#fff'}" @click="checkableChange(ta)"> {{ta.auditName }}</a-tag>
+                <a-tag v-else-if="ta.status == false" class="checkTag tagStyle"
+                       :style="{'background':'#fff', 'color':ta.levelColor}" @click="checkableChange(ta)"> {{ta.auditName }}</a-tag>
               </span>
               <span style="float: right">
-                <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" style>全部</a-tag>
-                <a-tag class="checkTag tagStyle aTag2" v-else>全部</a-tag>
+               <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" style="" @click="handleChange"> 全部</a-tag>
+                <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange"> 全部</a-tag>
               </span>
-              <a-card
-                class="margin-top-10 antCard"
-                v-for="(op,index) in rightData "
-                :style="{'borderColor':op.borderColor}"
-                :key="index"
-              >
+              <a-card class="margin-top-10 antCard" @click="clickTagsCard(op)" v-for="(op,index) in rightData "
+                      v-if="op.status" :style="{'borderColor':op.borderColor}" :key="index">
                 <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
                 <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
                 <span class="marLeft10">
@@ -187,6 +119,58 @@
                   {{op.audSuggest}}
                 </div>
               </a-card>
+
+              <div class="margin-top-10">
+                <p class="dealP margin-top-10" style="float: left">审核意见：</p>
+                <a-button
+                  type="primary"
+                  class="saveButton"
+                  size="small"
+                  @click="saveTemplate()"
+                >存为模板</a-button>
+                <a-select
+                  class="saveButton"
+                  size="small"
+                  style="width: 150px"
+                  @change="selectTemp"
+                  v-model="problemType"
+                >
+                  <a-select-option
+                    :value="op.tabooId"
+                    v-for="(op,index) in reviewTemplates"
+                    :key="index"
+                  >{{op.tabooTitle}}</a-select-option>
+                </a-select>
+                <a-tooltip placement="top" :key="index" v-for="(tt,index) in templateTags">
+                  <template slot="title" style="width: 100px">{{tt.titles}}</template>
+                  <a-tag
+                    class="problemTag saveButton"
+                    v-if="index<7 && tt.bgColor == '#2eabff'"
+                    :key="index"
+                    @click="tagsClick(tt)"
+                    color="#2eabff"
+                  >{{tt.updateTitles}}</a-tag>
+                  <a-tag
+                    class="problemTag saveButton"
+                    v-else-if="index<7"
+                    :key="index"
+                    @click="tagsClick(tt)"
+                  >{{tt.updateTitles}}</a-tag>
+                </a-tooltip>
+                <a-dropdown :trigger="['hover']">
+                <a-menu slot="overlay">
+                <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"
+                :key="index">
+                {{gd.updateTitles}}
+                </a-menu-item>
+                </a-menu>
+                <a v-if="templateTags.length>7" class="margin-left-5 saveButton">更多
+                <a-icon type="down"/>
+                </a>
+                <a v-else></a>
+                </a-dropdown>
+                <a-textarea :rows="4" v-model="templateText"></a-textarea>
+              </div>
             </a-tab-pane>
             <a-tab-pane tab="干预记录" key="2">
               <a-timeline style="margin-top: 20px;margin-left: 10px">
@@ -214,17 +198,55 @@
     </a-col>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
-      :extra="true"
-      :clickOne="versionContrast"
       oneText="版本对比"
       twoText="标记收藏"
-      :clickTwo="tagCollection"
     >
       <a-button @click="submit" :loading="loading">上一个</a-button>
       <a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>
       <a-button @click="submit" style="margin-left: 20px" :loading="loading">驳回</a-button>
       <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
     </footer-tool-bar>
+
+    <a-modal
+      title="另存为模板"
+      :visible="Modal.visible"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      width="600px"
+    >
+      <a-form :form="form">
+        <a-form-item label="分类"
+                     :label-col="{ span: 4 }"
+                     :wrapper-col="{ span: 17 }">
+          <a-select v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
+                    placeholder="请选择分类">
+            <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates" :key="index">
+              {{op.tabooTitle}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="类型"
+                     :label-col="{ span: 4 }"
+                     :wrapper-col="{ span: 17 }">
+          <a-select v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
+                    placeholder="请选择类型">
+            <a-select-option :value='op.id' v-for="(op,index) in this.enum.templateType" :key="index">
+              {{op.text}}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="标题"
+                     :label-col="{ span: 4 }"
+                     :wrapper-col="{ span: 17 }">
+         <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
+        </a-form-item>
+        <a-form-item label="内容"
+                     :label-col="{ span: 4 }"
+                     :wrapper-col="{ span: 17 }">
+          <a-textarea v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"></a-textarea>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
@@ -233,6 +255,7 @@ import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/FooterToolbar'
 import DetailOperate from './detailOperate.vue'
 import DetailTest from './detailTest.vue'
+import detailCheck from './detailCheck.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
 import { selectOutDetail } from '@/api/login'
 const DetailListItem = DetailList.Item
@@ -242,7 +265,8 @@ export default {
     DetailListItem,
     FooterToolBar,
     DetailOperate,
-    DetailTest
+    DetailTest,
+    detailCheck
   },
   mixins: [mixin, mixinDevice],
   name: 'detail',
@@ -255,7 +279,10 @@ export default {
         selectTestVisIdDel: 'sys/reviewOrderissue/selectClinicTestDetailByTestId',
         selectsurgeryDel: 'sys/reviewOrderissue/selectHospitalOperationListByVisId',
         selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
-        selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail'
+        selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail',
+        selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
+        selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
+        reviewTemplateUpdate:'sys/reviewTemplate/update',
       },
       loading: false,
       problemsData: [
@@ -272,13 +299,6 @@ export default {
           problem: '5',
           colors: '#FF6600',
           problemText: '重复给药',
-          tags: [
-            { template: '避免重复用药', num: 11, updateText: '', status: 1 },
-            { template: '避免用药过度', num: 12, updateText: '', status: 1 },
-            { template: '药剂量太少', num: 13, updateText: '', status: 1 },
-            { template: '药剂量太少', num: 14, updateText: '', status: 1 },
-            { template: '药剂量太少', num: 15, updateText: '', status: 1 }
-          ],
           text:
             '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
         }
@@ -304,20 +324,6 @@ export default {
           single: '0.4g',
           freq: '每天一次',
           way: '静滴'
-        },
-        {
-          num: 3,
-          mark: '┖',
-          name: '银参通络胶囊',
-          spec: '0.46g*24粒/盒 ',
-          total: '20粒',
-          single: '0.46g',
-          freq: '每天三次',
-          way: '口服',
-          colors: 'rgb(225,102,102)',
-          deptName: '内科',
-          doctorName: '张医生',
-          time: '2015.05.19 12:00'
         }
       ],
       checkdata: [
@@ -360,19 +366,26 @@ export default {
       tagsData: [],
       rightData: [],
       reviewTemplates: [],
-      checkedAll: false,
-      recordList: []
+      checkedAll: true,
+      recordList: [],
+      templateTags: [],
+      problemType: '',
+       Modal: {
+          visible: false
+        },
+        form: this.$form.createForm(this),
     }
   },
   mounted() {
-    this.getdata({ visid: '1' })
     this.gettestData({ visid: '1' })
     this.getRecordDelData({ visid: '1' })
     this.getDetailData()
     this.getRecord()
+    // 预判情况数据
+    this.getTemplate()
   },
   methods: {
-    //右边预判情况数据
+    //右边预判情况基础数据
     getDetailData() {
       let params = { visid: '2' }
       selectOutDetail(params)
@@ -381,6 +394,8 @@ export default {
             this.leftData = res.data
             this.rightData = this.leftData.reviewOrderissueVOList
             this.tagsData = this.leftData.levelTotalsList
+            this.dealTagsData(this.tagsData)
+             this.deal(this.rightData)
           } else {
             this.warn(res.msg)
           }
@@ -389,6 +404,175 @@ export default {
           this.error(err)
         })
     },
+    // 配置状态状态控制显示
+    dealTagsData(data) {
+      for (let key in data) {
+        data[key].status = true
+      }
+    },
+    // 数据处理
+    deal(data) {
+        for (let key in data) {
+          data[key].status = true
+          data[key].borderColor = '#d9d9d9'
+          let list = data[key].reviewTemplateList
+          for (let i in list) {
+            list[i].bgColor = '#d9d9d9'
+            if (list[i].titles.length > 5) {
+              list[i].updateTitles = list[i].titles.substr(0, 5) + '...'
+            } else {
+              list[i].updateTitles = list[i].titles
+            }
+          }
+        }
+        data.push()
+      },
+    // 右边预判情况树形结构数据
+    getTemplate() {
+      let params = { visId: '2' }
+      this.$axios({
+        url: this.api.selectWithReviewId,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.reviewTemplates = res.rows
+            if (this.reviewTemplates.length > 0) {
+              this.problemType = this.reviewTemplates[0].tabooId
+              this.getTemplateDetail()
+            }
+            this.reviewTemplates.push({ tabooId: '-1', tabooTitle: '----通用----' })
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 选择树形结构再次获取具体数据；
+    getTemplateDetail() {
+      let params = {}
+      params.tabooClass = this.problemType
+      this.$axios({
+        url: this.api.selectReviewTemplateDetail,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.templateTags = res.rows
+            this.dealTemplateTags(this.templateTags)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    //选择结构的事件过程
+    selectTemp(data) {
+      this.problemType = data
+      this.getTemplateDetail()
+    },
+    // 数据的拼接
+    dealTemplateTags(data) {
+      for (let i in data) {
+        data[i].bgColor = '#d9d9d9'
+        if (data[i].titles.length > 5) {
+          data[i].updateTitles = data[i].titles.substr(0, 5) + '...'
+        } else {
+          data[i].updateTitles = data[i].titles
+        }
+      }
+    },
+     //button点击事件模板的存储；
+      saveTemplate() {
+        if ($.trim(this.templateText).length > 0){
+          setTimeout(()=>{
+            this.form.setFieldsValue({titles:this.templateTitle,reviewTemplate:this.templateText,templetType:'1'});
+          },100)
+          this.Modal.visible = true;
+        } else{
+          this.warn("请输入审核意见");
+        }
+      },
+      //  点击
+       tagsClick(pd) {
+          let list = this.templateTags
+          for (let i in list) {
+            if (list[i].id == pd.id) {
+              list[i].bgColor = '#2eabff'
+            } else {
+              list[i].bgColor = '#d9d9d9'
+            }
+          }
+        this.templateText = pd.reviewTemplate;
+        this.templateTitle = pd.titles;
+        this.rightData.push()
+      },
+      //模板的提交
+      handleOk() {
+        this.form.validateFields((err, values) => {
+            if (!err) {
+              this.$axios({
+                url: this.api.reviewTemplateUpdate,
+                method: 'post',
+                data: values
+              }).then(res => {
+                if (res.code == '200') {
+                  this.success(res.msg);
+                  this.getTemplateDetail();
+                  this.Modal.visible = false
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+                .catch(err => {
+                  this.error(err)
+                })
+            }
+          }
+        )
+      },
+      // 模板取消编辑
+       handleCancel() {
+        this.Modal.visible = false
+      },
+      // 筛选等级，匹配下面的数据；
+      checkableChange(data) {
+         console.log('xxxx')
+        for (let key in this.rightData) {
+          if (this.rightData[key].auditLevel == data.auditLevel) {
+            this.checkedAll = false
+            this.rightData[key].status = true
+          } else {
+            this.rightData[key].status = false
+          }
+        }
+        for (let key in this.tagsData) {
+          if (data.auditLevel == this.tagsData[key].auditLevel) {
+            this.tagsData[key].status = true
+          } else {
+            this.tagsData[key].status = false
+          }
+        }
+        this.rightData.push()
+      },
+      // 刷新筛选等级
+      handleChange(checked) {
+        console.log('cccc')
+        let data = this.rightData
+        for (let key in data) {
+          data[key].status = true
+        }
+        for (let key in this.tagsData) {
+          this.tagsData[key].status = true
+        }
+        this.checkedAll = true
+      },
     // 右边干预记录
     getRecord() {
       let params = { visid: '1' }
@@ -466,7 +650,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.RecordDelData = res.data
-
+            // console.log(this.RecordDelData)
             this.loading = false
           } else {
             this.loading = false
@@ -484,75 +668,18 @@ export default {
         name: 'presHospitalizedIndex'
       })
     },
-    // 删除数据
-    dealData() {
-      for (let key in this.problemsData) {
-        for (let i in this.problemsData[key].tags) {
-          if (this.problemsData[key].tags[i].template.length > 5) {
-            let str = this.problemsData[key].tags[i].template.substr(0, 5)
-            this.problemsData[key].tags[i].updateText = str + '...'
-          } else {
-            let str = this.problemsData[key].tags[i].template.substr(0, 5)
-            this.problemsData[key].tags[i].updateText = str
-          }
-        }
-      }
-    },
-    tagsClick(data, index, status, i, num) {
-      if (status == 1) {
-        $('#' + index).css('color', '#1890ff')
-        this.problemsData[i].tags[num].status = 2
-        this.templateText = this.templateText + '、' + data
-      } else {
-        $('#' + index).css('color', 'rgba(0, 0, 0, 0.65)')
-        this.problemsData[i].tags[num].status = 1
-        this.templateText = this.templateText.replace('、' + data, '')
-      }
-    },
-    cellStyle(row) {},
-    //版本对比
-    versionContrast() {},
-    //标记收藏
-    tagCollection() {},
-    // 检查功能事件点击
-    clickrow(data) {
-      let params = { examId: data.examId }
-      this.$axios({
-        url: this.api.selectExamId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.formData = res.data
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    // 检验功能点击事件
-    checkclick(data) {
-      let params = { testId: data.testId }
-      this.$axios({
-        url: this.api.selectTestVisIdDel,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.testsDeldata = res.data.clinicTestreportList
-            this.testsDeltopdata = res.data
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
+    // tagsClick() {
+    //   if (status == 1) {
+    //     $('#' + index).css('color', '#1890ff')
+    //     this.problemsData[i].tags[num].status = 2
+    //     this.templateText = this.templateText + '、' + data
+    //   } else {
+    //     $('#' + index).css('color', 'rgba(0, 0, 0, 0.65)')
+    //     this.problemsData[i].tags[num].status = 1
+    //     this.templateText = this.templateText.replace('、' + data, '')
+    //   }
+    // },
+
     changeKey(key) {
       let params = { examId: this.num }
       let param = { testId: this.testid }
@@ -603,7 +730,6 @@ export default {
       return levelText
     },
 
-  
     // 时间格式处理
     timeFormat(data) {
       let times = data.slice(5, 20)
@@ -614,19 +740,15 @@ export default {
 </script>
 
 <style  lang="less">
-.details {
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-}
-.testchk {
-  .ant-card-body {
-    padding: 2px 2px;
-  }
-}
-.dealRowchild {
-  margin-top: 8px;
-}
+// .details {
+//   padding: 10px;
+//   display: flex;
+//   flex-direction: row;
+// }
+
+// .dealRowchild {
+//   margin-top: 8px;
+// }
 .titleText {
   font-size: 17px;
   font-weight: bold;
@@ -683,20 +805,20 @@ export default {
   font-weight: bold;
 }
 
-.dealRow {
-  //margin-top: 5px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
+// .dealRow {
+//   margin-top: 5px;
+//   margin-bottom: 20px;
+//   font-size: 14px;
+// }
 
-.dealRow .dealCol {
-  line-height: 25px;
-}
+// .dealRow .dealCol {
+//   line-height: 25px;
+// }
 
-.dealRow .sizeWeight {
-  font-size: 16px;
-  font-weight: bold;
-}
+// .dealRow .sizeWeight {
+//   font-size: 16px;
+//   font-weight: bold;
+// }
 
 .timelineItem p {
   margin-bottom: 5px;
@@ -704,70 +826,26 @@ export default {
 .timelineItem p:nth-child(n + 2) {
   opacity: 0.8;
 }
-.detail {
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-  box-shadow: 10px 10px 5px #ffff;
-  h3 {
-    font-weight: 800;
-  }
-  .boxone {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 80%;
-    span {
-      font-weight: 800;
-    }
-  }
-  .boxthree {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    span {
-      font-weight: 800;
-    }
-    p:nth-child(1) {
-      margin-right: 90px;
-    }
-  }
-  .checks {
-    text-indent: 2em;
-  }
-  .grades {
-    display: flex;
-    flex-direction: row;
-  }
-  .text-reprot {
-    .el-table_2_column_10 {
-      background-color: black !important;
-    }
-  }
-}
-.contents {
-  margin-left: 12px;
-  width: 99%;
-}
-.borders {
-  width: 0;
-  border-right: 1px solid #ebeef5;
-}
-.jiantou {
-  margin-bottom: 0em;
-  font-weight: bold;
-  font-size: 20px;
-}
+
+// .contents {
+//   margin-left: 12px;
+//   width: 99%;
+// }
+// .borders {
+//   width: 0;
+//   border-right: 1px solid #ebeef5;
+// }
+// .jiantou {
+//   margin-bottom: 0em;
+//   font-weight: bold;
+//   font-size: 20px;
+// }
 .text-reprot {
   .el-table th {
     background-color: white !important;
   }
 }
-.testchk {
-  .el-table th {
-    background-color: white !important;
-  }
-}
+
 .border {
   width: 0;
   border-right: 1px solid #ebeef5;

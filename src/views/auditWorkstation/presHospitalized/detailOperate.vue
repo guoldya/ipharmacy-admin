@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table class="margin-top-10 width-100" :data="surgeryData" highlight-current-row>
+    <el-table class="width-100" :data="surgeryData" highlight-current-row>
       <el-table-column
         :prop="item.prop"
         :label="item.title"
@@ -14,6 +14,8 @@
         <template slot-scope="props">
           <span v-if="item.prop == 'name'">{{props.row.name}}&nbsp;&nbsp;{{props.row.spec}}</span>
           <span v-else-if="item.prop == 'status'" v-html="statusFormatter(props.row.status)"></span>
+          <span v-else-if="item.prop == 'operationTime'" v-html="timeFormat(props.row.operationTime)"></span>
+           <span v-else-if="item.prop == 'updateTime'" v-html="timeFormat(props.row.updateTime)"></span>
           <span
             v-else-if="item.prop == 'isInfection'"
             v-html="isInfectionFormatter(props.row.isInfection)"
@@ -83,6 +85,7 @@ export default {
       })
       return levelText
     },
+    // 枚举
      isInfectionFormatter(data) {
       let levelText
       this.enum.surgerystatus.map(item => {
@@ -91,6 +94,10 @@ export default {
         }
       })
       return levelText
+    },
+     timeFormat(data) {
+      let times = data.slice(data.indexOf('-')+1,data.lastIndexOf(':'))
+      return times
     },
   }
 }
