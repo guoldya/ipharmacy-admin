@@ -15,7 +15,7 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-input read-only v-decorator="['levelName',]"/>
+        <a-input :read-only="readOnly" v-decorator="['levelName',]"/>
       </a-form-item>
       <a-form-item
         label="等级说明"
@@ -23,7 +23,7 @@
         :wrapper-col="wrapperCol"
       >
         <a-textarea :read-only="readOnly"
-          v-decorator="['levelDescription']"/>
+                    v-decorator="['levelDescription']"/>
       </a-form-item>
       <a-form-item
         label="处理类型"
@@ -31,7 +31,8 @@
         :wrapper-col="wrapperCol"
       >
         <a-select v-decorator="[ 'handleType',{rules: [{ required: true, message: '请输入药品名称' }]} ]">
-          <a-select-option v-for="(op,index) in this.enum.handleType" :value="op.id" :key="index">{{op.text}}</a-select-option>
+          <a-select-option v-for="(op,index) in this.enum.handleType" :value="op.id" :key="index">{{op.text}}
+          </a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item
@@ -62,13 +63,16 @@
   </a-card>
 </template>
 <script>
-  import {reviewAuditlevelUpdate} from '@/api/login'
+  import { reviewAuditlevelUpdate } from '@/api/login'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
 
   export default {
     components: { ATextarea },
     data() {
       return {
+        api: {
+          selectOne: 'sys/reviewAuditlevel/selectOne'
+        },
         labelCol: {
           xs: { span: 8 },
           sm: { span: 8 }
@@ -77,49 +81,71 @@
           xs: { span: 8 },
           sm: { span: 8 }
         },
-        status:[
+        status: [
           { id: 0, text: '停用' },
           { id: 1, text: '启用' }
         ],
         form: this.$form.createForm(this),
         roleCode: '',
         loadData: [],
-        levelColor:'#000',
-        listData:{},
-        readOnly:false,
+        levelColor: '#000',
+        listData: {},
+        readOnly: false,
+        isNew: true
       }
     },
     computed: {},
     mounted() {
-      let _this = this;
-      if (this.$route.query){
-        if (this.$route.query.msg == 'old'){
-          _this.listData = this.$route.query;
-          _this.form.setFieldsValue({
-            levelName:_this.listData.levelName,
-            handleType:_this.listData.handleType,
-            levelDescription:_this.listData.levelDescription,
-            status:_this.listData.status,
-          });
-          this.readOnly = this.$route.query.levelType == 1 ? true:false;
-          if (this.$route.query.levelColor){
-            _this.levelColor = this.$route.query.levelColor;
-          }
-      }else {
-          this.readOnly=false;
-          _this.form.setFieldsValue({levelName:this.$route.query.length+'级'});
-        }
-      }
+      this.init();
     },
     methods: {
+      init(){
+        if (this.$route.params.auditLevel == -1) {
+          this.isNew = true;
+        } else {
+          this.$axios({
+            url: this.api.selectOne,
+            method: 'put',
+            data: this.$route.params
+          }).then(res => {
+            if (res.code == '200') {
+              this.listData = res.data;
+              this.form.setFieldsValue({
+                  levelName: this.listData.levelName,
+                  handleType: this.listData.handleType,
+                  levelDescription: this.listData.levelDescription,
+                  status: this.listData.status
+              });
+              if (this.listData.levelType == 1){
+                this.readOnly = true;
+              }else {
+                this.readOnly = false;
+              }
+              this.levelColor = this.listData.levelColor;
+            } else {
+              this.warn(res.msg)
+            }
+          })
+            .catch(err => {
+              this.error(err)
+            })
+
+          // this.form.setFieldsValue({
+          //   levelName: this.listData.levelName,
+          //   handleType: this.listData.handleType,
+          //   levelDescription: this.listData.levelDescription,
+          //   status: this.listData.status
+          // })
+        }
+      },
       handleSubmit(e) {
         e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
-            values.levelColor = this.levelColor;
-            values.auditLevel = this.$route.query.auditLevel;
-            if (this.$route.query.msg == 'new'){
-              values.levelType = 0;
+            values.levelColor = this.levelColor
+            values.auditLevel = this.$route.query.auditLevel
+            if (this.$route.query.msg == 'new') {
+              values.levelType = 0
             }
             reviewAuditlevelUpdate(values).then(res => {
               if (res.code == '200') {
@@ -143,10 +169,10 @@
       confirm(e) {
 
       },
-      handlesColor(data){
+      handlesColor(data) {
         if (data) {
-          console.log(data);
-          this.listData.levelColor = data;
+          console.log(data)
+          this.listData.levelColor = data
         }
       }
     }
@@ -160,12 +186,14 @@
   .spanBtn {
     color: #1694fb
   }
+
   .m-colorPicker .colorBtn[data-v-11842410] {
     width: 38px;
     height: 38px;
     border-radius: 10%;
   }
-  .colorPick{
+
+  .colorPick {
     margin-left: 15px;
     z-index: 3;
   }

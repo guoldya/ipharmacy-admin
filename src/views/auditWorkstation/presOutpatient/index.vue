@@ -250,6 +250,7 @@
           selectReviewTemplateDetail:'sys/reviewTemplate/selectReviewTemplateDetail',
           reviewTemplateUpdate:'sys/reviewTemplate/update',
           selectTribunalRecordNum:'sys/reviewOrderissue/selectTribunalRecordNum',
+          reviewUpdateStatus:'sys/reviewPlanorder/updateStatus',
 
     },
         labelCol: {
@@ -427,15 +428,33 @@
       },
       //开始审方
       buttonClick() {
-        if (this.buttonText == '开始审方') {
+        let status = null;
+        if (this.buttonText == '开始审方'){
           this.buttonText = '停止审方'
           this.buttonType = 'danger'
           this.disable = false
+          status = 1;
         } else {
           this.buttonText = '开始审方'
           this.buttonType = 'primary'
-          this.disable = true
+          this.disable = true;
+          status = 0;
         }
+        let params = {status:status}
+        this.$axios({
+          url: this.api.reviewUpdateStatus,
+          method: 'post',
+          data: params
+        }).then(res => {
+            if (res.code == '200') {
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+
       },
       //批量通过
       pass() {

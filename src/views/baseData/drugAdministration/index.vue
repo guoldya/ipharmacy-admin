@@ -404,7 +404,7 @@
       },
       //添加药品按钮
       addDrug(){
-        this.selectDrugData = [];
+        this.selectDrugData = {};
         if (this.classData.id){
           this.Modal.visible = true;
         } else {
@@ -493,7 +493,6 @@
         this.selectDrugData = value;
       },
       deleteDrug(data){
-        console.log(data,'data');
         let params = {};
         params = {drugId:data.drugCode,id:''+this.classData.id};
         this.$axios({

@@ -145,11 +145,11 @@ export const asyncRouterMap = [
                                 meta: { title: '问题等级设置', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/auditWorkstation/problemLevel/detail',
+                                path: '/auditWorkstation/problemLevel/detail/:auditLevel',
                                 name: 'problemLevelDetail',
                                 hidden: true,
                                 component: () => import( '@/views/auditWorkstation/problemLevel/detail.vue'),
-                                meta: { title: '问题等级详情', detail: true, description: '问题等级自定义设置' }
+                                meta: { title: '问题等级详情',hiddenHeaderContent: true, detail: true, }
                             }
                         ]
                     },
