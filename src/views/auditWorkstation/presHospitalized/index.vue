@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-card>
-      <countText :countList="countText"></countText>
+      <!-- <countText :countList="countText"></countText> -->
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
           <a-button type="primary" @click="search">查询</a-button>

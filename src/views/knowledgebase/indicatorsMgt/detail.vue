@@ -89,7 +89,8 @@ export default {
   data() {
     return {
       api: {
-        diagnosisMgtupdate: '/sys/dicIcd/update'
+        diagnosisMgtupdate: '/sys/dicIcd/update',
+          selectPage: 'sys/testIndex/selectPage'
       },
       fromData: {},
      
@@ -98,36 +99,59 @@ export default {
 
   computed: {},
   mounted() {
+    this.getData({indexId:this.$route.params.indexId})
     let _this = this
-    if (this.$route.query) {
-        let data = this.$route.query.row
-       this.resultTypeFormatter(data.resultType)
-      _this.fromData = {
-          englishName: data.englishName,
-          indexId: data.indexId,
-          isCalc: data.isCalc,
-          isPrivacy: data.isPrivacy,
-          limitHigh: data.limitHigh,
-          limitLow: data.limitLow,
-          limitValue: data.limitValue,
-          resultType: data.resultType,
-          spellcode: data.spellcode,
-          testItemCode: data.testItemCode,
-          testItemName: data.testItemName,
-          testItemCode: data.testItemCode,
-          testItemType: data.testItemType,
-          unit: data.unit,
-          wbcode: data.wbcode,
-          testItemClass:data.testItemClass,
-          formUla: data.formUla
-        }
-    }
+    // if (this.$route.query) {
+    //     let data = this.$route.query.row
+    //    this.resultTypeFormatter(data.resultType)
+    //   _this.fromData = {
+    //       englishName: data.englishName,
+    //       indexId: data.indexId,
+    //       isCalc: data.isCalc,
+    //       isPrivacy: data.isPrivacy,
+    //       limitHigh: data.limitHigh,
+    //       limitLow: data.limitLow,
+    //       limitValue: data.limitValue,
+    //       resultType: data.resultType,
+    //       spellcode: data.spellcode,
+    //       testItemCode: data.testItemCode,
+    //       testItemName: data.testItemName,
+    //       testItemCode: data.testItemCode,
+    //       testItemType: data.testItemType,
+    //       unit: data.unit,
+    //       wbcode: data.wbcode,
+    //       testItemClass:data.testItemClass,
+    //       formUla: data.formUla
+    //     }
+    // }
   },
   methods: {  
     backTo() {
       this.$router.push({
         name: 'indicatorsIndex'
       })
+    },
+    // 数据筛选
+    getData(params = { pageSize: 10, offset: 0 }) {
+      this.loading = true
+      this.$axios({
+        url: this.api.selectPage,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.fromData=res.rows[0]
+            this.loading = false
+          } else {
+            this.loading = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loading = false
+          this.error(err)
+        })
     },
     // 枚举类型
     testItemTypeFormatter(data) {

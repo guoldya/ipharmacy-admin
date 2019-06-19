@@ -75,7 +75,7 @@
             </el-table>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
-            <detailCheck></detailCheck>
+            <detailCheck :visidId='visidIdnum'></detailCheck>
           </a-tab-pane>
           <a-tab-pane tab="检验报告" key="3">
             <DetailTest></DetailTest>
@@ -398,7 +398,8 @@ export default {
       Modal: {
         visible: false
       },
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      visidIdnum:'1'
     }
   },
   mounted() {
@@ -567,7 +568,7 @@ export default {
     },
     // 筛选等级，匹配下面的数据；
     checkableChange(data) {
-      console.log('xxxx')
+     
       for (let key in this.rightData) {
         if (this.rightData[key].auditLevel == data.auditLevel) {
           this.checkedAll = false
@@ -587,7 +588,6 @@ export default {
     },
     // 刷新筛选等级
     handleChange(checked) {
-      console.log('cccc')
       let data = this.rightData
       for (let key in data) {
         data[key].status = true
@@ -674,7 +674,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.RecordDelData = res.data
-             console.log(this.RecordDelData)
             this.loading = false
           } else {
             this.loading = false
@@ -692,17 +691,6 @@ export default {
         name: 'presHospitalizedIndex'
       })
     },
-    // tagsClick() {
-    //   if (status == 1) {
-    //     $('#' + index).css('color', '#1890ff')
-    //     this.problemsData[i].tags[num].status = 2
-    //     this.templateText = this.templateText + '、' + data
-    //   } else {
-    //     $('#' + index).css('color', 'rgba(0, 0, 0, 0.65)')
-    //     this.problemsData[i].tags[num].status = 1
-    //     this.templateText = this.templateText.replace('、' + data, '')
-    //   }
-    // },
 
     changeKey(key) {
       let params = { examId: this.num }

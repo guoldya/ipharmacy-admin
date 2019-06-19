@@ -1,91 +1,85 @@
 <template>
   <a-Row class="text-reprot">
-              <a-Col :span="8">
-                <el-table @row-click="clickrow" class="width-100" :data="inspectionData">
-                  <el-table-column
-                    :prop="item.prop"
-                    :label="item.title"
-                    :key="index"
-                    v-for="(item,index) in columnsa"
-                    :width="item.width"
-                    :align="item.align"
-                    :formatter="item.formatter"
-                    :show-overflow-tooltip="true"
-                  >
-                    <template slot-scope="props">
-                      <span
-                        v-if="item.prop == 'resultStatus'"
-                      >{{resultStatusformatter(props.row.resultStatus)}}</span>
-                      <span v-else-if="item.prop == 'reportDateStr'">
-                        <a-tooltip placement="top">
-                          <template slot="title">
-                            <span>{{props.row.reportDateStr}}</span>
-                          </template>
-                          <span>{{timeFormat(props.row.reportDateStr)}}</span>
-                        </a-tooltip>
-                      </span>
-                      <span v-else>{{props.row[item.prop]}}</span>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </a-Col>
-              <a-Col :span="15" class="detail">
-                <div class="border"></div>
-                <div class="jiancha">
-                  <div class="boxone">
-                    <p>
-                      <span>检查号：</span>
-                      {{formData.reportNo}}
-                    </p>
-                    <p>
-                      <span>检查科室：</span>
-                      {{formData.deptName}}
-                    </p>
-                  </div>
-                  <a-divider/>
-                  <div class="boxtwo">
-                    <h3>检查所见：</h3>
-                    <p class="checks">{{formData.objectiveSeen}}</p>
-                    <h3>建议：</h3>
-                    <p>{{formData.subjectivePrompt}}</p>
-                  </div>
-                  <a-divider/>
-                  <div class="boxthree">
-                    <p>
-                      <span>报告人姓名：</span>
-                      {{formData.docName}}
-                    </p>
-                    <p>
-                      <span>报告日期：</span>
-                      {{formData.checkDate}}
-                    </p>
-                  </div>
-                  <a-divider/>
-                </div>
-              </a-Col>
-            </a-Row>
+    <a-Col :span="5">
+      <el-table @row-click="clickrow" class="width-100" :data="inspectionData" :show-header="false">
+        <el-table-column
+          :prop="item.prop"
+          :label="item.title"
+          :key="index"
+          v-for="(item,index) in columnsa"
+          :width="item.width"
+          :align="item.align"
+          :formatter="item.formatter"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="props">
+            <span v-if="item.prop == 'itemName'" class="tableLineHeights">
+              <p class="pageone">{{props.row.itemName}}</p>
+              <p class="pagetwo">{{props.row.reportDateStr}}</p>
+            </span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </a-Col>
+    <a-Col :span="18" class="detail">
+      <div class="border"></div>
+      <div class="jiancha">
+        <div class="boxone">
+          <p>
+            <span>检查号：</span>
+            {{formData.reportNo}}
+          </p>
+          <p>
+            <span>检查科室：</span>
+            {{formData.deptName}}
+          </p>
+        </div>
+        <a-divider/>
+        <div class="boxtwo">
+          <h3>检查所见：</h3>
+          <p class="checks">{{formData.objectiveSeen}}</p>
+          <h3>建议：</h3>
+          <p>{{formData.subjectivePrompt}}</p>
+        </div>
+        <a-divider/>
+        <div class="boxthree">
+          <p>
+            <span>报告人姓名：</span>
+            {{formData.docName}}
+          </p>
+          <p>
+            <span>报告日期：</span>
+            {{formData.checkDate}}
+          </p>
+        </div>
+        <a-divider/>
+      </div>
+    </a-Col>
+  </a-Row>
 </template>
 <script>
 export default {
+  props: {
+    visidId: {
+      type: String
+    }
+  },
   data() {
     return {
       api: {
-         selectVisId: 'sys/reviewOrderissue/selectClinicExamListWithVisId',
+        selectVisId: 'sys/reviewOrderissue/selectClinicExamListWithVisId',
         selectExamId: 'sys/reviewOrderissue/selectClinicExamReportDetailByExamId',
         loading: false
       },
-     columnsa: [
-        { title: '报告时间', prop: 'reportDateStr', width: 95, align: 'left' },
-        { title: '检查项目', prop: 'itemName' }
-      ],
-      
-     inspectionData: [],
-     formData: [],
-     num:'',
+      columnsa: [{ title: '', prop: 'itemName', align: 'left' }],
+
+      inspectionData: [],
+      formData: [],
+      num: ''
     }
   },
   mounted() {
-      this.getdata({ visid: '1' })
+    this.getdata({ visid: this.visidId })
   },
   methods: {
     // 点击详情功能
@@ -126,13 +120,13 @@ export default {
           this.error(err)
         })
     },
-   
+
     // 时间格式处理
     timeFormat(data) {
       let times = data.slice(5, 20)
       return times
     },
-      // 判断颜色
+    // 判断颜色
     getcolor(data) {
       if (data == '1') {
         return ''
@@ -142,7 +136,7 @@ export default {
         return 'red'
       }
     },
-     // 获取检查数据
+    // 获取检查数据
     getdata(params = {}) {
       this.loading = true
       this.$axios({
@@ -166,7 +160,7 @@ export default {
           this.loading = false
         })
     },
-     // 枚举
+    // 枚举
     resultStatusformatter(data) {
       let levelText
       this.enum.resultStatus.forEach(item => {
@@ -175,7 +169,7 @@ export default {
         }
       })
       return levelText
-    },
+    }
   }
 }
 </script>
@@ -183,6 +177,9 @@ export default {
 .text-reprot {
   .el-table th {
     background-color: white !important;
+  }
+  .ant-col-5 {
+    margin-top: 10px;
   }
 }
 .detail {
@@ -198,6 +195,7 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     width: 80%;
+    height: 20px;
     span {
       font-weight: 800;
     }
@@ -220,7 +218,32 @@ export default {
     display: flex;
     flex-direction: row;
   }
-  
+}
+.tableLineHeights {
+  line-height: 14px;
+  .tag {
+    display: inline-block;
+  }
+  .pageone {
+    margin-top: 9px;
+    span {
+      padding-left: 3px;
+      line-height: 20px;
+    }
+  }
+  .pagetwo {
+    margin-top: -7px;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+  .pageone {
+    .ant-badge {
+      margin-top: -7px !important;
+    }
+  }
+  .ant-pro-footer-toolbar {
+    z-index: 9999;
+  }
 }
 </style>
 

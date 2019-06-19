@@ -45,6 +45,7 @@
         @showSizeChange="pageChangeSize"
         @change="pageChange"
         size="small"
+        v-model='current'
       >
       </a-pagination>
     </a-spin>
@@ -164,6 +165,9 @@
       },
       getData(params = { pageSize: 10, offset: 0 }) {
         this.loading = true
+         if(params.offset==0){
+        this.current=1
+      }
         // params.orderId = 1
         reviewPlanPage(params).then(res => {
           if (res.code == '200') {
@@ -214,7 +218,7 @@
               } else {
                 this.success('启用成功')
               }
-              this.getData()
+              this.getData({offset:(this.current-1)*10})
             } else {
               if (data.status == '1') {
                 this.warn('停用失败')
