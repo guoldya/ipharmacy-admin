@@ -544,18 +544,22 @@
                 return tree
             },
             getUserFormData(obj = {}) {
-                this.$axios({
-                    url: this.api.userByOrgUrl,
-                    method: 'post',
-                    data: obj
-                }).then(res => {
-                    if (res.code == '200') {
-                        this.userForData = res.rows;
-                    } else {
-                        this.warn(res.msg);
-                    }
-                }).catch(err => {
-                    this.error(err);
+                return new Promise((resolve, reject) => {
+                    this.$axios({
+                        url: this.api.userByOrgUrl,
+                        method: 'post',
+                        data: obj
+                    }).then(res => {
+                        if (res.code == '200') {
+                            this.userForData = res.rows;
+                        } else {
+                            this.warn(res.msg);
+                        }
+                        resolve()
+                    }).catch(err => {
+                        this.error(err);
+                        reject(err)
+                    })
                 })
             },
         }
