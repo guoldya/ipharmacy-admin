@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="gante-tbody">
-      <gante-tr @change-calendar="change_calendar" @on-click="onclick" @change="change"  :all_data="data" :data="data" :th_data="th_data"></gante-tr>
+      <gante-tr @change-calendar="change_calendar" @on-click="onclick" @change="change"  :all_data="data" :data="data" :th_data="th_data":lowDatal='lowData'></gante-tr>
     </div>
     <div v-show="show_proxy" :style="{left:proxy_left+'px'}" id="gante-table__column-resize-proxy"></div>
   </div>
@@ -30,8 +30,15 @@
     },
     props:{
       th_data:Object,
-      data:Array
+      data:Array,
+      lowData:Object
     },
+    watch: {
+      lowData:function(){
+  		console.log(this.lowData.bg_color);
+  	}
+   
+  },
     methods:{
       change(data){
         this.$emit('change',data)
