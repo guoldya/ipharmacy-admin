@@ -15,14 +15,16 @@
     <a-card class="margin-top-10">
       <a-col :span="4">
         <a-anchor v-if="drugDetail" style="text-align: justify;">
+          <!--<a-anchor style="text-align: justify;">-->
           <a-anchor-link v-if="drugDetail.drugNames" href="#drugName" class="w4" title="药品名称"/>
           <a-anchor-link v-if="drugDetail.composition" href="#composition" class="w4" title="药品成分"/>
           <a-anchor-link v-if="drugDetail.chemicalName" href="#chemicalName" class="w4" title="化学名称"/>
+          <a-anchor-link v-if="drugDetail.spec" href="#spec" class="w4" title="规格"/>
           <a-anchor-link v-if="drugDetail.molecularformula" href="#molecularformula" class="w4" title="分子式"/>
           <a-anchor-link v-if="drugDetail.molecularweight" href="#molecularweight" class="w4" title="分子量"/>
           <a-anchor-link v-if="drugDetail.description" href="#description" class="w4" title="性状"/>
           <a-anchor-link v-if="drugDetail.indications" href="#indications" class="w4" title="适应症"/>
-          <a-anchor-link v-if="drugDetail.spec" href="#spec" class="w4" title="规格"/>
+
           <a-anchor-link v-if="drugDetail.dosage" href="#dosage" class="w4" title="用法用量"/>
           <a-anchor-link v-if="drugDetail.adverseReactions" href="#adverseReactions" class="w4" title="不良反应"/>
           <a-anchor-link v-if="drugDetail.contraindications" href="#contraindications" class="w4" title="禁忌症"/>
@@ -52,159 +54,159 @@
         <div v-if="drugDetail.composition" id="composition">
           <a-row>
             <p class="font-bold">药品成分</p>
-            <p>{{drugDetail.composition}}</p>
+            <p class="textIndent">{{drugDetail.composition}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.chemicalName" id="chemicalName">
           <a-row>
             <p class="font-bold">化学名称</p>
-            <p>{{drugDetail.chemicalName}}</p>
-          </a-row>
-          <a-divider></a-divider>
-        </div>
-        <div v-if="drugDetail.molecularformula" id="molecularformula">
-          <a-row>
-            <p class="font-bold">分子式</p>
-            <p>{{drugDetail.molecularformula}}</p>
-          </a-row>
-          <a-divider></a-divider>
-        </div>
-        <div v-if="drugDetail.molecularweight" id="molecularweight">
-          <a-row>
-            <p class="font-bold">分子量</p>
-            <p>{{drugDetail.molecularweight}}</p>
-          </a-row>
-          <a-divider></a-divider>
-        </div>
-        <div v-if="drugDetail.description" id="description">
-          <a-row>
-            <p class="font-bold">性状</p>
-            <p>{{drugDetail.description}}</p>
-          </a-row>
-          <a-divider></a-divider>
-        </div>
-        <div v-if="drugDetail.indications" id="indications">
-          <a-row>
-            <p class="font-bold">适应症</p>
-            <p>{{drugDetail.indications}}</p>
+            <p  class="textIndent">{{drugDetail.chemicalName}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.spec" id="spec">
           <a-row>
             <p class="font-bold">规格</p>
-            <p>{{drugDetail.spec}}</p>
+            <p  class="textIndent">{{drugDetail.spec}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
+        <div v-if="drugDetail.molecularformula" id="molecularformula">
+          <a-row>
+            <p class="font-bold">分子式</p>
+            <p  class="textIndent">{{drugDetail.molecularformula}}</p>
+          </a-row>
+          <a-divider></a-divider>
+        </div>
+        <div v-if="drugDetail.molecularweight" id="molecularweight">
+          <a-row>
+            <p class="font-bold">分子量</p>
+            <p  class="textIndent">{{drugDetail.molecularweight}}</p>
+          </a-row>
+          <a-divider></a-divider>
+        </div>
+        <div v-if="drugDetail.description" id="description">
+          <a-row>
+            <p class="font-bold">性状</p>
+            <p  class="textIndent">{{drugDetail.description}}</p>
+          </a-row>
+          <a-divider></a-divider>
+        </div>
+        <div v-if="drugDetail.indications" id="indications">
+          <a-row>
+            <p class="font-bold">适应症</p>
+            <p  class="textIndent">{{drugDetail.indications}}</p>
+          </a-row>
+          <a-divider></a-divider>
+        </div>
+
         <div  v-if="drugDetail.dosage" id="dosage">
           <a-row>
             <p class="font-bold">用法用量</p>
-            <p>{{drugDetail.dosage}}</p>
+            <p  class="textIndent">{{drugDetail.dosage}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div  v-if="drugDetail.adverseReactions" id="adverseReactions">
           <a-row>
             <p class="font-bold">不良反应</p>
-            <p>{{drugDetail.adversereactions}}</p>
+            <p  class="textIndent">{{drugDetail.adversereactions}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.contraindications" id="contraindications">
           <a-row>
             <p class="font-bold">禁忌症</p>
-            <p>{{drugDetail.contraindications }}</p>
+            <p  class="textIndent">{{drugDetail.contraindications }}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.precautions" id="precautions">
           <a-row>
             <p class="font-bold">注意事项</p>
-            <p>{{drugDetail.precautions}}</p>
+            <p  class="textIndent">{{drugDetail.precautions}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.pregnantuse" id="pregnantuse">
           <a-row>
             <p class="font-bold">孕妇及哺乳期用药</p>
-            <p>{{drugDetail.pregnantuse}}</p>
+            <p  class="textIndent">{{drugDetail.pregnantuse}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.childrenuse" id="childrenuse">
           <a-row>
             <p class="font-bold">儿童用药</p>
-            <p>{{drugDetail.childrenuse}}</p>
+            <p  class="textIndent">{{drugDetail.childrenuse}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.elderlyuse" id="elderlyuse">
           <a-row>
             <p class="font-bold">老年用药</p>
-            <p>{{drugDetail.elderlyuse}}</p>
+            <p  class="textIndent">{{drugDetail.elderlyuse}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.interactions" id="interactions">
           <a-row>
             <p class="font-bold">相互作用</p>
-            <p>{{drugDetail.interactions}}</p>
+            <p  class="textIndent">{{drugDetail.interactions}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.pharmacologicalActions" id="pharmacologicalActions">
           <a-row>
             <p class="font-bold">药理毒理</p>
-            <p>{{drugDetail.pharmacologicalActions}}</p>
+            <p class="textIndent">{{drugDetail.pharmacologicalActions}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.overdosage" id="overdosage">
           <a-row>
             <p class="font-bold">药物过量</p>
-            <p>{{drugDetail.overdosage}}</p>
+            <p class="textIndent">{{drugDetail.overdosage}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.phamacokinetics" id="phamacokinetics">
           <a-row>
             <p class="font-bold">药代动力学</p>
-            <p>{{drugDetail.phamacokinetics}}</p>
+            <p class="textIndent">{{drugDetail.phamacokinetics}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.storage" id="storage">
           <a-row>
             <p class="font-bold">药品贮藏</p>
-            <p>{{drugDetail.storage}}</p>
+            <p class="textIndent">{{drugDetail.storage}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.approvalnumber" id="approvalnumber">
           <a-row>
             <p class="font-bold">批准文号</p>
-            <p>{{drugDetail.approvalnumber}}</p>
+            <p class="textIndent">{{drugDetail.approvalnumber}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
         <div v-if="drugDetail.producedby" id="producedby">
           <a-row>
             <p class="font-bold">生产企业</p>
-            <p>{{drugDetail.producedby}}</p>
+            <p class="textIndent">{{drugDetail.producedby}}</p>
           </a-row>
           <a-divider></a-divider>
         </div>
       </a-col>
     </a-card>
-    <footer-tool-bar
-      :extra="false"
-      :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
-      <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
-      <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
-      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
-    </footer-tool-bar>
+    <!--<footer-tool-bar-->
+      <!--:style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">-->
+      <!--&lt;!&ndash;<a-button @click="submit" :loading="loading">上一个</a-button>&ndash;&gt;-->
+      <!--&lt;!&ndash;<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>&ndash;&gt;-->
+      <!--<a-button @click="cancle" class="margin-left-5">返回</a-button>-->
+    <!--</footer-tool-bar>-->
   </div>
 </template>
 
@@ -294,6 +296,9 @@
   }
   .ant-divider-horizontal{
     margin: 18px 0;
+  }
+  .textIndent {
+    text-indent:2em
   }
 
 </style>

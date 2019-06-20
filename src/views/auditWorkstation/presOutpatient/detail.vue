@@ -2,18 +2,13 @@
   <div class="detailPres">
     <a-col :span="14">
       <a-card>
-        <!--<div class="cardHead">-->
-          <!--<a href="#" @click.prevent="cancle">-->
-            <!--<a-icon type="left"></a-icon>-->
-            <!--返回-->
-          <!--</a>-->
-        <!--</div>-->
         <a-row class=" margin-top-10">
-          <a-col class="titleText" :md="4" :lg="3" :xxl="2">
+          <a-col class="titleText" :md="4" :lg="3" :xxl="3">
             {{leftData.patientDeptName}}：
           </a-col>
           <a-col :md="3" :lg="4" :xxl="4">
-            {{leftData.patientName}}&nbsp;&nbsp; {{leftData.patientSex | control_type}}&nbsp;&nbsp;{{leftData.agevalue}}岁
+            <span class="font-bold fontSize14">{{leftData.patientName}}</span>&nbsp;&nbsp; {{leftData.patientSex |
+            control_type}}&nbsp;&nbsp;{{leftData.agevalue}}岁
           </a-col>
           <a-col class="titleText" :md="12" :lg="12" :xxl="16">
             <a-tag class="tagStyle"> 妊娠</a-tag>
@@ -26,7 +21,14 @@
           <detail-list-item term="身高"><span class="opacity8">{{leftData.height}}cm</span></detail-list-item>
           <detail-list-item term="体重"><span class="opacity8">{{leftData.weight}}Kg</span></detail-list-item>
           <detail-list-item term="体表面积"><span class="opacity8">{{leftData.bSA}}㎡</span></detail-list-item>
-          <detail-list-item term="过敏史"><span class="opacity8">无</span></detail-list-item>
+          <detail-list-item term="过敏史">
+            <a-tooltip>
+              <template slot="title">
+                <span>{{leftData.irritabilityNames}}</span>
+              </template>
+              <div class="hiddenOpacity opacity8">{{leftData.irritabilityNames}}</div>
+            </a-tooltip>
+          </detail-list-item>
           <detail-list-item term="处方医生">
           <span class="opacity8"><a href="">
           {{leftData.attendingDocName}}&nbsp;<a-icon type="message"/>&nbsp;{{leftData.attendingDocPhone}}</a>
@@ -114,36 +116,6 @@
                 <a-tag class="tagStyle" :color="op.levelColor"> {{op.auditName }}</a-tag>
                 <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
                 <span class="marLeft10"><i class="iconfont action action-yaopin1" style="color: #2eabff"/>{{op.drugName}}</span>
-                <!--<a-tooltip placement="top" :key="index" v-for="(pd,index) in op.reviewTemplateList">-->
-                  <!--<template slot="title" style="width: 100px">{{pd.titles}}</template>-->
-                  <!--<a-tag-->
-                    <!--class="problemTag"-->
-                    <!--v-if="index<3 && pd.bgColor == '#2eabff'"-->
-                    <!--:key="index"-->
-                    <!--@click="tagsClick(pd)"-->
-                    <!--color="#2eabff"-->
-                  <!--&gt;{{pd.updateTitles}}-->
-                  <!--</a-tag>-->
-                  <!--<a-tag-->
-                    <!--class="problemTag"-->
-                    <!--v-else-if="index<3"-->
-                    <!--:key="index"-->
-                    <!--@click="tagsClick(pd)"-->
-                  <!--&gt;{{pd.updateTitles}}-->
-                  <!--</a-tag>-->
-                <!--</a-tooltip>-->
-                <!--<a-dropdown :trigger="['hover']">-->
-                  <!--<a-menu slot="overlay">-->
-                    <!--<a-menu-item v-for="(gd,index) in op.reviewTemplateList" @click="tagsClick(gd)" v-if="index>=3"-->
-                                 <!--:key="index">-->
-                      <!--{{gd.updateTitles}}-->
-                    <!--</a-menu-item>-->
-                  <!--</a-menu>-->
-                  <!--<a v-if="op.reviewTemplateList.length>3" class="margin-left-5">更多-->
-                    <!--<a-icon type="down"/>-->
-                  <!--</a>-->
-                  <!--<a v-else></a>-->
-                <!--</a-dropdown>-->
                 <div :rows="3" :maxRows="4" read-only class="textArea ">
                   <a-tag>问题</a-tag>
                   <span class="opacity8">{{op.auditDescription}}</span>
@@ -156,12 +128,13 @@
               <div class="margin-top-10">
                 <p class="dealP margin-top-10" style="float: left">审核意见：</p>
                 <a-button type="primary" class="saveButton" size="small" @click="saveTemplate()">存为模板</a-button>
-                <a-select class="saveButton"  size="small" style="width: 150px" @change="selectTemp" v-model="problemType">
-                  <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates"  :key="index" >
+                <a-select class="saveButton" size="small" style="width: 150px" @change="selectTemp"
+                          v-model="problemType">
+                  <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates" :key="index">
                     {{op.tabooTitle}}
                   </a-select-option>
                 </a-select>
-                <a-tooltip  placement="top" :key="index" v-for="(tt,index) in templateTags">
+                <a-tooltip placement="top" :key="index" v-for="(tt,index) in templateTags">
                   <template slot="title" style="width: 100px">{{tt.titles}}</template>
                   <a-tag
                     class="problemTag saveButton"
@@ -180,16 +153,16 @@
                   </a-tag>
                 </a-tooltip>
                 <a-dropdown :trigger="['hover']">
-                <a-menu slot="overlay">
-                <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"
-                :key="index">
-                {{gd.updateTitles}}
-                </a-menu-item>
-                </a-menu>
-                <a v-if="templateTags.length>7" class="margin-left-5 saveButton">更多
-                <a-icon type="down"/>
-                </a>
-                <a v-else></a>
+                  <a-menu slot="overlay">
+                    <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"
+                                 :key="index">
+                      {{gd.updateTitles}}
+                    </a-menu-item>
+                  </a-menu>
+                  <a v-if="templateTags.length>7" class="margin-left-5 saveButton">更多
+                    <a-icon type="down"/>
+                  </a>
+                  <a v-else></a>
                 </a-dropdown>
                 <a-textarea :rows="4" v-model="templateText"></a-textarea>
               </div>
@@ -197,8 +170,12 @@
             <a-tab-pane tab="干预记录" key="2">
               <a-timeline style="margin-top: 20px;margin-left: 10px">
                 <a-timeline-item v-for="(rd,index) in recordList" class="timelineItem" :key="index">
-                  <a-icon v-if="index+1 == recordList.length" slot="dot" type="clock-circle-o" style="font-size: 16px;" />
-                  <p><a-tag>{{rd.eventPerson}}</a-tag>{{rd.eventTime}}</p>
+                  <a-icon v-if="index+1 == recordList.length" slot="dot" type="clock-circle-o"
+                          style="font-size: 16px;"/>
+                  <p>
+                    <a-tag>{{rd.eventPerson}}</a-tag>
+                    {{rd.eventTime}}
+                  </p>
                   <p><span class="font-bold">{{rd.event}}:</span><span>{{rd.eventText}}</span></p>
                 </a-timeline-item>
               </a-timeline>
@@ -239,20 +216,47 @@
         <a-form-item label="标题"
                      :label-col="{ span: 4 }"
                      :wrapper-col="{ span: 17 }">
-         <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
+          <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
         </a-form-item>
         <a-form-item label="内容"
                      :label-col="{ span: 4 }"
                      :wrapper-col="{ span: 17 }">
-          <a-textarea v-decorator="[ 'contents',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"></a-textarea>
+          <a-textarea
+            v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"></a-textarea>
         </a-form-item>
       </a-form>
     </a-modal>
+
+    <a-modal
+      title="版本对比"
+      :visible="versionModal.visible"
+      :footer="null"
+      @cancel="versionCancel"
+      width="900px"
+    >
+      <versionComp
+        :visId="visId"
+      ></versionComp>
+    </a-modal>
     <footer-tool-bar
-      :extra="false"
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}">
       <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
       <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
+      <template slot="back">
+        <a-button v-if="carePatient" @click="attention" class="margin-left-5" :loading="loading">
+          <a-icon type="star" theme="filled"/>
+          关注患者
+        </a-button>
+        <a-button v-else @click="attention" class="margin-left-5" :loading="loading">
+          <a-icon type="star"/>
+          关注患者
+        </a-button>
+        <a-button @click="versionComp" :disabled="leftData.subNo>1? false:true" class="margin-left-5"
+                  :loading="loading">
+          <i type="star" class="iconfont action action-tubiaozhizuomoban-"/><span class="margin-left-5">版本对比</span>
+        </a-button>
+
+      </template>
       <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
       <a-button @click="refuse" style="margin-left: 5px" :loading="loading">驳回</a-button>
       <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
@@ -270,6 +274,7 @@
   import { mixin, mixinDevice } from '@/utils/mixin'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
   import ACol from 'ant-design-vue/es/grid/Col'
+  import versionComp from '@/my-components/version-comparison'
 
   const DetailListItem = DetailList.Item
   export default {
@@ -281,7 +286,8 @@
       DetailList,
       DetailListItem,
       STable,
-      FooterToolBar
+      FooterToolBar,
+      versionComp
     },
     mixins: [mixin, mixinDevice],
     name: 'detail',
@@ -289,27 +295,33 @@
       return {
         api: {
           updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
-          selectWithReviewId:'/sys/reviewTemplate/selectReviewTemplateWithReviewId',
-          selectVisId:'/sys/reviewOrderissue/selectInterventionRecordWithVisId',
-          selectReviewTemplateDetail:'sys/reviewTemplate/selectReviewTemplateDetail',
-          selectWithVisId:'sys/reviewOrderissue/selectInterventionRecordWithVisId',
-          reviewTemplateUpdate:'sys/reviewTemplate/update',
-    },
+          selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
+          selectVisId: '/sys/reviewOrderissue/selectInterventionRecordWithVisId',
+          selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
+          selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
+          reviewTemplateUpdate: 'sys/reviewTemplate/update',
+          concernedRecord: 'sys/concernedPatient/selectCurrentRecord',
+          concernedPatientUpdate: 'sys/concernedPatient/update'
+        },
         Modal: {
+          visible: false
+        },
+        versionModal: {
           visible: false
         },
         form: this.$form.createForm(this),
         loading: false,
         tags: [],
-        templateTitle:'',
+        templateTitle: '',
         templateText: '',
-        problemType:'',
+        problemType: '',
         leftData: {},
         rightData: [],
         tagsData: [],
-        reviewTemplates:[],
-        templateTags:[],
-        recordList:[],
+        reviewTemplates: [],
+        templateTags: [],
+        recordList: [],
+        carePatient: false,
         columns: [{ title: '序号', prop: 'seqNum', width: 50, align: 'right' },
           { title: '', prop: 'mark', width: 20, align: 'left' },
           { title: '药品', prop: 'drugName' },
@@ -322,16 +334,19 @@
         problemId: '122',
         checkedAll: true,
         prescOrderId: '',
-        levelColor: ''
+        levelColor: '',
+        visId: null
       }
     },
     mounted() {
-      this.getDetailData();
-      this.getTemplate();
-      this.getRecord();
+      this.getDetailData()
+      this.getTemplate()
+      this.getRecord()
+      this.getAttention()
     },
     methods: {
       getDetailData() {
+        this.visId = this.$route.query.visId
         let params = this.$route.query
         selectOutDetail(params).then(res => {
           if (res.code == '200') {
@@ -390,12 +405,12 @@
           method: 'put',
           data: params
         }).then(res => {
-            if (res.code == '200') {
-              this.success(res.msg)
-            } else {
-              this.warn(res.msg)
-            }
-          })
+          if (res.code == '200') {
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        })
           .catch(err => {
             this.error(err)
           })
@@ -445,16 +460,16 @@
         // } else {
         //   event.cancelBubble = true   //ie兼容
         // }
-          let list = this.templateTags
-          for (let i in list) {
-            if (list[i].id == pd.id) {
-              list[i].bgColor = '#2eabff'
-            } else {
-              list[i].bgColor = '#d9d9d9'
-            }
+        let list = this.templateTags
+        for (let i in list) {
+          if (list[i].id == pd.id) {
+            list[i].bgColor = '#2eabff'
+          } else {
+            list[i].bgColor = '#d9d9d9'
           }
-        this.templateText = pd.reviewTemplate;
-        this.templateTitle = pd.titles;
+        }
+        this.templateText = pd.reviewTemplate
+        this.templateTitle = pd.titles
         this.rightData.push()
       },
       tableRowStyle({ row, rowIndex }) {
@@ -508,7 +523,7 @@
         this.levelColor = data.levelColor
         this.rightData.push()
       },
-      getTemplate(){
+      getTemplate() {
         let params = this.$route.query
         this.$axios({
           url: this.api.selectWithReviewId,
@@ -516,12 +531,12 @@
           data: params
         }).then(res => {
           if (res.code == '200') {
-            this.reviewTemplates = res.rows;
-            if (this.reviewTemplates.length>0){
-              this.problemType = this.reviewTemplates[0].tabooId;
-              this.getTemplateDetail();
+            this.reviewTemplates = res.rows
+            if (this.reviewTemplates.length > 0) {
+              this.problemType = this.reviewTemplates[0].tabooId
+              this.getTemplateDetail()
             }
-            this.reviewTemplates.push({tabooId:'-1',tabooTitle:'----通用----'});
+            this.reviewTemplates.push({ tabooId: '-1', tabooTitle: '----通用----' })
           } else {
             this.warn(res.msg)
           }
@@ -530,17 +545,17 @@
             this.error(err)
           })
       },
-      getTemplateDetail(){
-        let params = {};
-        params.tabooClass=this.problemType;
+      getTemplateDetail() {
+        let params = {}
+        params.tabooClass = this.problemType
         this.$axios({
           url: this.api.selectReviewTemplateDetail,
           method: 'put',
           data: params
         }).then(res => {
           if (res.code == '200') {
-            this.templateTags = res.rows;
-            this.dealTemplateTags(this.templateTags);
+            this.templateTags = res.rows
+            this.dealTemplateTags(this.templateTags)
           } else {
             this.warn(res.msg)
           }
@@ -549,29 +564,33 @@
             this.error(err)
           })
       },
-      selectTemp(data){
-        this.problemType = data;
-        this.getTemplateDetail();
+      selectTemp(data) {
+        this.problemType = data
+        this.getTemplateDetail()
       },
-      dealTemplateTags(data){
+      dealTemplateTags(data) {
         for (let i in  data) {
           data[i].bgColor = '#d9d9d9'
-          if ( data[i].titles.length > 5) {
-            data[i].updateTitles =  data[i].titles.substr(0, 5) + '...'
+          if (data[i].titles.length > 5) {
+            data[i].updateTitles = data[i].titles.substr(0, 5) + '...'
           } else {
-            data[i].updateTitles =  data[i].titles
+            data[i].updateTitles = data[i].titles
           }
         }
       },
       //存为模板
       saveTemplate() {
-        if ($.trim(this.templateText).length > 0){
-          setTimeout(()=>{
-            this.form.setFieldsValue({titles:this.templateTitle,contents:this.templateText,templetType:'1'});
-          },100)
-          this.Modal.visible = true;
-        } else{
-          this.warn("请输入审核意见");
+        if ($.trim(this.templateText).length > 0) {
+          setTimeout(() => {
+            this.form.setFieldsValue({
+              titles: this.templateTitle,
+              reviewTemplate: this.templateText,
+              templetType: '1'
+            })
+          }, 100)
+          this.Modal.visible = true
+        } else {
+          this.warn('请输入审核意见')
         }
       },
       handleOk() {
@@ -583,8 +602,8 @@
                 data: values
               }).then(res => {
                 if (res.code == '200') {
-                  this.success(res.msg);
-                  this.getTemplateDetail();
+                  this.success(res.msg)
+                  this.getTemplateDetail()
                   this.Modal.visible = false
                 } else {
                   this.warn(res.msg)
@@ -602,7 +621,7 @@
       },
 
       //获取记录
-      getRecord(){
+      getRecord() {
         let params = this.$route.query
         this.$axios({
           url: this.api.selectWithVisId,
@@ -611,7 +630,7 @@
         })
           .then(res => {
             if (res.code == '200') {
-              this.recordList = res.rows;
+              this.recordList = res.rows
             } else {
               this.warn(res.msg)
             }
@@ -620,9 +639,64 @@
             this.error(err)
           })
       },
+      //开始对比
+      versionComp() {
+        this.versionModal.visible = true
+      },
+      //版本对比确认
+      versionCancel() {
+        this.versionModal.visible = false
+      },
+      //获取关注患者信息
+      getAttention() {
+        let params = this.$route.query
+        this.$axios({
+          url: this.api.concernedRecord,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.carePatient = res.data
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      //关注患者
+      attention() {
+        let params = {}
+        params.visId = this.leftData.visId
+        params.patientId = this.leftData.patientId
+        this.$axios({
+          url: this.api.concernedPatientUpdate,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              if (this.carePatient) {
+                this.carePatient = false
+                this.success('取消关注')
+              } else {
+                this.carePatient = true
+                this.success('关注成功')
+              }
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      }
     },
     filters: {
       control_type(value) {
+
         if (value == '1') {
           return '女'
         } else if (value == '0') {
@@ -640,14 +714,27 @@
     padding: 14px 32px;
   }
 
+  .fontSize14 {
+    font-size: 18px;
+    line-height: 18px;
+  }
+
   .titleText {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: bold;
+    line-height: 18px;
   }
 
   .detailDivider {
     margin-bottom: 30px;
     margin-top: 20px;
+  }
+
+  .hiddenOpacity {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .textArea {

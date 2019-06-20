@@ -17,7 +17,7 @@ export const asyncRouterMap = [
         hidden: true,
         redirect: '/dashboard/workplace',
         component: RouteView,
-        meta: { title: '仪表盘', keepAlive: true, icon: 'dashboard' },
+        meta: { title: '仪表盘', keepAlive: false, icon: 'dashboard' },
         children: [
           {
             path: '/dashboard/analysis',
@@ -30,19 +30,19 @@ export const asyncRouterMap = [
             name: 'Monitor',
             hidden: true,
             component: () => import('@/views/dashboard/Monitor'),
-            meta: { title: '监控页', keepAlive: true }
+            meta: { title: '监控页', keepAlive: false }
           },
           {
             path: '/dashboard/workplace',
             name: 'Workplace',
             component: () => import('@/views/dashboard/Workplace'),
-            meta: { title: '工作台', keepAlive: true }
+            meta: { title: '工作台', keepAlive: false }
           },
           {
             path: '/dashboard/test',
             name: 'test',
             component: () => import('@/views/dashboard/test'),
-            meta: { title: '测试页面', keepAlive: true }
+            meta: { title: '测试页面', keepAlive: false }
           },
           {
             path: '/exception/Coming',
@@ -95,7 +95,7 @@ export const asyncRouterMap = [
                                 meta: { title: '诊断管理', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/knowledgebase/diagnosisMgt/detail',
+                                path: '/knowledgebase/diagnosisMgt/detail/:id/:patientid',
                                 name: 'diagnosisMgtDetail',
                                 hidden: true,
                                 component: () => import( '@/views/knowledgebase/diagnosisMgt/detail.vue'),
@@ -116,7 +116,7 @@ export const asyncRouterMap = [
                               meta: { title: '检验指标管理', hiddenHeaderContent: true, index: true }
                           },
                           {
-                              path: '/knowledgebase/indicatorsMgt/detail',
+                              path: '/knowledgebase/indicatorsMgt/detail/:indexId',
                               name: 'indicatorsMgtDetail',
                               hidden: true,
                               component: () => import( '@/views/knowledgebase/indicatorsMgt/detail.vue'),
@@ -145,11 +145,11 @@ export const asyncRouterMap = [
                                 meta: { title: '问题等级设置', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/auditWorkstation/problemLevel/detail',
+                                path: '/auditWorkstation/problemLevel/detail/:auditLevel',
                                 name: 'problemLevelDetail',
                                 hidden: true,
                                 component: () => import( '@/views/auditWorkstation/problemLevel/detail.vue'),
-                                meta: { title: '问题等级详情', detail: true, description: '问题等级自定义设置' }
+                                meta: { title: '问题等级详情',hiddenHeaderContent: true, detail: true, }
                             }
                         ]
                     },
@@ -212,7 +212,7 @@ export const asyncRouterMap = [
                                 name: 'presHospitalizedDetail',
                                 hidden: true,
                                 component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
-                                meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
+                                // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
                             }
                         ]
                     }
@@ -267,7 +267,7 @@ export const asyncRouterMap = [
                                 meta: { title: '问题分类管理', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/knowledgeMgt/questionMgt/detail',
+                                path: '/knowledgeMgt/questionMgt/detail/:id',
                                 name: 'questionMgtDetail',
                                 hidden: true,
                                 component: () => import( '@/views/knowledgeMgt/questionMgt/detail.vue'),
@@ -295,13 +295,13 @@ export const asyncRouterMap = [
                                 component: () => import( '@/views/baseData/drugSpec/index.vue'),
                                 meta: { title: '药品字典管理', hiddenHeaderContent: true, index: true }
                             },
-                            {
-                                path: '/baseData/drugSpec/detail/:drugCode/',
-                                name: 'drugSpecDetail',
-                                hidden: true,
-                                component: () => import( '@/views/baseData/drugSpec/detail.vue'),
-                                meta: { title: '药品说明书', hiddenHeaderContent: true, detail: true }
-                            },
+                            // {
+                            //     path: '/baseData/drugSpec/detail/:drugCode/',
+                            //     name: 'drugSpecDetail',
+                            //     hidden: true,
+                            //     component: () => import( '@/views/baseData/drugSpec/detail.vue'),
+                            //     meta: { title: '药品说明书', hiddenHeaderContent: true, detail: true }
+                            // },
                           {
                             path: '/baseData/drugSpec/updateDetail/:drugCode/',
                             name: 'drugSpecUpdateDetail',
@@ -311,6 +311,21 @@ export const asyncRouterMap = [
                           },
                         ]
                     },
+                  {
+                    path: '/baseData/instructionManual',
+                    name: 'instructionManual',
+                    component: RouteView,
+                     hidden: true,
+                    meta: { title: '药品说明书', multistage: true },
+                    children: [
+                      {
+                        path: '/baseData/drugSpec/detail/:drugCode/',
+                        name: 'drugSpecDetail',
+                        component: () => import( '@/views/baseData/drugSpec/detail.vue'),
+                        meta: { title: '药品说明书', hiddenHeaderContent: true, index: true }
+                      },
+                    ]
+                  },
                     {
                         path: '/baseData/dictionary',
                         name: 'dictionary',
@@ -343,14 +358,14 @@ export const asyncRouterMap = [
                                 name: 'drugAdminIndex',
                                 component: () => import( '@/views/baseData/drugAdministration/index.vue'),
                                 meta: { title: '药品组管理', hiddenHeaderContent: true, index: true }
-                            }
-                            // {
-                            //   path: '/baseData/drugSpec/detail',
-                            //   name: 'drugAdministration',
-                            //   hidden: true,
-                            //   component: () => import( '@/views/baseData/drugSpec/detail.vue'),
-                            //   meta: { title: '药品说明书',hiddenHeaderContent: true, detail: true,}
-                            // },
+                            },
+                            {
+                              path: '/baseData/drugAdministration/detail',
+                              name: 'drugAdminDetail',
+                              hidden: true,
+                              component: () => import( '@/views/baseData/drugAdministration/detail.vue'),
+                              meta: { title: '药品组管理详情',hiddenHeaderContent: true, detail: true,}
+                            },
                         ]
                     }
                 ]

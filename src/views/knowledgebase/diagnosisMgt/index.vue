@@ -6,7 +6,7 @@
           <a-card>
             <a-row>
               <a-col :span="13">
-                <a-input @pressEnter="pressEnterChange" placeholder="请输入" />
+                <a-input @pressEnter="pressEnterChange" placeholder="请输入" @change='searchchange'/>
               </a-col>
               <a-col class="treeCol" :span="5">
                 <a-button size="small" type="primary" @click="searchRule">查询</a-button>
@@ -90,6 +90,7 @@
               </el-table-column>
             </el-table>
             <a-pagination
+             v-model="current"
               showSizeChanger
               showQuickJumper
               :total="total"
@@ -123,10 +124,7 @@ export default {
       columns: [
         { title: '编码', prop: 'id', width: 80, align: 'right' },
         { title: 'ICD编码', prop: 'icdcode', width: 80, align: 'left' },
-        { title: '附加编码', prop: 'addcode', width: 80, align: 'left' },
-        { title: '自定义编码1', prop: 'defcode1', width: 100, align: 'left' },
-        { title: '自定义编码2', prop: 'defcode2', width: 100, align: 'left' },
-        { title: '拼音码', prop: 'spellcode', width: 100, align: 'left' },
+     
         { title: '诊断名称', prop: 'icdname', align: 'left', width: 300 },
         { title: '备注', prop: 'remark', align: 'left' },
         { title: '类型', prop: 'icdtype', width: 90, align: 'center' },
@@ -146,7 +144,9 @@ export default {
       disable: true,
       form: this.$form.createForm(this),
       // key值也就是id值
-      id: ''
+      id: '',
+      value:'',
+      current:1
     }
   },
   mounted() {
@@ -240,7 +240,7 @@ export default {
       let params = this.$refs.searchPanel.form.getFieldsValue()
       // this.current=2
       params.pageSize = 10
-      params.offset = 10
+      params.offset = 1
       params.patientid = this.id
       this.getPageData(params)
     },
@@ -249,6 +249,7 @@ export default {
       this.$refs.searchPanel.form.resetFields()
       let params = { patientid: this.id }
       this.getPageData(params)
+      this.current=1
     },
     //查询按下回车的回调
     pressEnterChange(e) {
@@ -256,20 +257,27 @@ export default {
     },
     //查询
     searchRule() {
-      const expandedKeys = this.dataList
-        .map(item => {
-          if (this.values) {
-            if (item.title.indexOf(this.values) > -1) {
-              return this.getParentKey(item.title, this.gData)
-            }
-          }
-          return null
-        })
-        .filter((item, i, self) => item && self.indexOf(item) === i)
-      Object.assign(this, {
-        expandedKeys,
-        searchValue: this.values
-      })
+      // const expandedKeys = this.dataList
+      //   .map(item => {
+      //     if (this.values) {
+      //       if (item.title.indexOf(this.values) > -1) {
+      //         return this.getParentKey(item.title, this.gData)
+      //       }
+      //     }
+      //     return null
+      //   })
+      //   .filter((item, i, self) => item && self.indexOf(item) === i)
+      // Object.assign(this, {
+      //   expandedKeys,
+      //   searchValue: this.values
+      // })
+       let params={keyword:this.value}
+       this.getTreeData(params)
+    },
+    // 查找事件
+    searchchange(e){
+    // console.log(e.target.value)
+     this.value=e.target.value
     },
     //新增事件
     addMdc() {
@@ -280,10 +288,10 @@ export default {
     },
     // 编辑事件
     edit(data) {
-      console.log(data.row)
+      console.log(data)
       this.$router.push({
         name: 'diagnosisMgtDetail',
-        query: data.row
+     params:{ id:data.row.id ,patientid:data.row.patientid}
       })
     },
     //树形节点点击事件
@@ -374,7 +382,7 @@ export default {
     },
     //页面跳转事件
     pageChange(page, pageSize) {
-      this.getPageData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      this.getPageData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
     },
 
     //操作启用停用
@@ -382,6 +390,7 @@ export default {
       let params = {}
       params.id = row.id
       params.status = val
+      params.offset=(this.current-1)*10
       this.$axios({
         url: this.api.diagnosisMgtupdate,
         method: 'post',
@@ -390,7 +399,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
-              this.getPageData()
+              this.getPageData({offset:(this.current-1)*10})
             })
           } else {
             this.warn(res.msg)

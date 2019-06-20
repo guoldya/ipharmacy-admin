@@ -36,6 +36,10 @@
               v-else-if="item.dataIndex == 'resultType'"
               v-html="resultTypeFormatter(props.row.resultType)"
             ></span>
+            <span
+              v-else-if="item.dataIndex == 'resultType'"
+              v-html="resultTypeFormatter(props.row.resultType)"
+            ></span>
             <span v-else-if="item.dataIndex == 'isCalc'" v-html="isCalcFormatter(props.row.isCalc)"></span>
 
             <span v-else>{{props.row[item.dataIndex]}}</span>
@@ -53,6 +57,7 @@
         @showSizeChange="pageChangeSize"
         @change="pageChange"
         size="small"
+        v-model='current'
       ></a-pagination>
     </a-spin>
   </a-card>
@@ -87,7 +92,8 @@ export default {
         { title: '计算项', width: 100, dataIndex: 'isCalc', align: 'left' },
         { title: '操作', width: 100, dataIndex: 'action', align: 'center' }
       ],
-      dataSource: []
+      dataSource: [],
+      current:1,
     }
   },
   computed: {
@@ -139,12 +145,15 @@ export default {
       this.getData(params)
     },
     //重置
-    resetForm() {
+    resetForm({}) {
       this.$refs.searchPanel.form.resetFields()
       this.getData({ pageSize: 10, offset: 0 })
     },
     // 获取初始数据
     getData(params = { pageSize: 10, offset: 0 }) {
+      if(params.offset==0){
+        this.current=1
+      }
       this.loading = true
       this.$axios({
         url: this.api.selectPage,
@@ -174,10 +183,11 @@ export default {
       this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
     },
     edits(data) {
+      //console.log(data)
       data.msg = 'old'
       this.$router.push({
         name: 'indicatorsMgtDetail',
-        query: data
+         params:{ indexId:data.row.indexId ,}
       })
     },
 

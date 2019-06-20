@@ -113,10 +113,9 @@ export default {
     },
     // 编辑修改数据
     edits(data) {
-      data.msg = 'old'
       this.$router.push({
         name: 'questionMgtDetail',
-        query: data
+       params:{ id:data.id ,}
       })
     },
     // 组件绑定函数

@@ -21,12 +21,13 @@
     <a-button type="primary" @click="handleAdd">记录</a-button>
     <a-button type="primary" @click="handleNewError">触发一个错误</a-button>
     <i class="iconfont action action-user-lock"></i>
+    <a-card>
+      <div id="gante-test">  </div>
+    </a-card>
   </div>
-
 </template>
 
 <script>
-
   export default {
     name: 'Test',
 
@@ -39,7 +40,87 @@
       if (this.$store.state.routerData.count == 0){
         this.$store.state.routerData.count =50
       }
-      console.log(this.$store.state.routerData.count,'1')
+      // console.log(this.$store.state.routerData.count,'1')
+       let data=[
+        {
+          gunter_id:4,
+          params:{title:'阿司匹林肠溶片',startTime:'2018-12-19',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2018,11,19).getTime(),
+          end_time:new Date(2019,0,3).getTime(),
+          bg_color:'#00B1F1',
+          level:1,
+          items:[
+            {
+              gunter_id:5,
+              params:{orderClass:1,title:'阿司匹林肠溶片',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次3毫克'},
+              start_time:new Date(2018,11,19).getTime(),
+              end_time:new Date(2019,0,1).getTime(),
+              bg_color:'#FFC100',
+              level:2
+            },
+            {
+              gunter_id:6,
+              params:{orderClass:1,title:'阿司匹林肠溶片',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次4g'},
+              start_time:new Date(2019,0,2).getTime(),
+              end_time:new Date(2019,0,3).getTime(),
+              bg_color:'#FFC100',
+              level:2
+            }
+          ]
+        },
+        {
+          gunter_id:1,
+          params:{title:'阿莫西林',startTime:'2018-12-19',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2018,11,19).getTime(),
+          end_time:new Date(2019,0,3).getTime(),
+          bg_color:'#00B1F1',
+          level:1,
+          children:[
+            {
+              gunter_id:2,
+              params:{orderClass:2,title:'2019-01-01 11:11',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次2毫克'},
+              start_time:new Date(2018,11,19).getTime(),
+              end_time:new Date(2019,0,1).getTime(),
+              bg_color:'#00B1F1',
+              level:2
+            },
+            {
+              gunter_id:3,
+              params:{orderClass:2,title:'2019-01-01 11:11',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+              start_time:new Date(2019,0,2).getTime(),
+              end_time:new Date(2019,0,2).getTime(),
+              bg_color:'#00B1F1',
+              level:2
+            }
+          ]
+        },
+      ]
+
+     let th_data = {
+        title:{value:'药品名称',width:225,showToast:true,listen_click:true,isTableShow:true},
+      	startTime:{value:'开始时间',width:150,showToast:true,chooseTime:true,time_mode:1},
+      	endTime:{value:'结束时间',width:150,showToast:true,chooseTime:true,time_mode:2},
+      	biaoti:{value:'用法',width:450,showToast:true,edit:false}
+        }
+
+
+     	this.$gante({
+        	container:'#gante-test',
+        	ganteData:data,
+        	start_time:new Date('2018/12/19').getTime(),
+        	end_time:new Date('2018/12/31').getTime(),
+        	open:true,
+        	height:400,
+          tabe_width:310,
+        	time_mode:1,
+        	th_data:th_data,
+        	onEdit(data){
+        	console.log(data)
+        	},
+        	onClick(data){
+        	console.log(data)
+        	},
+      	})
     },
     methods: {
       onClick({ key }) {

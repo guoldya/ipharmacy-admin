@@ -17,11 +17,6 @@
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
           <template slot-scope="props">
-            <!--<span v-if="item.dataIndex == 'action'">-->
-              <!--<a @click="edits(props.row)">编辑</a>-->
-              <!--<a-divider type="vertical"/>-->
-              <!--<a @click="user(props.row)">{{props.row.status==0?'启用':'停用' }}</a>-->
-            <!--</span>-->
             <span v-if="item.dataIndex == 'action'">
               <opcol :items="items" :more="false" :data="props.row" :filterItem="['status']"></opcol>
             </span>
@@ -49,6 +44,7 @@
         @showSizeChange="pageChangeSize"
         @change="pageChange"
         size="small"
+        v-model='current'
       >
       </a-pagination>
     </a-spin>
@@ -89,7 +85,8 @@
           {text:'停用',showtip:true,tip:'确认停用吗？',click:this.user,status:'0'},
         ],
         levelColor: '#ffffff',
-        dataSource: []
+        dataSource: [],
+        current:1
       }
     },
     computed: {
@@ -130,6 +127,9 @@
       },
       getData(params = { pageSize: 10, offset: 0 }) {
         this.loading = true
+        if(params.offset==0){
+        this.current=1
+      }
         // params.orderId = 1
         reviewAuditlevelPage(params).then(res => {
           if (res.code == '200') {
@@ -181,10 +181,9 @@
       ban(data) {
       },
       edits(data) {
-        data.msg='old';
         this.$router.push({
           name: 'problemLevelDetail',
-          query: data
+          params: {auditLevel:data.auditLevel}
         })
       },
 
@@ -197,7 +196,7 @@
       add(){
         this.$router.push({
           name: 'problemLevelDetail',
-          query:{msg:'new',length:this.dataSource.length,}
+          params: {auditLevel:-1}
         })
       },
 

@@ -470,7 +470,6 @@
 
       //查看药品说明书
       lookDetail(data){
-        console.log(data);
         this.$router.push({
           name: 'drugSpecDetail',
           params:{drugCode:data.drugCode},
@@ -478,7 +477,6 @@
       },
       //编辑说明书
       editInstruct(data){
-        console.log(data);
         this.$router.push({
           name: 'drugSpecUpdateDetail',
           params:{drugCode:data.drugCode, drugName:data.drugName},

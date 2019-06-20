@@ -64,7 +64,8 @@ export default {
   data() {
     return {
       api: {
-        diagnosisMgtupdate: '/sys/dicIcd/update'
+        diagnosisMgtupdate: '/sys/dicIcd/update',
+        diagnosisMgtselectPage: '/sys/dicIcd/selectPage'
       },
       labelCol: {
         xs: { span: 8 },
@@ -80,28 +81,18 @@ export default {
       levelColor: '#000',
       listData: {},
       readOnly: false,
-      patientid: ''
+      patientid: '',
+      formData: []
     }
   },
   computed: {},
   mounted() {
+    this.getselectData({ patientid: this.$route.params.patientid, id: this.$route.params.id })
     let _this = this
     if (this.$route.query) {
       if (this.$route.query.msg !== 'new') {
-        console.log('xxxx')
         _this.listData = this.$route.query
-        _this.form.setFieldsValue({
-          id: _this.listData.id,
-          icdcode: _this.listData.defcode2,
-          addcode: _this.listData.addcode,
-          defcode1: _this.listData.defcode1,
-          defcode2: _this.listData.defcode2,
-          spellcode: _this.listData.spellcode,
-          icdname: _this.listData.icdname,
-          remark: _this.listData.remark,
-          icdtype: _this.listData.icdtype,
-          status: _this.listData.status
-        })
+        _this.form.setFieldsValue({})
         this.readOnly = this.$route.query.levelType == 1 ? true : false
         if (this.$route.query.levelColor) {
           _this.levelColor = this.$route.query.levelColor
@@ -159,6 +150,35 @@ export default {
           }
         }
       })
+    },
+    // 查询数据
+    getselectData(params = {}) {
+      this.$axios({
+        url: this.api.diagnosisMgtselectPage,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            let arr = res.rows
+            let reqArr = []
+            arr.map(item => {
+              if (item.id == this.$route.params.id) {
+                reqArr = item
+              }
+            })
+            let { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status } = reqArr,
+              formData = { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status }
+            this.form.setFieldsValue(formData)
+          } else {
+            this.loadingTable = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
     },
     backTo() {
       this.$router.push({
