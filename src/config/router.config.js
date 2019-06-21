@@ -166,7 +166,7 @@ export const asyncRouterMap = [
                                 meta: { title: '审方方案设置', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/auditWorkstation/PrescriptionsSetting/detail',
+                                path: '/auditWorkstation/PrescriptionsSetting/detail/:planId',
                                 name: 'PrescriptionsDetail',
                                 hidden: true,
                                 component: () => import( '@/views/auditWorkstation/PrescriptionsSetting/detail.vue'),

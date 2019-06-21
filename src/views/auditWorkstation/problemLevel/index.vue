@@ -196,7 +196,7 @@
       add(){
         this.$router.push({
           name: 'problemLevelDetail',
-          params: {auditLevel:-1}
+          params: {auditLevel:'new'}
         })
       },
 

@@ -87,10 +87,10 @@
             </div>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
-
+            <detailCheck :visId="visId"></detailCheck>
           </a-tab-pane>
           <a-tab-pane tab="检验报告" key="3">
-
+            <DetailTest :visId="visId"></DetailTest>
           </a-tab-pane>
         </a-tabs>
       </a-card>
@@ -275,7 +275,8 @@
   import ATextarea from 'ant-design-vue/es/input/TextArea'
   import ACol from 'ant-design-vue/es/grid/Col'
   import versionComp from '@/my-components/version-comparison'
-
+  import detailCheck from '../presHospitalized/detailCheck.vue'
+  import DetailTest from '../presHospitalized/detailTest.vue'
   const DetailListItem = DetailList.Item
   export default {
     components: {
@@ -287,7 +288,9 @@
       DetailListItem,
       STable,
       FooterToolBar,
-      versionComp
+      versionComp,
+      detailCheck,
+      DetailTest
     },
     mixins: [mixin, mixinDevice],
     name: 'detail',

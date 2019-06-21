@@ -382,7 +382,7 @@
       },
       //TODO：数据暂未获取
       getCountText() {
-        let params = {};
+        let params = {reviewResouce: 1};
         this.$axios({
           url: this.api.selectTribunalRecordNum,
           method: 'put',

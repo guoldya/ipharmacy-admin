@@ -27,10 +27,13 @@
         </a-col>
         <a-col :span="4">
           <!--文本输入框-->
-          <a-input v-if="cd.inputType=='input'" class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
+          <div v-if="cd.inputType=='input'">
+            <a-input  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
+          </div>
+
           <!--下拉框-->
           <a-select
-            mode="multiple"
+            :mode=cd.multiple
             @search="searchSelect($event,cd.treeData,cd.columnId,cd)"
             v-else-if="cd.inputType=='select'"
             class="width-100 marLeft10"
@@ -48,7 +51,7 @@
           </a-select>
           <!--树-->
           <a-tree-select
-            multiple
+            :multiple = cd.multiple
             @search="searchTreeSelect($event,cd.treeData,cd.columnId,cd)"
             :treeData="cd.treeData"
             v-else-if="cd.inputType=='tree'"
@@ -154,54 +157,6 @@
         // this.conditions.push();
         console.log(data.assertVal);
       },
-      // //枚举时搜索下拉框
-      // searchSelect(value,data,code){
-      //   let params = {};
-      //   params.keyword = value;
-      //   params.code = code;
-      //   this.$axios({
-      //     url: this.api.planSelectData,
-      //     method: 'put',
-      //     data: params
-      //   }).then(res => {
-      //     if (res.code == '200') {
-      //         for (let key in this.conditions){
-      //           if (this.conditions[key].columnId == code){
-      //             this.conditions[key].treeData = res.rows;
-      //           }
-      //         }
-      //         console.log(this.conditions);
-      //     } else {
-      //       this.warn(res.msg)
-      //     }
-      //   })
-      //     .catch(err => {
-      //       this.error(err)
-      //     })
-      // },
-      // //树下拉
-      // searchTreeSelect(value,data,code){
-      //   let params = {};
-      //   params.keyword = value;
-      //   params.code = code;
-      //   this.$axios({
-      //     url: this.api.planSelectData,
-      //     method: 'put',
-      //     data: params
-      //   }).then(res => {
-      //     if (res.code == '200') {
-      //       let indexData = this.dealAllStartTree(res.rows)
-      //       data = this.recursiveNodeTree(indexData, 'undefined');
-      //       data.push();
-      //     } else {
-      //       this.warn(res.msg)
-      //     }
-      //   })
-      //     .catch(err => {
-      //       this.error(err)
-      //     })
-      // },
-
       //处理模型字段
       dealAllStartTree(list) {
         let indexData = {}

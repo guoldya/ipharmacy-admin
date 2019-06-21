@@ -2,100 +2,100 @@
   <div>
     <a-card :body-style="{padding: '24px 32px'}" :bordered="false">
       <a-spin tip="加载中..." :spinning="spinning">
-      <div class="cardHead">
-        <a href="#" @click.prevent="cancle">
-          <a-icon type="left"></a-icon>
-          返回
-        </a>
-      </div>
-      <a-form :form="form" id="form">
-        <a-form-item
-          label="方案名称"
-          v-bind="formItemLayout"
+        <div class="cardHead">
+          <a href="#" @click.prevent="cancle">
+            <a-icon type="left"></a-icon>
+            返回
+          </a>
+        </div>
+        <a-form :form="form" id="form">
+          <a-form-item
+            label="方案名称"
+            v-bind="formItemLayout"
+          >
+            <a-input
+              placeholder="请输入..."
+              v-decorator="['planName',{rules: [{ required: true, message: '请输入方案名称' },{ max:20 }]}]"
+            />
+          </a-form-item>
+          <a-form-item
+            v-bind="formItemLayout"
+            label="方案类型"
+            :required="true"
+          >
+            <a-radio-group v-decorator="['planType',{initialValue: '1'}]">
+              <a-radio value="1">药师审方</a-radio>
+              <a-radio value="2">处方点评</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item
+            v-bind="formItemLayout"
+            label="方案范围"
+            :required="true"
+          >
+            <a-radio-group v-decorator="['planScope',{initialValue: '1'}]">
+              <a-radio value="1">门诊</a-radio>
+              <a-radio value="0">住院</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item
+            v-bind="formItemLayout"
+            label="状态"
+            :required="true"
+          >
+            <a-radio-group v-decorator="['status',{initialValue: '1'}]">
+              <a-radio value="1">启用</a-radio>
+              <a-radio value="0">停用</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <!--<a-form-item-->
+          <!--v-bind="formItemLayout"-->
+          <!--label="选择已有方案"-->
+          <!--&gt;-->
+          <!--<a-select v-decorator="['clientClass',]"-->
+          <!--&gt;-->
+          <!--<a-select-option-->
+          <!--v-for="(item,index) in classData"-->
+          <!--:value='item.id'-->
+          <!--:key="index"-->
+          <!--&gt;-->
+          <!--{{item.text}}-->
+          <!--</a-select-option>-->
+          <!--</a-select>-->
+          <!--</a-form-item>-->
+          <a-form-item
+            label="方案描述"
+            v-bind="formItemLayout"
+          >
+            <a-textarea
+              v-decorator="['describe',{rules: [{ max:100 }]}]"
+            />
+          </a-form-item>
+          <a-form-item
+            :wrapperCol="{ span: 7}"
+            style="text-align: right"
+          >
+            <a-button type="primary" @click="addCondition()">
+              <a-icon type="plus-circle" theme="filled"/>
+              添加条件
+            </a-button>
+          </a-form-item>
+        </a-form>
+        <conditionSelect
+          class="margin-top-10"
+          :conditions="planruleList"
+          :treeData="treeList"
+          :classData="classData"
+          :deleteCon="deleteCondition"
+          :baseSelectTree="baseSelectTree"
+          :searchSelect="searchSelect"
+          :searchTreeSelect="searchTreeSelect"
         >
-          <a-input
-            placeholder="请输入..."
-            v-decorator="['planName',{rules: [{ required: true, message: '请输入方案名称' },{ max:20 }]}]"
-          />
-        </a-form-item>
-        <a-form-item
-          v-bind="formItemLayout"
-          label="方案类型"
-          :required="true"
-        >
-          <a-radio-group v-decorator="['planType',{initialValue: '1'}]">
-            <a-radio value="1">药师审方</a-radio>
-            <a-radio value="2">处方点评</a-radio>
-          </a-radio-group>
-        </a-form-item>
-        <a-form-item
-          v-bind="formItemLayout"
-          label="方案范围"
-          :required="true"
-        >
-          <a-radio-group v-decorator="['planScope',{initialValue: '1'}]">
-            <a-radio value="1">门诊</a-radio>
-            <a-radio value="0">住院</a-radio>
-          </a-radio-group>
-        </a-form-item>
-        <a-form-item
-          v-bind="formItemLayout"
-          label="状态"
-          :required="true"
-        >
-          <a-radio-group v-decorator="['status',{initialValue: '1'}]">
-            <a-radio value="1">启用</a-radio>
-            <a-radio value="0">停用</a-radio>
-          </a-radio-group>
-        </a-form-item>
-        <!--<a-form-item-->
-        <!--v-bind="formItemLayout"-->
-        <!--label="选择已有方案"-->
-        <!--&gt;-->
-        <!--<a-select v-decorator="['clientClass',]"-->
-        <!--&gt;-->
-        <!--<a-select-option-->
-        <!--v-for="(item,index) in classData"-->
-        <!--:value='item.id'-->
-        <!--:key="index"-->
-        <!--&gt;-->
-        <!--{{item.text}}-->
-        <!--</a-select-option>-->
-        <!--</a-select>-->
-        <!--</a-form-item>-->
-        <a-form-item
-          label="方案描述"
-          v-bind="formItemLayout"
-        >
-          <a-textarea
-            v-decorator="['describe',{rules: [{ max:100 }]}]"
-          />
-        </a-form-item>
-        <a-form-item
-          :wrapperCol="{ span: 7}"
-          style="text-align: right"
-        >
-          <a-button type="primary" @click="addCondition()">
-            <a-icon type="plus-circle" theme="filled"/>
-            添加条件
-          </a-button>
-        </a-form-item>
-      </a-form>
-      <conditionSelect
-        class="margin-top-10"
-        :conditions="planruleList"
-        :treeData="treeList"
-        :classData="classData"
-        :deleteCon="deleteCondition"
-        :baseSelectTree="baseSelectTree"
-        :searchSelect="searchSelect"
-        :searchTreeSelect="searchTreeSelect"
-      >
-      </conditionSelect>
-      <a-row class="btnStyle">
-        <a-button htmlType="submit" type="primary" @click="handleSubmit" :loading="loading">保存</a-button>
-        <a-button @click="cancle" style="margin-left: 8px">取消</a-button>
-      </a-row>
+        </conditionSelect>
+        <a-row class="btnStyle">
+          <a-button htmlType="submit" type="primary" @click="handleSubmit" :loading="loading">保存</a-button>
+          <a-button @click="cancle" style="margin-left: 8px">取消</a-button>
+        </a-row>
       </a-spin>
     </a-card>
   </div>
@@ -104,6 +104,7 @@
   import debounce from 'lodash/debounce'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
   import conditionSelect from '@/components/condition-select'
+
   export default {
     components: { ATextarea, conditionSelect },
     data() {
@@ -137,12 +138,19 @@
           { id: '7', text: '包含' },
           { id: '8', text: '不包含' }
         ],
-        isNew:true,
-        spinning:false,
+        isNew: true,
+        spinning: false,
         planruleList: [],
         selectMode: 'tags',
         treeList: [],
-        CoreFactAllTree: []
+        CoreFactAllTree: [],
+        defaults:{
+          drugCategory:'DRUGCATEGORY',
+          drugTypes:'DRUGTYPES',
+          drugGrade:'DRUGGRADE',
+          anestheticDrugs:'ANESTHETICDRUGS',
+          essentialDrugs:'ESSENTIALDRUGS',
+        }
       }
     },
     beforeCreate() {
@@ -167,64 +175,70 @@
             data: { planId: planId }
           }).then(res => {
             if (res.code == '200') {
-              this.planruleList = res.data.reviewPlanrules;
-              for (let key in this.planruleList){
-                  this.planruleList[key].inputType = '';
-                  this.planruleList[key].operators = [];
-                  this.planruleList[key].treeData = [];
-                  if (this.planruleList[key].logic == '1'){
-                    this.planruleList[key].inputType = 'input'
-                  }else if (this.planruleList[key].logic == '2'){
-                    this.planruleList[key].inputType = 'dataRange'
-                  } else if (this.planruleList[key].logic == '3'){
-                    if (this.planruleList[key].columnId == 'ANTIBACTERIALLEVEL'){
-                      this.planruleList[key].inputType = 'select';
-                      this.planruleList[key].treeData = this.enum.drugGrade;
-                    }else if (this.planruleList[key].columnId == 'DRUGGRADE'){
-                      this.planruleList[key].inputType = 'select';
-                      this.planruleList[key].treeData = this.enum.drugGrade;
-                    }else if (this.planruleList[key].columnId == 'PURPOSEOFDRUGUSE'){
-                      this.planruleList[key].inputType = 'select';
-                      this.planruleList[key].treeData = this.enum.purposeDrug;
-                    }else if (this.planruleList[key].columnId == 'TYPESOFDRUGS'){
-                      this.planruleList[key].inputType = 'select';
-                      this.planruleList[key].treeData = this.enum.drugType;
-                    }else if (this.planruleList[key].columnId == 'PATIENTYPE'){
-                      this.planruleList[key].inputType = 'select';
-                      this.planruleList[key].treeData = this.enum.patientType;
-                    }else if (this.planruleList[key].columnId) {
-                      let params = {}
-                      params.code = this.planruleList[key].columnId
-                      this.$axios({
-                        url: this.api.planSelectData,
-                        method: 'put',
-                        data: params
-                      }).then(res => {
-                        if (res.code == '200') {
-                          let pidNum = 0
-                          for (let i in res.rows) {
-                            if (res.rows[i].PID) {
-                              this.planruleList[key].inputType = 'tree'
-                              let indexData = this.dealAllStartTree(res.rows)
-                              this.planruleList[key].treeData = this.recursiveNodeTree(indexData, 'undefined')
-                              pidNum += 1
-                            }
-                          }
-                          if (pidNum == 0) {
-                            this.planruleList[key].inputType = 'select'
-                            this.planruleList[key].treeData = res.rows
-                          }
-                          this.planruleList.push();
-                        } else {
-                          this.warn(res.msg)
-                        }
-                      })
-                        .catch(err => {
-                          this.error(err)
-                        })
-                    }
+              this.planruleList = res.data.reviewPlanrules
+              for (let key in this.planruleList) {
+                this.planruleList[key].inputType = ''
+                this.planruleList[key]. multiple = true
+                this.planruleList[key].operators = []
+                this.planruleList[key].treeData = []
+                if (this.planruleList[key].logic == '1') {
+                  this.planruleList[key].inputType = 'input'
+                } else if (this.planruleList[key].logic == '2') {
+                  this.planruleList[key].inputType = 'dataRange'
+                } else if (this.planruleList[key].logic == '3') {
+                  if (this.planruleList[key].columnId == 'ANTIBACTERIALLEVEL') {
+                    this.planruleList[key].inputType = 'select'
+                    this.planruleList[key].treeData = this.enum.drugGrade
                   }
-                let loadData = this.getItemTreeData(this.planruleList[key].columnId, this.treeList);
+                  else if (this.planruleList[key].columnId == 'PURPOSEOFDRUGUSE') {
+                    this.planruleList[key].inputType = 'select'
+                    this.planruleList[key].treeData = this.enum.purposeDrug
+                  } else if (this.planruleList[key].columnId == 'TYPESOFDRUGS') {
+                    this.planruleList[key].inputType = 'select'
+                    this.planruleList[key].treeData = this.enum.drugType
+                  } else if (this.planruleList[key].columnId == 'PATIENTYPE') {
+                    this.planruleList[key].inputType = 'select'
+                    this.planruleList[key].treeData = this.enum.patientType
+                  } else if (this.planruleList[key].columnId) {
+                    let code = this.planruleList[key].columnId;
+                    if (code == this.defaults.drugCategory ||
+                      code == this.defaults.drugTypes ||
+                      code == this.defaults.drugGrade || code == this.defaults.anestheticDrugs || code == this.defaults.essentialDrugs){
+                      this.planruleList[key].multiple = false;
+                    }
+                    let params = {}
+                    params.code = this.planruleList[key].columnId
+                    this.$axios({
+                      url: this.api.planSelectData,
+                      method: 'put',
+                      data: params
+                    }).then(res => {
+                      if (res.code == '200') {
+                        let pidNum = 0
+                        for (let i in res.rows) {
+                          if (res.rows[i].PID) {
+                            this.planruleList[key].inputType = 'tree'
+                            let indexData = this.dealAllStartTree(res.rows)
+                            this.planruleList[key].treeData = this.recursiveNodeTree(indexData, 'undefined')
+                            pidNum += 1
+                            break
+                          }
+                        }
+                        if (pidNum == 0) {
+                          this.planruleList[key].inputType = 'select'
+                          this.planruleList[key].treeData = res.rows
+                        }
+                        this.planruleList.push()
+                      } else {
+                        this.warn(res.msg)
+                      }
+                    })
+                      .catch(err => {
+                        this.error(err)
+                      })
+                  }
+                }
+                let loadData = this.getItemTreeData(this.planruleList[key].columnId, this.treeList)
                 for (let j in this.classData) {
                   for (let k in loadData.operators) {
                     if (this.classData[j].id == loadData.operators[k]) {
@@ -232,15 +246,16 @@
                     }
                   }
                 }
-                this.planruleList.push();
-                }
+                this.planruleList.push()
+              }
               setTimeout(() => {
                 this.form.setFieldsValue({
                   planName: res.data.planName,
                   planType: res.data.planType,
                   planScope: res.data.planScope,
                   status: res.data.status,
-                  describe: res.data.describe,})
+                  describe: res.data.describe
+                })
               })
               this.spinning = false
             } else {
@@ -275,9 +290,9 @@
             }
             params.sampling = '1'
             params.distribution = '1'
-            params.reviewPlanrules = listData;
-            if (this.$route.params.planId){
-              params.planId = this.$route.params.planId;
+            params.reviewPlanrules = listData
+            if (this.$route.params.planId) {
+              params.planId = this.$route.params.planId
             }
             console.log(JSON.stringify(params))
             this.$axios({
@@ -287,12 +302,12 @@
             })
               .then(res => {
                 if (res.code == '200') {
-                  this.success(res.msg);
-                  setTimeout(()=>{
+                  this.success(res.msg)
+                  setTimeout(() => {
                     this.$router.push({
-                      name: 'PrescriptionsSettingIndex',
+                      name: 'PrescriptionsSettingIndex'
                     })
-                  },500)
+                  }, 500)
                 } else {
                   this.warn(res.msg)
                 }
@@ -316,7 +331,7 @@
           inputType: 'input',
           assertVal: null,
           assertVal2: null,
-          values: [],
+          values: []
         })
       },
       deleteCondition(index) {
@@ -360,10 +375,10 @@
       },
       baseSelectTree(index, item) {
         item.operators = []
-        item.treeData = [];
-        item.values = [];
-        item.assertVal = 0;
-        item.assertVal2 = 0;
+        item.treeData = []
+        item.values = []
+        item.assertVal = 0
+        item.assertVal2 = 0
         let data = this.getItemTreeData(item.columnId, this.treeList)
         for (let key in this.classData) {
           for (let i in data.operators) {
@@ -373,29 +388,28 @@
             }
           }
         }
-        console.log(item, 'dada')
         item.logic = data.logic
         if (data.logic == '1') {
           item.inputType = 'input'
         } else if (data.logic == '2') {
           item.inputType = 'dataRange'
         } else if (data.logic == '3') {
-          if (item.columnId == 'ANTIBACTERIALLEVEL'){
-            item.inputType = 'select';
-            item.treeData = this.enum.drugGrade;
-          }else if (item.columnId == 'DRUGGRADE'){
-            item.inputType = 'select';
-            item.treeData = this.enum.drugGrade;
-          }else if (item.columnId == 'PURPOSEOFDRUGUSE'){
-            item.inputType = 'select';
-            item.treeData = this.enum.purposeDrug;
-          }else if (item.columnId == 'TYPESOFDRUGS'){
-            item.inputType = 'select';
-            item.treeData = this.enum.drugType;
-          }else if (item.columnId == 'PATIENTYPE'){
-            item.inputType = 'select';
-            item.treeData = this.enum.patientType;
-          }else {
+          if (item.columnId == 'ANTIBACTERIALLEVEL') {
+            item.inputType = 'select'
+            item.treeData = this.enum.drugGrade
+          } else if (item.columnId == 'DRUGGRADE') {
+            item.inputType = 'select'
+            item.treeData = this.enum.drugGrade
+          } else if (item.columnId == 'PURPOSEOFDRUGUSE') {
+            item.inputType = 'select'
+            item.treeData = this.enum.purposeDrug
+          } else if (item.columnId == 'TYPESOFDRUGS') {
+            item.inputType = 'select'
+            item.treeData = this.enum.drugType
+          } else if (item.columnId == 'PATIENTYPE') {
+            item.inputType = 'select'
+            item.treeData = this.enum.patientType
+          } else {
             let params = {}
             params.code = data.code
             this.$axios({
@@ -411,13 +425,15 @@
                     let indexData = this.dealAllStartTree(res.rows)
                     item.treeData = this.recursiveNodeTree(indexData, 'undefined')
                     pidNum += 1
+                    console.log(pidNum, 'nul')
+                    break
                   }
                 }
                 if (pidNum == 0) {
                   item.inputType = 'select'
                   item.treeData = res.rows
                 }
-                this.planruleList.push();
+                this.planruleList.push()
               } else {
                 this.warn(res.msg)
               }
@@ -482,20 +498,20 @@
 
 
       //枚举时搜索下拉框
-      searchSelect(value,data,code,item){
+      searchSelect(value, data, code, item) {
 
-        let params = {};
-        params.keyword = value;
-        params.code = code;
+        let params = {}
+        params.keyword = value
+        params.code = code
         this.$axios({
           url: this.api.planSelectData,
           method: 'put',
           data: params
         }).then(res => {
           if (res.code == '200') {
-             item.treeData = res.rows;
-            this.planruleList.push();
-            console.log(this.planruleList);
+            item.treeData = res.rows
+            this.planruleList.push()
+            console.log(this.planruleList)
           } else {
             this.warn(res.msg)
           }
@@ -505,10 +521,10 @@
           })
       },
       //树下拉
-      searchTreeSelect(value,data,code,item){
-        let params = {};
-        params.keyword = value;
-        params.code = code;
+      searchTreeSelect(value, data, code, item) {
+        let params = {}
+        params.keyword = value
+        params.code = code
         this.$axios({
           url: this.api.planSelectData,
           method: 'put',
@@ -516,7 +532,7 @@
         }).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows)
-            item.treeData = this.recursiveNodeTree(indexData, 'undefined');
+            item.treeData = this.recursiveNodeTree(indexData, 'undefined')
             this.planruleList.push()
           } else {
             this.warn(res.msg)
@@ -525,7 +541,7 @@
           .catch(err => {
             this.error(err)
           })
-      },
+      }
     }
   }
 </script>
