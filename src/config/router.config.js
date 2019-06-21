@@ -95,7 +95,7 @@ export const asyncRouterMap = [
                                 meta: { title: '诊断管理', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/knowledgebase/diagnosisMgt/detail',
+                                path: '/knowledgebase/diagnosisMgt/detail/:id/:patientid',
                                 name: 'diagnosisMgtDetail',
                                 hidden: true,
                                 component: () => import( '@/views/knowledgebase/diagnosisMgt/detail.vue'),
@@ -116,7 +116,7 @@ export const asyncRouterMap = [
                               meta: { title: '检验指标管理', hiddenHeaderContent: true, index: true }
                           },
                           {
-                              path: '/knowledgebase/indicatorsMgt/detail',
+                              path: '/knowledgebase/indicatorsMgt/detail/:indexId',
                               name: 'indicatorsMgtDetail',
                               hidden: true,
                               component: () => import( '@/views/knowledgebase/indicatorsMgt/detail.vue'),
@@ -267,7 +267,7 @@ export const asyncRouterMap = [
                                 meta: { title: '问题分类管理', hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/knowledgeMgt/questionMgt/detail',
+                                path: '/knowledgeMgt/questionMgt/detail/:id',
                                 name: 'questionMgtDetail',
                                 hidden: true,
                                 component: () => import( '@/views/knowledgeMgt/questionMgt/detail.vue'),

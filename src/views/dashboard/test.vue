@@ -44,7 +44,7 @@
        let data=[
         {
           gunter_id:4,
-          params:{title:'阿司匹林肠溶片',startTime:'2018-12-19',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          params:{title:'藿香正气液',startTime:'2018-12-19',endTime:'2019-1-4',biaoti:'[口服]  每天异常  每次2毫克'},
           start_time:new Date(2018,11,19).getTime(),
           end_time:new Date(2019,0,3).getTime(),
           bg_color:'#00B1F1',
@@ -52,17 +52,17 @@
           items:[
             {
               gunter_id:5,
-              params:{orderClass:1,title:'阿司匹林肠溶片',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次3毫克'},
+              params:{orderClass:1,title:'藿香正气液',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次3吨'},
               start_time:new Date(2018,11,19).getTime(),
-              end_time:new Date(2019,0,1).getTime(),
+              end_time:new Date(2019,0,2).getTime(),
               bg_color:'#FFC100',
               level:2
             },
             {
               gunter_id:6,
-              params:{orderClass:1,title:'阿司匹林肠溶片',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次4g'},
-              start_time:new Date(2019,0,2).getTime(),
-              end_time:new Date(2019,0,3).getTime(),
+              params:{orderClass:1,title:'藿香正气液',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次4g'},
+              start_time:new Date(2019,0,3).getTime(),
+              end_time:new Date(2019,0,4).getTime(),
               bg_color:'#FFC100',
               level:2
             }
@@ -107,8 +107,8 @@
      	this.$gante({
         	container:'#gante-test',
         	ganteData:data,
-        	start_time:new Date('2018/12/19').getTime(),
-        	end_time:new Date('2018/12/31').getTime(),
+        	start_time:new Date('2018/12/18').getTime(),
+        	end_time:new Date('2018/12/30').getTime(),
         	open:true,
         	height:400,
           tabe_width:310,
@@ -119,6 +119,7 @@
         	},
         	onClick(data){
         	console.log(data)
+        // console.log('xxx')
         	},
       	})
     },

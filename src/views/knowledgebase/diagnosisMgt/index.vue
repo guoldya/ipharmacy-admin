@@ -90,6 +90,7 @@
               </el-table-column>
             </el-table>
             <a-pagination
+             v-model="current"
               showSizeChanger
               showQuickJumper
               :total="total"
@@ -145,6 +146,7 @@ export default {
       // key值也就是id值
       id: '',
       value:'',
+      current:1
     }
   },
   mounted() {
@@ -247,6 +249,7 @@ export default {
       this.$refs.searchPanel.form.resetFields()
       let params = { patientid: this.id }
       this.getPageData(params)
+      this.current=1
     },
     //查询按下回车的回调
     pressEnterChange(e) {
@@ -269,7 +272,7 @@ export default {
       //   searchValue: this.values
       // })
        let params={keyword:this.value}
-       this.getTreeData({params})
+       this.getTreeData(params)
     },
     // 查找事件
     searchchange(e){
@@ -285,9 +288,10 @@ export default {
     },
     // 编辑事件
     edit(data) {
+      console.log(data)
       this.$router.push({
         name: 'diagnosisMgtDetail',
-        query: data.row
+     params:{ id:data.row.id ,patientid:data.row.patientid}
       })
     },
     //树形节点点击事件
@@ -378,7 +382,7 @@ export default {
     },
     //页面跳转事件
     pageChange(page, pageSize) {
-      this.getPageData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      this.getPageData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
     },
 
     //操作启用停用
@@ -386,6 +390,7 @@ export default {
       let params = {}
       params.id = row.id
       params.status = val
+      params.offset=(this.current-1)*10
       this.$axios({
         url: this.api.diagnosisMgtupdate,
         method: 'post',
@@ -394,7 +399,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
-              this.getPageData()
+              this.getPageData({offset:(this.current-1)*10})
             })
           } else {
             this.warn(res.msg)

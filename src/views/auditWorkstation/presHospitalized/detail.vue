@@ -8,22 +8,23 @@
           </a>
         </div>
         <a-row class="margin-top-10">
-          <a-col class="titleText" :md="4" :lg="3" :xxl="2">
-            <h3>消化内科:</h3>
-          </a-col>
-          <a-col :md="4" :lg="5" :xxl="6">
+          <a-col class="titleText"   :xl="7" :xxl="7">
+            <span class="neike">消化内科:</span>
             <span class="renming">{{RecordDelData.patientName}}</span>
+          </a-col>
+          <a-col  :xl="7" :xxl="7" class="ages">
             <span class="bianhao">{{RecordDelData.admitNum}}</span>
-            <span class="sex">女</span>
+            <span class="sex">{{RecordDelData.patientSex}}</span>
             <span class="nianlin">{{RecordDelData.agevalue}}岁</span>
           </a-col>
-          <a-col class="titleText" :md="8" :lg="8" :xxl="8">
-            <a-tag class="tagStyle">哺乳期</a-tag>
+          <a-col class="titleText"   :xl="3" :xxl="3">
+             <a-tag class="tagStyle">哺乳期</a-tag>
           </a-col>
-          <a-col :md="8" :lg="8" :xxl="8">
-            <span>入院日期：&nbsp;{{RecordDelData.admitDate}}</span>
+          <a-col class="ages"   :xl="7" :xxl="7">
+            <span >入院日期：&nbsp;{{RecordDelData.admitDate}}</span>
           </a-col>
         </a-row>
+
         <a-divider type="horizontal" class="detailDivider"/>
         <detail-list>
           <detail-list-item term="身高">
@@ -42,12 +43,12 @@
             <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
           </detail-list-item>
           <detail-list-item term="处方医生">
-            <span class="opacity8">
-              <a href>
+            <span class="opacity8 ">
+              <span class='datetime'>
                 {{RecordDelData.attendingDocName}}&nbsp;
                 <a-icon type="message"/>
                 &nbsp;{{RecordDelData.attendingDocPhone}}
-              </a>
+              </span>
             </span>
           </detail-list-item>
         </detail-list>
@@ -74,7 +75,7 @@
             </el-table>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
-            <detailCheck></detailCheck>
+            <detailCheck :visidId='visidIdnum'></detailCheck>
           </a-tab-pane>
           <a-tab-pane tab="检验报告" key="3">
             <DetailTest></DetailTest>
@@ -93,17 +94,36 @@
             <a-tab-pane tab="预判情况" key="1">
               <span class="dealP">问题描述</span>
               <span v-for="ta in tagsData " style="float: right">
-                <a-tag v-if="ta.status == true" class="checkTag tagStyle"
-                       :style="{'background':ta.levelColor, 'color':'#fff'}" @click="checkableChange(ta)"> {{ta.auditName }}</a-tag>
-                <a-tag v-else-if="ta.status == false" class="checkTag tagStyle"
-                       :style="{'background':'#fff', 'color':ta.levelColor}" @click="checkableChange(ta)"> {{ta.auditName }}</a-tag>
+                <a-tag
+                  v-if="ta.status == true"
+                  class="checkTag tagStyle"
+                  :style="{'background':ta.levelColor, 'color':'#fff'}"
+                  @click="checkableChange(ta)"
+                >{{ta.auditName }}</a-tag>
+                <a-tag
+                  v-else-if="ta.status == false"
+                  class="checkTag tagStyle"
+                  :style="{'background':'#fff', 'color':ta.levelColor}"
+                  @click="checkableChange(ta)"
+                >{{ta.auditName }}</a-tag>
               </span>
               <span style="float: right">
-               <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" style="" @click="handleChange"> 全部</a-tag>
-                <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange"> 全部</a-tag>
+                <a-tag
+                  class="checkTag tagStyle aTag1"
+                  v-if="checkedAll"
+                  style
+                  @click="handleChange"
+                >全部</a-tag>
+                <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
               </span>
-              <a-card class="margin-top-10 antCard" @click="clickTagsCard(op)" v-for="(op,index) in rightData "
-                      v-if="op.status" :style="{'borderColor':op.borderColor}" :key="index">
+              <a-card
+                class="margin-top-10 antCard"
+                @click="clickTagsCard(op)"
+                v-for="(op,index) in rightData "
+                v-if="op.status"
+                :style="{'borderColor':op.borderColor}"
+                :key="index"
+              >
                 <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
                 <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
                 <span class="marLeft10">
@@ -158,16 +178,19 @@
                   >{{tt.updateTitles}}</a-tag>
                 </a-tooltip>
                 <a-dropdown :trigger="['hover']">
-                <a-menu slot="overlay">
-                <a-menu-item v-for="(gd,index) in templateTags" @click="tagsClick(gd)" v-if="index>=7"
-                :key="index">
-                {{gd.updateTitles}}
-                </a-menu-item>
-                </a-menu>
-                <a v-if="templateTags.length>7" class="margin-left-5 saveButton">更多
-                <a-icon type="down"/>
-                </a>
-                <a v-else></a>
+                  <a-menu slot="overlay">
+                    <a-menu-item
+                      v-for="(gd,index) in templateTags"
+                      @click="tagsClick(gd)"
+                      v-if="index>=7"
+                      :key="index"
+                    >{{gd.updateTitles}}</a-menu-item>
+                  </a-menu>
+                  <a v-if="templateTags.length>7" class="margin-left-5 saveButton">
+                    更多
+                    <a-icon type="down"/>
+                  </a>
+                  <a v-else></a>
                 </a-dropdown>
                 <a-textarea :rows="4" v-model="templateText"></a-textarea>
               </div>
@@ -215,35 +238,37 @@
       width="600px"
     >
       <a-form :form="form">
-        <a-form-item label="分类"
-                     :label-col="{ span: 4 }"
-                     :wrapper-col="{ span: 17 }">
-          <a-select v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
-                    placeholder="请选择分类">
-            <a-select-option :value='op.tabooId' v-for="(op,index) in reviewTemplates" :key="index">
-              {{op.tabooTitle}}
-            </a-select-option>
+        <a-form-item label="分类" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+          <a-select
+            v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
+            placeholder="请选择分类"
+          >
+            <a-select-option
+              :value="op.tabooId"
+              v-for="(op,index) in reviewTemplates"
+              :key="index"
+            >{{op.tabooTitle}}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="类型"
-                     :label-col="{ span: 4 }"
-                     :wrapper-col="{ span: 17 }">
-          <a-select v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
-                    placeholder="请选择类型">
-            <a-select-option :value='op.id' v-for="(op,index) in this.enum.templateType" :key="index">
-              {{op.text}}
-            </a-select-option>
+        <a-form-item label="类型" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+          <a-select
+            v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
+            placeholder="请选择类型"
+          >
+            <a-select-option
+              :value="op.id"
+              v-for="(op,index) in this.enum.templateType"
+              :key="index"
+            >{{op.text}}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="标题"
-                     :label-col="{ span: 4 }"
-                     :wrapper-col="{ span: 17 }">
-         <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
+        <a-form-item label="标题" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+          <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
         </a-form-item>
-        <a-form-item label="内容"
-                     :label-col="{ span: 4 }"
-                     :wrapper-col="{ span: 17 }">
-          <a-textarea v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"></a-textarea>
+        <a-form-item label="内容" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+          <a-textarea
+            v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"
+          ></a-textarea>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -282,7 +307,7 @@ export default {
         selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail',
         selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
         selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
-        reviewTemplateUpdate:'sys/reviewTemplate/update',
+        reviewTemplateUpdate: 'sys/reviewTemplate/update'
       },
       loading: false,
       problemsData: [
@@ -370,10 +395,11 @@ export default {
       recordList: [],
       templateTags: [],
       problemType: '',
-       Modal: {
-          visible: false
-        },
-        form: this.$form.createForm(this),
+      Modal: {
+        visible: false
+      },
+      form: this.$form.createForm(this),
+      visidIdnum:'1'
     }
   },
   mounted() {
@@ -381,13 +407,12 @@ export default {
     this.getRecordDelData({ visid: '1' })
     this.getDetailData()
     this.getRecord()
-    // 预判情况数据
     this.getTemplate()
   },
   methods: {
     //右边预判情况基础数据
     getDetailData() {
-      let params = { visid: '2' }
+      let params = { visid: '3' }
       selectOutDetail(params)
         .then(res => {
           if (res.code == '200') {
@@ -395,7 +420,7 @@ export default {
             this.rightData = this.leftData.reviewOrderissueVOList
             this.tagsData = this.leftData.levelTotalsList
             this.dealTagsData(this.tagsData)
-             this.deal(this.rightData)
+            this.deal(this.rightData)
           } else {
             this.warn(res.msg)
           }
@@ -412,24 +437,24 @@ export default {
     },
     // 数据处理
     deal(data) {
-        for (let key in data) {
-          data[key].status = true
-          data[key].borderColor = '#d9d9d9'
-          let list = data[key].reviewTemplateList
-          for (let i in list) {
-            list[i].bgColor = '#d9d9d9'
-            if (list[i].titles.length > 5) {
-              list[i].updateTitles = list[i].titles.substr(0, 5) + '...'
-            } else {
-              list[i].updateTitles = list[i].titles
-            }
+      for (let key in data) {
+        data[key].status = true
+        data[key].borderColor = '#d9d9d9'
+        let list = data[key].reviewTemplateList
+        for (let i in list) {
+          list[i].bgColor = '#d9d9d9'
+          if (list[i].titles.length > 5) {
+            list[i].updateTitles = list[i].titles.substr(0, 5) + '...'
+          } else {
+            list[i].updateTitles = list[i].titles
           }
         }
-        data.push()
-      },
+      }
+      data.push()
+    },
     // 右边预判情况树形结构数据
     getTemplate() {
-      let params = { visId: '2' }
+      let params = { visId: '3' }
       this.$axios({
         url: this.api.selectWithReviewId,
         method: 'put',
@@ -488,91 +513,90 @@ export default {
         }
       }
     },
-     //button点击事件模板的存储；
-      saveTemplate() {
-        if ($.trim(this.templateText).length > 0){
-          setTimeout(()=>{
-            this.form.setFieldsValue({titles:this.templateTitle,reviewTemplate:this.templateText,templetType:'1'});
-          },100)
-          this.Modal.visible = true;
-        } else{
-          this.warn("请输入审核意见");
+    //button点击事件模板的存储；
+    saveTemplate() {
+      if ($.trim(this.templateText).length > 0) {
+        setTimeout(() => {
+          this.form.setFieldsValue({ titles: this.templateTitle, reviewTemplate: this.templateText, templetType: '1' })
+        }, 100)
+        this.Modal.visible = true
+      } else {
+        this.warn('请输入审核意见')
+      }
+    },
+    //  点击
+    tagsClick(pd) {
+      let list = this.templateTags
+      for (let i in list) {
+        if (list[i].id == pd.id) {
+          list[i].bgColor = '#2eabff'
+        } else {
+          list[i].bgColor = '#d9d9d9'
         }
-      },
-      //  点击
-       tagsClick(pd) {
-          let list = this.templateTags
-          for (let i in list) {
-            if (list[i].id == pd.id) {
-              list[i].bgColor = '#2eabff'
-            } else {
-              list[i].bgColor = '#d9d9d9'
-            }
-          }
-        this.templateText = pd.reviewTemplate;
-        this.templateTitle = pd.titles;
-        this.rightData.push()
-      },
-      //模板的提交
-      handleOk() {
-        this.form.validateFields((err, values) => {
-            if (!err) {
-              this.$axios({
-                url: this.api.reviewTemplateUpdate,
-                method: 'post',
-                data: values
-              }).then(res => {
-                if (res.code == '200') {
-                  this.success(res.msg);
-                  this.getTemplateDetail();
-                  this.Modal.visible = false
-                } else {
-                  this.warn(res.msg)
-                }
-              })
-                .catch(err => {
-                  this.error(err)
-                })
-            }
-          }
-        )
-      },
-      // 模板取消编辑
-       handleCancel() {
-        this.Modal.visible = false
-      },
-      // 筛选等级，匹配下面的数据；
-      checkableChange(data) {
-         console.log('xxxx')
-        for (let key in this.rightData) {
-          if (this.rightData[key].auditLevel == data.auditLevel) {
-            this.checkedAll = false
-            this.rightData[key].status = true
-          } else {
-            this.rightData[key].status = false
-          }
+      }
+      this.templateText = pd.reviewTemplate
+      this.templateTitle = pd.titles
+      this.rightData.push()
+    },
+    //模板的提交
+    handleOk() {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          this.$axios({
+            url: this.api.reviewTemplateUpdate,
+            method: 'post',
+            data: values
+          })
+            .then(res => {
+              if (res.code == '200') {
+                this.success(res.msg)
+                this.getTemplateDetail()
+                this.Modal.visible = false
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
         }
-        for (let key in this.tagsData) {
-          if (data.auditLevel == this.tagsData[key].auditLevel) {
-            this.tagsData[key].status = true
-          } else {
-            this.tagsData[key].status = false
-          }
+      })
+    },
+    // 模板取消编辑
+    handleCancel() {
+      this.Modal.visible = false
+    },
+    // 筛选等级，匹配下面的数据；
+    checkableChange(data) {
+     
+      for (let key in this.rightData) {
+        if (this.rightData[key].auditLevel == data.auditLevel) {
+          this.checkedAll = false
+          this.rightData[key].status = true
+        } else {
+          this.rightData[key].status = false
         }
-        this.rightData.push()
-      },
-      // 刷新筛选等级
-      handleChange(checked) {
-        console.log('cccc')
-        let data = this.rightData
-        for (let key in data) {
-          data[key].status = true
-        }
-        for (let key in this.tagsData) {
+      }
+      for (let key in this.tagsData) {
+        if (data.auditLevel == this.tagsData[key].auditLevel) {
           this.tagsData[key].status = true
+        } else {
+          this.tagsData[key].status = false
         }
-        this.checkedAll = true
-      },
+      }
+      this.rightData.push()
+    },
+    // 刷新筛选等级
+    handleChange(checked) {
+      let data = this.rightData
+      for (let key in data) {
+        data[key].status = true
+      }
+      for (let key in this.tagsData) {
+        this.tagsData[key].status = true
+      }
+      this.checkedAll = true
+    },
     // 右边干预记录
     getRecord() {
       let params = { visid: '1' }
@@ -650,7 +674,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.RecordDelData = res.data
-            // console.log(this.RecordDelData)
             this.loading = false
           } else {
             this.loading = false
@@ -668,17 +691,6 @@ export default {
         name: 'presHospitalizedIndex'
       })
     },
-    // tagsClick() {
-    //   if (status == 1) {
-    //     $('#' + index).css('color', '#1890ff')
-    //     this.problemsData[i].tags[num].status = 2
-    //     this.templateText = this.templateText + '、' + data
-    //   } else {
-    //     $('#' + index).css('color', 'rgba(0, 0, 0, 0.65)')
-    //     this.problemsData[i].tags[num].status = 1
-    //     this.templateText = this.templateText.replace('、' + data, '')
-    //   }
-    // },
 
     changeKey(key) {
       let params = { examId: this.num }
@@ -740,15 +752,12 @@ export default {
 </script>
 
 <style  lang="less">
-// .details {
-//   padding: 10px;
-//   display: flex;
-//   flex-direction: row;
-// }
-
-// .dealRowchild {
-//   margin-top: 8px;
-// }
+.ant-col-xxl-6 {
+    display: block;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 33%;
+}
 .titleText {
   font-size: 17px;
   font-weight: bold;
@@ -758,23 +767,16 @@ export default {
   margin-bottom: 30px;
   margin-top: 20px;
 }
-// .textArea {
-//   word-break: break-all;
-//   display: -webkit-box;
-//   -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
-//   -webkit-box-orient: vertical;
-//   overflow: hidden;
-//   height: 100%;
-//   margin-top: 5px;
-//   text-indent: 2em;
-// }
 
+.neike {
+  font-size: 20px;
+}
 .tagStyle {
   cursor: default;
   font-size: 12px;
   margin-left: 7px;
   margin-bottom: 5px;
-  margin-top: 5px;
+  margin-top: 7px;
 }
 .saveButton {
   margin-top: 10px;
@@ -805,41 +807,12 @@ export default {
   font-weight: bold;
 }
 
-// .dealRow {
-//   margin-top: 5px;
-//   margin-bottom: 20px;
-//   font-size: 14px;
-// }
-
-// .dealRow .dealCol {
-//   line-height: 25px;
-// }
-
-// .dealRow .sizeWeight {
-//   font-size: 16px;
-//   font-weight: bold;
-// }
-
 .timelineItem p {
   margin-bottom: 5px;
 }
 .timelineItem p:nth-child(n + 2) {
   opacity: 0.8;
 }
-
-// .contents {
-//   margin-left: 12px;
-//   width: 99%;
-// }
-// .borders {
-//   width: 0;
-//   border-right: 1px solid #ebeef5;
-// }
-// .jiantou {
-//   margin-bottom: 0em;
-//   font-weight: bold;
-//   font-size: 20px;
-// }
 .text-reprot {
   .el-table th {
     background-color: white !important;
@@ -910,8 +883,15 @@ export default {
 .timelineItem p {
   margin-bottom: 5px;
 }
-
 .timelineItem p:nth-child(n + 2) {
   opacity: 0.8;
+}
+.ages{
+  font-size: 15px;
+  padding-top: 5px;
+}
+
+  .datetime{
+    color:blue;
 }
 </style>

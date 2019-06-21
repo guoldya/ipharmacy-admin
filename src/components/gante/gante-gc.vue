@@ -9,7 +9,7 @@
           <div class="ganteview-headercell" :title="item.title" v-for="item in bottom_time_data" :style="{width:item.width+'px',left:item.left+'px'}">{{item.date}}</div>
         </div>
       </div>
-      <gante-gc-item :th_data="th_data" :style="{width:header_width+'px'}" v-if="show_item" class="ganteview-content-box" :gante_data="gante_data" >
+      <gante-gc-item :th_data="th_data" :style="{width:header_width+'px'}" v-if="show_item" class="ganteview-content-box" :gante_data="gante_data"  @adoptMessage="updateColor" >
         <div v-for="item in bottom_time_data" class="ganteview-column" :style="{width:item.width+'px',left:item.left+'px',background:item.is_rest?'#f5f7fa':null}"></div>
       </gante-gc-item>
     </div>
@@ -37,6 +37,11 @@
       end_time:{},
     },
     methods:{
+        // 接收子组件
+    updateColor(data){
+      //  console.log(data);
+         this.$emit('listFunc', data)
+      },
       ganteview_scroll(e){
 //        让左侧表格跟随滚动
         document.getElementsByClassName('gante-tbody')[0].style.top = -(e.target.scrollTop)+'px'

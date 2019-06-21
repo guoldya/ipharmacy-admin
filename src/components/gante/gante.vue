@@ -11,6 +11,7 @@
           @change="change"
           :th_data="th_data"
           :data="ganteData"
+          :lowData='lowDatas'
         ></gante-table>
       </div>
       <div class="gante-gc-box" :style="{left:Number(tabe_width) ? tabe_width+'px': tabe_width}">
@@ -20,6 +21,7 @@
           :end_time="end_time"
           :th_data="th_data"
           :gante_data="ganteData"
+          @listFunc='getSondata'
         ></gante-gc>
       </div>
       <gante-split :left="tabe_width"></gante-split>
@@ -60,6 +62,7 @@ export default {
       start_time: 0, //最小的开始时间
       end_time: 0, //最大的结束时间
       edit_data: {},
+      lowDatas:{},
       onEdit: () => {},
       onClick: () => {}
     }
@@ -75,6 +78,11 @@ export default {
     })
   },
   methods: {
+    // 监听子组件数据
+    getSondata(data){
+    console.log(data)
+   this.lowDatas=data
+    },
     //      放大
     to_big() {
       if (this.time_mode <= 4) {

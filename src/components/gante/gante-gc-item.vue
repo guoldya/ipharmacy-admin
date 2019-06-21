@@ -1,6 +1,6 @@
 <template>
   <div class="ganteview-content">
-    <div v-for="(item,index) in gante_data" :key="index" class="ganteview-ones">
+    <div v-for="(item,index) in gante_data" :key="index" class="ganteview-ones"  @click="onclick(item)">
       <div class="ganteview-content-one">
         <template v-if="item.items">
           <div
@@ -87,7 +87,7 @@ export default {
       if (target.dataset.itemstoast && data.items) {
         data = data.items[target.dataset.itemstoast]
       }
-      console.log(data.items, 'showToast')
+      // console.log(data.items, 'showToast')
       if (data.params) {
         let toast = document.createElement('div'),
           add_toast = true
@@ -116,6 +116,11 @@ export default {
       if (document.getElementsByClassName('gante-toast-liu')) {
         document.getElementsByClassName('gante-toast-liu')[0].style.display = 'none'
       }
+    },
+    // 点击具体服药细节
+    onclick(data) {
+      console.log(data)
+      this.$emit('adoptMessage', data)
     }
   }
 }
