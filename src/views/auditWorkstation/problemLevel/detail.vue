@@ -11,6 +11,14 @@
       @submit="handleSubmit"
     >
       <a-form-item
+        label="等级编号"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
+        <a-input :read-only="readOnly" v-decorator="['auditLevel',
+        {rules: [{ required: true, message: '请填写编号' },{pattern: /^([1-9][0-9]{0,1}|100)$/,message:'请输入数字'}]}]"/>
+      </a-form-item>
+      <a-form-item
         label="等级名称"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
@@ -71,8 +79,9 @@
     data() {
       return {
         api: {
-          selectOne: 'sys/reviewAuditlevel/selectOne'
-        },
+          selectOne: 'sys/reviewAuditlevel/selectOne',
+          levelInsert:'sys/reviewAuditlevel/insert',
+    },
         labelCol: {
           xs: { span: 8 },
           sm: { span: 8 }
@@ -96,32 +105,35 @@
     },
     computed: {},
     mounted() {
-      this.init();
+      this.init()
     },
     methods: {
-      init(){
-        if (this.$route.params.auditLevel == -1) {
-          this.isNew = true;
+      init() {
+        if (this.$route.params.auditLevel == 'new') {
+          this.isNew = true
         } else {
+          this.isNew = false
           this.$axios({
             url: this.api.selectOne,
             method: 'put',
             data: this.$route.params
           }).then(res => {
             if (res.code == '200') {
-              this.listData = res.data;
+              this.listData = res.data
+              console.log(this.listData);
               this.form.setFieldsValue({
-                  levelName: this.listData.levelName,
-                  handleType: this.listData.handleType,
-                  levelDescription: this.listData.levelDescription,
-                  status: this.listData.status
-              });
-              if (this.listData.levelType == 1){
-                this.readOnly = true;
-              }else {
-                this.readOnly = false;
+                auditLevel:res.data.auditLevel,
+                levelName: this.listData.levelName,
+                handleType: this.listData.handleType,
+                levelDescription: this.listData.levelDescription,
+                status: this.listData.status
+              })
+              if (this.listData.levelType == 1) {
+                this.readOnly = true
+              } else {
+                this.readOnly = false
               }
-              this.levelColor = this.listData.levelColor;
+              this.levelColor = this.listData.levelColor
             } else {
               this.warn(res.msg)
             }
@@ -141,23 +153,40 @@
       handleSubmit(e) {
         e.preventDefault()
         this.form.validateFields((err, values) => {
+          console.log(values,'values');
           if (!err) {
             values.levelColor = this.levelColor
-            values.auditLevel = this.$route.query.auditLevel
-            if (this.$route.query.msg == 'new') {
-              values.levelType = 0
+            values.levelType = this.$route.params.levelType;
+            values.auditLevel = Number(values.auditLevel);
+            if (this.isNew){
+              this.$axios({
+                url: this.api.levelInsert,
+                method: 'post',
+                data: values
+              }).then(res => {
+                if (res.code == '200') {
+                  this.success('保存成功');
+                  this.backTo()
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+                .catch(err => {
+                  this.error(err)
+                })
+            }else{
+              reviewAuditlevelUpdate(values).then(res => {
+                if (res.code == '200') {
+                  this.$message.info('保存成功!')
+                  this.backTo()
+                } else {
+                  this.$message.error('保存失败!')
+                  this.warn(res.msg)
+                }
+              }).catch(err => {
+                this.error(err)
+              })
             }
-            reviewAuditlevelUpdate(values).then(res => {
-              if (res.code == '200') {
-                this.$message.info('保存成功!')
-                this.backTo()
-              } else {
-                this.$message.error('保存失败!')
-                this.warn(res.msg)
-              }
-            }).catch(err => {
-              this.error(err)
-            })
           }
         })
       },
@@ -171,7 +200,6 @@
       },
       handlesColor(data) {
         if (data) {
-          console.log(data)
           this.listData.levelColor = data
         }
       }

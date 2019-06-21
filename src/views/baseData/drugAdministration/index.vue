@@ -128,7 +128,7 @@
         <a-select style="width: 500px" class="margin-left-5 margin-top-10"
                   showSearch
                   allowClear
-                  mode="multiple"
+                  mode="single"
                   optionLabelProp="title"
                   :defaultActiveFirstOption="false"
                   :showArrow="false"
