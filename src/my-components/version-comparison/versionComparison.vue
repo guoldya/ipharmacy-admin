@@ -133,6 +133,9 @@
     props: {
       visId: {
         type: String
+      },
+      maxSubmitNo:{
+        type: String
       }
     },
     data() {
