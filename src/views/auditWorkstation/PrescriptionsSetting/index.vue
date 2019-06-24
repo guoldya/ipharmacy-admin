@@ -121,6 +121,7 @@
         planId:'',
         selectPersons:[],
         pageInPlanData:[],
+        current:null,
         Modal:{
           visible:false,
         }
