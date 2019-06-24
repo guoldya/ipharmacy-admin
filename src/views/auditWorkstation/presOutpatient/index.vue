@@ -695,7 +695,7 @@
       looks(data) {
         this.$router.push({
           name: 'presOutpatientDetail',
-          query:{visId:data.visId},
+          query:{visId:data.visId,submitNo:data.maxSubmitNo},
         })
       },
       //TODO:处方单数据暂未处理

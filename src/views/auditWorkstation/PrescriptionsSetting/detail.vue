@@ -311,11 +311,14 @@
                 } else {
                   this.warn(res.msg)
                 }
+                 this.loading = false
               })
               .catch(err => {
+             this.loading = false
                 this.error(err)
               })
           } else {
+             this.loading = false
           }
         })
       },

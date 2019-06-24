@@ -212,6 +212,7 @@
         let params = {}
         params.prescNum = this.orderValue
         params.subNo = this.currentOrder
+        //TODO:传入处方序号
         this.$axios({
           url: this.api.tableDataPage,
           method: 'put',
