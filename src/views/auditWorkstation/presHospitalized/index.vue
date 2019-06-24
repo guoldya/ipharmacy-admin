@@ -251,7 +251,7 @@ export default {
         { name: '患者', dataField: 'patientName ', type: 'text' },
         {
           name: '科室',
-          dataField: 'keyword',
+          dataField: 'admitDept',
           type: 'tree-select',
           keyExpr: 'keyword',
           treeData: this.treeDatas

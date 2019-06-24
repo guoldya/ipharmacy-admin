@@ -1,7 +1,7 @@
 const Enum = {
     yesNo: [
-        {id: '0', text: '否'},
-        {id: '1', text: '是'}
+        { id: '0', text: '否' },
+        { id: '1', text: '是' }
     ],
     sex: [
         { id: '1', text: '男' },
@@ -17,24 +17,24 @@ const Enum = {
         { id: 1, text: '启用' }
     ],
 
-  clientClass:[
-    {id:'0',text:'等于'},
-    {id:'1',text:'存在'},
-    {id:'2',text:'包含'},
-    {id:'3',text:'大于'},
-    {id:'4',text:'大于等于'},
-    {id:'5',text:'小于'},
-    {id:'6',text:'小于等于'},
-    {id:'7',text:'区间'},
-  ],
-  clientLevel:[
-    {id:'1',text:'文本'},
-    {id:'2',text:'枚举'},
-    {id:'3',text:'日期'},
-    {id:'4',text:'范围'},
-    {id:'5',text:'存在'},
-    {id:'6',text:'日期范围'},
-  ],
+    clientClass: [
+        { id: '0', text: '等于' },
+        { id: '1', text: '存在' },
+        { id: '2', text: '包含' },
+        { id: '3', text: '大于' },
+        { id: '4', text: '大于等于' },
+        { id: '5', text: '小于' },
+        { id: '6', text: '小于等于' },
+        { id: '7', text: '区间' },
+    ],
+    clientLevel: [
+        { id: '1', text: '文本' },
+        { id: '2', text: '枚举' },
+        { id: '3', text: '日期' },
+        { id: '4', text: '范围' },
+        { id: '5', text: '存在' },
+        { id: '6', text: '日期范围' },
+    ],
 
     patientStatus: [
         { text: '待审核', value: '0' },
@@ -68,7 +68,7 @@ const Enum = {
         { text: '记录', id: 1 },
         { text: '提示', id: 2 },
         { text: '医师确认', id: 3 },
-        { text: '双签确认', id: 4},
+        { text: '双签确认', id: 4 },
         { text: '药师确认', id: 5 },
         { text: '驳回', id: 9 }
     ],
@@ -104,101 +104,110 @@ const Enum = {
         { text: '通用', id: '0' },
         { text: '个人', id: '1' }
     ],
-    drugGrade:[
+    drugGrade: [
         { TITLE: '非限制使用级', ID: '1' },
         { TITLE: '限制使用级', ID: '2' },
         { TITLE: '特殊使用级', ID: '3' },
     ],
-    purposeDrug:[
+    purposeDrug: [
         { TITLE: '预防', ID: '1' },
         { TITLE: '治疗', ID: '2' },
         { TITLE: '预防和治疗', ID: '3' },
     ],
-    drugType:[
+    drugType: [
         { TITLE: '西药', ID: '1' },
         { TITLE: '中成药', ID: '2' },
         { TITLE: '中药', ID: '3' },
     ],
-    patientType:[
+    patientType: [
         { TITLE: '门诊', ID: '1' },
         { TITLE: '急诊', ID: '2' },
         { TITLE: '住院', ID: '3' },
         { TITLE: '体检', ID: '4' },
         { TITLE: '转院', ID: '5' },
     ],
-    ageType:[
+    ageType: [
         { text: '天', id: '1' },
         { text: '月', id: '2' },
         { text: '岁', id: '3' },
     ],
-    classType:[
+    classType: [
         { text: '系统分类', id: 1 },
         { text: '自定义', id: 2 },
     ],
-    paramClass:[
-        { id:'0', text:'系统参数'},
-        { id:'1', text:'库房参数'},
-        { id:'2', text:'发药参数'},
-        { id:'3', text:'价格参数'},
-        { id:'9', text:'其他'},
+    paramClass: [
+        { id: '0', text: '系统参数' },
+        { id: '1', text: '库房参数' },
+        { id: '2', text: '发药参数' },
+        { id: '3', text: '价格参数' },
+        { id: '9', text: '其他' },
     ],
-    paramDataType:[
-        { id:'1', text:'TEXT文本'},
-        { id:'2', text:'NUM数值'},
-        { id:'3', text:'INT整型'},
-        { id:'4', text:'Date日期'},
-        { id:'5', text:'DateTime日期时间'},
-        { id:'6', text:'ComboBox选项'},
-        { id:'7', text:'Boolean布尔值'},
+    paramDataType: [
+        { id: '1', text: 'TEXT文本' },
+        { id: '2', text: 'NUM数值' },
+        { id: '3', text: 'INT整型' },
+        { id: '4', text: 'Date日期' },
+        { id: '5', text: 'DateTime日期时间' },
+        { id: '6', text: 'ComboBox选项' },
+        { id: '7', text: 'Boolean布尔值' },
     ],
-    icdType:[
+    icdType: [
         { text: 'icd10', id: '1' },
         { text: 'icd9', id: '0' },
         { text: 'icd11', id: '2' },
     ],
-    testItemType:[
+    testItemType: [
         { text: '普通项目', id: '1' },
         { text: '计算项目', id: '3' },
         { text: '酶标项目', id: '4' },
     ],
-    resultType:[
+    resultType: [
         { text: '定量', id: '1' },
         { text: '定性', id: '2' },
         { text: '半定量', id: '3' },
     ],
-    isCalc:[
+    isCalc: [
         { text: '否', id: '0' },
         { text: '是', id: '1' },
-       
+
     ],
-    isPrivacy:[ { text: '否', id: '0' },
+    isPrivacy: [{ text: '否', id: '0' },
     { text: '是', id: '1' },],
     // 
-    resultStatus:[
+    resultStatus: [
         { text: '阴性', id: '1' },
         { text: '样行', id: '2' },
     ],
-    surgerystatus:[
-        { id:'1', text:'待手术'},
-        { id:'2', text:'手术中'},
-        { id:'3', text:'待复苏'},
-        { id:'4', text:'复苏中'},
-        { id:'5', text:'已手术'},
-        { id:'6', text:'已拒绝'},
-        { id:'7', text:'已执行'},
+    surgerystatus: [
+        { id: '1', text: '待手术' },
+        { id: '2', text: '手术中' },
+        { id: '3', text: '待复苏' },
+        { id: '4', text: '复苏中' },
+        { id: '5', text: '已手术' },
+        { id: '6', text: '已拒绝' },
+        { id: '7', text: '已执行' },
     ],
-    surgerysKinds:[
-        { id:'1', text:'有菌手术'},
-        { id:'2', text:'无菌手术'},
-        { id:'3', text:'凝菌手术'},
+    surgerysKinds: [
+        { id: '1', text: '有菌手术' },
+        { id: '2', text: '无菌手术' },
+        { id: '3', text: '凝菌手术' },
     ],
-    infection:[
-        { id:'1', text:'是'},
-        { id:'0', text:'否'},
+    infection: [
+        { id: '1', text: '是' },
+        { id: '0', text: '否' },
     ],
-    isEnergery:[
-        { id:'1', text:'是'},
-        { id:'0', text:'否'},
+    isEnergery: [
+        { id: '1', text: '是' },
+        { id: '0', text: '否' },
     ],
+    problemLeve: [
+        { id: '1', text: '一级' },
+        { id: '2', text: '二级' },
+        { id: '3', text: '三级' },
+        { id: '4', text: '四级' },
+        { id: '5', text: '五级' },
+        { id: '6', text: '六级' },
+        { id: '7', text: '七级' },
+       ]
 }
 export default Enum

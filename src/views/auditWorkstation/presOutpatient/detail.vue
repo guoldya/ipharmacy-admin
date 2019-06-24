@@ -9,10 +9,19 @@
             &nbsp;&nbsp; {{leftData.patientSex |
             control_type}}&nbsp;&nbsp;{{leftData.agevalue}}岁
           </a-col>
-          <a-col class="titleText" :md="12" :lg="12" :xxl="16">
-            <a-tag class="tagStyle">妊娠</a-tag>
-            <a-tag :color="'#40a9ff'" class="tagStyle">哺乳</a-tag>
-            <a-tag class="tagStyle">肝肾功能</a-tag>
+          <a-col class="titleText" :md="12" :lg="12" :xxl="14">
+            <a-tag
+              class="tagStyle"
+              :color="'#40a9ff'"
+              v-for=" (op,index) in this.phyStatelist"
+            >{{op}}</a-tag>
+            <!-- <a-tag :color="'#40a9ff'" class="tagStyle">哺乳</a-tag>
+            <a-tag class="tagStyle">肝肾功能</a-tag>-->
+          </a-col>
+          <a-col v-if="carePatient===true" :md="3" :lg="2" :xxl="3">
+            <div class="guanzhu" :loading="loading">
+              <a-icon theme="filled" type="star" class="xingxing"/>已关注
+            </div>
           </a-col>
         </a-row>
         <a-divider type="horizontal" class="detailDivider"/>
@@ -26,14 +35,6 @@
           <detail-list-item term="体表面积">
             <span class="opacity8">{{leftData.bSA}}㎡</span>
           </detail-list-item>
-          <detail-list-item term="过敏史">
-            <a-tooltip>
-              <template slot="title">
-                <span>{{leftData.irritabilityNames}}</span>
-              </template>
-              <div class="hiddenOpacity opacity8">{{leftData.irritabilityNames}}</div>
-            </a-tooltip>
-          </detail-list-item>
           <detail-list-item term="处方医生">
             <span class="opacity8">
               <a href>
@@ -43,8 +44,18 @@
               </a>
             </span>
           </detail-list-item>
-          <detail-list-item term="临床诊断">
+        </detail-list>
+        <detail-list>
+          <detail-list-item term="临床诊断" :col="2">
             <span class="opacity8">{{leftData.diseaseName}}</span>
+          </detail-list-item>
+          <detail-list-item term="过敏史" :col="2">
+            <a-tooltip>
+              <template slot="title">
+                <span>{{leftData.irritabilityNames}}</span>
+              </template>
+              <div class="hiddenOpacity opacity8">{{leftData.irritabilityNames}}</div>
+            </a-tooltip>
           </detail-list-item>
         </detail-list>
       </a-card>
@@ -57,11 +68,11 @@
                 <div v-if="op.auditingStatus == '2'" class="iconRefused"></div>
                 <!--<img src="" alt="">-->
                 <a-row>
-                  <a-col :span="7">
+                  <a-col :span="6">
                     处方号：
                     <span class="font-bold">{{op.prescNum}}</span>
                   </a-col>
-                  <a-col :span="7">
+                  <a-col :span="6">
                     科室：
                     <span class="font-bold">{{op.deptName}}</span>
                   </a-col>
@@ -69,23 +80,23 @@
                     医生：
                     <span class="font-bold">{{op.prescDocName}}</span>
                   </a-col>
-                  <a-col :span="6">
+                  <a-col :span="8">
                     时间：
-                    <span class="font-bold">{{op.prescDate}}</span>
+                    <span class="font-bold">{{dealtime(op.prescDate)}}</span>
                   </a-col>
                 </a-row>
                 <a-row v-if="op.auditingStatus != 0">
-                  <a-col :span="7">
+                  <a-col :span="6">
                     审核状态：
                     <span class="font-bold">{{op.auditingStatus==1? '通过':'未通过'}}</span>
                   </a-col>
-                  <a-col :span="7">
+                  <a-col :span="6">
                     审核人：
                     <span class="font-bold">{{op.reviewDocName}}</span>
                   </a-col>
-                  <a-col :span="6">
+                  <a-col :span="9">
                     审核时间：
-                    <span class="font-bold">{{op.reviewTime}}</span>
+                    <span class="font-bold">{{dealtime(op.reviewTime)}}</span>
                   </a-col>
                 </a-row>
                 <a-row class="dealRow">
@@ -155,11 +166,11 @@
                 >全部</a-tag>
                 <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
               </span>
+
               <a-card
                 class="margin-top-10 antCard"
                 @click="clickTagsCard(op)"
                 v-for="(op,index) in rightData "
-                v-if="op.status"
                 :style="{'borderColor':op.borderColor}"
                 :key="index"
               >
@@ -177,9 +188,12 @@
                   <a-tag>建议</a-tag>
                   {{op.audSuggest}}
                 </div>
+                <!-- <div v-if="op.status=="1"" class="subscript">已审核</div> -->
+                <div class="subscript" v-if="Number(op.status)===1">已审核</div>
               </a-card>
-              <div class="margin-top-10">
-                <p class="dealP margin-top-10" style="float: left">审核意见：</p>
+
+              <div class="margin-top-10" v-if="this.auditStatus===false">
+                <p class="dealP margin-top-10" style="float: left">审核意见:</p>
                 <a-button
                   type="primary"
                   class="saveButton"
@@ -308,16 +322,14 @@
       @cancel="versionCancel"
       width="900px"
     >
-      <versionComp :visId="visId"></versionComp>
+      <versionComp :propData="propData"></versionComp>
     </a-modal>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
     >
-      <!--<a-button @click="submit" :loading="loading">上一个</a-button>-->
-      <!--<a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>-->
       <template slot="back">
         <a-button v-if="carePatient" @click="attention" class="margin-left-5" :loading="loading">
-          <a-icon type="star" theme="filled"/>关注患者
+          <a-icon type="star" theme="filled"/>取消关注
         </a-button>
         <a-button v-else @click="attention" class="margin-left-5" :loading="loading">
           <a-icon type="star"/>关注患者
@@ -331,10 +343,16 @@
           <i type="star" class="iconfont action action-tubiaozhizuomoban-"/>
           <span class="margin-left-5">版本对比</span>
         </a-button>
+        <a-button  @click="slePatients" class="margin-left-5" :loading="loading">
+          上一位
+        </a-button>
+        <a-button  @click="slePatients" class="margin-left-5" :loading="loading">
+          下一位
+        </a-button>
       </template>
       <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
-      <a-button @click="refuse" style="margin-left: 5px" :loading="loading">驳回</a-button>
-      <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
+      <a-button @click="refuse" style="margin-left: 5px" :loading="loading" v-if="this.auditStatus===false">驳回</a-button>
+      <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading" v-if="this.auditStatus===false">通过</a-button>
     </footer-tool-bar>
   </div>
 </template>
@@ -379,7 +397,10 @@ export default {
         selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
         reviewTemplateUpdate: 'sys/reviewTemplate/update',
         concernedRecord: 'sys/concernedPatient/selectCurrentRecord',
-        concernedPatientUpdate: 'sys/concernedPatient/update'
+        concernedPatientUpdate: 'sys/concernedPatient/update',
+        turnAudit: 'sys/reviewOrderissue/selectLeadVisIdAndLagVisId',
+        //reviewOrderissue/selectLeadVisIdAndLagVisId
+
       },
       Modal: {
         visible: false
@@ -414,11 +435,13 @@ export default {
       checkedAll: true,
       prescOrderId: '',
       levelColor: '',
-      visId: null
+      visId: null,
+      propData: { visId: null, submitNo: null },
+      phyStatelist: [],
+      auditStatus: true
     }
   },
   mounted() {
-    console.log(11)
     this.getDetailData()
     this.getTemplate()
     this.getRecord()
@@ -427,6 +450,8 @@ export default {
   methods: {
     getDetailData() {
       this.visId = this.$route.query.visId
+      this.propData.visId = this.$route.query.visId
+      this.propData.submitNo = this.$route.query.submitNo
       let params = this.$route.query
       //submitNo
       selectOutDetail(params)
@@ -435,8 +460,14 @@ export default {
             this.leftData = res.data
             this.rightData = this.leftData.reviewOrderissueVOList
             this.tagsData = this.leftData.levelTotalsList
-            this.dealTagsData(this.tagsData)
-            this.deal(this.rightData)
+            if (res.data.physiologicalState) {
+              this.phyStatelist = res.data.physiologicalState.split(',')
+            }
+            this.leftData.clinicPrescVOList.forEach((item, index) => {
+              if (item.auditingStatus!=='1') {
+                 this.auditStatus = false           
+              }
+            })
           } else {
             this.warn(res.msg)
           }
@@ -445,11 +476,11 @@ export default {
           this.error(err)
         })
     },
-    dealTagsData(data) {
-      for (let key in data) {
-        data[key].status = true
-      }
-    },
+    // dealTagsData(data) {
+    //   for (let key in data) {
+    //     data[key].status = true
+    //   }
+    // },
     deal(data) {
       if (data) {
         for (let key in data) {
@@ -599,7 +630,7 @@ export default {
     },
     clickTagsCard(data) {
       for (let key in this.rightData) {
-        if (this.rightData[key].prescOrderId == data.prescOrderId) {
+        if (this.rightData[key].problemId == data.problemId) {
           this.rightData[key].borderColor = '#1890ff'
         } else {
           this.rightData[key].borderColor = '#d9d9d9'
@@ -780,6 +811,32 @@ export default {
         .catch(err => {
           this.error(err)
         })
+    },
+    // 时间格式处理
+    dealtime(time) {
+      if (time) {
+        return time.slice(0, time.lastIndexOf(':'))
+      }
+    },
+    // 更换患者
+    slePatients(){
+      let params={}
+      params.visId=this.$route.query.visId
+     this.$axios({
+        url: this.api.turnAudit,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            console.log('ddd')
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
     }
   },
   filters: {
@@ -796,7 +853,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang='less'>
 .detailPres .ant-card-body {
   padding: 14px 32px;
 }
@@ -818,7 +875,7 @@ export default {
 }
 
 .hiddenOpacity {
-  max-width: 160px;
+  max-width: 460px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -942,5 +999,43 @@ export default {
 
 .antCard {
   cursor: pointer;
+}
+.guanzhu {
+  background-color: #0c60ee;
+  height: 26px;
+  width: 80px;
+  display: block;
+  border-radius: 5px;
+  color: white;
+  line-height: 26px;
+  text-align: center;
+  font-weight: bold;
+  i {
+    font-size: 20px;
+    margin-right: 5px;
+  }
+}
+.dealRight {
+  .ant-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .subscript {
+    color: white;
+    height: 30px;
+    width: 100px;
+    position: absolute;
+    right: -25px;
+    top: 9px;
+    text-align: center;
+    line-height: 30px;
+    /* font-family: ""; */
+    background-color: #8a8a8a;
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
 }
 </style>
