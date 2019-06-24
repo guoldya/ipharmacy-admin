@@ -1,7 +1,14 @@
 <template>
   <div class="ganteview-content">
-    <div v-for="(item,index) in gante_data" :key="index" class="ganteview-ones"  @click="onclick(item)">
+    <!-- ganteview-ones是一个完整的div里面有可能有子集有可能没有 -->
+    <div
+      v-for="(item,index) in gante_data"
+      :key="index"
+      class="ganteview-ones"
+      @click="onclick(item)"
+    >
       <div class="ganteview-content-one">
+        <!-- |ones cont-one =>(无层级关系子集,直接两个div,)|ones一级 cont-one(一个没内容的子集)2 content(ones, 这下是无层级的的div)2 -->
         <template v-if="item.items">
           <div
             v-for="(temp,tempindex) in item.items"
@@ -27,6 +34,7 @@
           :data-toast="index"
           :style="{width:item.width?item.width+'px':0,left:item.left?item.left+'px':0,background:item.bg_color?item.bg_color:'#00b0ff'}"
           class="ganteview-item"
+           @click="onclicks(item.children)"
         >
           <a-tag v-if="item.params.orderClass==1" color="orange">临时</a-tag>
           <a-tag v-else color="blue">长期</a-tag>
@@ -39,6 +47,7 @@
           :data-toast="index"
           :style="{width:item.width?item.width+'px':0,left:item.left?item.left+'px':0,background:item.bg_color?item.bg_color:'#00b0ff'}"
           class="ganteview-item has-child"
+           @click="onclicks(item.children)"
         >
           <span
             :style="{borderLeftColor:item.bg_color?item.bg_color:'#00b0ff'}"
@@ -121,6 +130,10 @@ export default {
     onclick(data) {
       console.log(data)
       this.$emit('adoptMessage', data)
+    },
+    // 点击具体小模块
+    onclicks(data) {
+      console.log(data)
     }
   }
 }

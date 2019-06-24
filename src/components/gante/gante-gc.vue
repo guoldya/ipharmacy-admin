@@ -39,8 +39,8 @@
     methods:{
         // 接收子组件
     updateColor(data){
-      //  console.log(data);
          this.$emit('listFunc', data)
+         console.log(data,'xxxx');
       },
       ganteview_scroll(e){
 //        让左侧表格跟随滚动

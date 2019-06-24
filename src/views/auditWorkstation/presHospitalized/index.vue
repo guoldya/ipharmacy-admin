@@ -7,13 +7,7 @@
           <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
         </div>
       </Searchpanel>
-      <!-- <a-tree
-        @expand="onExpand"
-        :expandedKeys="expandedKeys"
-        :autoExpandParent="autoExpandParent"
-        :treeData="treeDatas"
-      ></a-tree> -->
-      <a-row>
+      <a-row class="dealDetail">
         <a-col :span="10">
           <a-button
             class="margin-top-10 margin-left-5"
@@ -23,7 +17,7 @@
           <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
           <a-button class="margin-left-5" @click="rejected" :disabled="disable">批量驳回</a-button>
         </a-col>
-        <a-col :span="14" class="countCol">
+        <a-col :span="14" class=".">
           <countText :countList="countText"></countText>
         </a-col>
       </a-row>
@@ -112,6 +106,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <a-pagination
+          showSizeChanger
+          showQuickJumper
+          :total="total"
+          class="pnstyle"
+          v-model="current"
+          :defaultPageSize="10"
+          @showSizeChange="clientSizeChange"
+          @change="customerPageChange"
+          size="small"
+        ></a-pagination>
       </a-spin>
       <a-modal
         title="驳回理由"
@@ -410,10 +415,35 @@ export default {
     },
     //批量通过
     pass() {
+      let params = {}
+      let reviewIds = []
       if ($.trim(this.selections).length <= 0) {
         this.warn('请选择处方')
         return
       } else {
+        for (let key in this.selections) {
+          reviewIds[key] = this.selections[key].reviewId
+        }
+        params.auditType = '1'
+        params.passType = '1'
+        params.reviewOpinion = '批量通过'
+        params.reviewVerdict = '1'
+        params.reviewIds = reviewIds
+        this.$axios({
+          url: this.api.updateReviewStatus,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success(res.msg)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       }
     },
     //批量驳回
@@ -453,186 +483,14 @@ export default {
 
     //查看
     looks(data) {
+      console.log(data)
       this.$router.push({
-        name: 'presHospitalizedDetail'
-        // params:data,
+        name: 'presHospitalizedDetail',
+       query:{visId:data.visId},
       })
     },
     //处方单网格样式
-    //TODO:处方单显示数据颜色暂未控制
-    cellStyle(row) {
-      if (row.rowIndex == 0 && row.columnIndex == 2) {
-        return 'color: red; opacity: 0.6;'
-      } else if (row.rowIndex == 0 && row.columnIndex == 4) {
-        return 'color: red; opacity: 0.6;'
-      } else if (row.rowIndex == 4 && row.columnIndex == 2) {
-        return 'color: red; opacity: 0.6;'
-      } else if (row.rowIndex == 4 && row.columnIndex == 5) {
-        return 'color: red; opacity: 0.6;'
-      }
-    },
-    //TODO:处方单数据暂未处理
-    mouseHover(data) {
-      let tabsOne = {}
-      let tabsTwo = {}
-      let columns2 = [
-        { title: '序号', prop: 'num', width: 50, align: 'right' },
-        { title: '', prop: 'mark', width: 20, align: 'left' },
-        { title: '名称', prop: 'name' },
-        { title: '规格', prop: 'spec', width: 130 },
-        { title: '总量', prop: 'total', width: 60 },
-        { title: '单量', prop: 'single', width: 60 },
-        { title: '频次', prop: 'freq', width: 80, align: 'center' },
-        { title: '服药方式', prop: 'way', width: 80, align: 'center' }
-      ]
-      if (data.patientName == '张力') {
-        let adviceData = [
-          {
-            num: 1,
-            mark: '┎',
-            name: '5%葡萄糖氯化钠注射液',
-            spec: '500ml/袋',
-            total: '1袋',
-            single: '500ml',
-            freq: '每天一次',
-            way: '静滴'
-          },
-          {
-            num: 2,
-            mark: '┃',
-            name: '西咪替丁注射液',
-            spec: '2ml:0.2g',
-            total: '2支',
-            single: '0.4g',
-            freq: '每天一次',
-            way: '静滴'
-          },
-          {
-            num: 3,
-            mark: '┖',
-            name: '银参通络胶囊',
-            spec: '0.46g*24粒/盒 ',
-            total: '20粒',
-            single: '0.46g',
-            freq: '每天三次',
-            way: '口服'
-          },
-          {
-            num: 4,
-            name: '益肾灵胶囊',
-            spec: '0.1GM*100粒/瓶',
-            total: '72粒',
-            single: '0.33g',
-            freq: '每天三次',
-            way: '口服'
-          },
-          {
-            num: 5,
-            name: '银杏叶丸',
-            spec: '0.2g*12颗/瓶 ',
-            total: '40颗',
-            single: '0.33g',
-            freq: '每天三次',
-            way: '口服'
-          }
-        ]
-        tabsOne.tabName = '处方单1'
-        tabsOne.diagnose = '胃炎'
-        tabsOne.costType = '自费'
-        tabsOne.listData = adviceData
-        tabsOne.columns = columns2
 
-        tabsTwo.tabName = '处方单2'
-        tabsTwo.diagnose = '胃炎'
-        tabsTwo.costType = '自费'
-        tabsTwo.listData = adviceData
-        tabsTwo.columns = columns2
-      } else {
-        let adviceData = [
-          {
-            num: 1,
-            name: '银参通络胶囊',
-            spec: '0.46g*24粒/盒 ',
-            total: '20粒',
-            single: '0.46g',
-            freq: '每天三次',
-            way: '口服'
-          },
-          {
-            num: 2,
-            name: '益肾灵胶囊',
-            spec: '0.1GM*100粒/瓶',
-            total: '72粒',
-            single: '0.33g',
-            freq: '每天三次',
-            way: '口服'
-          },
-          {
-            num: 3,
-            name: '银杏叶丸',
-            spec: '0.2g*12颗/瓶 ',
-            total: '40颗',
-            single: '0.33g',
-            freq: '每天三次',
-            way: '口服'
-          },
-          {
-            num: 4,
-            name: '云南白药胶囊',
-            spec: '0.18g*24片/盒 ',
-            total: '24片',
-            single: '0.18g',
-            freq: '每天三次',
-            way: '口服'
-          },
-          {
-            num: 5,
-            name: '异烟肼片',
-            spec: '0.1GM*100粒/瓶',
-            total: '7粒',
-            single: '0.33g',
-            freq: '每天三次',
-            way: '口服'
-          }
-        ]
-        tabsOne.tabName = '处方单1'
-        tabsOne.diagnose = '胃炎'
-        tabsOne.costType = '自费'
-        tabsOne.listData = adviceData
-        tabsOne.columns = columns2
-
-        tabsTwo.tabName = '处方单2'
-        tabsTwo.diagnose = '胃炎'
-        tabsTwo.costType = '自费'
-        tabsTwo.listData = adviceData
-        tabsTwo.columns = columns2
-      }
-      this.dealTabsData(tabsOne, tabsTwo)
-    },
-
-    dealTabsData(dataOne, dataTwo) {
-      this.tabsData.tabsOne = {
-        tabName: dataOne.tabName,
-        diagnose: dataOne.diagnose,
-        costType: dataOne.costType,
-        adviceData: dataOne.listData,
-        columns: dataOne.columns
-      }
-      this.tabsData.tabsTwo = {
-        tabName: dataTwo.tabName,
-        diagnose: dataTwo.diagnose,
-        costType: dataTwo.costType,
-        adviceData: dataTwo.listData,
-        columns: dataTwo.columns
-      }
-    },
-    changeBox(data) {
-      if (data.target.checked) {
-        this.dis = true
-      } else {
-        this.dis = false
-      }
-    },
     dealsex(sex) {
       if (sex == 1) {
         return '男'
@@ -650,29 +508,33 @@ export default {
       }
     },
     // 递归处理数据
-   getDataChildren(bdata, pid) {
-        var items = []
-        for (var key in bdata) {
-          var item = bdata[key]
-          if (pid == item.parentId) {
-             items.push({
+    getDataChildren(bdata, pid) {
+      var items = []
+      for (var key in bdata) {
+        var item = bdata[key]
+        if (pid == item.parentId) {
+          items.push({
             title: item.title,
             value: item.deptId,
             key: item.deptId,
             children: this.getDataChildren(bdata, item.deptId)
           })
-          }
         }
-        return items
-      },
+      }
+      return items
+    }
   }
 }
 </script>
-<style>
+<style lang='less'>
 .divInfo span {
   margin-left: 10px;
 }
-
+.dealDetail {
+  .ant-row {
+    padding-top: 12px;
+  }
+}
 /*自定义图标样式*/
 .myIcon {
   font-size: 22px;

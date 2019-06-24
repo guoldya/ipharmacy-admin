@@ -403,7 +403,6 @@ export default {
     }
   },
   mounted() {
-    this.gettestData({ visid: '1' })
     this.getRecordDelData({ visid: '1' })
     this.getDetailData()
     this.getRecord()
@@ -568,7 +567,6 @@ export default {
     },
     // 筛选等级，匹配下面的数据；
     checkableChange(data) {
-     
       for (let key in this.rightData) {
         if (this.rightData[key].auditLevel == data.auditLevel) {
           this.checkedAll = false
@@ -640,30 +638,7 @@ export default {
           this.loading = false
         })
     },
-    // 获取检验数据
-    gettestData(params = {}) {
-      this.loading = true
-      this.$axios({
-        url: this.api.selectTestVisId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.testDatas = res.rows
-            this.testid = res.rows[0].testId
-            this.loading = false
-          } else {
-            this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-          this.loading = false
-        })
-    },
-    // 获取住院信息
+    // 获取患者个人信息
     getRecordDelData(params = {}) {
       this.loading = true
       this.$axios({
@@ -712,22 +687,6 @@ export default {
             this.error(err)
           })
       } else if (key == 3) {
-        this.$axios({
-          url: this.api.selectTestVisIdDel,
-          method: 'put',
-          data: param
-        })
-          .then(res => {
-            if (res.code == '200') {
-              this.testsDeldata = res.data.clinicTestreportList
-              this.testsDeltopdata = res.data
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
       }
     },
 
