@@ -81,11 +81,11 @@ const Enum = {
         { text: '门诊', id: '2' }
     ],
     refreshRate: [
-        { text: '5秒', id: 5000 },
         { text: '10秒', id: 10000 },
         { text: '20秒', id: 20000 },
         { text: '30秒', id: 30000 },
-        { text: '60秒', id: 60000 }
+        { text: '60秒', id: 60000 },
+        { text: '手动刷新', id: 0 },
     ],
     ruleClassification: [
         { text: '药品', id: 1 },

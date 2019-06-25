@@ -1,7 +1,6 @@
 <template>
   <div>
     <a-card>
-      <!--<countText :countList="countText"></countText>-->
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
           <a-button type="primary" @click="search">查询</a-button>
@@ -20,6 +19,8 @@
             class="margin-left-5"
             placeholder="刷新频率"
             @change="rateChange"
+            :disabled="disable"
+            defaultValue="10秒"
           >
             <a-select-option
               :value="op.id"
@@ -33,7 +34,6 @@
         </a-col>
       </a-row>
 
-      <alert :checkNum="checkSelect" :clearSelect="clearSelect"></alert>
       <a-spin tip="加载中..." :spinning="loading">
         <el-table
           ref="multipleTable"
@@ -48,24 +48,6 @@
           <!--多选框checkbox-->
           <el-table-column type="selection" width="55" align="center" :show-overflow-tooltip="true"></el-table-column>
           <!--状态列-->
-          <!-- <el-table-column
-            prop="status"
-            label="状态"
-            align="center"
-            width="80"
-            :filters="this.enum.patientStatus"
-            :filter-method="filterStatus"
-            filter-placement="bottom"
-            :show-overflow-tooltip="true"
-          >
-            <template slot-scope="props">
-              <a-badge v-if="props.row.status == 0" status="default" text="待审核"/>
-              <a-badge v-else-if="props.row.status == 1" status="warning" text="已修改"/>
-              <a-badge v-else-if="props.row.status == 2" status="error" text="坚持使用"/>
-              <a-badge v-else-if="props.row.status == 3" status="success" text="已通过"/>
-              <a-badge v-else-if="props.row.status == 4" status="warning" text="已驳回"/>
-            </template>
-          </el-table-column>-->
           <!--处方、处方数、患者列-->
           <el-table-column
             :prop="item.prop"
@@ -90,7 +72,7 @@
                 </a-tooltip>
               </span>
               <span v-else-if="item.prop == 'orderNo'">
-                <a-popover @mouseenter="mouseHover(props.row)" trigger="hover">
+                <a-popover placement="topLeft" @mouseenter="mouseHover(props.row)" trigger="click">
                   <template slot="content">
                     <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
                   </template>
@@ -112,9 +94,6 @@
           <el-table-column
             prop="problem"
             label="问题"
-            :filters="this.enum.patientProblem"
-            :filter-method="filterTag"
-            filter-placement="bottom"
             min-width="500"
           >
             <template slot-scope="props">
@@ -183,6 +162,48 @@
         <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
 
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
+            <span class="dealP margin-top-10">问题描述</span>
+            <!--<span v-for="ta in tagsData " style="float: right">-->
+                <!--<a-tag-->
+                  <!--v-if="ta.status == true"-->
+                  <!--class="checkTag tagStyle"-->
+                  <!--:style="{'background':ta.levelColor, 'color':'#fff'}"-->
+                  <!--@click="checkableChange(ta)"-->
+                <!--&gt;{{ta.auditName }}</a-tag>-->
+                <!--<a-tag-->
+                  <!--v-else-if="ta.status == false"-->
+                  <!--class="checkTag tagStyle"-->
+                  <!--:style="{'background':'#fff', 'color':ta.levelColor}"-->
+                  <!--@click="checkableChange(ta)"-->
+                <!--&gt;{{ta.auditName }}</a-tag>-->
+              <!--</span>-->
+            <!--<span style="float: right">-->
+                <!--<a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" @click="handleChange">全部</a-tag>-->
+                <!--<a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>-->
+              <!--</span>-->
+
+            <a-card
+              class="margin-top-10 antCard"
+              v-for="(op,index) in tagsDetailData"
+              :style="{'borderColor':op.borderColor}"
+              :key="index"
+            >
+              <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
+              <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
+              <span class="marLeft10">
+                  <i class="iconfont action action-yaopin1" style="color: #2eabff"/>
+                  {{op.drugName}}
+                </span>
+              <div :rows="3" :maxRows="4" read-only class="textArea">
+                <a-tag>问题</a-tag>
+                <span class="opacity8">{{op.auditDescription}}</span>
+              </div>
+              <div :rows="3" :maxRows="4" read-only>
+                <a-tag>建议</a-tag>
+                {{op.audSuggest}}
+              </div>
+              <div class="subscript" v-if="Number(op.status)===1">已审核</div>
+            </a-card>
             <div class="margin-top-10">
               <p class="dealP margin-top-10" style="float: left">审核意见：</p>
               <a-popconfirm title="确定存为模板?" @confirm="saveTemplate()" okText="确定" cancelText="取消">
@@ -258,6 +279,22 @@
           </a-tab-pane>
         </a-tabs>
       </a-modal>
+
+      <a-modal
+        title="停止审方"
+        :visible="stopModal.visible"
+        @ok="stopOk"
+        :confirmLoading="stopModal.confirmLoading"
+        @cancel="stopCancel"
+        width="400px"
+        class="modals"
+      >
+        <a-radio-group v-model="radioValue">
+          <a-radio class="radioStyle"  :value="1">批量通过</a-radio>
+          <a-radio class="radioStyle"   :value="2">批量驳回</a-radio>
+          <a-radio class="radioStyle"   :value="3">继续审方</a-radio>
+        </a-radio-group>
+      </a-modal>
     </a-card>
   </div>
 </template>
@@ -265,8 +302,7 @@
 import { selectTribunalRecord } from '@/api/login'
 import { Icon } from 'ant-design-vue'
 import countText from '@/components/count-text'
-import prescriptionTabs from '@/components/prescription-tabs'
-import alert from '@/components/alert'
+import prescriptionTabs from '../component/prescription-tabs'
 
 const myIcon = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js' // 在 iconfont.cn 上生成
@@ -276,7 +312,6 @@ export default {
     myIcon,
     countText,
     prescriptionTabs,
-    alert
   },
   data() {
     return {
@@ -289,6 +324,7 @@ export default {
         reviewUpdateStatus: 'sys/reviewPlanorder/updateStatus',
         selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
         selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
+        selectOrderDetail:'sys/reviewOrderissue/selectReviewOrderissueDetail',
       },
       labelCol: {
         xs: { span: 24 },
@@ -306,17 +342,16 @@ export default {
       buttonType: 'primary',
       disable: true,
       //初始化多选项
-      checkSelect: 0,
       selections: [],
       //table数据加载
       loading: false,
       dataSource: [],
       columns: [
         { title: '处方号', prop: 'orderNo', width: 100, align: 'center' },
-        { title: '处方时间', prop: 'submitTime', width: 170 },
+        { title: '处方时间', prop: 'submitTime', width: 140 },
         { title: '医生', prop: 'submitName', width: 90 },
-        { title: '科室', prop: 'deptName', width: 80, align: 'center' },
-        { title: '门诊号', prop: 'admitNum', width: 150, align: 'right' },
+        { title: '科室', prop: 'deptName', width: 110, },
+        { title: '门诊号', prop: 'admitNum', width: 120, },
         { title: '患者', prop: 'pname', width: 80 },
         { title: '性别', prop: 'sex', width: 50, align: 'center' },
         { title: '年龄', prop: 'age', width: 60 }
@@ -341,11 +376,20 @@ export default {
       //初始化定时器
       timeInitialize: null,
       templateTags: [],
-      reviewTemplates: [],
       templateText: '',
       tempRowData: {},
       treeDatas: [],
-      recordList:[]
+      recordList:[],
+      // 刷新频率
+      refreshFreq:null,
+      stopModal:{
+        visible:false,
+        confirmLoading:false,
+      },
+      radioValue:1,
+      tagsData:[],
+      tagsDetailData:[],
+      checkedAll: true,
     }
   },
   computed: {
@@ -369,9 +413,7 @@ export default {
   },
   mounted() {
     //获取后台数据
-    this.fetchYJSMapData()
-    //获取头部数据
-    this.getCountText()
+
     // 获取科室数据
     this.getTreeseldata()
   },
@@ -417,12 +459,17 @@ export default {
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.pageSize = 10
       params.offset = 0
-      this.fetchYJSMapData(params)
+      if (this.buttonText != '开始审方'){
+        this.fetchYJSMapData(params)
+      }
+
     },
     //重置
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
-      this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+      if (this.buttonText != '开始审方'){
+        this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+      }
     },
 
     //翻页事件
@@ -430,7 +477,9 @@ export default {
       let params = {}
       params.pageSize = pageSize
       params.offset = (page - 1) * pageSize
-      this.fetchYJSMapData(params)
+      if (this.buttonText != '开始审方'){
+        this.fetchYJSMapData(params)
+      }
     },
     //更改一页多少数据
     clientSizeChange(current, size) {
@@ -438,17 +487,17 @@ export default {
       let params = {}
       params.pageSize = size
       params.offset = 0
-      this.fetchYJSMapData(params)
+      if (this.buttonText != '开始审方'){
+        this.fetchYJSMapData(params)
+      }
     },
-
-    //TODO:后台暂未获取数据
     fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
       this.loading = true
       params.orderId = 1
       selectTribunalRecord(params)
         .then(res => {
           if (res.code == '200') {
-            this.dataSource = res.rows
+            this.dataSource = this.$dateFormat(res.rows,['submitTime']);
             this.total = res.total
             this.loading = false
           } else {
@@ -461,7 +510,6 @@ export default {
           this.error(err)
         })
     },
-    //TODO：数据暂未获取
     getCountText() {
       let params = { reviewResouce: 1 }
       this.$axios({
@@ -495,47 +543,63 @@ export default {
     selectBox(selection, row) {
       //点击后获取这条数据
       this.selections = selection
-      this.checkSelect = selection.length
     },
     //全选
     selectAll(selection) {
       this.selections = selection
-      this.checkSelect = selection.length
     },
-    //清空多选
-    clearSelect() {
-      this.$refs.multipleTable.clearSelection()
-      this.checkSelect = 0
-    },
+
     //开始审方
     buttonClick() {
       let status = null
       if (this.buttonText == '开始审方') {
+        this.fetchYJSMapData();
+        //获取头部数据
+        this.getCountText();
+        this.refreshFreq = Number(10000);
+        this.setTimeRval(10000)
         this.buttonText = '停止审方'
         this.buttonType = 'danger'
         this.disable = false
-        status = 1
+        status = 1;
+        let params = { status: status }
+        this.$axios({
+          url: this.api.reviewUpdateStatus,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       } else {
-        this.buttonText = '开始审方'
-        this.buttonType = 'primary'
-        this.disable = true
-        status = 0
+
+        status = 0;
+        let params = { status: status }
+        this.$axios({
+          url: this.api.reviewUpdateStatus,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              // this.buttonText = '开始审方'
+              // this.buttonType = 'primary'
+              // this.disable = true;
+            } else {
+              this.stopModal.visible = true;
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       }
-      let params = { status: status }
-      this.$axios({
-        url: this.api.reviewUpdateStatus,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
+
     },
     //批量通过
     pass() {
@@ -560,6 +624,7 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
+              this.fetchYJSMapData()
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -593,6 +658,7 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
+              this.fetchYJSMapData()
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -635,13 +701,51 @@ export default {
       this.tempRowData = data.row
       this.problemsData = data.row.orderissueVOS
       this.getRecords({visId:data.row.visId})
-      this.getTemplate(data)
+      this.getTemplate(data);
+      this.getSelectOrderDetail(data);
+    },
+    //驳回问题详情
+    getSelectOrderDetail(data){
+      let params = {}
+      params.visId = data.row.visId
+      params.submitNo = data.row.maxSubmitNo
+      params.clinicPrescNum = data.row.orderNo
+      this.$axios({
+        url: this.api.selectOrderDetail,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.tagsDetailData = res.rows;
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    handleChange(){
+      for (let key in this.tagsData) {
+        this.tagsData[key].status = true
+      }
+      this.checkedAll = true
+    },
+    checkableChange(data){
+      for (let key in this.tagsData) {
+        if (data.auditLevel == this.tagsData[key].auditLevel) {
+          this.tagsData[key].status = true
+        } else {
+          this.tagsData[key].status = false
+        }
+      }
+      this.tagsData.push()
     },
     getTemplate(data) {
       let params = {}
       params.visId = data.row.visId
       params.prescOrderNo = data.row.orderNo
-      console.log(data, 'data')
       this.$axios({
         url: this.api.selectWithReviewId,
         method: 'put',
@@ -769,19 +873,12 @@ export default {
     handleCancel() {
       this.Modal.visible = false
     },
-    //筛选
-    filterTag(value, row) {
-      console.log(value, 'value')
-      console.log(row, 'row')
-    },
-    filterStatus(value, row) {
-      return row.status == value
-    },
+
     //查看
     looks(data) {
       this.$router.push({
         name: 'presOutpatientDetail',
-        query: { visId: data.visId, submitNo: data.maxSubmitNo }
+        params: { visId: data.visId, submitNo: data.maxSubmitNo}
       })
     },
     //TODO:处方单数据暂未处理
@@ -791,7 +888,6 @@ export default {
         { title: '序号', prop: 'seqNum', width: 50, align: 'right' },
         { title: '', prop: 'mark', width: 20, align: 'left' },
         { title: '名称', prop: 'drugName' },
-        // { title: '', prop: 'tags',width:100 },
         { title: '规格', prop: 'spec', width: 80 },
         { title: '单量', prop: 'dosageStr', width: 60 },
         { title: '总量', prop: 'amountStr', width: 60 },
@@ -820,14 +916,6 @@ export default {
         columns: dataOne.columns
       }
     },
-
-    changeBox(data) {
-      if (data.target.checked) {
-        this.dis = true
-      } else {
-        this.dis = false
-      }
-    },
     getDataChildren(bdata, pid) {
       var items = []
       for (var key in bdata) {
@@ -844,19 +932,44 @@ export default {
       return items
     },
 
+    //停止审方
+    stopOk(){
+      if (this.radioValue == 1){
+        this.selections = this.dataSource;
+        if (this.selections.length > 0){
+          this.pass();
+        }
+        clearInterval(this.timeInitialize)
+      }else if (this.radioValue == 2) {
+        this.selections = this.dataSource;
+        if (this.selections.length > 0){
+          this.rejected();
+        }
+        clearInterval(this.timeInitialize)
+      }
+      this.stopModal.visible = false;
+    },
+    stopCancel(){
+      this.stopModal.visible = false;
+    },
     //频率事件
     rateChange(value) {
-      this.rateTime = value
       clearInterval(this.timeInitialize)
-      this.setTimeRval(this.rateTime)
+      if (value == 0){
+        // this.fetchYJSMapData()
+      } else{
+        this.rateTime = value;
+        this.setTimeRval(this.rateTime)
+      }
     },
     //定时器
-    setTimeRval() {
+    setTimeRval(data) {
       this.timeInitialize = setInterval(() => {
         this.fetchYJSMapData()
-      }, this.rateTime)
-    }
+      }, data)
+    },
   },
+
   beforeDestroy() {
     if (this.timeInitialize) {
       clearInterval(this.timeInitialize)
@@ -886,33 +999,11 @@ export default {
   opacity: 0.9;
 }
 
-/*.multipleEl .has-gutter tr th:nth-child(3) {*/
-/*border-right: 0px;*/
-/*}*/
-
-/*.multipleEl .has-gutter tr th:nth-child(4) {*/
-/*border-right: 0px;*/
-/*}*/
-
-/*.multipleEl .has-gutter tr th:nth-child(7) {*/
-/*border-right: 0px;*/
-/*}*/
-
-/*.multipleEl .has-gutter tr th:nth-child(8) {*/
-/*border-right: 0px;*/
-/*}*/
-
-/*.multipleEl .has-gutter tr th:nth-child(9) {*/
-/*border-right: 0px;*/
-/*}*/
 
 .multipleEl .has-gutter tr th:nth-child(11) {
   border-right: 0px;
 }
 
-/*.multipleEl .el-table__row td:nth-child(11) {*/
-/*border-right: 0px;*/
-/*}*/
 .problemRow {
   line-height: 30px;
 }
@@ -931,11 +1022,6 @@ export default {
   /*text-indent:2em;*/
 }
 
-.lineText {
-  height: 100%;
-  text-indent: 2em;
-  font-size: 12px;
-}
 
 .modals .ant-form-item {
   margin-bottom: 5px;
@@ -993,5 +1079,49 @@ export default {
 
 .timelineItem p:nth-child(n + 2) {
   opacity: 0.8;
+}
+
+  .radioStyle{
+    display: block;
+    height: 30px;
+    line-height: 30px;
+  }
+.tagStyle {
+  font-size: 12px;
+  /*margin-left: 7px;*/
+  margin-bottom: 5px;
+}
+.textArea {
+  word-break: break-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 100%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  /*text-indent: 2em*/
+}
+.subscript {
+  color: white;
+  height: 30px;
+  width: 100px;
+  position: absolute;
+  right: -25px;
+  top: 9px;
+  text-align: center;
+  line-height: 30px;
+  /* font-family: ""; */
+  background-color: #8a8a8a;
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.dealP {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>

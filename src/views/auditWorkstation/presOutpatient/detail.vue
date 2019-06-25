@@ -14,6 +14,7 @@
               class="tagStyle"
               :color="'#40a9ff'"
               v-for=" (op,index) in this.phyStatelist"
+              :key="index"
             >{{op}}</a-tag>
             <!-- <a-tag :color="'#40a9ff'" class="tagStyle">哺乳</a-tag>
             <a-tag class="tagStyle">肝肾功能</a-tag>-->
@@ -129,7 +130,7 @@
             </div>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
-            <detailCheck :visId="visId"></detailCheck>
+            <detailCheck :visidId="visId"></detailCheck>
           </a-tab-pane>
           <a-tab-pane tab="检验报告" key="3">
             <DetailTest :visId="visId"></DetailTest>
@@ -158,12 +159,7 @@
                 >{{ta.auditName }}</a-tag>
               </span>
               <span style="float: right">
-                <a-tag
-                  class="checkTag tagStyle aTag1"
-                  v-if="checkedAll"
-                  style
-                  @click="handleChange"
-                >全部</a-tag>
+                <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" @click="handleChange">全部</a-tag>
                 <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
               </span>
 
@@ -188,7 +184,6 @@
                   <a-tag>建议</a-tag>
                   {{op.audSuggest}}
                 </div>
-                <!-- <div v-if="op.status=="1"" class="subscript">已审核</div> -->
                 <div class="subscript" v-if="Number(op.status)===1">已审核</div>
               </a-card>
 
@@ -344,10 +339,10 @@
           <span class="margin-left-5">版本对比</span>
         </a-button>
         <a-button  @click="slePatients" class="margin-left-5" :loading="loading">
-          上一位
+          上一患者
         </a-button>
         <a-button  @click="slePatients" class="margin-left-5" :loading="loading">
-          下一位
+          下一患者
         </a-button>
       </template>
       <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
@@ -358,28 +353,18 @@
 </template>
 
 <script>
-import { selectTribunalRecord, selectOutDetail } from '@/api/login'
-import PageLayout from '@/components/page/PageLayout'
-import STable from '@/components/table/'
+import { selectOutDetail } from '@/api/login'
 import DetailList from '@/components/tools/DetailList'
-import ABadge from 'ant-design-vue/es/badge/Badge'
 import FooterToolBar from '@/components/FooterToolbar'
 import { mixin, mixinDevice } from '@/utils/mixin'
-import ATextarea from 'ant-design-vue/es/input/TextArea'
-import ACol from 'ant-design-vue/es/grid/Col'
-import versionComp from '@/my-components/version-comparison'
+import versionComp from '../component/version-comparison'
 import detailCheck from '../presHospitalized/detailCheck.vue'
 import DetailTest from '../presHospitalized/detailTest.vue'
 const DetailListItem = DetailList.Item
 export default {
   components: {
-    ACol,
-    ATextarea,
-    PageLayout,
-    ABadge,
     DetailList,
     DetailListItem,
-    STable,
     FooterToolBar,
     versionComp,
     detailCheck,
@@ -441,18 +426,18 @@ export default {
       auditStatus: true
     }
   },
-  mounted() {
-    this.getDetailData()
-    this.getTemplate()
-    this.getRecord()
-    this.getAttention()
-  },
+  // mounted() {
+  //   this.getDetailData()
+  //   this.getTemplate()
+  //   this.getRecord()
+  //   this.getAttention()
+  // },
   methods: {
     getDetailData() {
-      this.visId = this.$route.query.visId
-      this.propData.visId = this.$route.query.visId
-      this.propData.submitNo = this.$route.query.submitNo
-      let params = this.$route.query
+      this.visId = this.$route.params.visId
+      this.propData.visId = this.$route.params.visId
+      this.propData.submitNo = this.$route.params.submitNo
+      let params = this.$route.params
       //submitNo
       selectOutDetail(params)
         .then(res => {
@@ -641,7 +626,7 @@ export default {
       this.rightData.push()
     },
     getTemplate() {
-      let params = this.$route.query
+      let params = this.$route.params
       this.$axios({
         url: this.api.selectWithReviewId,
         method: 'put',
@@ -741,7 +726,7 @@ export default {
 
     //获取记录
     getRecord() {
-      let params = this.$route.query
+      let params = this.$route.params
       this.$axios({
         url: this.api.selectWithVisId,
         method: 'put',
@@ -768,7 +753,7 @@ export default {
     },
     //获取关注患者信息
     getAttention() {
-      let params = this.$route.query
+      let params = this.$route.params
       this.$axios({
         url: this.api.concernedRecord,
         method: 'post',
@@ -821,7 +806,7 @@ export default {
     // 更换患者
     slePatients(){
       let params={}
-      params.visId=this.$route.query.visId
+      params.visId=this.$route.params.visId
      this.$axios({
         url: this.api.turnAudit,
         method: 'put',
@@ -849,6 +834,13 @@ export default {
         return '未知'
       }
     }
+  },
+
+  activated() {
+    this.getDetailData()
+    this.getTemplate()
+    this.getRecord()
+    this.getAttention()
   }
 }
 </script>
