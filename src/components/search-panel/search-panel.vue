@@ -10,7 +10,7 @@
                                 <a-input v-decorator="[item.dataField]" placeholder="请输入..."></a-input>
                             </a-form-item>
                              <a-form-item :label="item.name" v-if="!item.type || item.type=='tree-select'" v-bind="formItemLayout">
-                                <a-tree-select :treeData="item.treeData" placeholder="请选择" v-decorator="[ item.dataField]"></a-tree-select>
+                                <a-tree-select   :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }" :treeData="item.treeData" placeholder="请选择" v-decorator="[ item.dataField]"></a-tree-select>
                             </a-form-item>
                             <a-form-item :label="item.name" v-if="item.type=='range-picker'" v-bind="formItemLayout">
                                 <a-range-picker v-decorator="[item.dataField]"/>

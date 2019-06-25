@@ -103,7 +103,7 @@
 <script>
   import debounce from 'lodash/debounce'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
-  import conditionSelect from '@/components/condition-select'
+  import conditionSelect from '../component/condition-select'
 
   export default {
     components: { ATextarea, conditionSelect },
