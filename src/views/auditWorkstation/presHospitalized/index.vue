@@ -247,8 +247,8 @@ export default {
   computed: {
     list() {
       return [
-        { name: '医生', dataField: 'submitDoc ', type: 'text' },
-        { name: '患者', dataField: 'patientName ', type: 'text' },
+        { name: '医生', dataField: 'submitDoc', type: 'text' },
+        { name: '患者', dataField: 'patientName', type: 'text' },
         {
           name: '科室',
           dataField: 'admitDept',
@@ -456,12 +456,11 @@ export default {
     },
     //单个通过
     passSingle(data) {
-      console.log(data)
+     
     },
     //单个驳回
     rejectedSingle(data) {
       this.Modal.visible = true
-      console.log(data.row.problemList)
       this.problemsData = data.row.problemList
       for (let key in this.problemsData) {
         this.problemsData[key].rejectReason = '病入膏肓'
@@ -483,10 +482,9 @@ export default {
 
     //查看
     looks(data) {
-      console.log(data)
       this.$router.push({
         name: 'presHospitalizedDetail',
-       query:{visId:data.visId},
+       query:{visId:data.visId,maxSubmitNo:data.maxSubmitNo},
       })
     },
     //处方单网格样式

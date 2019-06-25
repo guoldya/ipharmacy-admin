@@ -403,7 +403,7 @@ export default {
     }
   },
   mounted() {
-    this.getRecordDelData({ visid: '1' })
+    this.getRecordDelData({ visid:this.$route.query.visId,maxSubmitNo:this.$route.query.maxSubmitNo })
     this.getDetailData()
     this.getRecord()
     this.getTemplate()
@@ -411,7 +411,7 @@ export default {
   methods: {
     //右边预判情况基础数据
     getDetailData() {
-      let params = { visid: '3' }
+      let params = { visid:this.$route.query.visId,submitNo:this.$route.query.maxSubmitNo,clinicPrescNum:''}
       selectOutDetail(params)
         .then(res => {
           if (res.code == '200') {

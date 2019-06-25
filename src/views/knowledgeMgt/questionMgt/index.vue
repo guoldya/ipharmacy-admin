@@ -88,7 +88,7 @@ export default {
     }
   },
   mounted() {
-    console.log(this.items)
+    //console.log(this.items)
     this.getTreeList({ codeclass: 7 })
   },
   methods: {
@@ -96,6 +96,15 @@ export default {
     search() {
       //TODO:枚举值回来以后在调用分页查询
       let params = this.$refs.searchPanel.form.getFieldsValue()
+      for (let item in params) {
+        if (typeof params[item] == 'string') {
+          //  let arr=params[item].split('').filter(item =>{
+          //       return item!==' '
+          //     }).join('')
+          let arr = this.trim(params[item])
+          params[item] = arr
+        }
+      }
       Object.assign(params, { codeclass: 7 })
       this.getTreeList(params)
     },
@@ -115,7 +124,7 @@ export default {
     edits(data) {
       this.$router.push({
         name: 'questionMgtDetail',
-       params:{ id:data.id ,}
+        params: { id: data.id }
       })
     },
     // 组件绑定函数
@@ -136,6 +145,7 @@ export default {
     },
     // 树形初始数据
     getTreeList(params = {}) {
+      var paramsNum = Object.keys(params)
       this.loading = true
       this.$axios({
         url: this.api.selectTitlesList,
@@ -144,7 +154,11 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.dataSource = this.getDataChildren(res.rows, undefined)
+            if (paramsNum.length == 1) {
+              this.dataSource = this.getDataChildren(res.rows, undefined)
+            } else {
+              this.dataSource = res.rows
+            }
             this.loading = false
           } else {
             this.loadingTable = false
@@ -190,6 +204,16 @@ export default {
           this.loading = false
           this.error(err)
         })
+    },
+    trim(str) {
+      str = str.replace(/^(\s|\u00A0)+/, '')
+      for (var i = str.length - 1; i >= 0; i--) {
+        if (/\S/.test(str.charAt(i))) {
+          str = str.substring(0, i + 1)
+          break
+        }
+      }
+      return str
     }
   }
 }

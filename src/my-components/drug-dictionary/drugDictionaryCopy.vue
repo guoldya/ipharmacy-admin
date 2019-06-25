@@ -1,6 +1,6 @@
 <template>
   <div>
-  <a-button type="primary"  @click="addDictionary">新增药品</a-button>
+  <!-- <a-button type="primary"  @click="addDictionary">新增药品</a-button> -->
   <a-spin tip="加载中..." :spinning="loading">
     <el-table
       ref="table"

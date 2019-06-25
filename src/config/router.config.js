@@ -326,6 +326,27 @@ export const asyncRouterMap = [
                       },
                     ]
                   },
+                  {
+                    path: '/baseData/question',
+                    name: 'dictionary',
+                    component: RouteView,
+                    meta: { title: '药品分类管理', multistage: true },
+                    children: [
+                        {
+                            path: '/baseData/question/index',
+                            name: 'baseDataQuestion',
+                            component: () => import( '@/views/baseData/question/index.vue'),
+                            meta: { title: '药品分类管理基础数据', hiddenHeaderContent: true, index: true }
+                        },
+                        {
+                            path: '/baseData/question/detailBaseClass/:code/',
+                            name: 'baseDataQuestionDetail',
+                            hidden: true,
+                            component: () => import( '@/views/baseData/question/detail.vue'),
+                            meta: { title: '分类详情',hiddenHeaderContent: true, detail: true,}
+                        },
+                    ]
+                },
                     {
                         path: '/baseData/dictionary',
                         name: 'dictionary',

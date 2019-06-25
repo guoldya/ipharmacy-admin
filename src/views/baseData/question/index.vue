@@ -1,7 +1,7 @@
 <template>
   <a-card>
     <a-row class="ruleRow">
-      <!-- <a-col :xl="5" :xxl="5">
+      <a-col :xl="5" :xxl="5">
         <div class="ruleCow">
           <a-card title="药品分类">
             <drugClassification
@@ -12,8 +12,8 @@
             ></drugClassification>
           </a-card>
         </div>
-      </a-col> -->
-      <a-col :xl="24" :xxl="24">
+      </a-col>
+      <a-col :xl="19" :xxl="19">
         <a-card title="药品品种">
           <Searchpanel ref="searchPanel" :list="list">
             <div slot="control">
@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import drugClassification from '@/my-components/drug-classification/drugClassification'
-import drugVarieties from '@/my-components/drug-varieties/drugVarieties'
-import drugDictionary from '@/my-components/drug-dictionary/drugDictionary'
+import drugClassification from '@/my-components/drug-classification/drugClassificationCopy'
+import drugVarieties from '@/my-components/drug-varieties/drugVarietiesCopy'
+import drugDictionary from '@/my-components/drug-dictionary/drugDictionaryCopy'
 
 export default {
   components: {
@@ -65,7 +65,7 @@ export default {
       variety: {
         drugVarietyData: [],
         total: 0,
-        categoryId: null
+        categoryId: null,
       },
       dictionary: {
         drugDictionaryData: [],
