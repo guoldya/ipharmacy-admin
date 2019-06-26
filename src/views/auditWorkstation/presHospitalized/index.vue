@@ -197,7 +197,8 @@ export default {
       api: {
         selectPage: 'sys/reviewOrderissue/selectHospitalizationRecord',
         selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
-        getStatusData: 'sys/reviewOrderissue/selectTribunalRecordNum'
+        getStatusData: 'sys/reviewOrderissue/selectTribunalRecordNum',
+        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus'
       },
       labelCol: {
         xs: { span: 24 },
@@ -388,6 +389,7 @@ export default {
     //多选框点击事件
     selectBox(selection, row) {
       //点击后获取这条数据
+      console.log(selection)
       this.selections = selection
       this.checkSelect = selection.length
     },
@@ -436,6 +438,7 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
+              this.fetchYJSMapData()
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -455,9 +458,7 @@ export default {
       }
     },
     //单个通过
-    passSingle(data) {
-     
-    },
+    passSingle(data) {},
     //单个驳回
     rejectedSingle(data) {
       this.Modal.visible = true
@@ -484,7 +485,7 @@ export default {
     looks(data) {
       this.$router.push({
         name: 'presHospitalizedDetail',
-       query:{visId:data.visId,maxSubmitNo:data.maxSubmitNo},
+        query: { visId: data.visId, maxSubmitNo: data.maxSubmitNo }
       })
     },
     //处方单网格样式

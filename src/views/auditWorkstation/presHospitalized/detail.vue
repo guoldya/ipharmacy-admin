@@ -851,6 +851,6 @@ export default {
 }
 
   .datetime{
-    color:blue;
+    color:#1890ff;
 }
 </style>
