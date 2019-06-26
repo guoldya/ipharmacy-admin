@@ -33,7 +33,7 @@
 
           <!--下拉框-->
           <a-select
-            :mode=cd.multiple
+            mode='multiple'
             @search="searchSelect($event,cd.treeData,cd.columnId,cd)"
             v-else-if="cd.inputType=='select'"
             class="width-100 marLeft10"
@@ -51,7 +51,7 @@
           </a-select>
           <!--树-->
           <a-tree-select
-            :multiple = cd.multiple
+            multiple
             @search="searchTreeSelect($event,cd.treeData,cd.columnId,cd)"
             :treeData="cd.treeData"
             v-else-if="cd.inputType=='tree'"
@@ -59,12 +59,6 @@
             v-model="cd.values"
             :filterTreeNode="false">
           </a-tree-select>
-
-          <!--日期框-->
-          <!--<a-date-picker class="width-100 marLeft10" v-else-if="cd.isCheckbox==3" v-model="cd.value"></a-date-picker>-->
-          <!--日期范围-->
-          <!--<a-range-picker class="width-100 marLeft10" v-else-if="cd.val==6" v-model="cd.list"/>-->
-          <!--数字范围-->
           <div v-else-if="cd.inputType=='dataRange'" class="width-100 marLeft10">
             <a-input-number style=" width:32%; text-align: center" placeholder="1" v-model="cd.assertVal"  />
             <a-input style=" width: 12%; border-left: 0; pointer-events: none; backgroundColor: #fff" placeholder="~" disabled />
@@ -74,22 +68,6 @@
               <a-select-option value="2">月</a-select-option>
               <a-select-option value="3">日</a-select-option>
             </a-select>
-            <!--<a-input style=" width:32%; text-align: center" placeholder="Minimum" v-model="cd.assertVal"/>-->
-            <!--<a-input style=" width: 4%; border-left: 0; pointer-events: none; backgroundColor: #fff" placeholder="~" disabled />-->
-            <!--<a-input style="width:32%; text-align: center; border-left: 0" v-model="cd.assertVal2"  placeholder="Maximum" />-->
-            <!--<a-select-->
-              <!--style="width:20%"-->
-              <!--v-if="cd.columnId =='AGE'"-->
-              <!--class="margin-left-5"-->
-            <!--&gt;-->
-              <!--<a-select-option-->
-                <!--v-for="at in ageType"-->
-                <!--:value='at.id'-->
-                <!--:key="at.id"-->
-              <!--&gt;-->
-                <!--{{at.text}}-->
-              <!--</a-select-option>-->
-            <!--</a-select>-->
           </div>
         </a-col>
         <a-col :span="1">

@@ -65,13 +65,16 @@
                 mode="multiple"
                 placeholder="药师可多选"
                 v-model="personsToData"
+                optionLabelProp="title"
       >
         <a-select-option
           v-for="(item,index) in this.selectPersons"
           :value='item.personId'
           :key="index"
+          :title="item.name"
         >
-          {{item.name}}
+          <div>{{item.name}}-{{item.code}}</div>
+          <div>{{item.orgTitle}}-{{item.deptName}}</div>
         </a-select-option>
       </a-select>
     </a-modal>

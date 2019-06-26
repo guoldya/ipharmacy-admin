@@ -178,7 +178,6 @@
               this.planruleList = res.data.reviewPlanrules
               for (let key in this.planruleList) {
                 this.planruleList[key].inputType = ''
-                this.planruleList[key]. multiple = true
                 this.planruleList[key].operators = []
                 this.planruleList[key].treeData = []
                 if (this.planruleList[key].logic == '1') {
@@ -200,12 +199,6 @@
                     this.planruleList[key].inputType = 'select'
                     this.planruleList[key].treeData = this.enum.patientType
                   } else if (this.planruleList[key].columnId) {
-                    let code = this.planruleList[key].columnId;
-                    if (code == this.defaults.drugCategory ||
-                      code == this.defaults.drugTypes ||
-                      code == this.defaults.drugGrade || code == this.defaults.anestheticDrugs || code == this.defaults.essentialDrugs){
-                      this.planruleList[key].multiple = false;
-                    }
                     let params = {}
                     params.code = this.planruleList[key].columnId
                     this.$axios({
@@ -240,6 +233,9 @@
                 }
                 let loadData = this.getItemTreeData(this.planruleList[key].columnId, this.treeList)
                 for (let j in this.classData) {
+                  if (loadData.logic == 2){
+                    this.planruleList[key].operators.push( { id: '9', text: '区间' },)
+                  }
                   for (let k in loadData.operators) {
                     if (this.classData[j].id == loadData.operators[k]) {
                       this.planruleList[key].operators.push(this.classData[j])
@@ -294,7 +290,6 @@
             if (this.$route.params.planId) {
               params.planId = this.$route.params.planId
             }
-            console.log(JSON.stringify(params))
             this.$axios({
               url: this.api.reviewPlanUpdate,
               method: 'post',
@@ -380,17 +375,23 @@
         item.operators = []
         item.treeData = []
         item.values = []
-        item.assertVal = 0
-        item.assertVal2 = 0
+        item.assertVal = null
+        item.assertVal2 = null
         let data = this.getItemTreeData(item.columnId, this.treeList)
-        for (let key in this.classData) {
-          for (let i in data.operators) {
-            if (this.classData[key].id == data.operators[i]) {
-              item.operators.push(this.classData[key])
-              item.relation = this.classData[key].id
+        if (data.logic == 2){
+          item.operators.push({ id: '9', text: '区间' },)
+          item.relation = '9';
+        }else{
+          for (let key in this.classData) {
+            for (let i in data.operators) {
+              if (this.classData[key].id == data.operators[i]) {
+                item.operators.push(this.classData[key])
+                item.relation = this.classData[key].id
+              }
             }
           }
         }
+
         item.logic = data.logic
         if (data.logic == '1') {
           item.inputType = 'input'
@@ -428,7 +429,6 @@
                     let indexData = this.dealAllStartTree(res.rows)
                     item.treeData = this.recursiveNodeTree(indexData, 'undefined')
                     pidNum += 1
-                    console.log(pidNum, 'nul')
                     break
                   }
                 }
@@ -514,7 +514,6 @@
           if (res.code == '200') {
             item.treeData = res.rows
             this.planruleList.push()
-            console.log(this.planruleList)
           } else {
             this.warn(res.msg)
           }
