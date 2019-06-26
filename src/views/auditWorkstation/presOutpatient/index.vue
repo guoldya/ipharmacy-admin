@@ -9,13 +9,16 @@
       </Searchpanel>
       <a-row>
         <a-col :span="10" style="padding-top: 15px">
-          <a-button class="margin-left-5" :type="buttonType" @click="buttonClick">{{buttonText}}</a-button>
+          <a-popconfirm v-if="buttonType == 'danger'" title="确定停止审方?" @confirm="buttonClick" okText="确定" cancelText="取消">
+          <a-button class="margin-left-5" :type="buttonType">{{buttonText}}</a-button>
+          </a-popconfirm>
+          <a-button v-else class="margin-left-5" @click="buttonClick" :type="buttonType">{{buttonText}}</a-button>
           <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
           <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
             <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
           </a-popconfirm>
           <a-select
-            style="width: 100px"
+            style="width: 120px"
             class="margin-left-5"
             placeholder="刷新频率"
             @change="rateChange"
@@ -28,6 +31,9 @@
               :key="index"
             >{{op.text}}</a-select-option>
           </a-select>
+          <span class="margin-left-5 icons-list">
+            <a-icon  type="sync" :spin="iconSpin" />
+          </span>
         </a-col>
         <a-col :span="14" class="countCol">
           <countText :countList="countText"></countText>
@@ -72,7 +78,7 @@
                 </a-tooltip>
               </span>
               <span v-else-if="item.prop == 'orderNo'">
-                <a-popover placement="topLeft" @mouseenter="mouseHover(props.row)" trigger="click">
+                <a-popover placement="topLeft" @click="mouseHover(props.row)" trigger="click">
                   <template slot="content">
                     <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
                   </template>
@@ -160,28 +166,8 @@
         class="modals"
       >
         <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
-
           <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
             <span class="dealP margin-top-10">问题描述</span>
-            <!--<span v-for="ta in tagsData " style="float: right">-->
-                <!--<a-tag-->
-                  <!--v-if="ta.status == true"-->
-                  <!--class="checkTag tagStyle"-->
-                  <!--:style="{'background':ta.levelColor, 'color':'#fff'}"-->
-                  <!--@click="checkableChange(ta)"-->
-                <!--&gt;{{ta.auditName }}</a-tag>-->
-                <!--<a-tag-->
-                  <!--v-else-if="ta.status == false"-->
-                  <!--class="checkTag tagStyle"-->
-                  <!--:style="{'background':'#fff', 'color':ta.levelColor}"-->
-                  <!--@click="checkableChange(ta)"-->
-                <!--&gt;{{ta.auditName }}</a-tag>-->
-              <!--</span>-->
-            <!--<span style="float: right">-->
-                <!--<a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" @click="handleChange">全部</a-tag>-->
-                <!--<a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>-->
-              <!--</span>-->
-
             <a-card
               class="margin-top-10 antCard"
               v-for="(op,index) in tagsDetailData"
@@ -281,19 +267,22 @@
       </a-modal>
 
       <a-modal
-        title="停止审方"
         :visible="stopModal.visible"
-        @ok="stopOk"
         :confirmLoading="stopModal.confirmLoading"
         @cancel="stopCancel"
         width="400px"
         class="modals"
+        :closable="false"
       >
-        <a-radio-group v-model="radioValue">
-          <a-radio class="radioStyle"  :value="1">批量通过</a-radio>
-          <a-radio class="radioStyle"   :value="2">批量驳回</a-radio>
-          <a-radio class="radioStyle"   :value="3">继续审方</a-radio>
-        </a-radio-group>
+        <div class="padding5">
+          <span style="font-size: 16px" class="font-bold margin-left-5">停止审方操作</span>
+          <p class="opacity8 margin-top-10">批量通过审方、批量驳回审方、继续审方</p>
+        </div>
+        <template slot="footer">
+          <a-button key="1" @click="stopOk({radioValue:1})">批量通过</a-button>
+          <a-button key="2" @click="stopOk({radioValue:2})">批量驳回</a-button>
+          <a-button key="3"  type="primary" @click="stopOk({radioValue:3})">继续审方</a-button>
+        </template>
       </a-modal>
     </a-card>
   </div>
@@ -390,6 +379,7 @@ export default {
       tagsData:[],
       tagsDetailData:[],
       checkedAll: true,
+      iconSpin:false,
     }
   },
   computed: {
@@ -561,8 +551,9 @@ export default {
         this.buttonText = '停止审方'
         this.buttonType = 'danger'
         this.disable = false
-        status = 1;
-        let params = { status: status }
+        status = '1';
+        this.iconSpin = true;
+        let params = { status: status,planScope:1 }
         this.$axios({
           url: this.api.reviewUpdateStatus,
           method: 'post',
@@ -578,9 +569,8 @@ export default {
             this.error(err)
           })
       } else {
-
-        status = 0;
-        let params = { status: status }
+        status = '0';
+        let params = { status: status,planScope:1 }
         this.$axios({
           url: this.api.reviewUpdateStatus,
           method: 'post',
@@ -588,11 +578,19 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-              // this.buttonText = '开始审方'
-              // this.buttonType = 'primary'
-              // this.disable = true;
+              console.log(res)
+              if (res.data >0){
+                this.stopModal.visible = true;
+              } else{
+                this.success('停止成功！');
+                this.buttonText = '开始审方'
+                this.buttonType = 'primary'
+                this.disable = true
+                this.iconSpin = false;
+                clearInterval(this.timeInitialize)
+              }
             } else {
-              this.stopModal.visible = true;
+
             }
           })
           .catch(err => {
@@ -883,39 +881,18 @@ export default {
     },
     //TODO:处方单数据暂未处理
     mouseHover(data) {
-      let tabsOne = {}
-      let columns2 = [
-        { title: '序号', prop: 'seqNum', width: 50, align: 'right' },
-        { title: '', prop: 'mark', width: 20, align: 'left' },
-        { title: '名称', prop: 'drugName' },
-        { title: '规格', prop: 'spec', width: 80 },
-        { title: '单量', prop: 'dosageStr', width: 60 },
-        { title: '总量', prop: 'amountStr', width: 60 },
-        { title: '频次', prop: 'frequency', width: 80, align: 'center' },
-        { title: '服药方式', prop: 'useType', width: 80 }
-      ]
-      let adviceData = data.clinicPrescVOS
-      tabsOne.tabName = '处方单1'
       if (data.diseaseName) {
-        tabsOne.diseaseName = data.diseaseName
+        this.tabsData.diagnose = data.diseaseName
       }
       if (data.ptype) {
-        tabsOne.costType = data.ptype
+        this.tabsData.costType = data.ptype
       }
-      tabsOne.listData = adviceData
-      tabsOne.columns = columns2
-      this.dealTabsData(tabsOne)
+      this.tabsData.clinicPrescNum = data.orderNo;
+      this.tabsData.maxSubmitNo = data.maxSubmitNo;
+      this.tabsData.visId = data.visId;
+
     },
 
-    dealTabsData(dataOne) {
-      this.tabsData.tabsOne = {
-        tabName: dataOne.tabName,
-        diagnose: dataOne.diseaseName,
-        costType: dataOne.costType,
-        adviceData: dataOne.listData,
-        columns: dataOne.columns
-      }
-    },
     getDataChildren(bdata, pid) {
       var items = []
       for (var key in bdata) {
@@ -933,19 +910,29 @@ export default {
     },
 
     //停止审方
-    stopOk(){
-      if (this.radioValue == 1){
+    stopOk(data){
+      if (data.radioValue == 1){
         this.selections = this.dataSource;
         if (this.selections.length > 0){
           this.pass();
         }
         clearInterval(this.timeInitialize)
-      }else if (this.radioValue == 2) {
+        this.buttonText = '开始审方'
+        this.buttonType = 'primary'
+        this.disable = true;
+      }else if (data.radioValue == 2) {
         this.selections = this.dataSource;
         if (this.selections.length > 0){
           this.rejected();
         }
         clearInterval(this.timeInitialize)
+        this.buttonText = '开始审方'
+        this.buttonType = 'primary'
+        this.disable = true;
+      }else{
+        this.buttonText = '停止审方'
+        this.buttonType = 'danger'
+        this.disable = false;
       }
       this.stopModal.visible = false;
     },
@@ -956,8 +943,9 @@ export default {
     rateChange(value) {
       clearInterval(this.timeInitialize)
       if (value == 0){
-        // this.fetchYJSMapData()
+        this.iconSpin = false;
       } else{
+        this.iconSpin = true;
         this.rateTime = value;
         this.setTimeRval(this.rateTime)
       }
@@ -1028,7 +1016,7 @@ export default {
 }
 
 .modals .ant-modal-body {
-  padding: 8px 24px;
+  padding: 20px 24px;
 }
 
 .modals .ant-form-item-control {
@@ -1124,4 +1112,8 @@ export default {
   font-weight: bold;
   margin-top: 10px;
 }
+  .icons-list{
+    margin-right: 6px;
+    font-size: 18px;
+  }
 </style>

@@ -58,12 +58,10 @@
         total: 10,
         curent: 1,
         pageSize: 10,
-        columns: [{ title: '个人编号', value: 'personId', width: 80, align: 'right' },
+        columns: [{ title: '工号', value: 'code', width: 80, align: 'right' },
           { title: '姓名', value: 'name', width: 120 },
-          { title: '性别', value: 'sex', width: 80, align: 'center' },
           { title: '电话', value: 'phone', width: 130, align: 'right' },
-          { title: '聘任职称', value: 'titlesName', width: 130 },
-          { title: '科室', value: 'deptName', width: 130 },
+          { title: '科室', value: 'deptName', width: 200 },
           { title: '医院', value: 'orgTitle' }
         ],
         items: [
