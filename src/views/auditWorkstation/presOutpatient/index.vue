@@ -31,9 +31,6 @@
               :key="index"
             >{{op.text}}</a-select-option>
           </a-select>
-          <span class="margin-left-5 icons-list">
-            <a-icon  type="sync" :spin="iconSpin" />
-          </span>
         </a-col>
         <a-col :span="14" class="countCol">
           <countText :countList="countText"></countText>
@@ -266,24 +263,6 @@
         </a-tabs>
       </a-modal>
 
-      <a-modal
-        :visible="stopModal.visible"
-        :confirmLoading="stopModal.confirmLoading"
-        @cancel="stopCancel"
-        width="400px"
-        class="modals"
-        :closable="false"
-      >
-        <div class="padding5">
-          <span style="font-size: 16px" class="font-bold margin-left-5">停止审方操作</span>
-          <p class="opacity8 margin-top-10">批量通过审方、批量驳回审方、继续审方</p>
-        </div>
-        <template slot="footer">
-          <a-button key="1" @click="stopOk({radioValue:1})">批量通过</a-button>
-          <a-button key="2" @click="stopOk({radioValue:2})">批量驳回</a-button>
-          <a-button key="3"  type="primary" @click="stopOk({radioValue:3})">继续审方</a-button>
-        </template>
-      </a-modal>
     </a-card>
   </div>
 </template>
@@ -314,7 +293,9 @@ export default {
         selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
         selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
         selectOrderDetail:'sys/reviewOrderissue/selectReviewOrderissueDetail',
-      },
+        updateReviewList:'sys/reviewOrderissue/updateReviewOrderissueList',
+        selectPlanInPlanCount:'sys/reviewPlanorder/selectUsingPlanInPlanorderCount',
+  },
       labelCol: {
         xs: { span: 24 },
         sm: { span: 3 }
@@ -371,15 +352,11 @@ export default {
       recordList:[],
       // 刷新频率
       refreshFreq:null,
-      stopModal:{
-        visible:false,
-        confirmLoading:false,
-      },
-      radioValue:1,
       tagsData:[],
       tagsDetailData:[],
       checkedAll: true,
-      iconSpin:false,
+      iconSpin:true,
+      openTrialTime:null,
     }
   },
   computed: {
@@ -405,9 +382,47 @@ export default {
     //获取后台数据
 
     // 获取科室数据
-    this.getTreeseldata()
+    this.getTreeseldata();
+    this.getOpenTrial();
+    this.openTrialTime = setInterval(()=>{
+      this.getOpenTrial()
+    },15000)
+    console.log(this.iconSpin)
+    if (this.iconSpin){
+      clearInterval(this.timeInitialize)
+      this.setTimeRval(10000)
+    }
   },
   methods: {
+    //判断是否已经开启审方
+    getOpenTrial(){
+      this.$axios({
+        url: this.api.selectPlanInPlanCount,
+        method: 'put',
+        data: {planScope:1}
+      })
+        .then(res => {
+          if (res.code == '200') {
+            if (res.data == 1){
+              this.buttonText = '停止审方'
+              this.buttonType = 'danger'
+              this.disable = false
+              this.iconSpin = true;
+            }else{
+              this.buttonText = '开始审方'
+              this.buttonType = 'primary'
+              this.disable = true;
+              this.iconSpin = false;
+              clearInterval(this.timeInitialize)
+            }
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
     //获取干预记录数据
     getRecords(params={}) {
       this.$axios({
@@ -541,9 +556,13 @@ export default {
 
     //开始审方
     buttonClick() {
-      let status = null
+      let status = null;
+      let _this = this;
       if (this.buttonText == '开始审方') {
-        this.fetchYJSMapData();
+        // setTimeout(()=>{
+        //   this.fetchYJSMapData();
+        //   this.getCountText();
+        // },1000)
         //获取头部数据
         this.getCountText();
         this.refreshFreq = Number(10000);
@@ -552,8 +571,7 @@ export default {
         this.buttonType = 'danger'
         this.disable = false
         status = '1';
-        this.iconSpin = true;
-        let params = { status: status,planScope:1 }
+        let params = { status: status,planScope:1,planType:1 }
         this.$axios({
           url: this.api.reviewUpdateStatus,
           method: 'post',
@@ -570,7 +588,7 @@ export default {
           })
       } else {
         status = '0';
-        let params = { status: status,planScope:1 }
+        let params = { status: status,planScope:1,planType:1 }
         this.$axios({
           url: this.api.reviewUpdateStatus,
           method: 'post',
@@ -578,19 +596,65 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-              console.log(res)
+              clearInterval(_this.timeInitialize)
+              this.buttonText = '开始审方'
+              this.buttonType = 'primary'
+              this.disable = true;
               if (res.data >0){
-                this.stopModal.visible = true;
+                this.$confirm({
+                  title: '批量通过或者批量驳回！',
+                  okText: '批量通过',
+                  cancelText: '批量驳回',
+                  onOk() {
+                    let passParams = {};
+                    passParams.reviewVerdict = 1;
+                    passParams.planScope = 1;
+                    _this.$axios({
+                      url: _this.api.updateReviewList,
+                      method: 'put',
+                      data: passParams
+                    })
+                      .then(res => {
+                        if (res.code == '200') {
+                          _this.success('批量通过成功');
+                          _this.fetchYJSMapData();
+                          _this.getCountText();
+                        } else {
+                          _this.warn(res.msg)
+                        }
+                      })
+                      .catch(err => {
+                        _this.error(err)
+                      })
+                  },
+                  onCancel() {
+                    let passParams = {};
+                    passParams.reviewVerdict =2;
+                    passParams.planScope = 1;
+                    _this.$axios({
+                      url: _this.api.updateReviewList,
+                      method: 'put',
+                      data: passParams
+                    })
+                      .then(res => {
+                        if (res.code == '200') {
+                          _this.success('批量驳回成功');
+                          _this.fetchYJSMapData();
+                          _this.getCountText();
+                        } else {
+                          _this.warn(res.msg)
+                        }
+                      })
+                      .catch(err => {
+                        _this.error(err)
+                      })
+                  },
+                });
               } else{
                 this.success('停止成功！');
-                this.buttonText = '开始审方'
-                this.buttonType = 'primary'
-                this.disable = true
-                this.iconSpin = false;
-                clearInterval(this.timeInitialize)
               }
             } else {
-
+              this.warn(res.msg)
             }
           })
           .catch(err => {
@@ -623,6 +687,7 @@ export default {
           .then(res => {
             if (res.code == '200') {
               this.fetchYJSMapData()
+              this.getCountText();
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -657,6 +722,7 @@ export default {
           .then(res => {
             if (res.code == '200') {
               this.fetchYJSMapData()
+              this.getCountText();
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -684,7 +750,8 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success(res.msg)
-            this.fetchYJSMapData()
+            this.fetchYJSMapData();
+            this.getCountText();
           } else {
             this.warn(res.msg)
           }
@@ -858,7 +925,8 @@ export default {
           if (res.code == '200') {
             this.success(res.msg)
             this.Modal.visible = false
-            this.fetchYJSMapData()
+            this.fetchYJSMapData();
+            this.getCountText();
           } else {
             this.warn(res.msg)
           }
@@ -909,43 +977,12 @@ export default {
       return items
     },
 
-    //停止审方
-    stopOk(data){
-      if (data.radioValue == 1){
-        this.selections = this.dataSource;
-        if (this.selections.length > 0){
-          this.pass();
-        }
-        clearInterval(this.timeInitialize)
-        this.buttonText = '开始审方'
-        this.buttonType = 'primary'
-        this.disable = true;
-      }else if (data.radioValue == 2) {
-        this.selections = this.dataSource;
-        if (this.selections.length > 0){
-          this.rejected();
-        }
-        clearInterval(this.timeInitialize)
-        this.buttonText = '开始审方'
-        this.buttonType = 'primary'
-        this.disable = true;
-      }else{
-        this.buttonText = '停止审方'
-        this.buttonType = 'danger'
-        this.disable = false;
-      }
-      this.stopModal.visible = false;
-    },
-    stopCancel(){
-      this.stopModal.visible = false;
-    },
+
     //频率事件
     rateChange(value) {
       clearInterval(this.timeInitialize)
       if (value == 0){
-        this.iconSpin = false;
       } else{
-        this.iconSpin = true;
         this.rateTime = value;
         this.setTimeRval(this.rateTime)
       }
@@ -953,14 +990,19 @@ export default {
     //定时器
     setTimeRval(data) {
       this.timeInitialize = setInterval(() => {
-        this.fetchYJSMapData()
+        this.fetchYJSMapData();
+        this.getCountText();
       }, data)
     },
   },
 
+
   beforeDestroy() {
     if (this.timeInitialize) {
       clearInterval(this.timeInitialize)
+    }
+    if (this.openTrialTime){
+      clearInterval(this.openTrialTime)
     }
   }
 }

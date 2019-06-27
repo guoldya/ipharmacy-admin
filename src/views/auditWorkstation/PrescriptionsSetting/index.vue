@@ -135,10 +135,8 @@
         return [
           {
             name: '方案名称',
-            dataField: 'clientId',
+            dataField: 'planName',
             type: 'text',
-            keyExpr: 'clientId',
-            valueExpr: 'clientName'
           },
           {
             name: '方案类型',
