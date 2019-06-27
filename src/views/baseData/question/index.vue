@@ -111,7 +111,15 @@ export default {
   methods: {
     //左侧点击事件
     onSelect(selectedKeys, e) {
-      this.classification.disable = true
+      // this.classification.disable = true
+      console.log(this.classification.disable)
+      console.log(e.node.dataRef.categoryType)
+      if(e.node.dataRef.categoryType=='1'){
+         this.classification.disable = false
+      }
+      if(e.node.dataRef.categoryType=='2'){
+         this.classification.disable = true
+      }
       this.nodeData = e.node.dataRef
       this.variety.categoryId = e.node.dataRef.key
       if (this.variety.categoryId) {
@@ -132,6 +140,7 @@ export default {
           if (res.code == '200') {
             this.variety.drugVarietyData = res.rows
             this.variety.total = res.total
+            // console.log(this.variety.drugVarietyData[0].linkType)
           } else {
             this.warn(res.msg)
           }
