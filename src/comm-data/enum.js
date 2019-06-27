@@ -208,6 +208,28 @@ const Enum = {
         { id: '5', text: '五级' },
         { id: '6', text: '六级' },
         { id: '7', text: '七级' },
-       ]
+       ],
+       auditType:[
+        {id:'1',text:'自动审核'},
+        {id:'2',text:'人工审核'},
+      ],
+      reviewVerdict:[
+        {id:'1',text:'通过'},
+        {id:'2',text:'驳回'},
+      ],
+      passType:[
+        {id:1,text:'记录通过'},
+        {id:2,text:'医生坚持'},
+        {id:3,text:'双签通过'},
+      ],
+      reviewResouce:[
+        {id:'1',text:'处方'},
+        {id:'2',text:'医嘱'},
+      ],
+      patientScope:[
+        {id:'1',text:'门诊'},
+        {id:'2',text:'住院'},
+      ]
+    
 }
 export default Enum

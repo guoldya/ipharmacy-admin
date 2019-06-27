@@ -1,4 +1,6 @@
 <template>
+<div>
+ <div v-if="testDatas.length>0">
   <a-Row class="testchk">
     <a-Col :span="6">
       <el-table
@@ -33,7 +35,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <div></div>
     </a-Col>
 
     <a-Col :span="18" class="details">
@@ -63,49 +64,59 @@
           </a-col>
         </a-row>
         <a-row class="dealRow">
-          <el-table class="margin-top-10" :data="testsDeldata" highlight-current-row>
-            <el-table-column
-              :prop="item.prop"
-              :label="item.title"
-              :key="index"
-              v-for="(item,index) in columnscheckdtl"
-              :width="item.width"
-              :align="item.align"
-              :formatter="item.formatter"
-              :show-overflow-tooltip="true"
-            >
-              <template slot-scope="props">
-                <span
-                  class="grades"
-                  v-if="item.prop == 'resultDesc'&&props.row.resultDesc&&(Number(props.row.resultSign)>=2||Number(props.row.resultSign)==1)"
-                >
-                  <a-tag :color="getcolor(props.row.resultSign)">{{props.row.resultDesc}}</a-tag>
-                  <!-- <p class="jiantou">{{props.row.resultSignEng}}</p> -->
-                  <a-icon
-                    v-if="props.row.resultSignEng==0"
-                    type="arrow-down"
-                    class="jiantou"
-                    style="color:#1890ff"
-                  />
-                  <a-icon
-                    v-else-if="props.row.resultSignEng==1"
-                    type="arrow-up"
-                    class="jiantou"
-                    style="color:#f5222d"
-                  />
-                  <a v-else-if="props.row.resultSignEng==2">（异常)</a>
-                </span>
-                <span v-else>{{props.row[item.prop]}}</span>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div >
+            <el-table class="margin-top-10" :data="testsDeldata" highlight-current-row>
+              <el-table-column
+                :prop="item.prop"
+                :label="item.title"
+                :key="index"
+                v-for="(item,index) in columnscheckdtl"
+                :width="item.width"
+                :align="item.align"
+                :formatter="item.formatter"
+                :show-overflow-tooltip="true"
+              >
+                <template slot-scope="props">
+                  <span
+                    class="grades"
+                    v-if="item.prop == 'resultDesc'&&props.row.resultDesc&&(Number(props.row.resultSign)>=2||Number(props.row.resultSign)==1)"
+                  >
+                    <a-tag :color="getcolor(props.row.resultSign)">{{props.row.resultDesc}}</a-tag>
+                    <!-- <p class="jiantou">{{props.row.resultSignEng}}</p> -->
+                    <a-icon
+                      v-if="props.row.resultSignEng==0"
+                      type="arrow-down"
+                      class="jiantou"
+                      style="color:#1890ff"
+                    />
+                    <a-icon
+                      v-else-if="props.row.resultSignEng==1"
+                      type="arrow-up"
+                      class="jiantou"
+                      style="color:#f5222d"
+                    />
+                    <a v-else-if="props.row.resultSignEng==2">（异常)</a>
+                  </span>
+                  <span v-else>{{props.row[item.prop]}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </a-row>
       </div>
     </a-Col>
   </a-Row>
+  </div>
+<div v-else-if="testDatas.length==0" class="zwsjs">暂无数据</div>
+</div>
 </template>
 <script>
 export default {
+  props: {
+    visidId: {
+      type: String
+    }
+  },
   data() {
     return {
       api: {
@@ -132,7 +143,7 @@ export default {
     }
   },
   mounted() {
-    this.gettestData({ visid: '1' })
+    this.gettestData({ visid: this.visidId })
   },
   methods: {
     // 点击详情功能
@@ -159,24 +170,26 @@ export default {
     },
     // 获取初始详情
     getBeginData(data) {
-      let params = { testId: data.testId }
-      this.$axios({
-        url: this.api.selectTestVisIdDel,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.testsDeldata = res.data.clinicTestreportList
-            this.testsDeltopdata = res.data
-            this.copytestsDeldata = res.data.clinicTestreportList
-          } else {
-            this.warn(res.msg)
-          }
+      if (data) {
+        let params = { testId: data.testId }
+        this.$axios({
+          url: this.api.selectTestVisIdDel,
+          method: 'put',
+          data: params
         })
-        .catch(err => {
-          this.error(err)
-        })
+          .then(res => {
+            if (res.code == '200') {
+              this.testsDeldata = res.data.clinicTestreportList
+              this.testsDeltopdata = res.data
+              this.copytestsDeldata = res.data.clinicTestreportList
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      }
     },
     // 获取检验数据
     gettestData(params = {}) {
@@ -306,6 +319,12 @@ export default {
   .ant-pro-footer-toolbar {
     z-index: 9999;
   }
+}
+.zwsjs{
+ text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #909399;
 }
 </style>
 

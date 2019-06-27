@@ -8,20 +8,20 @@
           </a>
         </div>
         <a-row class="margin-top-10">
-          <a-col class="titleText"   :xl="7" :xxl="7">
+          <a-col class="titleText" :xl="7" :xxl="7">
             <span class="neike">消化内科:</span>
             <span class="renming">{{RecordDelData.patientName}}</span>
           </a-col>
-          <a-col  :xl="7" :xxl="7" class="ages">
+          <a-col :xl="7" :xxl="7" class="ages">
             <span class="bianhao">{{RecordDelData.admitNum}}</span>
             <span class="sex">{{RecordDelData.patientSex}}</span>
             <span class="nianlin">{{RecordDelData.agevalue}}岁</span>
           </a-col>
-          <a-col class="titleText"   :xl="3" :xxl="3">
-             <a-tag class="tagStyle">哺乳期</a-tag>
+          <a-col class="titleText" :xl="3" :xxl="3">
+            <a-tag class="tagStyle">哺乳期</a-tag>
           </a-col>
-          <a-col class="ages"   :xl="7" :xxl="7">
-            <span >入院日期：&nbsp;{{RecordDelData.admitDate}}</span>
+          <a-col class="ages" :xl="7" :xxl="7">
+            <span>入院日期：&nbsp;{{RecordDelData.admitDate}}</span>
           </a-col>
         </a-row>
 
@@ -43,8 +43,8 @@
             <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
           </detail-list-item>
           <detail-list-item term="处方医生">
-            <span class="opacity8 ">
-              <span class='datetime'>
+            <span class="opacity8">
+              <span class="datetime">
                 {{RecordDelData.attendingDocName}}&nbsp;
                 <a-icon type="message"/>
                 &nbsp;{{RecordDelData.attendingDocPhone}}
@@ -75,10 +75,10 @@
             </el-table>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
-            <detailCheck :visidId='visidIdnum'></detailCheck>
+            <detailCheck :visidId="visidIdnum"></detailCheck>
           </a-tab-pane>
           <a-tab-pane tab="检验报告" key="3">
-            <DetailTest></DetailTest>
+            <DetailTest :visidId="visidIdnum"></DetailTest>
           </a-tab-pane>
           <a-tab-pane tab="手术信息" key="4">
             <DetailOperate></DetailOperate>
@@ -88,136 +88,7 @@
       </a-card>
     </a-col>
     <a-col :span="10" class="padding-left-5">
-      <a-card class="cardRight">
-        <div class="dealRight">
-          <a-tabs defaultActiveKey="1" size="small" class="width-100">
-            <a-tab-pane tab="预判情况" key="1">
-              <span class="dealP">问题描述</span>
-              <span v-for="ta in tagsData " style="float: right">
-                <a-tag
-                  v-if="ta.status == true"
-                  class="checkTag tagStyle"
-                  :style="{'background':ta.levelColor, 'color':'#fff'}"
-                  @click="checkableChange(ta)"
-                >{{ta.auditName }}</a-tag>
-                <a-tag
-                  v-else-if="ta.status == false"
-                  class="checkTag tagStyle"
-                  :style="{'background':'#fff', 'color':ta.levelColor}"
-                  @click="checkableChange(ta)"
-                >{{ta.auditName }}</a-tag>
-              </span>
-              <span style="float: right">
-                <a-tag
-                  class="checkTag tagStyle aTag1"
-                  v-if="checkedAll"
-                  style
-                  @click="handleChange"
-                >全部</a-tag>
-                <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
-              </span>
-              <a-card
-                class="margin-top-10 antCard"
-                @click="clickTagsCard(op)"
-                v-for="(op,index) in rightData "
-                v-if="op.status"
-                :style="{'borderColor':op.borderColor}"
-                :key="index"
-              >
-                <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
-                <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
-                <span class="marLeft10">
-                  <i class="iconfont action action-yaopin1" style="color: #2eabff"/>
-                  {{op.drugName}}
-                </span>
-                <div :rows="3" :maxRows="4" read-only class="textArea">
-                  <a-tag>问题</a-tag>
-                  <span class="opacity8">{{op.auditDescription}}</span>
-                </div>
-                <div :rows="3" :maxRows="4" read-only>
-                  <a-tag>建议</a-tag>
-                  {{op.audSuggest}}
-                </div>
-              </a-card>
-
-              <div class="margin-top-10">
-                <p class="dealP margin-top-10" style="float: left">审核意见：</p>
-                <a-button
-                  type="primary"
-                  class="saveButton"
-                  size="small"
-                  @click="saveTemplate()"
-                >存为模板</a-button>
-                <a-select
-                  class="saveButton"
-                  size="small"
-                  style="width: 150px"
-                  @change="selectTemp"
-                  v-model="problemType"
-                >
-                  <a-select-option
-                    :value="op.tabooId"
-                    v-for="(op,index) in reviewTemplates"
-                    :key="index"
-                  >{{op.tabooTitle}}</a-select-option>
-                </a-select>
-                <a-tooltip placement="top" :key="index" v-for="(tt,index) in templateTags">
-                  <template slot="title" style="width: 100px">{{tt.titles}}</template>
-                  <a-tag
-                    class="problemTag saveButton"
-                    v-if="index<7 && tt.bgColor == '#2eabff'"
-                    :key="index"
-                    @click="tagsClick(tt)"
-                    color="#2eabff"
-                  >{{tt.updateTitles}}</a-tag>
-                  <a-tag
-                    class="problemTag saveButton"
-                    v-else-if="index<7"
-                    :key="index"
-                    @click="tagsClick(tt)"
-                  >{{tt.updateTitles}}</a-tag>
-                </a-tooltip>
-                <a-dropdown :trigger="['hover']">
-                  <a-menu slot="overlay">
-                    <a-menu-item
-                      v-for="(gd,index) in templateTags"
-                      @click="tagsClick(gd)"
-                      v-if="index>=7"
-                      :key="index"
-                    >{{gd.updateTitles}}</a-menu-item>
-                  </a-menu>
-                  <a v-if="templateTags.length>7" class="margin-left-5 saveButton">
-                    更多
-                    <a-icon type="down"/>
-                  </a>
-                  <a v-else></a>
-                </a-dropdown>
-                <a-textarea :rows="4" v-model="templateText"></a-textarea>
-              </div>
-            </a-tab-pane>
-            <a-tab-pane tab="干预记录" key="2">
-              <a-timeline style="margin-top: 20px;margin-left: 10px">
-                <a-timeline-item v-for="(rd,index) in recordList" class="timelineItem" :key="index">
-                  <a-icon
-                    v-if="index+1 == recordList.length"
-                    slot="dot"
-                    type="clock-circle-o"
-                    style="font-size: 16px;"
-                  />
-                  <p>
-                    <a-tag>{{rd.eventPerson}}</a-tag>
-                    {{rd.eventTime}}
-                  </p>
-                  <p>
-                    <span class="font-bold">{{rd.event}}:</span>
-                    <span>{{rd.eventText}}</span>
-                  </p>
-                </a-timeline-item>
-              </a-timeline>
-            </a-tab-pane>
-          </a-tabs>
-        </div>
-      </a-card>
+      <jodgeStation></jodgeStation>
     </a-col>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
@@ -229,49 +100,6 @@
       <a-button @click="submit" style="margin-left: 20px" :loading="loading">驳回</a-button>
       <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
     </footer-tool-bar>
-
-    <a-modal
-      title="另存为模板"
-      :visible="Modal.visible"
-      @ok="handleOk"
-      @cancel="handleCancel"
-      width="600px"
-    >
-      <a-form :form="form">
-        <a-form-item label="分类" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
-          <a-select
-            v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
-            placeholder="请选择分类"
-          >
-            <a-select-option
-              :value="op.tabooId"
-              v-for="(op,index) in reviewTemplates"
-              :key="index"
-            >{{op.tabooTitle}}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="类型" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
-          <a-select
-            v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
-            placeholder="请选择类型"
-          >
-            <a-select-option
-              :value="op.id"
-              v-for="(op,index) in this.enum.templateType"
-              :key="index"
-            >{{op.text}}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item label="标题" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
-          <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
-        </a-form-item>
-        <a-form-item label="内容" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
-          <a-textarea
-            v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"
-          ></a-textarea>
-        </a-form-item>
-      </a-form>
-    </a-modal>
   </div>
 </template>
 
@@ -281,6 +109,7 @@ import FooterToolBar from '@/components/FooterToolbar'
 import DetailOperate from './detailOperate.vue'
 import DetailTest from './detailTest.vue'
 import detailCheck from './detailCheck.vue'
+import jodgeStation from './jodgeStation.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
 import { selectOutDetail } from '@/api/login'
 const DetailListItem = DetailList.Item
@@ -291,7 +120,8 @@ export default {
     FooterToolBar,
     DetailOperate,
     DetailTest,
-    detailCheck
+    detailCheck,
+    jodgeStation
   },
   mixins: [mixin, mixinDevice],
   name: 'detail',
@@ -303,11 +133,8 @@ export default {
         selectTestVisId: 'sys/reviewOrderissue/selectClinicTestListByVisId',
         selectTestVisIdDel: 'sys/reviewOrderissue/selectClinicTestDetailByTestId',
         selectsurgeryDel: 'sys/reviewOrderissue/selectHospitalOperationListByVisId',
-        selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
         selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail',
         selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
-        selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
-        reviewTemplateUpdate: 'sys/reviewTemplate/update'
       },
       loading: false,
       problemsData: [
@@ -382,10 +209,6 @@ export default {
       templateText: '',
       formData: [],
       num: '',
-      testsdata: [],
-      testDatas: [],
-      testsDeldata: [],
-      testsDeltopdata: [],
       testid: '',
       RecordDelData: {},
       tagsData: [],
@@ -399,245 +222,15 @@ export default {
         visible: false
       },
       form: this.$form.createForm(this),
-      visidIdnum:'1'
+      visidIdnum: this.$route.query.visId
     }
   },
   mounted() {
-    this.getRecordDelData({ visid:this.$route.query.visId,maxSubmitNo:this.$route.query.maxSubmitNo })
-    this.getDetailData()
-    this.getRecord()
-    this.getTemplate()
+    this.getRecordDelData({ visid: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
+    
   },
   methods: {
-    //右边预判情况基础数据
-    getDetailData() {
-      let params = { visid:this.$route.query.visId,submitNo:this.$route.query.maxSubmitNo,clinicPrescNum:''}
-      selectOutDetail(params)
-        .then(res => {
-          if (res.code == '200') {
-            this.leftData = res.data
-            this.rightData = this.leftData.reviewOrderissueVOList
-            this.tagsData = this.leftData.levelTotalsList
-            this.dealTagsData(this.tagsData)
-            this.deal(this.rightData)
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    // 配置状态状态控制显示
-    dealTagsData(data) {
-      for (let key in data) {
-        data[key].status = true
-      }
-    },
-    // 数据处理
-    deal(data) {
-      for (let key in data) {
-        data[key].status = true
-        data[key].borderColor = '#d9d9d9'
-        let list = data[key].reviewTemplateList
-        for (let i in list) {
-          list[i].bgColor = '#d9d9d9'
-          if (list[i].titles.length > 5) {
-            list[i].updateTitles = list[i].titles.substr(0, 5) + '...'
-          } else {
-            list[i].updateTitles = list[i].titles
-          }
-        }
-      }
-      data.push()
-    },
-    // 右边预判情况树形结构数据
-    getTemplate() {
-      let params = { visId: '3' }
-      this.$axios({
-        url: this.api.selectWithReviewId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.reviewTemplates = res.rows
-            if (this.reviewTemplates.length > 0) {
-              this.problemType = this.reviewTemplates[0].tabooId
-              this.getTemplateDetail()
-            }
-            this.reviewTemplates.push({ tabooId: '-1', tabooTitle: '----通用----' })
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    // 选择树形结构再次获取具体数据；
-    getTemplateDetail() {
-      let params = {}
-      params.tabooClass = this.problemType
-      this.$axios({
-        url: this.api.selectReviewTemplateDetail,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.templateTags = res.rows
-            this.dealTemplateTags(this.templateTags)
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    //选择结构的事件过程
-    selectTemp(data) {
-      this.problemType = data
-      this.getTemplateDetail()
-    },
-    // 数据的拼接
-    dealTemplateTags(data) {
-      for (let i in data) {
-        data[i].bgColor = '#d9d9d9'
-        if (data[i].titles.length > 5) {
-          data[i].updateTitles = data[i].titles.substr(0, 5) + '...'
-        } else {
-          data[i].updateTitles = data[i].titles
-        }
-      }
-    },
-    //button点击事件模板的存储；
-    saveTemplate() {
-      if ($.trim(this.templateText).length > 0) {
-        setTimeout(() => {
-          this.form.setFieldsValue({ titles: this.templateTitle, reviewTemplate: this.templateText, templetType: '1' })
-        }, 100)
-        this.Modal.visible = true
-      } else {
-        this.warn('请输入审核意见')
-      }
-    },
-    //  点击
-    tagsClick(pd) {
-      let list = this.templateTags
-      for (let i in list) {
-        if (list[i].id == pd.id) {
-          list[i].bgColor = '#2eabff'
-        } else {
-          list[i].bgColor = '#d9d9d9'
-        }
-      }
-      this.templateText = pd.reviewTemplate
-      this.templateTitle = pd.titles
-      this.rightData.push()
-    },
-    //模板的提交
-    handleOk() {
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          this.$axios({
-            url: this.api.reviewTemplateUpdate,
-            method: 'post',
-            data: values
-          })
-            .then(res => {
-              if (res.code == '200') {
-                this.success(res.msg)
-                this.getTemplateDetail()
-                this.Modal.visible = false
-              } else {
-                this.warn(res.msg)
-              }
-            })
-            .catch(err => {
-              this.error(err)
-            })
-        }
-      })
-    },
-    // 模板取消编辑
-    handleCancel() {
-      this.Modal.visible = false
-    },
-    // 筛选等级，匹配下面的数据；
-    checkableChange(data) {
-      for (let key in this.rightData) {
-        if (this.rightData[key].auditLevel == data.auditLevel) {
-          this.checkedAll = false
-          this.rightData[key].status = true
-        } else {
-          this.rightData[key].status = false
-        }
-      }
-      for (let key in this.tagsData) {
-        if (data.auditLevel == this.tagsData[key].auditLevel) {
-          this.tagsData[key].status = true
-        } else {
-          this.tagsData[key].status = false
-        }
-      }
-      this.rightData.push()
-    },
-    // 刷新筛选等级
-    handleChange(checked) {
-      let data = this.rightData
-      for (let key in data) {
-        data[key].status = true
-      }
-      for (let key in this.tagsData) {
-        this.tagsData[key].status = true
-      }
-      this.checkedAll = true
-    },
-    // 右边干预记录
-    getRecord() {
-      let params = { visid: '1' }
-      this.$axios({
-        url: this.api.selectWithVisId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.recordList = res.rows
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    // 获取检查数据
-    getdata(params = {}) {
-      this.loading = true
-      this.$axios({
-        url: this.api.selectVisId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.inspectionData = res.rows
-            this.num = res.rows[0].examId
-
-            this.loading = false
-          } else {
-            this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-          this.loading = false
-        })
-    },
+    
     // 获取患者个人信息
     getRecordDelData(params = {}) {
       this.loading = true
@@ -712,10 +305,10 @@ export default {
 
 <style  lang="less">
 .ant-col-xxl-6 {
-    display: block;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 33%;
+  display: block;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 33%;
 }
 .titleText {
   font-size: 17px;
@@ -845,12 +438,12 @@ export default {
 .timelineItem p:nth-child(n + 2) {
   opacity: 0.8;
 }
-.ages{
+.ages {
   font-size: 15px;
   padding-top: 5px;
 }
 
-  .datetime{
-    color:#1890ff;
+.datetime {
+  color: #1890ff;
 }
 </style>

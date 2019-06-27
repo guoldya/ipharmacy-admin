@@ -389,7 +389,7 @@ export default {
     //多选框点击事件
     selectBox(selection, row) {
       //点击后获取这条数据
-      console.log(selection)
+      //console.log(selection)
       this.selections = selection
       this.checkSelect = selection.length
     },

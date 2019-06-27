@@ -215,7 +215,28 @@ export const asyncRouterMap = [
                                 // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
                             }
                         ]
-                    }
+                    },
+                    {
+                      path: '/auditWorkstation/presHistory',
+                      name: 'presHistory',
+                      component: RouteView,
+                      meta: { title: '审方记录', multistage: true },
+                      children: [
+                        {
+                          path: '/auditWorkstation/presHistory/index',
+                          name: 'presHistoryIndex',
+                          component: () => import( '@/views/auditWorkstation/presHistory/index.vue'),
+                          meta: { title: '审方记录', hiddenHeaderContent: true, index: true }
+                        },
+                        {
+                          path: '/auditWorkstation/presHistory/detail',
+                          name: 'presHistoryDetail',
+                          hidden: true,
+                          component: () => import( '@/views/auditWorkstation/presHistory/detail.vue'),
+                          // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
+                        }
+                      ]
+                    },
                 ]
             },
             {
