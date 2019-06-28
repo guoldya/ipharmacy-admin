@@ -240,7 +240,7 @@
   import { selectTribunalRecord} from '@/api/login'
   import { Icon } from 'ant-design-vue'
   import countText from '@/components/count-text'
-  import prescriptionTabs from '@/components/prescription-tabs'
+  import prescriptionTabs from '../component/prescription-tabs'
   import alert from '@/components/alert'
 
   const myIcon = Icon.createFromIconfontCN({
