@@ -9,21 +9,10 @@
       </Searchpanel>
       <a-row>
         <a-col :span="10" style="padding-top: 15px">
-          <a-popconfirm
-            v-if="buttonType == 'danger'"
-            title="确定停止审方?"
-            @confirm="buttonClick"
-            okText="确定"
-            cancelText="取消"
-          >
+          <a-popconfirm v-if="buttonType == 'danger'" title="确定停止审方?" @confirm="buttonClick" okText="确定" cancelText="取消">
             <a-button class="margin-left-5" :type="buttonType">{{buttonText}}</a-button>
           </a-popconfirm>
-          <a-button
-            v-else
-            class="margin-left-5"
-            @click="buttonClick"
-            :type="buttonType"
-          >{{buttonText}}</a-button>
+          <a-button v-else class="margin-left-5" @click="buttonClick" :type="buttonType">{{buttonText}}</a-button>
           <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
           <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
             <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
@@ -105,7 +94,11 @@
             </template>
           </el-table-column>
           <!--问题tags列-->
-          <el-table-column prop="problem" label="问题" min-width="500">
+          <el-table-column
+            prop="problem"
+            label="问题"
+            min-width="500"
+          >
             <template slot-scope="props">
               <a-row v-for="(op,index) in props.row.orderissueVOS" class="problemRow" :key="index">
                 <a-col :span="2">
@@ -181,9 +174,9 @@
               <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
               <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
               <span class="marLeft10">
-                <i class="iconfont action action-yaopin1" style="color: #2eabff"/>
-                {{op.drugName}}
-              </span>
+                  <i class="iconfont action action-yaopin1" style="color: #2eabff"/>
+                  {{op.drugName}}
+                </span>
               <div :rows="3" :maxRows="4" read-only class="textArea">
                 <a-tag>问题</a-tag>
                 <span class="opacity8">{{op.auditDescription}}</span>
@@ -245,6 +238,7 @@
               </a-dropdown>
               <a-textarea :rows="4" v-model="templateText"></a-textarea>
             </div>
+
           </a-tab-pane>
           <a-tab-pane tab="干预记录" key="2">
             <a-timeline style="margin-top: 20px;margin-left: 10px">
@@ -268,391 +262,158 @@
           </a-tab-pane>
         </a-tabs>
       </a-modal>
+
     </a-card>
   </div>
 </template>
 <script>
-import { selectTribunalRecord } from '@/api/login'
-import { Icon } from 'ant-design-vue'
-import countText from '@/components/count-text'
-import prescriptionTabs from '../component/prescription-tabs'
+  import { selectTribunalRecord } from '@/api/login'
+  import { Icon } from 'ant-design-vue'
+  import countText from '../component/count-text'
+  import prescriptionTabs from '../component/prescription-tabs'
 
-const myIcon = Icon.createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js' // 在 iconfont.cn 上生成
-})
-export default {
-  components: {
-    myIcon,
-    countText,
-    prescriptionTabs
-  },
-  data() {
-    return {
-      api: {
-        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
-        selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
-        selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
-        reviewTemplateUpdate: 'sys/reviewTemplate/update',
-        selectTribunalRecordNum: 'sys/reviewOrderissue/selectTribunalRecordNum',
-        reviewUpdateStatus: 'sys/reviewPlanorder/updateStatus',
-        selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
-        selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
-        selectOrderDetail: 'sys/reviewOrderissue/selectReviewOrderissueDetail',
-        updateReviewList: 'sys/reviewOrderissue/updateReviewOrderissueList',
-        selectPlanInPlanCount: 'sys/reviewPlanorder/selectUsingPlanInPlanorderCount',
-        selectTribunalRecord: '/sys/reviewOrderissue/selectTribunalRecord'
-      },
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 3 }
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 12 }
-      },
-
-      //页头数据
-      countText: [],
-      //按钮初始化
-      buttonText: '开始审方',
-      buttonType: 'primary',
-      disable: true,
-      //初始化多选项
-      selections: [],
-      //table数据加载
-      loading: false,
-      dataSource: [],
-      columns: [
-        { title: '处方号', prop: 'orderNo', width: 100, align: 'center' },
-        { title: '处方时间', prop: 'submitTime', width: 140 },
-        { title: '医生', prop: 'submitName', width: 90 },
-        { title: '科室', prop: 'deptName', width: 110 },
-        { title: '门诊号', prop: 'admitNum', width: 120 },
-        { title: '患者', prop: 'pname', width: 80 },
-        { title: '性别', prop: 'sex', width: 50, align: 'center' },
-        { title: '年龄', prop: 'age', width: 60 }
-      ],
-      //页码初始化
-      total: 2,
-      current: 1,
-      //已分配科室
-      dis: false,
-      Modal: {
-        visible: false,
-        confirmLoading: false
-      },
-      form: this.$form.createForm(this),
-      //处方单tabsData
-      tabsData: {},
-      problemsData: [],
-      rateTime: 10000000000,
-
-      problemType: '',
-      reviewTemplates: [],
-      //初始化定时器
-      timeInitialize: null,
-      templateTags: [],
-      templateText: '',
-      tempRowData: {},
-      treeDatas: [],
-      recordList: [],
-      // 刷新频率
-      refreshFreq: null,
-      tagsData: [],
-      tagsDetailData: [],
-      checkedAll: true,
-      iconSpin: true,
-      openTrialTime: null
-    }
-  },
-  computed: {
-    list() {
-      return [
-        {
-          name: '患者',
-          dataField: 'pname',
-          type: 'text'
+  const myIcon = Icon.createFromIconfontCN({
+    scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js' // 在 iconfont.cn 上生成
+  })
+  export default {
+    components: {
+      myIcon,
+      countText,
+      prescriptionTabs,
+    },
+    data() {
+      return {
+        api: {
+          updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
+          selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
+          selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
+          reviewTemplateUpdate: 'sys/reviewTemplate/update',
+          selectTribunalRecordNum: 'sys/reviewOrderissue/selectTribunalRecordNum',
+          reviewUpdateStatus: 'sys/reviewPlanorder/updateStatus',
+          selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
+          selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
+          selectOrderDetail:'sys/reviewOrderissue/selectReviewOrderissueDetail',
+          updateReviewList:'sys/reviewOrderissue/updateReviewOrderissueList',
+          selectPlanInPlanCount:'sys/reviewPlanorder/selectUsingPlanInPlanorderCount',
         },
-        { name: '医生', dataField: 'submitName', type: 'text' },
-        {
-          name: '科室',
-          dataField: 'admitDept',
-          type: 'tree-select',
-          keyExpr: 'keyword',
-          treeData: this.treeDatas
-        }
-      ]
-    }
-  },
-  mounted() {
-    //获取后台数据
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 3 }
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 12 }
+        },
 
-    // 获取科室数据
-    this.getTreeseldata()
-    this.getOpenTrial()
-    this.openTrialTime = setInterval(() => {
-      this.getOpenTrial()
-    }, 15000)
-    console.log(this.iconSpin)
-    if (this.iconSpin) {
-      clearInterval(this.timeInitialize)
-      this.setTimeRval(10000)
-    }
-  },
-  methods: {
-    //判断是否已经开启审方
-    getOpenTrial() {
-      this.$axios({
-        url: this.api.selectPlanInPlanCount,
-        method: 'put',
-        data: { planScope: 1 }
-      })
-        .then(res => {
-          if (res.code == '200') {
-            if (res.data == 1) {
-              this.buttonText = '停止审方'
-              this.buttonType = 'danger'
-              this.disable = false
-              this.iconSpin = true
-            } else {
-              this.buttonText = '开始审方'
-              this.buttonType = 'primary'
-              this.disable = true
-              this.iconSpin = false
-              clearInterval(this.timeInitialize)
-            }
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    //获取干预记录数据
-    getRecords(params = {}) {
-      this.$axios({
-        url: this.api.selectWithVisId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.recordList = res.rows
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    // 科室树形结构
-    getTreeseldata(params = {}) {
-      this.$axios({
-        url: this.api.selectTreeData,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.treeDatas = this.getDataChildren(res.rows, undefined)
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    //搜索
-    search() {
-      let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.pageSize = 10
-      params.offset = 0
-      if (this.buttonText != '开始审方') {
-        this.fetchYJSMapData(params)
-      }
-    },
-    //重置
-    resetForm() {
-      this.$refs.searchPanel.form.resetFields()
-      if (this.buttonText != '开始审方') {
-        this.fetchYJSMapData({ pageSize: 10, offset: 0 })
-      }
-    },
+        //页头数据
+        countText: [],
+        //按钮初始化
+        buttonText: '开始审方',
+        buttonType: 'primary',
+        disable: true,
+        //初始化多选项
+        selections: [],
+        //table数据加载
+        loading: false,
+        dataSource: [],
+        columns: [
+          { title: '处方号', prop: 'orderNo', width: 100, align: 'center' },
+          { title: '处方时间', prop: 'submitTime', width: 140 },
+          { title: '医生', prop: 'submitName', width: 90 },
+          { title: '科室', prop: 'deptName', width: 110, },
+          { title: '门诊号', prop: 'admitNum', width: 120, },
+          { title: '患者', prop: 'pname', width: 80 },
+          { title: '性别', prop: 'sex', width: 50, align: 'center' },
+          { title: '年龄', prop: 'age', width: 60 }
+        ],
+        //页码初始化
+        total: 2,
+        current: 1,
+        //已分配科室
+        dis: false,
+        Modal: {
+          visible: false,
+          confirmLoading: false
+        },
+        form: this.$form.createForm(this),
+        //处方单tabsData
+        tabsData: {},
+        problemsData: [],
+        rateTime: 10000000000,
 
-    //翻页事件
-    customerPageChange(page, pageSize) {
-      let params = {}
-      params.pageSize = pageSize
-      params.offset = (page - 1) * pageSize
-      if (this.buttonText != '开始审方') {
-        this.fetchYJSMapData(params)
+        problemType: '',
+        reviewTemplates: [],
+        //初始化定时器
+        timeInitialize: null,
+        templateTags: [],
+        templateText: '',
+        tempRowData: {},
+        treeDatas: [],
+        recordList:[],
+        // 刷新频率
+        refreshFreq:null,
+        tagsData:[],
+        tagsDetailData:[],
+        checkedAll: true,
+        iconSpin:true,
+        openTrialTime:null,
       }
     },
-    //更改一页多少数据
-    clientSizeChange(current, size) {
-      this.current = 1
-      let params = {}
-      params.pageSize = size
-      params.offset = 0
-      if (this.buttonText != '开始审方') {
-        this.fetchYJSMapData(params)
+    computed: {
+      list() {
+        return [
+          {
+            name: '患者',
+            dataField: 'pname',
+            type: 'text'
+          },
+          { name: '医生', dataField: 'submitName', type: 'text' },
+          {
+            name: '科室',
+            dataField: 'admitDept',
+            type: 'tree-select',
+            keyExpr: 'keyword',
+            treeData: this.treeDatas
+          }
+        ]
       }
     },
-    fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
-      this.loading = true
-      params.orderId = 1
-      selectTribunalRecord(params)
-        .then(res => {
-          if (res.code == '200') {
-            this.dataSource = this.$dateFormat(res.rows, ['submitTime'])
-            this.total = res.total
-            this.loading = false
-          } else {
-            this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.loading = false
-          this.error(err)
-        })
-    },
-    getCountText() {
-      let params = { reviewResouce: 1 }
-      this.$axios({
-        url: this.api.selectTribunalRecordNum,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.countText = res.rows
-            for (let key in this.countText) {
-              if (this.countText[key].item == '待审核') {
-                this.countText[key].colors = '#32c5d2'
-              } else if (this.countText[key].item == '驳回待确认') {
-                this.countText[key].colors = '#f3c200'
-              } else if (this.countText[key].item == '已通过') {
-                this.countText[key].colors = '#3598dc'
-              } else if (this.countText[key].item == '已驳回') {
-                this.countText[key].colors = '#E6A23C'
-              }
-            }
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    //多选框点击事件
-    selectBox(selection, row) {
-      //点击后获取这条数据
-      this.selections = selection
-    },
-    //全选
-    selectAll(selection) {
-      this.selections = selection
-    },
+    mounted() {
+      //获取后台数据
 
-    //开始审方
-    buttonClick() {
-      let status = null
-      let _this = this
-      if (this.buttonText == '开始审方') {
-        this.getCountText()
-        this.refreshFreq = Number(10000)
+      // 获取科室数据
+      this.getTreeseldata();
+      this.getOpenTrial();
+      this.openTrialTime = setInterval(()=>{
+        this.getOpenTrial()
+      },15000)
+      console.log(this.iconSpin)
+      if (this.iconSpin){
+        clearInterval(this.timeInitialize)
         this.setTimeRval(10000)
-        this.buttonText = '停止审方'
-        this.buttonType = 'danger'
-        this.disable = false
-        status = '1'
-        let params = { status: status, planScope: 1, planType: 1 }
+      }
+    },
+    methods: {
+      //判断是否已经开启审方
+      getOpenTrial(){
         this.$axios({
-          url: this.api.reviewUpdateStatus,
-          method: 'post',
-          data: params
+          url: this.api.selectPlanInPlanCount,
+          method: 'put',
+          data: {planScope:1}
         })
           .then(res => {
             if (res.code == '200') {
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
-      } else {
-        let params = { status: '0', planScope: 1, planType: 1 }
-        this.$axios({
-          url: this.api.reviewUpdateStatus,
-          method: 'post',
-          data: params
-        })
-          .then(res => {
-            if (res.code == '200') {
-              clearInterval(_this.timeInitialize)
-              this.buttonText = '开始审方'
-              this.buttonType = 'primary'
-              this.disable = true
-              if (res.data > 0) {
-                this.$confirm({
-                  title: '批量通过或者批量驳回！',
-                  okText: '批量通过',
-                  cancelText: '批量驳回',
-                  onOk() {
-                    let passParams = {}
-                    passParams.reviewVerdict = 1
-                    passParams.planScope = 1
-                    _this
-                      .$axios({
-                        url: _this.api.updateReviewList,
-                        method: 'put',
-                        data: passParams
-                      })
-                      .then(res => {
-                        if (res.code == '200') {
-                          _this.success('批量通过成功')
-                          _this.fetchYJSMapData()
-                          _this.getCountText()
-                        } else {
-                          _this.warn(res.msg)
-                        }
-                      })
-                      .catch(err => {
-                        _this.error(err)
-                      })
-                  },
-                  onCancel() {
-                    let passParams = {}
-                    passParams.reviewVerdict = 2
-                    passParams.planScope = 1
-                    _this
-                      .$axios({
-                        url: _this.api.updateReviewList,
-                        method: 'put',
-                        data: passParams
-                      })
-                      .then(res => {
-                        if (res.code == '200') {
-                          _this.success('批量驳回成功')
-                          _this.fetchYJSMapData()
-                          _this.getCountText()
-                        } else {
-                          _this.warn(res.msg)
-                        }
-                      })
-                      .catch(err => {
-                        _this.error(err)
-                      })
-                  }
-                })
-              } else {
-                this.success('停止成功！')
+              if (res.data == 1){
+                this.buttonText = '停止审方'
+                this.buttonType = 'danger'
+                this.disable = false
+                this.iconSpin = true;
+              }else{
+                this.buttonText = '开始审方'
+                this.buttonType = 'primary'
+                this.disable = true;
+                this.iconSpin = false;
+                clearInterval(this.timeInitialize)
               }
             } else {
               this.warn(res.msg)
@@ -661,34 +422,17 @@ export default {
           .catch(err => {
             this.error(err)
           })
-      }
-    },
-    //批量通过
-    pass() {
-      let params = {}
-      let reviewIds = []
-      if ($.trim(this.selections).length <= 0) {
-        this.warn('请选择处方')
-        return
-      } else {
-        for (let key in this.selections) {
-          reviewIds[key] = this.selections[key].reviewId
-        }
-        params.auditType = '1'
-        params.passType = '1'
-        params.reviewOpinion = '批量通过'
-        params.reviewVerdict = '1'
-        params.reviewIds = reviewIds
+      },
+      //获取干预记录数据
+      getRecords(params={}) {
         this.$axios({
-          url: this.api.updateReviewStatus,
+          url: this.api.selectWithVisId,
           method: 'put',
           data: params
         })
           .then(res => {
             if (res.code == '200') {
-              this.fetchYJSMapData()
-              this.getCountText()
-              this.success(res.msg)
+              this.recordList = res.rows
             } else {
               this.warn(res.msg)
             }
@@ -696,34 +440,17 @@ export default {
           .catch(err => {
             this.error(err)
           })
-      }
-    },
-    //批量驳回
-    rejected() {
-      let params = {}
-      let reviewIds = []
-      if ($.trim(this.selections).length <= 0) {
-        this.warn('请选择处方')
-        return
-      } else {
-        for (let key in this.selections) {
-          reviewIds[key] = this.selections[key].reviewId
-        }
-        params.auditType = '1'
-        params.passType = '1'
-        params.reviewOpinion = '批量驳回'
-        params.reviewVerdict = '2'
-        params.reviewIds = reviewIds
+      },
+      // 科室树形结构
+      getTreeseldata(params = {}) {
         this.$axios({
-          url: this.api.updateReviewStatus,
+          url: this.api.selectTreeData,
           method: 'put',
           data: params
         })
           .then(res => {
             if (res.code == '200') {
-              this.fetchYJSMapData()
-              this.getCountText()
-              this.success(res.msg)
+              this.treeDatas = this.getDataChildren(res.rows, undefined)
             } else {
               this.warn(res.msg)
             }
@@ -731,156 +458,84 @@ export default {
           .catch(err => {
             this.error(err)
           })
-      }
-    },
-    //单个通过
-    passSingle(data) {
-      let params = {}
-      params.auditType = '1'
-      params.passType = '1'
-      params.reviewOpinion = '通过'
-      params.reviewVerdict = '1'
-      params.reviewIds = []
-      params.reviewIds[0] = data.row.reviewId
-      this.$axios({
-        url: this.api.updateReviewStatus,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success(res.msg)
-            this.fetchYJSMapData()
-            this.getCountText()
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    //单个驳回
-    rejectedSingle(data) {
-      this.Modal.visible = true
-      this.tempRowData = data.row
-      this.problemsData = data.row.orderissueVOS
-      this.getRecords({ visId: data.row.visId })
-      this.getTemplate(data)
-      this.getSelectOrderDetail(data)
-    },
-    //驳回问题详情
-    getSelectOrderDetail(data) {
-      let params = {}
-      params.visId = data.row.visId
-      params.submitNo = data.row.maxSubmitNo
-      params.clinicPrescNum = data.row.orderNo
-      this.$axios({
-        url: this.api.selectOrderDetail,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.tagsDetailData = res.rows
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    handleChange() {
-      for (let key in this.tagsData) {
-        this.tagsData[key].status = true
-      }
-      this.checkedAll = true
-    },
-    checkableChange(data) {
-      for (let key in this.tagsData) {
-        if (data.auditLevel == this.tagsData[key].auditLevel) {
-          this.tagsData[key].status = true
-        } else {
-          this.tagsData[key].status = false
+      },
+      //搜索
+      search() {
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        params.pageSize = 10
+        params.offset = 0
+        if (this.buttonText != '开始审方'){
+          this.fetchYJSMapData(params)
         }
-      }
-      this.tagsData.push()
-    },
-    getTemplate(data) {
-      let params = {}
-      params.visId = data.row.visId
-      params.prescOrderNo = data.row.orderNo
-      this.$axios({
-        url: this.api.selectWithReviewId,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.reviewTemplates = res.rows
-            if (this.reviewTemplates.length > 0) {
-              this.problemType = this.reviewTemplates[0].tabooId
-              this.getTemplateDetail()
-            }
-            this.reviewTemplates.push({ tabooId: '-1', tabooTitle: '----通用----' })
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    getTemplateDetail(data) {
-      let params = {}
-      params.tabooClass = this.problemType
-      this.$axios({
-        url: this.api.selectReviewTemplateDetail,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.templateTags = res.rows
-            this.dealTemplateTags(this.templateTags)
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    dealTemplateTags(data) {
-      for (let i in data) {
-        data[i].bgColor = '#d9d9d9'
-        if (data[i].titles.length > 5) {
-          data[i].updateTitles = data[i].titles.substr(0, 5) + '...'
-        } else {
-          data[i].updateTitles = data[i].titles
+
+      },
+      //重置
+      resetForm() {
+        this.$refs.searchPanel.form.resetFields()
+        if (this.buttonText != '开始审方'){
+          this.fetchYJSMapData({ pageSize: 10, offset: 0 })
         }
-      }
-    },
-    //存为模板
-    saveTemplate() {
-      if ($.trim(this.templateText).length == 0) {
-        this.warn('请输入审核意见')
-        return
-      } else {
+      },
+
+      //翻页事件
+      customerPageChange(page, pageSize) {
         let params = {}
-        params.contents = this.templateText
-        params.tabooClass = this.problemType
-        params.templetType = '1'
-        params.titles = this.templateText.slice(0, 10)
+        params.pageSize = pageSize
+        params.offset = (page - 1) * pageSize
+        if (this.buttonText != '开始审方'){
+          this.fetchYJSMapData(params)
+        }
+      },
+      //更改一页多少数据
+      clientSizeChange(current, size) {
+        this.current = 1
+        let params = {}
+        params.pageSize = size
+        params.offset = 0
+        if (this.buttonText != '开始审方'){
+          this.fetchYJSMapData(params)
+        }
+      },
+      fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
+        this.loading = true
+        params.orderId = 1
+        selectTribunalRecord(params)
+          .then(res => {
+            if (res.code == '200') {
+              this.dataSource = this.$dateFormat(res.rows,['submitTime']);
+              this.total = res.total
+              this.loading = false
+            } else {
+              this.loading = false
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.loading = false
+            this.error(err)
+          })
+      },
+      getCountText() {
+        let params = { reviewResouce: 1 }
         this.$axios({
-          url: this.api.reviewTemplateUpdate,
-          method: 'post',
+          url: this.api.selectTribunalRecordNum,
+          method: 'put',
           data: params
         })
           .then(res => {
             if (res.code == '200') {
-              this.success(res.msg)
+              this.countText = res.rows
+              for (let key in this.countText) {
+                if (this.countText[key].item == '待审核') {
+                  this.countText[key].colors = '#32c5d2'
+                } else if (this.countText[key].item == '驳回待确认') {
+                  this.countText[key].colors = '#f3c200'
+                } else if (this.countText[key].item == '已通过') {
+                  this.countText[key].colors = '#3598dc'
+                } else if (this.countText[key].item == '已驳回') {
+                  this.countText[key].colors = '#E6A23C'
+                }
+              }
             } else {
               this.warn(res.msg)
             }
@@ -888,270 +543,620 @@ export default {
           .catch(err => {
             this.error(err)
           })
-      }
-    },
-    selectTemp(data) {
-      this.problemType = data
-      this.getTemplateDetail()
-    },
-    tagsClick(data) {
-      let list = this.templateTags
-      for (let i in list) {
-        if (list[i].id == data.id) {
-          list[i].bgColor = '#2eabff'
-        } else {
-          list[i].bgColor = '#d9d9d9'
-        }
-      }
-      console.log(data, 'data')
-      this.templateText = data.reviewTemplate
-    },
-    //弹窗提交
-    handleOk() {
-      this.problemsData
-      let params = {}
-      params.auditType = '1'
-      params.passType = '1'
-      params.reviewOpinion = this.templateText
-      params.reviewVerdict = '1'
-      params.reviewIds = []
-      params.reviewIds[0] = this.tempRowData.reviewId
-      this.$axios({
-        url: this.api.updateReviewStatus,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success(res.msg)
-            this.Modal.visible = false
-            this.fetchYJSMapData()
-            this.getCountText()
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    //弹窗取消
-    handleCancel() {
-      this.Modal.visible = false
-    },
+      },
+      //多选框点击事件
+      selectBox(selection, row) {
+        //点击后获取这条数据
+        this.selections = selection
+      },
+      //全选
+      selectAll(selection) {
+        this.selections = selection
+      },
 
-    //查看
-    looks(data) {
-      this.$router.push({
-        name: 'presOutpatientDetail',
-        params: { visId: data.visId, submitNo: data.maxSubmitNo }
-      })
-    },
-    //TODO:处方单数据暂未处理
-    mouseHover(data) {
-      if (data.diseaseName) {
-        this.tabsData.diagnose = data.diseaseName
-      }
-      if (data.ptype) {
-        this.tabsData.costType = data.ptype
-      }
-      this.tabsData.clinicPrescNum = data.orderNo
-      this.tabsData.maxSubmitNo = data.maxSubmitNo
-      this.tabsData.visId = data.visId
-    },
-
-    getDataChildren(bdata, pid) {
-      var items = []
-      for (var key in bdata) {
-        var item = bdata[key]
-        if (pid == item.parentId) {
-          items.push({
-            title: item.title,
-            value: item.deptId,
-            key: item.deptId,
-            children: this.getDataChildren(bdata, item.deptId)
+      //开始审方
+      buttonClick() {
+        let status = null;
+        let _this = this;
+        if (this.buttonText == '开始审方') {
+          // setTimeout(()=>{
+          //   this.fetchYJSMapData();
+          //   this.getCountText();
+          // },1000)
+          //获取头部数据
+          this.getCountText();
+          this.refreshFreq = Number(10000);
+          this.setTimeRval(10000)
+          this.buttonText = '停止审方'
+          this.buttonType = 'danger'
+          this.disable = false
+          status = '1';
+          let params = { status: status,planScope:1,planType:1 }
+          this.$axios({
+            url: this.api.reviewUpdateStatus,
+            method: 'post',
+            data: params
           })
+            .then(res => {
+              if (res.code == '200') {
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
+        } else {
+          status = '0';
+          let params = { status: status,planScope:1,planType:1 }
+          this.$axios({
+            url: this.api.reviewUpdateStatus,
+            method: 'post',
+            data: params
+          })
+            .then(res => {
+              if (res.code == '200') {
+                clearInterval(_this.timeInitialize)
+                this.buttonText = '开始审方'
+                this.buttonType = 'primary'
+                this.disable = true;
+                this.countText=[];
+                if (res.data >0){
+                  this.$confirm({
+                    title: '批量通过或者批量驳回！',
+                    okText: '批量通过',
+                    cancelText: '批量驳回',
+                    onOk() {
+                      let passParams = {};
+                      passParams.reviewVerdict = 1;
+                      passParams.planScope = 1;
+                      _this.$axios({
+                        url: _this.api.updateReviewList,
+                        method: 'put',
+                        data: passParams
+                      })
+                        .then(res => {
+                          if (res.code == '200') {
+                            _this.success('批量通过成功');
+                            _this.fetchYJSMapData();
+                            _this.getCountText();
+                          } else {
+                            _this.warn(res.msg)
+                          }
+                        })
+                        .catch(err => {
+                          _this.error(err)
+                        })
+                    },
+                    onCancel() {
+                      let passParams = {};
+                      passParams.reviewVerdict =2;
+                      passParams.planScope = 1;
+                      _this.$axios({
+                        url: _this.api.updateReviewList,
+                        method: 'put',
+                        data: passParams
+                      })
+                        .then(res => {
+                          if (res.code == '200') {
+                            _this.success('批量驳回成功');
+                            _this.fetchYJSMapData();
+                            _this.getCountText();
+                          } else {
+                            _this.warn(res.msg)
+                          }
+                        })
+                        .catch(err => {
+                          _this.error(err)
+                        })
+                    },
+                  });
+                } else{
+                  this.success('停止成功！');
+                }
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
         }
-      }
-      return items
+
+      },
+      //批量通过
+      pass() {
+        let params = {}
+        let reviewIds = []
+        if ($.trim(this.selections).length <= 0) {
+          this.warn('请选择处方')
+          return
+        } else {
+          for (let key in this.selections) {
+            reviewIds[key] = this.selections[key].reviewId
+          }
+          params.auditType = '1'
+          params.passType = '1'
+          params.reviewOpinion = '批量通过'
+          params.reviewVerdict = '1'
+          params.reviewIds = reviewIds
+          this.$axios({
+            url: this.api.updateReviewStatus,
+            method: 'put',
+            data: params
+          })
+            .then(res => {
+              if (res.code == '200') {
+                this.fetchYJSMapData()
+                this.getCountText();
+                this.success(res.msg)
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
+        }
+      },
+      //批量驳回
+      rejected() {
+        let params = {}
+        let reviewIds = []
+        if ($.trim(this.selections).length <= 0) {
+          this.warn('请选择处方')
+          return
+        } else {
+          for (let key in this.selections) {
+            reviewIds[key] = this.selections[key].reviewId
+          }
+          params.auditType = '1'
+          params.passType = '1'
+          params.reviewOpinion = '批量驳回'
+          params.reviewVerdict = '2'
+          params.reviewIds = reviewIds
+          this.$axios({
+            url: this.api.updateReviewStatus,
+            method: 'put',
+            data: params
+          })
+            .then(res => {
+              if (res.code == '200') {
+                this.fetchYJSMapData()
+                this.getCountText();
+                this.success(res.msg)
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
+        }
+      },
+      //单个通过
+      passSingle(data) {
+        let params = {}
+        params.auditType = '1'
+        params.passType = '1'
+        params.reviewOpinion = '通过'
+        params.reviewVerdict = '1'
+        params.reviewIds = []
+        params.reviewIds[0] = data.row.reviewId
+        this.$axios({
+          url: this.api.updateReviewStatus,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success(res.msg)
+              this.fetchYJSMapData();
+              this.getCountText();
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      //单个驳回
+      rejectedSingle(data) {
+        this.Modal.visible = true
+        this.tempRowData = data.row
+        this.problemsData = data.row.orderissueVOS
+        this.getRecords({visId:data.row.visId})
+        this.getTemplate(data);
+        this.getSelectOrderDetail(data);
+      },
+      //驳回问题详情
+      getSelectOrderDetail(data){
+        let params = {}
+        params.visId = data.row.visId
+        params.submitNo = data.row.maxSubmitNo
+        params.clinicPrescNum = data.row.orderNo
+        this.$axios({
+          url: this.api.selectOrderDetail,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.tagsDetailData = res.rows;
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      handleChange(){
+        for (let key in this.tagsData) {
+          this.tagsData[key].status = true
+        }
+        this.checkedAll = true
+      },
+      checkableChange(data){
+        for (let key in this.tagsData) {
+          if (data.auditLevel == this.tagsData[key].auditLevel) {
+            this.tagsData[key].status = true
+          } else {
+            this.tagsData[key].status = false
+          }
+        }
+        this.tagsData.push()
+      },
+      getTemplate(data) {
+        let params = {}
+        params.visId = data.row.visId
+        params.prescOrderNo = data.row.orderNo
+        this.$axios({
+          url: this.api.selectWithReviewId,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.reviewTemplates = res.rows
+              if (this.reviewTemplates.length > 0) {
+                this.problemType = this.reviewTemplates[0].tabooId
+                this.getTemplateDetail()
+              }
+              this.reviewTemplates.push({ tabooId: '-1', tabooTitle: '----通用----' })
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      getTemplateDetail(data) {
+        let params = {}
+        params.tabooClass = this.problemType
+        this.$axios({
+          url: this.api.selectReviewTemplateDetail,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.templateTags = res.rows
+              this.dealTemplateTags(this.templateTags)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      dealTemplateTags(data) {
+        for (let i in data) {
+          data[i].bgColor = '#d9d9d9'
+          if (data[i].titles.length > 5) {
+            data[i].updateTitles = data[i].titles.substr(0, 5) + '...'
+          } else {
+            data[i].updateTitles = data[i].titles
+          }
+        }
+      },
+      //存为模板
+      saveTemplate() {
+        if ($.trim(this.templateText).length == 0) {
+          this.warn('请输入审核意见')
+          return
+        } else {
+          let params = {}
+          params.contents = this.templateText
+          params.tabooClass = this.problemType
+          params.templetType = '1'
+          params.titles = this.templateText.slice(0, 10)
+          this.$axios({
+            url: this.api.reviewTemplateUpdate,
+            method: 'post',
+            data: params
+          })
+            .then(res => {
+              if (res.code == '200') {
+                this.success(res.msg)
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
+        }
+      },
+      selectTemp(data) {
+        this.problemType = data
+        this.getTemplateDetail()
+      },
+      tagsClick(data) {
+        let list = this.templateTags
+        for (let i in list) {
+          if (list[i].id == data.id) {
+            list[i].bgColor = '#2eabff'
+          } else {
+            list[i].bgColor = '#d9d9d9'
+          }
+        }
+        console.log(data, 'data')
+        this.templateText = data.reviewTemplate
+      },
+      //弹窗提交
+      handleOk() {
+        this.problemsData
+        let params = {}
+        params.auditType = '1'
+        params.passType = '1'
+        params.reviewOpinion = this.templateText
+        params.reviewVerdict = '1'
+        params.reviewIds = []
+        params.reviewIds[0] = this.tempRowData.reviewId
+        this.$axios({
+          url: this.api.updateReviewStatus,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success(res.msg)
+              this.Modal.visible = false
+              this.fetchYJSMapData();
+              this.getCountText();
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      //弹窗取消
+      handleCancel() {
+        this.Modal.visible = false
+      },
+
+      //查看
+      looks(data) {
+        this.$router.push({
+          name: 'presOutpatientDetail',
+          params: { visId: data.visId, submitNo: data.maxSubmitNo}
+        })
+      },
+      //TODO:处方单数据暂未处理
+      mouseHover(data) {
+        if (data.diseaseName) {
+          this.tabsData.diagnose = data.diseaseName
+        }
+        if (data.ptype) {
+          this.tabsData.costType = data.ptype
+        }
+        this.tabsData.clinicPrescNum = data.orderNo;
+        this.tabsData.maxSubmitNo = data.maxSubmitNo;
+        this.tabsData.visId = data.visId;
+
+      },
+
+      getDataChildren(bdata, pid) {
+        var items = []
+        for (var key in bdata) {
+          var item = bdata[key]
+          if (pid == item.parentId) {
+            items.push({
+              title: item.title,
+              value: item.deptId,
+              key: item.deptId,
+              children: this.getDataChildren(bdata, item.deptId)
+            })
+          }
+        }
+        return items
+      },
+
+
+      //频率事件
+      rateChange(value) {
+        clearInterval(this.timeInitialize)
+        if (value == 0){
+        } else{
+          this.rateTime = value;
+          this.setTimeRval(this.rateTime)
+        }
+      },
+      //定时器
+      setTimeRval(data) {
+        this.timeInitialize = setInterval(() => {
+          this.fetchYJSMapData();
+          this.getCountText();
+        }, data)
+      },
     },
 
-    //频率事件
-    rateChange(value) {
-      clearInterval(this.timeInitialize)
-      if (value == 0) {
-      } else {
-        this.rateTime = value
-        this.setTimeRval(this.rateTime)
-      }
-    },
-    //定时器
-    setTimeRval(data) {
-      this.timeInitialize = setInterval(() => {
-        console.log('ddddd')
-        this.fetchYJSMapData()
-        this.getCountText()
-      }, data)
-    }
-  },
 
-  beforeDestroy() {
-    if (this.timeInitialize) {
-      clearInterval(this.timeInitialize)
-    }
-    if (this.openTrialTime) {
-      clearInterval(this.openTrialTime)
+    beforeDestroy() {
+      if (this.timeInitialize) {
+        clearInterval(this.timeInitialize)
+      }
+      if (this.openTrialTime){
+        clearInterval(this.openTrialTime)
+      }
     }
   }
-}
 </script>
 <style>
-.divInfo span {
-  margin-left: 10px;
-}
+  .divInfo span {
+    margin-left: 10px;
+  }
 
-/*自定义图标样式*/
-.myIcon {
-  font-size: 22px;
-  font-weight: bold;
-  padding-top: 40px;
-}
+  /*自定义图标样式*/
+  .myIcon {
+    font-size: 22px;
+    font-weight: bold;
+    padding-top: 40px;
+  }
 
-/*网格样式*/
-.multipleEl {
-  margin-top: 10px;
-}
-.auditClass {
-  font-weight: bold;
-  color: #000000;
-  opacity: 0.9;
-}
+  /*网格样式*/
+  .multipleEl {
+    margin-top: 10px;
+  }
+  .auditClass {
+    font-weight: bold;
+    color: #000000;
+    opacity: 0.9;
+  }
 
-.multipleEl .has-gutter tr th:nth-child(11) {
-  border-right: 0px;
-}
 
-.problemRow {
-  line-height: 30px;
-}
+  .multipleEl .has-gutter tr th:nth-child(11) {
+    border-right: 0px;
+  }
 
-.problemRow .ant-divider-horizontal {
-  margin: 0 0;
-}
+  .problemRow {
+    line-height: 30px;
+  }
 
-.multipleEl .multiLineText {
-  word-break: break-all;
-  display: -webkit-box;
-  -webkit-line-clamp: 1; /*限制在一个块元素显示的文本的行数*/
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 100%;
-  /*text-indent:2em;*/
-}
+  .problemRow .ant-divider-horizontal {
+    margin: 0 0;
+  }
 
-.modals .ant-form-item {
-  margin-bottom: 5px;
-}
+  .multipleEl .multiLineText {
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /*限制在一个块元素显示的文本的行数*/
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 100%;
+    /*text-indent:2em;*/
+  }
 
-.modals .ant-modal-body {
-  padding: 20px 24px;
-}
 
-.modals .ant-form-item-control {
-  line-height: 30px;
-}
+  .modals .ant-form-item {
+    margin-bottom: 5px;
+  }
 
-.modals .ant-form-item-label {
-  line-height: 30px;
-}
+  .modals .ant-modal-body {
+    padding: 20px 24px;
+  }
 
-.modals .ant-tabs-bar {
-  margin: 0 0 0px 0;
-}
+  .modals .ant-form-item-control {
+    line-height: 30px;
+  }
 
-.modals .ant-card-body {
-  padding: 10px 21px;
-}
+  .modals .ant-form-item-label {
+    line-height: 30px;
+  }
 
-.modals .ant-timeline {
-  margin-top: 20px;
-}
+  .modals .ant-tabs-bar {
+    margin: 0 0 0px 0;
+  }
 
-.modals .selectInput {
-  line-height: 24px;
-  font-size: 14px;
-  width: 100%;
-}
-.countCol .countStyle {
-  margin-top: 0px !important;
-}
-.countCol .countFor {
-  margin-bottom: 0px !important;
-}
-.saveButton {
-  margin-top: 10px;
-  margin-left: 10px;
-  float: left;
-}
+  .modals .ant-card-body {
+    padding: 10px 21px;
+  }
 
-.problemTag {
-  font-size: 12px;
-  margin-left: 7px;
-  margin-bottom: 5px;
-}
-.timelineItem p {
-  margin-bottom: 5px;
-}
+  .modals .ant-timeline {
+    margin-top: 20px;
+  }
 
-.timelineItem p:nth-child(n + 2) {
-  opacity: 0.8;
-}
+  .modals .selectInput {
+    line-height: 24px;
+    font-size: 14px;
+    width: 100%;
+  }
+  .countCol .countStyle {
+    margin-top: 0px !important;
+  }
+  .countCol .countFor {
+    margin-bottom: 0px !important;
+  }
+  .saveButton {
+    margin-top: 10px;
+    margin-left: 10px;
+    float: left;
+  }
 
-.radioStyle {
-  display: block;
-  height: 30px;
-  line-height: 30px;
-}
-.tagStyle {
-  font-size: 12px;
-  /*margin-left: 7px;*/
-  margin-bottom: 5px;
-}
-.textArea {
-  word-break: break-all;
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 100%;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  /*text-indent: 2em*/
-}
-.subscript {
-  color: white;
-  height: 30px;
-  width: 100px;
-  position: absolute;
-  right: -25px;
-  top: 9px;
-  text-align: center;
-  line-height: 30px;
-  /* font-family: ""; */
-  background-color: #8a8a8a;
-  -moz-transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-.dealP {
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 10px;
-}
-.icons-list {
-  margin-right: 6px;
-  font-size: 18px;
-}
+  .problemTag {
+    font-size: 12px;
+    margin-left: 7px;
+    margin-bottom: 5px;
+  }
+  .timelineItem p {
+    margin-bottom: 5px;
+  }
+
+  .timelineItem p:nth-child(n + 2) {
+    opacity: 0.8;
+  }
+
+  .radioStyle{
+    display: block;
+    height: 30px;
+    line-height: 30px;
+  }
+  .tagStyle {
+    font-size: 12px;
+    /*margin-left: 7px;*/
+    margin-bottom: 5px;
+  }
+  .textArea {
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    /*text-indent: 2em*/
+  }
+  .subscript {
+    color: white;
+    height: 30px;
+    width: 100px;
+    position: absolute;
+    right: -25px;
+    top: 9px;
+    text-align: center;
+    line-height: 30px;
+    /* font-family: ""; */
+    background-color: #8a8a8a;
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+  .dealP {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  .icons-list{
+    margin-right: 6px;
+    font-size: 18px;
+  }
 </style>
