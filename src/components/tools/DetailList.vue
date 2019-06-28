@@ -18,12 +18,13 @@
         default: '',
         required: false
       },
-    },
-    inject: {
       col: {
-        type: Number
+        type: Number,
+        default: 3,
       }
     },
+    // inject: {
+    // },
     render () {
       return (
         <Col {...{props: responsive[this.col]}}>

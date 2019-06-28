@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-button class="margin-top-10" type="primary" :disabled="disable" @click="addVarieties">添加品种</a-button>
+    <a-button class="margin-top-10" type="primary"  @click="addVarieties">新增品种</a-button>
     <a-spin tip="加载中..." :spinning="loading">
       <el-table
         ref="table"

@@ -33,7 +33,7 @@
             label="方案范围"
             :required="true"
           >
-            <a-radio-group v-decorator="['planScope',{initialValue: '1'}]">
+            <a-radio-group @change="radioGroup" v-decorator="['planScope',{initialValue: '1'}]">
               <a-radio value="1">门诊</a-radio>
               <a-radio value="0">住院</a-radio>
             </a-radio-group>
@@ -48,21 +48,6 @@
               <a-radio value="0">停用</a-radio>
             </a-radio-group>
           </a-form-item>
-          <!--<a-form-item-->
-          <!--v-bind="formItemLayout"-->
-          <!--label="选择已有方案"-->
-          <!--&gt;-->
-          <!--<a-select v-decorator="['clientClass',]"-->
-          <!--&gt;-->
-          <!--<a-select-option-->
-          <!--v-for="(item,index) in classData"-->
-          <!--:value='item.id'-->
-          <!--:key="index"-->
-          <!--&gt;-->
-          <!--{{item.text}}-->
-          <!--</a-select-option>-->
-          <!--</a-select>-->
-          <!--</a-form-item>-->
           <a-form-item
             label="方案描述"
             v-bind="formItemLayout"
@@ -103,7 +88,7 @@
 <script>
   import debounce from 'lodash/debounce'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
-  import conditionSelect from '@/components/condition-select'
+  import conditionSelect from '../component/condition-select'
 
   export default {
     components: { ATextarea, conditionSelect },
@@ -157,8 +142,11 @@
       this.form = this.$form.createForm(this)
     },
     mounted() {
-      this.init()
-      this.getListTypeData()
+      this.getListTypeData();
+      setTimeout(()=>{
+        this.init()
+      },500)
+
     },
     methods: {
       init() {
@@ -177,10 +165,27 @@
             if (res.code == '200') {
               this.planruleList = res.data.reviewPlanrules
               for (let key in this.planruleList) {
+                this.planruleList[key].spec = '';
                 this.planruleList[key].inputType = ''
-                this.planruleList[key]. multiple = true
                 this.planruleList[key].operators = []
                 this.planruleList[key].treeData = []
+                if (this.planruleList[key].columnId == 'AGE'){
+                  let assertVal = '';
+                  let assertVal2 = '';
+                  let spec = '';
+                  assertVal = this.planruleList[key].assertVal;
+                  assertVal2 = this.planruleList[key].assertVal2;
+                  this.planruleList[key].assertVal = Number(assertVal.slice(0,$.trim(assertVal).length-1));
+                  this.planruleList[key].assertVal2 =Number(assertVal2.slice(0,$.trim(assertVal2).length-1));
+                  spec  = assertVal.slice($.trim(assertVal).length-1,$.trim(assertVal).length);
+                   if (spec == '岁'){
+                     this.planruleList[key].spec = '3'
+                   }else if (spec == '月'){
+                     this.planruleList[key].spec = '2'
+                   } else if (spec == '天'){
+                     this.planruleList[key].spec = '1'
+                   }
+                }
                 if (this.planruleList[key].logic == '1') {
                   this.planruleList[key].inputType = 'input'
                 } else if (this.planruleList[key].logic == '2') {
@@ -200,12 +205,6 @@
                     this.planruleList[key].inputType = 'select'
                     this.planruleList[key].treeData = this.enum.patientType
                   } else if (this.planruleList[key].columnId) {
-                    let code = this.planruleList[key].columnId;
-                    if (code == this.defaults.drugCategory ||
-                      code == this.defaults.drugTypes ||
-                      code == this.defaults.drugGrade || code == this.defaults.anestheticDrugs || code == this.defaults.essentialDrugs){
-                      this.planruleList[key].multiple = false;
-                    }
                     let params = {}
                     params.code = this.planruleList[key].columnId
                     this.$axios({
@@ -238,6 +237,7 @@
                       })
                   }
                 }
+                this.treeList = this.deletePresOut(this.treeList,res.data.planScope);
                 let loadData = this.getItemTreeData(this.planruleList[key].columnId, this.treeList)
                 for (let j in this.classData) {
                   for (let k in loadData.operators) {
@@ -246,7 +246,9 @@
                     }
                   }
                 }
-                this.planruleList.push()
+                if (loadData.logic == '2'){
+                  this.planruleList[key].operators.push( { id: '9', text: '区间' },)
+                }
               }
               setTimeout(() => {
                 this.form.setFieldsValue({
@@ -268,6 +270,35 @@
           })
         }
       },
+      //门诊或者住院
+      radioGroup(value){
+        this.treeList = this.deletePresOut(this.treeList,value.target.value);
+        if (value.target.value == 1){
+          console.log(this.planruleList)
+          for (let key in this.planruleList){
+            if (this.planruleList[key].columnId == 'LENGTHOFSTAY'){
+              this.planruleList.splice(key, 1)
+            }
+          } 
+        }
+      },
+      //删除住院费用
+      deletePresOut(data,value){
+        data.map((item) => {
+          if (item.code == 'LENGTHOFSTAY'){
+            if (value == 1){
+              item.disabled = true
+            } else{
+              item.disabled = false
+            }
+          }
+          if (item.children) {
+            this.deletePresOut(item.children,value)
+          }
+        })
+        this.treeList.push()
+        return data
+      },
       //返回首页
       cancle() {
         this.$router.push({
@@ -283,10 +314,27 @@
             let params = {}
             params = values
             let listData = this.planruleList
+            let specText = '';
             for (let key in listData) {
-              delete listData[key].inputType
-              delete listData[key].operators
-              delete listData[key].treeData
+              if (listData[key].columnId == 'AGE'){
+                if (listData[key].spec == '3'){
+                  specText = '岁'
+                }else if (listData[key].spec == '2') {
+                  specText = '月'
+                }else if (listData[key].spec == '1') {
+                  specText = '天'
+                }
+                if (listData[key].logic == '1'){
+                  listData[key].assertVal =  ''+listData[key].assertVal+specText
+                } else{
+                  listData[key].assertVal =  ''+listData[key].assertVal+specText
+                  listData[key].assertVal2 =  ''+listData[key].assertVal2+specText
+                }
+              }
+                delete listData[key].spec
+                delete listData[key].inputType
+                delete listData[key].operators
+                delete listData[key].treeData
             }
             params.sampling = '1'
             params.distribution = '1'
@@ -294,7 +342,7 @@
             if (this.$route.params.planId) {
               params.planId = this.$route.params.planId
             }
-            console.log(JSON.stringify(params))
+            console.log(params.reviewPlanrules )
             this.$axios({
               url: this.api.reviewPlanUpdate,
               method: 'post',
@@ -329,7 +377,7 @@
           columnId: '',
           relation: null,
           operators: [],
-          logic: '',
+          logic:'',
           status: '1',
           inputType: 'input',
           assertVal: null,
@@ -349,8 +397,7 @@
         })
           .then(res => {
             if (res.code == '200') {
-              this.treeList = res.rows
-              this.dealTreeList(res.rows)
+              this.treeList = this.dealTreeList(res.rows)
             } else {
               this.warn(res.msg)
             }
@@ -380,16 +427,21 @@
         item.operators = []
         item.treeData = []
         item.values = []
-        item.assertVal = 0
-        item.assertVal2 = 0
+        item.spec = ''
+        item.assertVal = null
+        item.assertVal2 = null
         let data = this.getItemTreeData(item.columnId, this.treeList)
-        for (let key in this.classData) {
-          for (let i in data.operators) {
-            if (this.classData[key].id == data.operators[i]) {
-              item.operators.push(this.classData[key])
-              item.relation = this.classData[key].id
+          for (let key in this.classData) {
+            for (let i in data.operators) {
+              if (this.classData[key].id == data.operators[i]) {
+                item.operators.push(this.classData[key])
+                item.relation = this.classData[key].id
+              }
             }
           }
+        if (data.logic == '2'){
+          item.operators.push({ id: '9', text: '区间' },)
+          item.relation = '9';
         }
         item.logic = data.logic
         if (data.logic == '1') {
@@ -428,7 +480,6 @@
                     let indexData = this.dealAllStartTree(res.rows)
                     item.treeData = this.recursiveNodeTree(indexData, 'undefined')
                     pidNum += 1
-                    console.log(pidNum, 'nul')
                     break
                   }
                 }
@@ -436,7 +487,8 @@
                   item.inputType = 'select'
                   item.treeData = res.rows
                 }
-                this.planruleList.push()
+                this.planruleList.push();
+
               } else {
                 this.warn(res.msg)
               }
@@ -497,6 +549,7 @@
           //TODO:数据交换
           arrays = temps
         }
+        return arrays
       },
 
 
@@ -514,7 +567,6 @@
           if (res.code == '200') {
             item.treeData = res.rows
             this.planruleList.push()
-            console.log(this.planruleList)
           } else {
             this.warn(res.msg)
           }

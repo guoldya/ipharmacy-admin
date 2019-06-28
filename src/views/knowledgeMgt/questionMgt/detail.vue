@@ -6,17 +6,55 @@
       </a>
     </div>
     <a-form :form="form" @submit="handleSubmit">
+      <a-form-item label="上级目录" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-tree-select
+          :treeData="treedata"
+          placeholder="请选择"
+          v-decorator="[
+                'id',
+                {
+                  rules: [{
+                    required: true,
+                    message: '请选择上级目录',
+                  }],
+                }
+              ]"
+        ></a-tree-select>
+      </a-form-item>
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input :disabled="disables" v-decorator="['id']"/>
+        <a-input
+          :disabled="disables"
+          v-decorator="[
+                'code',
+                {
+                  rules: [{
+                    required: true,
+                    message: '请输入问题编码',
+                  }],
+                }
+              ]"
+          placeholder="一般由数字和字母组成"
+        />
       </a-form-item>
       <a-form-item label="问题名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input v-decorator="['name']"/>
+        <a-input
+          v-decorator="[
+                'name',
+                {
+                  rules: [{
+                    required: true,
+                    message: '请输入问题名称',
+                  }],
+                }
+              ]"
+          placeholder="你想新增问题的名称"
+        />
       </a-form-item>
       <a-form-item label="拼音编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input v-decorator="['spellCode']"/>
+        <a-input v-decorator="['spellCode']" placeholder="为空时由系统自动生成"/>
       </a-form-item>
       <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-textarea v-decorator="['remark']"/>
+        <a-textarea v-decorator="['remark']" placeholder="可以添加更多丰富的信息"/>
       </a-form-item>
       <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-select v-decorator="[ 'status']">
@@ -62,7 +100,8 @@ export default {
       listData: {},
       disable: false,
       patientid: '',
-      datas: []
+      datas: [],
+      treedata: []
     }
   },
   computed: {
@@ -77,17 +116,10 @@ export default {
     //     this.disable=true
     // }
     this.getTreeList({ codeclass: 7, id: this.$route.params.id })
+    this.getTreeLists({ codeclass: 7 })
     let _this = this
     if (this.$route.query) {
       if (this.$route.query.msg !== 'new') {
-        // _this.listData = this.$route.query
-        // _this.form.setFieldsValue({
-        //   id: _this.listData.id,
-        //   name: _this.listData.name,
-        //   spellCode: _this.listData.spellCode,
-        //   remark: _this.listData.remark,
-        //   status: _this.listData.status
-        // })
         this.readOnly = this.$route.query.levelType == 1 ? true : false
         if (this.$route.query.levelColor) {
           _this.levelColor = this.$route.query.levelColor
@@ -152,7 +184,6 @@ export default {
     confirm(e) {},
     handlesColor(data) {
       if (data) {
-        console.log(data)
         this.listData.levelColor = data
       }
     },
@@ -166,11 +197,61 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            //this.datas = this.getDataChildren(res.rows, undefined)
-            // this.listData = res.rows
-            let { id, name, spellCode, remark, status, } = res.rows[0],
-              formData = { id, name, spellCode, status, remark, }
-            this.form.setFieldsValue(formData)
+            if (this.$route.query.msg !== 'new') {
+              let { code, name, spellCode, remark, status } = res.rows[0],
+                formData = { code, name, spellCode, status, remark }
+              this.form.setFieldsValue(formData)
+            }
+          } else {
+            this.loadingTable = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
+    },
+    // 树形初始数据
+    // getTreeList(params = {}) {
+    //   var paramsNum = Object.keys(params)
+    //   this.loading = true
+    //   this.$axios({
+    //     url: this.api.selectTitlesList,
+    //     method: 'put',
+    //     data: params
+    //   })
+    //     .then(res => {
+    //       if (res.code == '200') {
+    //         if (paramsNum.length == 1) {
+    //           this.dataSource = this.getDataChildren(res.rows, undefined)
+    //         } else {
+    //           this.dataSource = res.rows
+    //         }
+    //         this.loading = false
+    //       } else {
+    //         this.loadingTable = false
+    //         this.warn(res.msg)
+    //       }
+    //     })
+    //     .catch(err => {
+    //       this.loadingTable = false
+    //       this.error(err)
+    //     })
+    // },
+    // 父级初始结构
+    getTreeLists(params = {}) {
+      var paramsNum = Object.keys(params)
+      this.loading = true
+      this.$axios({
+        url: this.api.selectTitlesList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.treedata = this.getDataChildrens(res.rows, undefined)
+            this.loading = false
           } else {
             this.loadingTable = false
             this.warn(res.msg)
@@ -183,6 +264,22 @@ export default {
     },
     // 树形结构拼接
     getDataChildren(bdata, pid) {
+      var items = []
+      for (var key in bdata) {
+        var item = bdata[key]
+        if (pid == item.parentId) {
+          items.push({
+            title: item.name,
+            value: item.id,
+            key: item.id,
+            children: this.getDataChildren(bdata, item.id)
+          })
+        }
+      }
+      return items
+    },
+    //树形结构拼接
+    getDataChildrens(bdata, pid) {
       var items = []
       for (var key in bdata) {
         var item = bdata[key]

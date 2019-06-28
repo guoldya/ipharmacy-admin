@@ -178,20 +178,20 @@ export const asyncRouterMap = [
                         path: '/auditWorkstation/presOutpatient',
                         name: 'presOutpatient',
                         component: RouteView,
-                        meta: { title: '审方中心(门诊)', multistage: true },
+                        meta: { title: '审方中心(门诊)', multistage: true,keepAlive: true, },
                         children: [
                             {
                                 path: '/auditWorkstation/presOutpatient/index',
                                 name: 'presOutpatientIndex',
                                 component: () => import( '@/views/auditWorkstation/presOutpatient/index.vue'),
-                                meta: { title: '审方中心(门诊)', hiddenHeaderContent: true, index: true }
+                                meta: { title: '审方中心(门诊)',keepAlive: true, hiddenHeaderContent: true, index: true }
                             },
                             {
-                                path: '/auditWorkstation/presOutpatient/detail',
+                                path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo',
                                 name: 'presOutpatientDetail',
                                 hidden: true,
                                 component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-                                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, detail: true }
+                                meta: { title: '审方中心详情(门诊)',keepAlive: true, hiddenHeaderContent: true, detail: true }
                             }
                         ]
                     },
@@ -215,7 +215,28 @@ export const asyncRouterMap = [
                                 // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
                             }
                         ]
-                    }
+                    },
+                    {
+                      path: '/auditWorkstation/presHistory',
+                      name: 'presHistory',
+                      component: RouteView,
+                      meta: { title: '审方记录', multistage: true },
+                      children: [
+                        {
+                          path: '/auditWorkstation/presHistory/index',
+                          name: 'presHistoryIndex',
+                          component: () => import( '@/views/auditWorkstation/presHistory/index.vue'),
+                          meta: { title: '审方记录', hiddenHeaderContent: true, index: true }
+                        },
+                        {
+                          path: '/auditWorkstation/presHistory/detail',
+                          name: 'presHistoryDetail',
+                          hidden: true,
+                          component: () => import( '@/views/auditWorkstation/presHistory/detail.vue'),
+                          // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
+                        }
+                      ]
+                    },
                 ]
             },
             {
@@ -326,6 +347,27 @@ export const asyncRouterMap = [
                       },
                     ]
                   },
+                  {
+                    path: '/baseData/question',
+                    name: 'dictionary',
+                    component: RouteView,
+                    meta: { title: '药品分类管理', multistage: true },
+                    children: [
+                        {
+                            path: '/baseData/question/index',
+                            name: 'baseDataQuestion',
+                            component: () => import( '@/views/baseData/question/index.vue'),
+                            meta: { title: '药品分类管理基础数据', hiddenHeaderContent: true, index: true }
+                        },
+                        {
+                            path: '/baseData/question/detailBaseClass/:code/',
+                            name: 'baseDataQuestionDetail',
+                            hidden: true,
+                            component: () => import( '@/views/baseData/question/detail.vue'),
+                            meta: { title: '分类详情',hiddenHeaderContent: true, detail: true,}
+                        },
+                    ]
+                },
                     {
                         path: '/baseData/dictionary',
                         name: 'dictionary',

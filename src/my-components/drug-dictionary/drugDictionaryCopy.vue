@@ -1,6 +1,6 @@
 <template>
   <div>
-  <a-button type="primary"  @click="addDictionary">新增药品</a-button>
+  <!-- <a-button type="primary"  @click="addDictionary">新增药品</a-button> -->
   <a-spin tip="加载中..." :spinning="loading">
     <el-table
       ref="table"
@@ -9,11 +9,11 @@
       class="margin-top-10"
       :highlight-current-row="true"
     >
-      <el-table-column fixed="right" label="操作" :width="200" align="center" v-if="true">
+      <!-- <el-table-column fixed="right" label="操作" :width="200" align="center" v-if="true">
         <template slot-scope="scope">
           <opcol :items="items" :more="false" :data="scope.row" :filterItem="['status']"></opcol>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column :show-overflow-tooltip="true" v-for="item in columns" :key="item.value"
                        :label="item.title" :prop="item.value" :width="item.width" :align="item.align">
         <template slot-scope="scope">

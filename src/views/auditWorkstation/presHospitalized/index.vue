@@ -179,7 +179,7 @@
 import {} from '@/api/login'
 import { Icon } from 'ant-design-vue'
 import countText from '@/components/count-text'
-import prescriptionTabs from '@/components/prescription-tabs'
+import prescriptionTabs from '../component/prescription-tabs'
 import alert from '@/components/alert'
 
 const myIcon = Icon.createFromIconfontCN({
@@ -197,7 +197,8 @@ export default {
       api: {
         selectPage: 'sys/reviewOrderissue/selectHospitalizationRecord',
         selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
-        getStatusData: 'sys/reviewOrderissue/selectTribunalRecordNum'
+        getStatusData: 'sys/reviewOrderissue/selectTribunalRecordNum',
+        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus'
       },
       labelCol: {
         xs: { span: 24 },
@@ -247,11 +248,11 @@ export default {
   computed: {
     list() {
       return [
-        { name: '医生', dataField: 'submitDoc ', type: 'text' },
-        { name: '患者', dataField: 'patientName ', type: 'text' },
+        { name: '医生', dataField: 'submitDoc', type: 'text' },
+        { name: '患者', dataField: 'patientName', type: 'text' },
         {
           name: '科室',
-          dataField: 'keyword',
+          dataField: 'admitDept',
           type: 'tree-select',
           keyExpr: 'keyword',
           treeData: this.treeDatas
@@ -388,6 +389,7 @@ export default {
     //多选框点击事件
     selectBox(selection, row) {
       //点击后获取这条数据
+      //console.log(selection)
       this.selections = selection
       this.checkSelect = selection.length
     },
@@ -436,6 +438,7 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
+              this.fetchYJSMapData()
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -455,13 +458,10 @@ export default {
       }
     },
     //单个通过
-    passSingle(data) {
-      console.log(data)
-    },
+    passSingle(data) {},
     //单个驳回
     rejectedSingle(data) {
       this.Modal.visible = true
-      console.log(data.row.problemList)
       this.problemsData = data.row.problemList
       for (let key in this.problemsData) {
         this.problemsData[key].rejectReason = '病入膏肓'
@@ -483,10 +483,9 @@ export default {
 
     //查看
     looks(data) {
-      console.log(data)
       this.$router.push({
         name: 'presHospitalizedDetail',
-       query:{visId:data.visId},
+        query: { visId: data.visId, maxSubmitNo: data.maxSubmitNo }
       })
     },
     //处方单网格样式

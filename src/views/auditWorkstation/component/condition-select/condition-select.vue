@@ -15,7 +15,11 @@
           </a-tree-select>
         </a-col>
         <a-col :span="2">
-          <a-select class="width-100 margin-left-5" v-model="cd.relation">
+          <a-select
+            class="width-100 margin-left-5"
+            v-model="cd.relation"
+            @change="relationChange($event,cd.logic,cd.ruleId)"
+          >
             <a-select-option
               v-for="item in cd.operators"
               :value='item.id'
@@ -30,10 +34,9 @@
           <div v-if="cd.inputType=='input'">
             <a-input  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
           </div>
-
           <!--下拉框-->
           <a-select
-            :mode=cd.multiple
+            mode='multiple'
             @search="searchSelect($event,cd.treeData,cd.columnId,cd)"
             v-else-if="cd.inputType=='select'"
             class="width-100 marLeft10"
@@ -51,7 +54,7 @@
           </a-select>
           <!--树-->
           <a-tree-select
-            :multiple = cd.multiple
+            multiple
             @search="searchTreeSelect($event,cd.treeData,cd.columnId,cd)"
             :treeData="cd.treeData"
             v-else-if="cd.inputType=='tree'"
@@ -59,39 +62,48 @@
             v-model="cd.values"
             :filterTreeNode="false">
           </a-tree-select>
-
-          <!--日期框-->
-          <!--<a-date-picker class="width-100 marLeft10" v-else-if="cd.isCheckbox==3" v-model="cd.value"></a-date-picker>-->
-          <!--日期范围-->
-          <!--<a-range-picker class="width-100 marLeft10" v-else-if="cd.val==6" v-model="cd.list"/>-->
-          <!--数字范围-->
+          <!--范围-->
           <div v-else-if="cd.inputType=='dataRange'" class="width-100 marLeft10">
-            <a-input-number style=" width:32%; text-align: center" placeholder="1" v-model="cd.assertVal"  />
-            <a-input style=" width: 12%; border-left: 0; pointer-events: none; backgroundColor: #fff" placeholder="~" disabled />
-            <a-input-number style="width:32%; text-align: center; border-left: 0" v-model="cd.assertVal2" />
-            <a-select defaultValue="1">
-              <a-select-option value="1">年</a-select-option>
-              <a-select-option value="2">月</a-select-option>
-              <a-select-option value="3">日</a-select-option>
+            <a-input-number  :max="cd.assertVal2" class="rangeLeft" v-model="cd.assertVal"  />
+            <a-input class="rangeCenter" placeholder="~" disabled />
+            <a-input-number  :min="cd.assertVal" class="rangeRight"  v-model="cd.assertVal2" />
+            <a-select
+              v-if="cd.columnId == 'AGE' && cd.logic == '2'"
+              @change="assertValSpec($event,cd.ruleId)"
+              :defaultValue="cd.spec"
+              style="width: 19%"
+            >
+              <a-select-option
+                v-for="item in ageType"
+                :value='item.id'
+                :key="item.id"
+              >
+                {{item.text}}
+              </a-select-option>
             </a-select>
-            <!--<a-input style=" width:32%; text-align: center" placeholder="Minimum" v-model="cd.assertVal"/>-->
-            <!--<a-input style=" width: 4%; border-left: 0; pointer-events: none; backgroundColor: #fff" placeholder="~" disabled />-->
-            <!--<a-input style="width:32%; text-align: center; border-left: 0" v-model="cd.assertVal2"  placeholder="Maximum" />-->
-            <!--<a-select-->
-              <!--style="width:20%"-->
-              <!--v-if="cd.columnId =='AGE'"-->
-              <!--class="margin-left-5"-->
-            <!--&gt;-->
-              <!--<a-select-option-->
-                <!--v-for="at in ageType"-->
-                <!--:value='at.id'-->
-                <!--:key="at.id"-->
-              <!--&gt;-->
-                <!--{{at.text}}-->
-              <!--</a-select-option>-->
-            <!--</a-select>-->
+            <a-input style="width:18%;" v-else value="天" disabled>
+            </a-input>
           </div>
+
+
         </a-col>
+        <a-col :span='1'>
+          <a-select
+            v-if="cd.columnId == 'AGE' && cd.logic == '1'"
+            @change="assertValSpec($event,cd.ruleId)"
+            :defaultValue="cd.spec"
+            style="width: 100%"
+          >
+            <a-select-option
+              v-for="item in ageType"
+              :value='item.id'
+              :key="item.id"
+            >
+              {{item.text}}
+            </a-select-option>
+          </a-select>
+        </a-col>
+
         <a-col :span="1">
           <a-icon class="iconStyle" @click="deleteCon(index)" type="minus-circle" theme="filled"/>
         </a-col>
@@ -110,10 +122,6 @@
         required: true
       },
       treeData: {
-        type: Array,
-        required: true
-      },
-      classData: {
         type: Array,
         required: true
       },
@@ -139,23 +147,37 @@
           planSelectData: 'sys/reviewPlan/selectData',
         },
         selectMode: 'tags',
-        ageType: this.enum.ageType
+        ageType: this.enum.ageType,
+        inDay:'1',
       }
     },
     mounted() {
-
+      console.log(this.conditions)
     },
     methods: {
-      changeAssert1(value,data){
-        console.log(value);
-        data.assertVal = value.data;
-        // this.conditions.push();
-        console.log(data.assertVal);
+      relationChange(value,logic,ruleId){
+        for (let key in this.conditions){
+          if (ruleId == this.conditions[key].ruleId){
+            if (logic <'3'){
+              if (value != '9'){
+                this.conditions[key].inputType = 'input'
+                this.conditions[key].logic = '1';
+              }else{
+                this.conditions[key].inputType = 'dataRange'
+                this.conditions[key].logic = '2';
+              }
+            }
+          } 
+        }
+        this.conditions.push();
       },
-      changeAssert2(value,data){
-        data.assertVal1 = value.data;
-        // this.conditions.push();
-        console.log(data.assertVal);
+      assertValSpec(value,ruleId){
+        console.log(value,'va')
+        for (let key in this.conditions){
+          if (ruleId == this.conditions[key].ruleId){
+              this.conditions[key].spec = ''+value
+          }
+        }
       },
       //处理模型字段
       dealAllStartTree(list) {
@@ -218,6 +240,24 @@
   }
   .ant-select-tree-dropdown {
    max-height: 300px !important;
+  }
+  .rangeCenter{
+    width: 12%;
+    border-right: 0;
+    border-left: 0;
+    margin-left: 1px;
+    pointer-events: none;
+    backgroundColor: #fff
+  }
+  .rangeLeft{
+    width:32%;
+    text-align: center;
+    border-right: 0px
+  }
+  .rangeRight{
+    width:32%;
+    text-align: center;
+    border-left: 0px
   }
 
 </style>
