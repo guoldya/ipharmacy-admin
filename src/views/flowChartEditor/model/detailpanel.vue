@@ -127,7 +127,7 @@
       </div>
     </div>
     <div data-status="edge-selected" class="pannel" id="edge_detailpannel" style="display: none;">
-      <div class="panel-title">边属性</div>
+      <div class="panel-title">线属性</div>
       <div class="block-container">
         <div class="p name">
           名称：
@@ -315,7 +315,6 @@
         }else if (params.lo == 3){
           this.boxInitialized.inputType = 'select';
           this.boxInitialized.itemId = params.id;
-          console.log(this.boxInitialized)
           coreRuleNodeSelectColId({id:params.id}).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = res.rows;
@@ -338,7 +337,6 @@
         this.selectNode.colDbType = params.colDbType;
         this.modelValue = params.title;
         this.selectNode.label = this.modelValue;
-        this.selectNode.ro = null;
         this.selectNode.assertVal = null;
         this.condition = '';
         this.conditionValue = '';
@@ -350,6 +348,7 @@
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
         }
+        this.selectNode.ro = value
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
       //条件值单个输入事件
@@ -422,7 +421,9 @@
       //属性节点后线段属性
       attributeEdge(value, node, extra){
         let _this = this;
+        console.log(extra)
         let params = extra.selectedNodes[0].data.props;
+        this.selectNode.lo = params.lo
         _this.selectNode.label = params.title;
         if (params.lo == 1){
           _this.edgeInitialized.inputEdge = 'input'
@@ -449,7 +450,6 @@
         }else if (params.colDbType == 3){
           _this.edgeInitialized.inValueEdge = 'text'
         }
-        console.log(_this.edgeInitialized,'1');
       },
 
       //线段输入框input事件

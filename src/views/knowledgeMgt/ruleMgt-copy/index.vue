@@ -24,7 +24,7 @@
                     <a-badge :status="props.row.status == 0? 'default':'processing'"
                              :text="props.row.status==0?'停用':'启用'"/>
                   </span>
-                  <span v-else-if="item.prop == 'type'" v-html="ruleType(props.row.type)"></span>
+                  <span v-else-if="item.prop == 'type'" v-html="typeRule(props.row.type)"></span>
                   <span v-else-if="item.prop == 'type2'" v-html="typeType(props.row.type2)"></span>
                   <span v-else-if="item.prop == 'action'">
                     <a @click="look(props)" v-if="props.row.type == 1">查看</a>
@@ -69,27 +69,16 @@
         width="700px"
       >
         <a-form :form="drugForm">
-          <a-form-item label="规则分类"
-                       :label-col="{ span: 4 }"
-                       :wrapper-col="{ span: 17 }">
-            <a-tree-select
-              class="draggable-tree"
-              :treeData="gData"
-              :loadData="onLoadData"
-              @select="onSelect"
-            >
-            </a-tree-select>
-          </a-form-item>
           <a-form-item label="类型"
                        :label-col="{ span: 4 }"
                        :wrapper-col="{ span: 17 }">
-            <a-select v-decorator="[ 'type2',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
-                      @select="selectType"
+            <a-radio-group v-decorator="[ 'type2',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
+                      @change="selectType"
                       placeholder="请选择类型">
-              <a-select-option :value='op.id' v-for="(op,index) in this.enum.ruleClassification" :key="index">
+              <a-radio :value='op.id' v-for="(op,index) in this.enum.ruleClassification" :key="index">
                 {{op.text}}
-              </a-select-option>
-            </a-select>
+              </a-radio>
+            </a-radio-group>
           </a-form-item>
           <a-form-item label="药品"
                        :label-col="{ span: 4 }"
@@ -286,13 +275,29 @@
             type: 'text'
           },
           {
+            name: '类型',
+            dataField: 'type2',
+            type: 'select',
+            dataSource: this.enum.ruleClassification,
+            keyExpr: 'id',
+            valueExpr: 'text'
+          },
+          {
+            name: '规则',
+            dataField: 'type2',
+            type: 'select',
+            dataSource: this.enum.ruleType,
+            keyExpr: 'id',
+            valueExpr: 'text'
+          },
+          {
             name: '状态',
             dataField: 'status',
             type: 'select',
             dataSource: this.enum.status,
             keyExpr: 'id',
             valueExpr: 'text'
-          }
+          },
 
         ]
       }
@@ -413,21 +418,21 @@
           this.disable = true
         }
       },
-      selectType(value){
-        console.log(value);
-        if (value == 1) {
+      selectType(e){
+        console.log(e.target.value);
+        if (e.target.value == 1) {
           // this.drugModal.modalTitle = '添加药品规则'
           this.selkeys = 1
           this.coreRuleSelect({ keyword: '' })
-        } else if (value == 2) {
+        } else if (e.target.value == 2) {
           // this.drugModal.modalTitle = '添加药品分类规则'
           this.selkeys = 2
           this.coreRuleCategory({keyword:''})
-        } else if (value == 3) {
+        } else if (e.target.value == 3) {
           // this.drugModal.modalTitle = '添加药品组规则'
           this.coreRuleGroup({ keyword: '' })
           this.selkeys = 3
-        } else if (value == 4) {
+        } else if (e.target.value == 4) {
           // this.drugModal.modalTitle = '添加全局规则'
           this.selkeys = 4
         }
@@ -459,6 +464,7 @@
       },
       //药品组select列
       coreRuleGroup(params = {}) {
+        this.coreRule=[];
         coreRuleGroupSpec(params).then(res => {
           if (res.code == '200') {
             for (let key in res.rows) {
@@ -524,16 +530,18 @@
         this.drugForm.validateFields((err, values) => {
             if (!err) {
               let params = {};
+              console.log(values)
               if (values.name){
                 params.name = values.name;
-
+                params.type2 = values.type2;
               }else{
                 params.name = this.ruleName.label
                 params.limitedItemid = this.ruleName.key
+                params.type2 = values.type2;
               }
-              params.type = this.selectNode.type
-              params.type2 = this.selectNode.type2
-              params.typeId = this.selectNode.key
+              // params.type = this.selectNode.type
+              // params.type2 = this.selectNode.type2
+              // params.typeId = this.selectNode.key
               coreRuleUpdate(params).then(res => {
                 if (res.code == '200') {
                   this.getPageData()
@@ -589,7 +597,7 @@
         console.log(data);
         let newPage = this.$router.resolve({
           name: 'flowChartEditor',
-          query:{id:data.row.id},
+          query:{id:data.row.id,type:data.row.type},
         })
         window.open(newPage.href, '_blank')
       },
@@ -597,7 +605,7 @@
       look(data){
         let newPage = this.$router.resolve({
           name: 'flowChartEditor',
-          query:{id:data.row.id},
+          query:{id:data.row.id,type:data.row.type},
         })
         window.open(newPage.href, '_blank')
       },
@@ -642,7 +650,7 @@
       },
 
       //filter
-      ruleType(value) {
+      typeRule(value) {
         if (value == '1') {
           return '系统'
         } else if (value == '2') {
@@ -684,7 +692,7 @@
   }
 
   .drugModal .ant-modal-body {
-    text-align: right
+    /*text-align: right*/
   }
 
   .selectCol {

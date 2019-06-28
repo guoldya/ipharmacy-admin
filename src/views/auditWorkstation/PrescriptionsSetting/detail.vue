@@ -175,9 +175,13 @@
                   let spec = '';
                   assertVal = this.planruleList[key].assertVal;
                   assertVal2 = this.planruleList[key].assertVal2;
-                  this.planruleList[key].assertVal = Number(assertVal.slice(0,$.trim(assertVal).length-1));
-                  this.planruleList[key].assertVal2 =Number(assertVal2.slice(0,$.trim(assertVal2).length-1));
-                  spec  = assertVal.slice($.trim(assertVal).length-1,$.trim(assertVal).length);
+                  if (assertVal) {
+                    this.planruleList[key].assertVal = Number(assertVal.slice(0,$.trim(assertVal).length-1));
+                    spec  = assertVal.slice($.trim(assertVal).length-1,$.trim(assertVal).length);
+                  }
+                  if (assertVal2){
+                    this.planruleList[key].assertVal2 =Number(assertVal2.slice(0,$.trim(assertVal2).length-1));
+                  }
                    if (spec == '岁'){
                      this.planruleList[key].spec = '3'
                    }else if (spec == '月'){

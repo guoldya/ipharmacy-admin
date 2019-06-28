@@ -269,7 +269,7 @@
 <script>
 import { selectTribunalRecord } from '@/api/login'
 import { Icon } from 'ant-design-vue'
-import countText from '@/components/count-text'
+import countText from '../component/count-text'
 import prescriptionTabs from '../component/prescription-tabs'
 
 const myIcon = Icon.createFromIconfontCN({
@@ -600,6 +600,7 @@ export default {
               this.buttonText = '开始审方'
               this.buttonType = 'primary'
               this.disable = true;
+              this.countText=[];
               if (res.data >0){
                 this.$confirm({
                   title: '批量通过或者批量驳回！',

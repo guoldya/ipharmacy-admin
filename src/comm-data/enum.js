@@ -64,6 +64,10 @@ const Enum = {
         { text: '系统固定', id: 1 },
         { text: '自定义', id: 0 }
     ],
+    ruleType: [
+        { text: '系统', id: 1 },
+        { text: '自定义', id: 2 }
+    ],
     handleType: [
         { text: '记录', id: 1 },
         { text: '提示', id: 2 },

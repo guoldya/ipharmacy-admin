@@ -178,7 +178,7 @@
 <script>
 import {} from '@/api/login'
 import { Icon } from 'ant-design-vue'
-import countText from '@/components/count-text'
+import countText from '../component/count-text'
 import prescriptionTabs from '../component/prescription-tabs'
 import alert from '@/components/alert'
 

@@ -29,20 +29,23 @@
             </a-select-option>
           </a-select>
         </a-col>
-        <a-col :span="4">
+        <a-col v-if="cd.inputType=='input'" :span="4">
           <!--文本输入框-->
-          <div v-if="cd.inputType=='input'">
-            <a-input  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
+          <div >
+            <a-input style="width: 94%" @change="onChange"  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
           </div>
+        </a-col>
+        <a-col  v-else-if="cd.inputType=='select'" :span="4">
           <!--下拉框-->
           <a-select
             mode='multiple'
             @search="searchSelect($event,cd.treeData,cd.columnId,cd)"
-            v-else-if="cd.inputType=='select'"
+
             class="width-100 marLeft10"
             v-model="cd.values"
             :filterOption="false"
             :key="cd.key"
+            @change="onChange"
           >
             <a-select-option
               v-for="item in cd.treeData"
@@ -52,21 +55,26 @@
               {{item.TITLE}}
             </a-select-option>
           </a-select>
+        </a-col>
+        <a-col v-else-if="cd.inputType=='tree'" :span="4">
           <!--树-->
           <a-tree-select
             multiple
             @search="searchTreeSelect($event,cd.treeData,cd.columnId,cd)"
             :treeData="cd.treeData"
-            v-else-if="cd.inputType=='tree'"
+
             class="width-100 marLeft10"
             v-model="cd.values"
+            @change="onChange"
             :filterTreeNode="false">
           </a-tree-select>
+        </a-col>
+        <a-col v-else-if="cd.inputType=='dataRange'" :span="4">
           <!--范围-->
-          <div v-else-if="cd.inputType=='dataRange'" class="width-100 marLeft10">
-            <a-input-number  :max="cd.assertVal2" class="rangeLeft" v-model="cd.assertVal"  />
+          <div  class="width-100 marLeft10">
+            <a-input-number @change="onChange"  :max="cd.assertVal2" class="rangeLeft" v-model="cd.assertVal"  />
             <a-input class="rangeCenter" placeholder="~" disabled />
-            <a-input-number  :min="cd.assertVal" class="rangeRight"  v-model="cd.assertVal2" />
+            <a-input-number @change="onChange" :min="cd.assertVal" class="rangeRight"  v-model="cd.assertVal2" />
             <a-select
               v-if="cd.columnId == 'AGE' && cd.logic == '2'"
               @change="assertValSpec($event,cd.ruleId)"
@@ -84,12 +92,15 @@
             <a-input style="width:18%;" v-else value="天" disabled>
             </a-input>
           </div>
-
-
         </a-col>
-        <a-col :span='1'>
+        <a-col v-if="cd.inputType=='inputNumber'" :span="3">
+          <!--文本数字-->
+          <div >
+            <a-input type="number" style="width: 94%" @change="onChange"  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
+          </div>
+        </a-col>
+        <a-col  v-if="cd.columnId == 'AGE' && cd.logic == '1'" :span='1'>
           <a-select
-            v-if="cd.columnId == 'AGE' && cd.logic == '1'"
             @change="assertValSpec($event,cd.ruleId)"
             :defaultValue="cd.spec"
             style="width: 100%"
@@ -160,14 +171,14 @@
           if (ruleId == this.conditions[key].ruleId){
             if (logic <'3'){
               if (value != '9'){
-                this.conditions[key].inputType = 'input'
+                this.conditions[key].inputType = 'inputNumber'
                 this.conditions[key].logic = '1';
               }else{
                 this.conditions[key].inputType = 'dataRange'
                 this.conditions[key].logic = '2';
               }
             }
-          } 
+          }
         }
         this.conditions.push();
       },
@@ -178,6 +189,11 @@
               this.conditions[key].spec = ''+value
           }
         }
+      },
+
+      //树选择事件
+      onChange(){
+        this.$forceUpdate();
       },
       //处理模型字段
       dealAllStartTree(list) {
