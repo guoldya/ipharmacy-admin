@@ -8,6 +8,7 @@
           allowClear
           mode="single"
           optionLabelProp="title"
+          autoClearSearchValue
           :defaultActiveFirstOption="false"
           :showArrow="false"
           :filterOption="false"

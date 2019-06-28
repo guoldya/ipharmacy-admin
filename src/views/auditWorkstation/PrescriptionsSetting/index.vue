@@ -145,6 +145,14 @@
             keyExpr: 'id',
             valueExpr: 'text',
             dataSource: this.enum.packageType
+          },
+            {
+            name: '方案范围',
+            dataField: 'planScope',
+            type: 'select',
+            keyExpr: 'id',
+            valueExpr: 'text',
+            dataSource: this.enum.patientScope
           }
         ]
       }

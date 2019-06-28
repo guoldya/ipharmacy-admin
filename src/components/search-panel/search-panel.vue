@@ -4,29 +4,63 @@
             <a-col :lg="20" :xl="18" :sm="18">
                 <a-form :form="form">
                     <a-row :gutter="21">
-                        <a-col v-for="(item,index) in list" :span="8" :key="index"
-                               :style="{display:index<count ?'block':'none'}">
-                            <a-form-item :label="item.name" v-if="!item.type || item.type=='text'" v-bind="formItemLayout">
+                        <a-col
+                                v-for="(item,index) in list"
+                                :span="col"
+                                :key="index"
+                                :style="{display:index<count ?'block':'none'}"
+                        >
+                            <a-form-item
+                                    :label="item.name"
+                                    v-if="!item.type || item.type=='text'"
+                                    v-bind="formItemLayout"
+                            >
                                 <a-input v-decorator="[item.dataField]" placeholder="请输入..."></a-input>
                             </a-form-item>
-                             <a-form-item :label="item.name" v-if="!item.type || item.type=='tree-select'" v-bind="formItemLayout">
-                                <a-tree-select   :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }" :treeData="item.treeData" placeholder="请选择" v-decorator="[ item.dataField]"></a-tree-select>
+                            <a-form-item
+                                    :label="item.name"
+                                    v-if="!item.type || item.type=='tree-select'"
+                                    v-bind="formItemLayout"
+                            >
+                                <a-tree-select
+                                        :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                                        :treeData="item.treeData"
+                                        placeholder="请选择"
+                                        v-decorator="[ item.dataField]"
+                                ></a-tree-select>
                             </a-form-item>
-                            <a-form-item :label="item.name" v-if="item.type=='range-picker'" v-bind="formItemLayout">
+                            <a-form-item
+                                    :label="item.name"
+                                    v-if="item.type=='range-picker'"
+                                    v-bind="formItemLayout"
+                            >
                                 <a-range-picker v-decorator="[item.dataField]"/>
                             </a-form-item>
                             <a-form-item :label="item.name" v-if="item.type=='select'" v-bind="formItemLayout">
-                                <a-select v-decorator="[item.dataField]" placeholder="请选择..." :disabled="item.disable">
-                                    <a-select-option :value='op[item.keyExpr]' v-for="(op,index) in item.dataSource" :key="index">
-                                        {{op[item.valueExpr]}}
+                                <a-select
+                                        v-decorator="[item.dataField]"
+                                        placeholder="请选择..."
+                                        :disabled="item.disable"
+                                >
+                                    <a-select-option
+                                            :value="op[item.keyExpr]"
+                                            v-for="(op,index) in item.dataSource"
+                                            :key="index"
+                                    >{{op[item.valueExpr]}}
                                     </a-select-option>
                                 </a-select>
                             </a-form-item>
-                          <a-form-item v-if="!item.type || item.type=='checkbox'" v-bind="formItemLayout">
-                            <a-checkbox v-decorator="[item.dataField]" @change="item.onChange">
-                             {{item.name}}
-                            </a-checkbox>
-                          </a-form-item>
+                            <a-form-item v-if="!item.type || item.type=='checkbox'" v-bind="formItemLayout">
+                                <a-checkbox v-decorator="[item.dataField]" @change="item.onChange">{{item.name}}
+                                </a-checkbox>
+                            </a-form-item>
+                            <a-form-item
+                                    :label="item.name"
+                                    v-if="item.type=='range-picker-detail'"
+                                    v-bind="formItemLayout"
+                            >
+                                <a-range-picker v-decorator="[item.dataField]" format="YYYY-MM-DD HH:mm"/>
+                            </a-form-item>
                         </a-col>
                     </a-row>
                     <a-row style="text-align: center" v-if="this.list.length>3">
@@ -67,8 +101,12 @@
                 type: Array,
                 required: true
             },
-            searchNumber:{
-              type:Number,
+            searchNumber: {
+                type: Number
+            },
+            col:{
+                type: Number,
+                default:8
             }
         },
         data() {
@@ -76,28 +114,22 @@
                 value: '',
                 expand: false,
                 form: this.$form.createForm(this),
-                formTwoLayout:{
-                  labelCol: {
-
-
-                  },
-                  wrapperCol: {
-
-
-                  },
+                formTwoLayout: {
+                    labelCol: {},
+                    wrapperCol: {}
                 },
-              formItemLayout: {
-                labelCol: {
-                  lg: { span: 8 },
-                  sm: { span: 7 },
-                  xxl:{span:6}
-                },
-                wrapperCol: {
-                  lg: { span: 10 },
-                  sm: { span: 17 },
-                  xxl:{span:18}
-                },
-              },
+                formItemLayout: {
+                    labelCol: {
+                        lg: { span: 8 },
+                        sm: { span: 7 },
+                        xxl: { span: 6 }
+                    },
+                    wrapperCol: {
+                        lg: { span: 10 },
+                        sm: { span: 17 },
+                        xxl: { span: 18 }
+                    }
+                }
             }
         },
         computed: {
@@ -106,7 +138,6 @@
             }
         },
         mounted() {
-
         },
         methods: {
             toggle() {
@@ -148,10 +179,11 @@
         text-align: center;
         padding-top: 80px;
     }
-    .expendBtn{
+
+    .expendBtn {
         cursor: pointer;
         border: 1px solid #e9e9e9;
-        color: #96A1A7;
+        color: #96a1a7;
         border-radius: 2px;
         width: 48px;
         text-align: center;
@@ -161,8 +193,8 @@
         bottom: -16px;
         margin-left: -1px;
     }
-    .search-form .ant-form-item
-    {
-      margin-bottom: 0px;
+
+    .search-form .ant-form-item {
+        margin-bottom: 0px;
     }
 </style>

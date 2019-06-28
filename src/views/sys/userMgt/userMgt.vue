@@ -281,10 +281,10 @@
                 this.formData = { status:'1' };
                 this.visible = true;
             },
-            async edit(row){
+            edit(row){
                 this.isNew = false;
-                await this.getDeptData(row.orgId);
-                await this.getPersonData(row.deptId);
+                this.getDeptData(row.orgId);
+                this.getPersonData(row.deptId);
                 this.formData = row;
                 this.visible = true;
             },
