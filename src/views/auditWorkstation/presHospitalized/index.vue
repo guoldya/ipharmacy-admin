@@ -9,24 +9,48 @@
       </Searchpanel>
       <a-row class="dealDetail">
         <a-col :span="10">
+          <a-popconfirm
+            v-if="buttonType == 'danger'"
+            title="确定停止审方?"
+            @confirm="buttonClick"
+            okText="确定"
+            cancelText="取消"
+          >
+            <a-button class="margin-left-5" :type="buttonType">{{buttonText}}</a-button>
+          </a-popconfirm>
           <a-button
-            class="margin-top-10 margin-left-5"
-            :type="buttonType"
+            v-else
+            class="margin-left-5"
             @click="buttonClick"
+            :type="buttonType"
           >{{buttonText}}</a-button>
           <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
           <a-button class="margin-left-5" @click="rejected" :disabled="disable">批量驳回</a-button>
+          <a-select
+            style="width: 120px"
+            class="margin-left-5"
+            placeholder="刷新频率"
+            @change="rateChange"
+            :disabled="disable"
+            defaultValue="10秒"
+          >
+            <a-select-option
+              :value="op.id"
+              v-for="(op,index) in this.enum.refreshRate"
+              :key="index"
+            >{{op.text}}</a-select-option>
+          </a-select>
         </a-col>
         <a-col :span="14" class=".">
           <countText :countList="countText"></countText>
         </a-col>
       </a-row>
-      <alert :checkNum="checkSelect" :clearSelect="clearSelect"></alert>
+
       <a-spin tip="加载中..." :spinning="loading">
         <el-table
           ref="multipleTable"
           class="multipleEl"
-          :data="dataSources"
+          :data="dataSource"
           border
           style="width: 100%"
           @select="selectBox"
@@ -49,10 +73,15 @@
               <span v-if="item.prop == 'sex'">{{dealsex(props.row.sex)}}</span>
               <span v-else-if="item.prop == 'submitTime'">{{dealtime(props.row.submitTime)}}</span>
               <span v-else-if="item.prop == 'submitName'">
-                <a href>
-                  {{props.row[item.prop]}}&nbsp;
-                  <a-icon type="message"/>
-                </a>
+                <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>{{props.row.submitDocPhone}}</span>
+                  </template>
+                  <a href>
+                    {{props.row[item.prop]}}&nbsp;
+                    <a-icon type="message"/>
+                  </a>
+                </a-tooltip>
               </span>
               <span v-else>{{props.row[item.prop]}}</span>
             </template>
@@ -98,8 +127,9 @@
                 @confirm="passSingle(props.row)"
                 okText="通过"
                 cancelText="取消"
+                placement="topRight"
               >
-                <a href="javascript:;">通过</a>
+                <a>通过</a>
               </a-popconfirm>
               <a-divider type="vertical"/>
               <a @click="rejectedSingle(props)">驳回</a>
@@ -124,53 +154,11 @@
         @ok="handleOk"
         :confirmLoading="Modal.confirmLoading"
         @cancel="handleCancel"
-        width="600px"
+        width="750px"
         class="modals"
+        okText="驳回"
       >
-        <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
-          <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
-            <a-card class="margin-top-10" v-for="(op,index) in problemsData" :key="index">
-              <a-tag :color="op.colors" style="cursor: default;font-weight: bold">{{op.problem }}级</a-tag>
-              <span :style="{fontWeight:'bold'}">{{op.problemText}}</span>
-              <div class="lineText opacity8">{{op.text}}</div>
-              <a-row class="margin-top-10 selectInput">
-                <a-col :span="3" style="line-height: 24px">驳回理由:</a-col>
-                <a-col :span="18">
-                  <a-input size="small">
-                    <a-select
-                      slot="addonBefore"
-                      :dropdownMatchSelectWidth="false"
-                      size="small"
-                      defaultValue="+86"
-                    >
-                      <a-select-option value="+86">药房库存不足</a-select-option>
-                      <a-select-option value="+87">药房库存不足</a-select-option>
-                    </a-select>
-                  </a-input>
-                </a-col>
-                <a-col :span="3">
-                  <a-button size="small">存为模板</a-button>
-                </a-col>
-              </a-row>
-            </a-card>
-          </a-tab-pane>
-          <a-tab-pane tab="干预记录" key="2">
-            <a-timeline>
-              <a-timeline-item color="green">系统预判不通过 2015-09-01</a-timeline-item>
-              <a-timeline-item color="green">请医生再次审核 2015-09-01</a-timeline-item>
-              <a-timeline-item color="red">
-                <p>有接触隔离医嘱 1</p>
-                <p>有隔离措施 2</p>
-                <p>医疗废物处置 3 2015-09-01</p>
-              </a-timeline-item>
-              <a-timeline-item>
-                <p>离开病区检查是否通知相关科室做好防护等 1</p>
-                <p>有隔离措施 2</p>
-                <p>医疗废物处置 3 2015-09-01</p>
-              </a-timeline-item>
-            </a-timeline>
-          </a-tab-pane>
-        </a-tabs>
+        <jodgeStation :visData="visDatas" @adoptMessage="updateData" @upchange="updateDatas"></jodgeStation>
       </a-modal>
     </a-card>
   </div>
@@ -181,7 +169,7 @@ import { Icon } from 'ant-design-vue'
 import countText from '@/components/count-text'
 import prescriptionTabs from '../component/prescription-tabs'
 import alert from '@/components/alert'
-
+import jodgeStation from './jodgeStationCopy.vue'
 const myIcon = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js' // 在 iconfont.cn 上生成
 })
@@ -190,15 +178,21 @@ export default {
     myIcon,
     countText,
     prescriptionTabs,
-    alert
+    alert,
+    jodgeStation
   },
   data() {
     return {
       api: {
         selectPage: 'sys/reviewOrderissue/selectHospitalizationRecord',
         selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
-        getStatusData: 'sys/reviewOrderissue/selectTribunalRecordNum',
-        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus'
+        // getStatusData: 'sys/reviewOrderissue/selectTribunalRecordNum',
+        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
+        reviewUpdateStatus: 'sys/reviewPlanorder/updateStatus',
+        selectTribunalRecordNum: 'sys/reviewOrderissue/selectTribunalRecordNum',
+        selectEason: 'sys/sysPersons/selectSysPersonsByOrgId'
+
+        // sysPersons/selectSysPersonsByOrgId
       },
       labelCol: {
         xs: { span: 24 },
@@ -219,7 +213,7 @@ export default {
       selections: [],
       //table数据加载
       loading: false,
-      dataSources: [],
+      dataSource: [],
       columns: [
         { title: '提交时间', prop: 'submitTime', width: 140, align: 'left' },
         { title: '住院号', prop: 'admitNum', width: 120 },
@@ -242,13 +236,21 @@ export default {
       //处方单tabsData
       tabsData: {},
       problemsData: [],
-      treeDatas: []
+      treeDatas: [],
+      timeInitialize: null,
+      refreshFreq: null,
+      rateTime: 10000000000,
+      loading: false,
+      visDatas: {},
+      templateText: '',
+      tempRowData: {},
+      EasonData: []
     }
   },
   computed: {
     list() {
       return [
-        { name: '医生', dataField: 'submitDoc', type: 'text' },
+        { name: '住院号', dataField: 'admitNum', type: 'text' },
         { name: '患者', dataField: 'patientName', type: 'text' },
         {
           name: '科室',
@@ -256,20 +258,58 @@ export default {
           type: 'tree-select',
           keyExpr: 'keyword',
           treeData: this.treeDatas
-          //valueExpr: 'text'
         },
-        { name: '住院号', dataField: 'admitNum', type: 'text' }
+        {
+          name: '医生',
+          dataField: 'personId',
+          type: 'select',
+          keyExpr: 'personId',
+          valueExpr: 'name',
+          dataSource: this.EasonData
+        }
       ]
     }
   },
   mounted() {
-    this.getDatas()
+    this.fetchYJSMapData()
     this.getTreeseldata()
-    this.getStatusDatas({ reviewResouce: 2 })
+    this.selectEasonData()
+    // this.getStatusDatas({ reviewResouce: 2 })
   },
   methods: {
-    // 开始数据
-    getDatas(params = {}) {
+    // 获取医生
+    selectEasonData(params = {}) {
+      this.$axios({
+        url: this.api.selectEason,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.EasonData = res.rows
+            console.log(this.EasonData)
+          } else {
+            this.loading = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loading = false
+          this.error(err)
+        })
+    },
+    updateData(value) {
+      //console.log(value, 'dddddddddddd')
+      this.templateText = value
+    },
+    updateDatas(value) {
+      //console.log(value, 'cccc')
+      this.templateText = value
+    },
+    // 刷新数据
+    fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
+      this.loading = true
+      params.orderId = 1
       this.$axios({
         url: this.api.selectPage,
         method: 'put',
@@ -277,19 +317,41 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.dataSources = res.rows
+            this.dataSource = this.$dateFormat(res.rows, ['submitTime'])
+            this.total = res.total
+            this.loading = false
           } else {
+            this.loading = false
             this.warn(res.msg)
           }
         })
         .catch(err => {
+          this.loading = false
           this.error(err)
         })
     },
-    //状态数据
-    getStatusDatas(params = {}) {
+    //频率事件
+    rateChange(value) {
+      clearInterval(this.timeInitialize)
+      if (value == 0) {
+      } else {
+        this.rateTime = value
+        this.setTimeRval(this.rateTime)
+      }
+    },
+    //定时器
+    setTimeRval(data) {
+      this.timeInitialize = setInterval(() => {
+        this.fetchYJSMapData()
+        this.getCountText()
+        console.log('dddddd')
+      }, data)
+    },
+    // 状态数据
+    getCountText() {
+      let params = { reviewResouce: 1 }
       this.$axios({
-        url: this.api.getStatusData,
+        url: this.api.selectTribunalRecordNum,
         method: 'put',
         data: params
       })
@@ -339,12 +401,13 @@ export default {
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.pageSize = 10
       params.offset = 0
-      this.getDatas(params)
+      this.fetchYJSMapData(params)
     },
     //重置
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
-      this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+      this.fetchYJSMapData(params)
+      // this.fetchYJSMapData({ pageSize: 10, offset: 0 })
     },
     //翻页事件
     customerPageChange(page, pageSize) {
@@ -379,13 +442,7 @@ export default {
       }
       this.dataSource = data
     },
-    //TODO:后台暂未获取数据
-    fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
-      params.statusYjs = '1'
-      params.drugSource = '1'
-      this.loading = false
-      this.dealData()
-    },
+
     //多选框点击事件
     selectBox(selection, row) {
       //点击后获取这条数据
@@ -403,17 +460,137 @@ export default {
       this.$refs.multipleTable.clearSelection()
       this.checkSelect = 0
     },
-    //开始审方
+    // 开始审方
     buttonClick() {
+      let status = null
+      let _this = this
       if (this.buttonText == '开始审方') {
-        this.buttonText = '停止审方'
+        this.getCountText()
+        this.refreshFreq = Number(10000)
+        this.setTimeRval(10000)
         this.buttonType = 'danger'
         this.disable = false
+        status = '1'
+        let params = { status: status, planScope: 1, planType: 1 }
+        this.$axios({
+          url: this.api.reviewUpdateStatus,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.buttonText = '停止审方'
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       } else {
-        this.buttonText = '开始审方'
-        this.buttonType = 'primary'
-        this.disable = true
+        status = '0'
+        let params = { status: status, planScope: 1, planType: 1 }
+        this.$axios({
+          url: this.api.reviewUpdateStatus,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              clearInterval(_this.timeInitialize)
+              this.buttonText = '开始审方'
+              this.buttonType = 'primary'
+              this.disable = true
+              if (res.data > 0) {
+                this.$confirm({
+                  title: '批量通过或者批量驳回！',
+                  okText: '批量通过',
+                  cancelText: '批量驳回',
+                  onOk() {
+                    let passParams = {}
+                    passParams.reviewVerdict = 1
+                    passParams.planScope = 1
+                    _this
+                      .$axios({
+                        url: _this.api.updateReviewList,
+                        method: 'put',
+                        data: passParams
+                      })
+                      .then(res => {
+                        if (res.code == '200') {
+                          _this.success('批量通过成功')
+                          _this.fetchYJSMapData()
+                          _this.getCountText()
+                        } else {
+                          _this.warn(res.msg)
+                        }
+                      })
+                      .catch(err => {
+                        _this.error(err)
+                      })
+                  },
+                  onCancel() {
+                    let passParams = {}
+                    passParams.reviewVerdict = 2
+                    passParams.planScope = 1
+                    _this
+                      .$axios({
+                        url: _this.api.updateReviewList,
+                        method: 'put',
+                        data: passParams
+                      })
+                      .then(res => {
+                        if (res.code == '200') {
+                          _this.success('批量驳回成功')
+                          _this.fetchYJSMapData()
+                          _this.getCountText()
+                        } else {
+                          _this.warn(res.msg)
+                        }
+                      })
+                      .catch(err => {
+                        _this.error(err)
+                      })
+                  }
+                })
+              } else {
+                this.success('停止成功！')
+              }
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       }
+    },
+    // 单个通过
+    passSingle(data) {
+      let params = {}
+      params.auditType = '1'
+      params.passType = '1'
+      params.reviewOpinion = '通过'
+      params.reviewVerdict = '1'
+      params.reviewIds = []
+      params.reviewIds[0] = data.reviewId
+      this.$axios({
+        url: this.api.updateReviewStatus,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+            this.fetchYJSMapData()
+            this.getCountText()
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
     },
     //批量通过
     pass() {
@@ -431,6 +608,7 @@ export default {
         params.reviewOpinion = '批量通过'
         params.reviewVerdict = '1'
         params.reviewIds = reviewIds
+
         this.$axios({
           url: this.api.updateReviewStatus,
           method: 'put',
@@ -439,6 +617,7 @@ export default {
           .then(res => {
             if (res.code == '200') {
               this.fetchYJSMapData()
+              this.getCountText()
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -451,25 +630,79 @@ export default {
     },
     //批量驳回
     rejected() {
+      let params = {}
+      let reviewIds = []
       if ($.trim(this.selections).length <= 0) {
         this.warn('请选择处方')
         return
       } else {
+        for (let key in this.selections) {
+          reviewIds[key] = this.selections[key].reviewId
+        }
+        params.auditType = '1'
+        params.passType = '1'
+        params.reviewOpinion = '批量驳回'
+        params.reviewVerdict = '2'
+        params.reviewIds = reviewIds
+        this.$axios({
+          url: this.api.updateReviewStatus,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.fetchYJSMapData()
+              this.getCountText()
+              this.success(res.msg)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       }
     },
     //单个通过
-    passSingle(data) {},
+    //单个通过
+
     //单个驳回
     rejectedSingle(data) {
+      Object.assign(this.visDatas, { visId: data.row.visId, submitNo: data.row.maxSubmitNo })
+      console.log(this.visDatas)
       this.Modal.visible = true
-      this.problemsData = data.row.problemList
-      for (let key in this.problemsData) {
-        this.problemsData[key].rejectReason = '病入膏肓'
-      }
+      //this.problemsData = data.row.problemList
+      this.tempRowData = data.row
     },
     //弹窗提交
     handleOk() {
-      this.Modal.visible = false
+      this.problemsData
+      let params = {}
+      params.auditType = '1'
+      params.passType = '1'
+      params.reviewOpinion = this.templateText
+      params.reviewVerdict = '1'
+      params.reviewIds = []
+      console.log(this.tempRowData)
+      params.reviewIds[0] = this.tempRowData.reviewId
+      this.$axios({
+        url: this.api.updateReviewStatus,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+            this.Modal.visible = false
+            this.fetchYJSMapData()
+            this.getCountText()
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
     },
     //弹窗取消
     handleCancel() {
@@ -529,7 +762,9 @@ export default {
 .divInfo span {
   margin-left: 10px;
 }
+
 .dealDetail {
+  margin-top: 10px;
   .ant-row {
     padding-top: 12px;
   }

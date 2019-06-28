@@ -88,7 +88,7 @@
       </a-card>
     </a-col>
     <a-col :span="10" class="padding-left-5">
-      <jodgeStation></jodgeStation>
+      <jodgeStation :visData='visDatas'></jodgeStation>
     </a-col>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
@@ -222,7 +222,8 @@ export default {
         visible: false
       },
       form: this.$form.createForm(this),
-      visidIdnum: this.$route.query.visId
+      visidIdnum: this.$route.query.visId,
+      visDatas:{visId:this.$route.query.visId,submitNo:this.$route.query.maxSubmitNo}
     }
   },
   mounted() {

@@ -139,7 +139,7 @@ export default {
       testsDeltopdata: [],
       testsDeldata: [],
       checkes: false,
-      storeArr: []
+      storeArr: [],
     }
   },
   mounted() {
