@@ -742,7 +742,7 @@
         params.reviewOpinion = '通过'
         params.reviewVerdict = '1'
         params.reviewIds = []
-        params.reviewIds[0] = data.row.reviewId
+        params.reviewIds[0] = data.reviewId
         this.$axios({
           url: this.api.updateReviewStatus,
           method: 'put',

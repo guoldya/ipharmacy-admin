@@ -64,7 +64,7 @@ const Enum = {
         { text: '系统固定', id: 1 },
         { text: '自定义', id: 0 }
     ],
-    ruleType: [
+    rulesType: [
         { text: '系统', id: 1 },
         { text: '自定义', id: 2 }
     ],

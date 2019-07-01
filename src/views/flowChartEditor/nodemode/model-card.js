@@ -10,7 +10,6 @@ Flow.registerNode('model-card', {
     const group = item.getGraphicGroup()
     const model = item.getModel()
     const shapeObj = item.getShapeObj()
-
     const str1 = model.sourcename != null ? model.sourcename : shapeObj.sourcename
     const str2 = model.message != null ? model.message : shapeObj.message
     const str3 = model.suggest != null ? model.suggest : shapeObj.suggest
@@ -68,7 +67,7 @@ Flow.registerNode('model-card', {
     //图标提示
     group.addShape('text', {
       attrs: {
-        text: levels,
+        text: ''+levels,
         x: levels < 10 ? x + 5 : x - 5,
         y: y + (height / 2 - (borderRadius + levelborderwidth) / 2),
         textAlign: 'start',

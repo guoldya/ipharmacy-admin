@@ -1,7 +1,13 @@
 <template>
   <div class="editorg6">
     <!-- 工具栏 -->
-    <a-toolbar v-bind:saveFlow="saveFlow" :verifyFlow="verifyFlow" :titleData="titleData" ref="toolbar"></a-toolbar>
+    <a-toolbar
+      v-bind:saveFlow="saveFlow"
+      :verifyFlow="verifyFlow"
+      :submitFlow="submitFlow"
+      :copyRule="copyRule"
+      :titleData="titleData"
+      ref="toolbar"></a-toolbar>
     <div style="height: 42px;"></div>
     <div class="bottom-container">
       <!-- 节点 -->
@@ -22,6 +28,17 @@
 
       <div id="page" class="page" ref="flow" :style="conheight"></div>
     </div>
+
+    <a-modal
+      :title="modal.title"
+      :visible="modal.visible"
+      @ok="modalOk"
+      :confirmLoading="modal.confirmLoading"
+      @cancel="modalCancel"
+      class="drugModal"
+      width="600px">
+      <a-ruleModal :handleChange="ruleModalChange"></a-ruleModal>
+    </a-modal>
   </div>
 </template>
 
@@ -48,6 +65,7 @@
   import itempanel from './model/itempanel'
   import navigator from './model/navigator'
   import toolbar from './model/toolbar'
+  import ruleModal from './model/ruleModal'
 
   import {
     coreRuleNodeSelectOne,
@@ -67,7 +85,8 @@
       'a-detailpanel': detailpanel,
       'a-itempanel': itempanel,
       'a-navigator': navigator,
-      'a-toolbar': toolbar
+      'a-toolbar': toolbar,
+      'a-ruleModal':ruleModal,
     },
     data() {
       return {
@@ -85,7 +104,7 @@
           message: null,
           suggest: null,
           restrictionType: null,
-          verdictType: '',
+          verdictType: null,
           itemId: null,
           itemName: null,
           ro: null,
@@ -139,7 +158,15 @@
         boxInitialized: { inputSelectData: [], inputType: '', inValueType: '', itemId: null },
         edgeInitialized: { inputEdgeSelect: [], inputEdge: '', inValueEdge: '', itemId: null },
         pieChartData: {},
-        getEdgesData: []
+        getEdgesData: [],
+        //modal属性
+        modal:{
+          visible:false,
+          title:'复制规则',
+          confirmLoading:false,
+        },
+        ruleModalId:null,
+        submitStatus:true,
       }
     },
     mounted() {
@@ -472,6 +499,7 @@
           switch (ev.item.type) {
             case 'node':
               this.getEdgesData = ev.item.model.childNodes
+              console.log(ev.item.isSelected)
               if (!ev.item.isSelected) {
                 _this.nodeId = ev.item.model.id
                 let model = ev.item.model
@@ -482,7 +510,6 @@
                 _this.selectNode.label = model.label != null ? model.label : shape.label
                 switch (_this.selectNode.shape) {
                   case 'model-card-conclusion':
-                    console.log(ev)
                     _this.selectNode.inAccordanceWith = model.inAccordanceWith != null ? model.inAccordanceWith : shape.inAccordanceWith
                     _this.selectNode.sourcename = model.sourcename != null ? model.sourcename : shape.sourcename
                     _this.selectNode.levelColor = model.levelColor != null ? model.levelColor : shape.levelColor
@@ -500,7 +527,6 @@
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     break
                   case 'flow-rhombus-if':
-                    console.log(ev)
                     let params = ev.item.model
                     // this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
                     if (params.lo == 1) {
@@ -660,32 +686,134 @@
       //校验数据
       verifyFlow() {
         let data = this.flow.save()
-        console.log(data)
-        let node = data.nodes
-        if (node.filter(item => item.shape == 'flow-circle-start').length == 0) {
+        if (data.nodes.filter(item => item.shape == 'flow-circle-start').length == 0) {
           this.warn('节点不存在起点!');
+          this.submitStatus = false;
           return
         }
-        if (node.filter(item => item.shape == 'model-card-conclusion').length == 0) {
-          this.warn('节点不存在结论节点!');
-          return
+        console.log(data)
+        let list = [];
+        if (data.edges){
+          list = data.nodes.concat(data.edges);
+        } else{
+          list = data.nodes
         }
-        for (let key in node) {
-          if (node[key].shape != 'flow-circle-start') {
-            if ($.trim(node[key].pid).length == 0) {
-              this.warn('节点连线不完整!')
+        for (let key in list) {
+          if (list[key].type == 'node') {
+            list[key].pid = this.getNodePids(data.edges, list[key].id)
+          } else {
+            list[key].pid = list[key].source
+          }
+          list[key].disOrder = list[key].index
+          list[key].ruleId = this.ruleId
+          list[key].verdictType = Number(list[key].verdictType)
+        }
+        let indexData = this.getNodeTreeData(list)
+        let i = 0
+        let nodeTree = this.recursiveNodeTree(indexData, '', i);
+        this.verifyTree(nodeTree, data.nodes, data.edges)
+      },
+
+      //校验数据
+      verifyTree(nodeTree, nodes, edges) {
+        for (let key in nodeTree) {
+          if (nodeTree[key].type == 'edge') {
+            if(this.judgeEdge(nodeTree[key], nodes)==false)
+              return
+          }
+          if (nodeTree[key].type == 'node') {
+           if(this.judgeNode(nodeTree[key], edges)==false)
+             return
+          }
+          if (nodeTree[key].childNodes) {
+            this.verifyTree(nodeTree[key].childNodes, nodes, edges)
+          }
+        }
+      },
+      //判断线的父节点类型
+      judgeEdge(edge, nodes) {
+        for (let i in nodes) {
+          if (nodes[i].id == edge.pid) {
+            if (nodes[i].shape == 'flow-circle-start') {
+              if ($.trim(edge.label).length == 0) {
+                this.warn('请输入线段值');
+                this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
+                this.submitStatus = false;
+                return false
+              }
+            } else if (nodes[i].shape == 'model-rect-attribute' ) {
+              if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertVal).length == 0) {
+                this.warn('请输入线段值');
+                this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
+                this.submitStatus = false;
+                return false
+              }
+            } else if (nodes[i].shape == 'flow-rhombus-if') {
+              if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0) {
+                this.warn('请输入线段值');
+                this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
+                this.submitStatus = false;
+                return false
+              }
+            } else if (nodes[i].shape == 'model-image-branch') {
+              if ($.trim(edge.label).length == 0) {
+                this.warn('请输入线段值');
+                this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
+                this.submitStatus = false;
+                return false
+              }
             }
           }
         }
       },
-
-
+      //判断节点父节点
+      judgeNode(node, edges) {
+        let pids = node.pid.split(',');
+        for (let key in edges) {
+          for (let i in pids){
+            if (edges[key].id == pids[i]) {
+              if (node.shape == 'model-rect-attribute'){
+                if ($.trim(node.itemId).length == 0 || $.trim(node.childNodes) == 0 ){
+                  this.warn('属性节点或缺少结论节点')
+                  this.flow.update(node.id, {isSelected:false})
+                  this.flow.update(node.id, {isSelected:true});
+                  this.submitStatus = false;
+                  return false
+                }
+              }else if (node.shape == 'model-image-branch' ){
+                if ($.trim(node.label).length == 0 || $.trim(node.childNodes) == 0){
+                  this.warn('分支节点或缺少结论节点');
+                  this.flow.update(node.id, {isSelected:false})
+                  this.flow.update(node.id, {isSelected:true});
+                  this.submitStatus = false;
+                  return false
+                }
+              }else if (node.shape == 'flow-rhombus-if'){
+                if ($.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertVal).length == 0 || $.trim(node.childNodes) == 0){
+                  this.warn('条件节点或缺少结论节点');
+                  this.flow.update(node.id, {isSelected:false})
+                  this.flow.update(node.id, {isSelected:true});
+                  this.submitStatus = false;
+                  return false
+                }
+              }else if (node.shape == 'model-card-conclusion'){
+                if ($.trim(node.inAccordanceWith).length == 0 || $.trim(node.levels).length == 0 || ($.trim(node.message).length == 0 || $.trim(node.suggest).length == 0 || $.trim(node.verdictType).length == 0)){
+                  this.warn('结论节点未完善');
+                  this.flow.update(node.id, {isSelected:false})
+                  this.flow.update(node.id, {isSelected:true});
+                  this.submitStatus = false;
+                  return false
+                }
+              }
+            }
+          }
+        }
+      },
       /**
        * @description: 保存流图数据
        */
       saveFlow() {
         let data = this.flow.save()
-        console.log(data)
         let list = data.nodes.concat(data.edges)
         for (let key in list) {
           delete list[key].childNodes
@@ -696,9 +824,10 @@
           }
           list[key].disOrder = list[key].index
           list[key].ruleId = this.ruleId
+          list[key].verdictType = Number(list[key].verdictType)
           delete  list[key].index
         }
-        coreRuleNodeUpdate({ ruleNodeVOS: list }).then(res => {
+        coreRuleNodeUpdate({ ruleNodeVOS: list,status:'0' }).then(res => {
           if (res.code == '200') {
             this.success('保存成功')
           } else {
@@ -708,6 +837,67 @@
           this.error(err)
         })
         localStorage.setItem('test', JSON.stringify(this.flow.save()))
+      },
+      /**
+       * @description: 提交流图数据
+       */
+      submitFlow(){
+        let data = this.flow.save()
+        let list = data.nodes.concat(data.edges)
+        for (let key in list) {
+          delete list[key].childNodes
+          if (list[key].type == 'node') {
+            list[key].pid = this.getNodePids(data.edges, list[key].id)
+          } else {
+            list[key].pid = list[key].source
+          }
+          list[key].disOrder = list[key].index
+          list[key].ruleId = this.ruleId
+          list[key].verdictType = Number(list[key].verdictType)
+          delete  list[key].index
+        }
+        this.submitStatus = true;
+        this.verifyFlow();
+        if (this.submitStatus){
+          coreRuleNodeUpdate({ ruleNodeVOS: list,status:'1' }).then(res => {
+            if (res.code == '200') {
+              this.success('提交成功')
+            } else {
+              this.warn(res.msg)
+            }
+          }).catch(err => {
+            this.error(err)
+          })
+          localStorage.setItem('test', JSON.stringify(this.flow.save()))
+        } else{
+          this.warn('流程图未完善不能提交，可以保存')
+        }
+
+      },
+
+      //复制规则
+      copyRule(){
+        this.modal.visible = true;
+      },
+      //选择规则
+      ruleModalChange(value){
+        this.ruleModalId = ''+value.key;
+
+      },
+      //保存复制规则
+      modalOk(){
+        let _this = this;
+        _this.flow.clear();
+        setTimeout(()=>{
+          this.getNodeData({ruleId:this.ruleModalId})
+          this.modal.visible = false;
+        },0)
+
+
+      },
+      //取消复制规则
+      modalCancel(){
+        this.modal.visible = false;
       },
       getNodePids(edges, id) {
         let pids = []
@@ -750,10 +940,13 @@
       /**
        * @description:获取节点数据
        */
-      getNodeData() {
-        let params = {}
-        params.ruleId = this.$route.query.id
-        this.ruleId = this.$route.query.id
+      getNodeData(params={}) {
+        if (params.ruleId == null){
+          params.ruleId = this.$route.query.id
+          this.ruleId = this.$route.query.id
+        }else {
+          this.ruleId = params.ruleId
+        }
         this.titleData.visible = this.$route.query.type == 1 ? false : true
         coreRuleNodeSelectOne(params).then(res => {
           if (res.code == '200') {
@@ -817,7 +1010,7 @@
                 suggest: nodeData[key].suggest,
                 sourcename: nodeData[key].sourcename,
                 inAccordanceWith: nodeData[key].inAccordanceWith,
-                verdictType: ''+nodeData[key].verdictType,
+                verdictType: '' + nodeData[key].verdictType,
                 restrictionType: nodeData[key].restrictionType,
                 ro: nodeData[key].ro,
                 lo: nodeData[key].lo,
@@ -861,12 +1054,15 @@
             let indexData = this.getNodeTreeData(list)
             let i = 0
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
-
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
 
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
+            // for (let key in nodesData){
+            //   console.log(nodesData[key])
+            //   this.flow.update(nodesData[key].id,{isSelected:true})
+            // }
           } else {
             this.warn(res.msg)
           }
