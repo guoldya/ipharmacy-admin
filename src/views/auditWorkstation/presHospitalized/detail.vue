@@ -3,9 +3,12 @@
     <a-col :span="14">
       <a-card>
         <div class="cardHead">
-          <a href="#" @click.prevent="cancle">
+          <a href="#" @click.prevent="cancle" class="fanhui">
             <a-icon type="left"></a-icon>返回
           </a>
+          <div class="guanzhu" :loading="loading" v-if="carePatient===true">
+            <a-icon theme="filled" type="star" class="xingxing"/>已关注
+          </div>
         </div>
         <a-row class="margin-top-10">
           <a-col class="titleText" :xl="7" :xxl="7">
@@ -56,23 +59,7 @@
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
           <a-tab-pane tab="医嘱信息" key="1">
-            <el-table class="margin-top-10 width-100" :data="adviceData" highlight-current-row>
-              <el-table-column
-                :prop="item.prop"
-                :label="item.title"
-                :key="index"
-                v-for="(item,index) in columns"
-                :width="item.width"
-                :align="item.align"
-                :formatter="item.formatter"
-                :show-overflow-tooltip="true"
-              >
-                <template slot-scope="props">
-                  <span v-if="item.prop == 'name'">{{props.row.name}}&nbsp;&nbsp;{{props.row.spec}}</span>
-                  <span v-else>{{props.row[item.prop]}}</span>
-                </template>
-              </el-table-column>
-            </el-table>
+            <docAdvices :docDatas="docDatas"></docAdvices>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
             <detailCheck :visidId="visidIdnum"></detailCheck>
@@ -88,17 +75,55 @@
       </a-card>
     </a-col>
     <a-col :span="10" class="padding-left-5">
-      <jodgeStation :visData='visDatas'></jodgeStation>
+      <jodgeStation :visData="visDatas" @listStatus='listStatul'></jodgeStation>
     </a-col>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
-      oneText="版本对比"
-      twoText="标记收藏"
     >
-      <a-button @click="submit" :loading="loading">上一个</a-button>
-      <a-button @click="submit" class="margin-left-5" :loading="loading">下一个</a-button>
-      <a-button @click="submit" style="margin-left: 20px" :loading="loading">驳回</a-button>
-      <a-button type="primary" class="margin-left-5" @click="submit" :loading="loading">通过</a-button>
+      <template slot="back">
+        <a-button v-if="carePatient" @click="attention" class="margin-left-5" :loading="loading">
+          <a-icon type="star" theme="filled"/>取消关注
+        </a-button>
+        <a-button v-else @click="attention" class="margin-left-5" :loading="loading">
+          <a-icon type="star"/>关注患者
+        </a-button>
+        <a-button
+          @click="slePatients(previousData)"
+          :disabled="previousData.visId==0? true:false"
+          class="margin-left-5"
+          :loading="loading"
+        >上一患者</a-button>
+        <a-button
+          @click="slePatients(nextPerson)"
+          :disabled="nextPerson.visId==0? true:false"
+          class="margin-left-5"
+          :loading="loading"
+        >下一患者</a-button>
+       
+      </template>
+      <template slot="center">
+         <div class="paintFoot">
+          <div v-for="(item,index) in this.enum.paintState" class="jianxie">
+            <a-tag :color="item.color">{{item.texts}}</a-tag>
+            <span>{{item.text}}</span>
+          </div>
+        </div>
+      </template>
+
+      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
+      <a-button
+        @click="refuse"
+        style="margin-left: 5px"
+        :loading="loading"
+        v-if="this.auditStatus===false"
+      >驳回</a-button>
+      <a-button
+        type="primary"
+        class="margin-left-5"
+        @click="submit"
+        :loading="loading"
+        v-if="this.auditStatus===false"
+      >通过</a-button>
     </footer-tool-bar>
   </div>
 </template>
@@ -110,6 +135,7 @@ import DetailOperate from './detailOperate.vue'
 import DetailTest from './detailTest.vue'
 import detailCheck from './detailCheck.vue'
 import jodgeStation from './jodgeStation.vue'
+import docAdvices from './docAdvices.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
 import { selectOutDetail } from '@/api/login'
 const DetailListItem = DetailList.Item
@@ -121,7 +147,8 @@ export default {
     DetailOperate,
     DetailTest,
     detailCheck,
-    jodgeStation
+    jodgeStation,
+    docAdvices
   },
   mixins: [mixin, mixinDevice],
   name: 'detail',
@@ -135,61 +162,10 @@ export default {
         selectsurgeryDel: 'sys/reviewOrderissue/selectHospitalOperationListByVisId',
         selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail',
         selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
+        concernedRecord: 'sys/concernedPatient/selectCurrentRecord',
+        concernedPatientUpdate: 'sys/concernedPatient/update'
       },
       loading: false,
-      problemsData: [
-        {
-          status: 1,
-          time: '2018-09-21  08:50:08',
-          openName: '黄磊',
-          deptName: '消化内科',
-          prescriptionNum: 1,
-          patientName: '张力',
-          patientNum: '201904010001',
-          patientSex: '女',
-          patientAge: '23岁',
-          problem: '5',
-          colors: '#FF6600',
-          problemText: '重复给药',
-          text:
-            '头孢丙烯分散片和头孢克洛缓释胶囊为重复用药。避免重复用药。头孢丙烯分散片和头孢克洛缓释胶囊为重复用药.头孢丙烯分散片和头孢克洛缓释胶囊为重复用药头孢丙烯分散片和头孢克洛缓释胶囊为重复用药'
-        }
-      ],
-      adviceData: [
-        {
-          num: 1,
-          mark: '┎',
-          name: '5%葡萄糖氯化钠注射液',
-          spec: '500ml/袋',
-          total: '1袋',
-          single: '500ml',
-          freq: '每天一次',
-          way: '静滴',
-          colors: 'rgb(225,102,102)'
-        },
-        {
-          num: 2,
-          mark: '┃',
-          name: '西咪替丁注射液',
-          spec: '2ml*0.2g',
-          total: '2支',
-          single: '0.4g',
-          freq: '每天一次',
-          way: '静滴'
-        }
-      ],
-      checkdata: [
-        {
-          num: 1,
-          reportDate: 'xxxx',
-          itemsName: 'ddddddd'
-        },
-        {
-          num: 2,
-          reportDate: 'jjjjjj',
-          itemsName: 'zzzzz'
-        }
-      ],
       inspectionData: [],
       columns: [
         { title: '序号', prop: 'num', width: 50, align: 'right' },
@@ -223,18 +199,28 @@ export default {
       },
       form: this.$form.createForm(this),
       visidIdnum: this.$route.query.visId,
-      visDatas:{visId:this.$route.query.visId,submitNo:this.$route.query.maxSubmitNo}
+      visDatas: { visId: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo },
+      docDatas: [],
+      previousData: {
+        visId: null,
+        maxSubmitNo: null
+      },
+      nextPerson: {
+        visId: null,
+        maxSubmitNo: null
+      },
+      auditStatus: true,
+      carePatient: false,
+      patientId: '',
+      visId: ''
     }
   },
   mounted() {
     this.getRecordDelData({ visid: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
-    
   },
   methods: {
-    
     // 获取患者个人信息
     getRecordDelData(params = {}) {
-      this.loading = true
       this.$axios({
         url: this.api.selectRecordDel,
         method: 'put',
@@ -243,15 +229,62 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.RecordDelData = res.data
-            this.loading = false
+            this.docDatas = res.data.clinicOrderList
+            this.visId = this.$route.query.visId
+            this.patientId = res.data.patientId
           } else {
-            this.loading = false
             this.warn(res.msg)
           }
         })
         .catch(err => {
           this.error(err)
-          this.loading = false
+        })
+    },
+    //获取关注患者信息
+    getAttention() {
+      let params = this.$route.query
+      this.$axios({
+        url: this.api.concernedRecord,
+        method: 'post',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.carePatient = res.data
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    //关注患者
+    attention() {
+      let params = {}
+      params.visId = this.visId
+      params.patientId = this.patientId
+   
+      this.$axios({
+        url: this.api.concernedPatientUpdate,
+        method: 'post',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            if (this.carePatient) {
+              this.carePatient = false
+              this.success('取消关注')
+            } else {
+              this.carePatient = true
+              this.success('关注成功')
+            }
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
         })
     },
     submit() {},
@@ -299,12 +332,40 @@ export default {
     timeFormat(data) {
       let times = data.slice(5, 20)
       return times
+    },
+    // 关注取消功能
+
+    // 上一位下一位患者更替
+    slePatients(data) {},
+    listStatul(data){
+     console.log(data,'dd')
     }
   }
 }
 </script>
 
 <style  lang="less">
+.detailPres {
+  .guanzhu {
+    background-color: #0c60ee;
+    height: 26px;
+    width: 80px;
+    display: block;
+    border-radius: 5px;
+    color: white;
+    line-height: 26px;
+    text-align: center;
+    font-weight: bold;
+    float: right;
+    i {
+      font-size: 20px;
+      margin-right: 5px;
+    }
+  }
+}
+.fanhui {
+  float: left;
+}
 .ant-col-xxl-6 {
   display: block;
   -webkit-box-sizing: border-box;
@@ -446,5 +507,14 @@ export default {
 
 .datetime {
   color: #1890ff;
+}
+.paintFoot {
+  .jianxie {
+    float: left;
+  margin-left: 15px;
+  }
+  .ant-tag{
+    margin-right: 1px;
+  }
 }
 </style>

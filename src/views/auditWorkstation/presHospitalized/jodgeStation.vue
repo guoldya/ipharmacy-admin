@@ -30,7 +30,7 @@
             </span>
             <a-card
               class="margin-top-10 antCard"
-              @click="clickTagsCard(op)"
+             
               v-for="(op,index) in rightData "
               v-if="op.status"
               :style="{'borderColor':op.borderColor}"
@@ -197,7 +197,8 @@ export default {
       form: this.$form.createForm(this),
       Modal: {
         visible: false
-      }
+      },
+      auditStatus:true
     }
   },
   mounted() {
@@ -208,7 +209,7 @@ export default {
   methods: {
     //右边预判情况基础数据
     getDetailData() {
-      console.log(this.visData)
+      
       let params = { visid: this.visData.visId, submitNo: this.visData.submitNo, clinicPrescNum: '' }
       selectOutDetail(params)
         .then(res => {
@@ -218,6 +219,14 @@ export default {
             this.tagsData = this.leftData.levelTotalsList
             this.dealTagsData(this.tagsData)
             this.deal(this.rightData)
+            // this.$emit('listStatus', 'ddddd')
+             this.leftData.clinicPrescVOList.forEach((item, index) => {
+                if (item.auditingStatus !== '1') {
+                  this.auditStatus = false
+                    this.$emit('listStatus', 'ddddd')
+                    // 逻辑合适的上面的判定没生效
+                }
+              })
           } else {
             this.warn(res.msg)
           }
