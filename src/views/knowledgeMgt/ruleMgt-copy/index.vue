@@ -284,9 +284,9 @@
           },
           {
             name: '规则',
-            dataField: 'type2',
+            dataField: 'type',
             type: 'select',
-            dataSource: this.enum.ruleType,
+            dataSource: this.enum.rulesType,
             keyExpr: 'id',
             valueExpr: 'text'
           },

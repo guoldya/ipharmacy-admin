@@ -5,7 +5,7 @@ const { Flow } = G6Editor;
 Flow.registerNode(
     'model-card-conclusion',
     {
-      levels:null,
+      levels:'',
       itemId:null,
       inAccordanceWith: null,
       sourcename:'',

@@ -29,8 +29,8 @@
         <!--<a href="javascript:void(0); " @click="saveFlow">保存节点信息</a>-->
         <!--<i class="iconfont action action-user-lock"></i>-->
           <a-button size="small" v-if="titleData.visible" type="primary" @click="saveFlow" class="margin-left-5">保存</a-button>
-          <a-button size="small" v-if="titleData.visible" type="primary" class="margin-left-5">提交</a-button>
-          <a-button size="small" v-if="titleData.visible" class="margin-left-5" >复制规则</a-button>
+          <a-button size="small" v-if="titleData.visible" type="primary" @click="submitFlow" class="margin-left-5">提交</a-button>
+          <a-button size="small" v-if="titleData.visible" @click="copyRule" class="margin-left-5"  >复制规则</a-button>
           <a-button size="small" v-if="titleData.visible" @click="verifyFlow" class="margin-left-5">校验</a-button>
 
       </div>
@@ -53,7 +53,9 @@ export default {
   props:{
     titleData: Object, // 传入数据
     saveFlow: Function, // 获取数据
-    verifyFlow: Function
+    verifyFlow: Function,
+    submitFlow: Function,
+    copyRule: Function,
   },
   methods: {
     // saveFlows() {

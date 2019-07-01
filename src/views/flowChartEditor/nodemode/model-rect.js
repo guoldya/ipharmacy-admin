@@ -26,7 +26,6 @@ Flow.registerNode('model-rect', {
       let arrayText=addShapePnewline(label);
       let arrayTextlength = arrayText.length >3 ? 3 : arrayText.length;
       let yy=-(((arrayTextlength-1)*20))/2-5;
-      console.log(yy);
       const keyShape = group.addShape('rect', {
         attrs: {
           x,

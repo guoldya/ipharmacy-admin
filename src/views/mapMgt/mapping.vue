@@ -24,7 +24,7 @@
                                     align="center"
                             >
                                 <template slot-scope="scope">
-                                    <a @click="edit(scope.row)" v-if="scope.row.status === '0'">对码</a>
+                                    <a @click="edit(scope.row)" v-if="scope.row.isCurrent === '0'">对码</a>
                                 </template>
                             </el-table-column>
                             <el-table-column
@@ -37,9 +37,9 @@
                                     :align="item.align"
                             >
                                 <template slot-scope="scope">
-                                    <span v-if="item.prop == 'status'">
-                                        <a-badge :status="scope.row.status == 0? 'default':'processing'"
-                                                 :text="scope.row.status ==0?'未对码':'已对码'"/>
+                                    <span v-if="item.prop == 'isCurrent'">
+                                        <a-badge :status="scope.row.isCurrent == 0? 'default':'processing'"
+                                                 :text="scope.row.isCurrent ==0?'未对码':'已对码'"/>
                                     </span>
                                     <span v-else>
                                         {{scope.row[item.prop]}}
@@ -64,7 +64,7 @@
             </a-col>
             <a-col :span="8">
                 <a-card :bodyStyle="{padding:'12px 10px'}">
-                    <a-button type="primary" :disabled="disabled" @click="submit" @loading="loading">保存</a-button>
+                    <a-button type="primary" :disabled="disabled" @click="submit" :oading="loading">保存</a-button>
                     <table class="table_dm margin-top-10">
                         <tr>
                             <td class="table_dm_th width_100"></td>
@@ -80,17 +80,35 @@
                         </tr>
                         <tr>
                             <td class="table_dm_td text_bold width_100">药品名称</td>
-                            <td class="table_dm_td text_center width_200" :title="NData.drugName">
-                                <div class="table_dm_td_text">{{NData.drugName}}</div></td>
-                            <td class="table_dm_td text_center width_200" :title="MData.drugName">
-                                <div class="table_dm_td_text">{{MData.drugName}}</div></td>
+                            <td class="table_dm_td text_center width_200">
+                                <div class="table_dm_td_text">
+                                    <a-tooltip>
+                                        <template slot='title'>
+                                            {{NData.drugName}}
+                                        </template>
+                                        {{NData.drugName}}
+                                    </a-tooltip>
+                                    <!--{{NData.drugName}}-->
+                                </div>
+                            </td>
+                            <td class="table_dm_td text_center width_200">
+                                <div class="table_dm_td_text">
+                                    <a-tooltip>
+                                        <template slot='title'>
+                                            {{MData.drugName}}
+                                        </template>
+                                        {{MData.drugName}}
+                                    </a-tooltip>
+                                    <!--{{MData.drugName}}-->
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td class="table_dm_td text_bold width_100">药品剂型</td>
                             <td class="table_dm_td text_center width_200">
                                 <div class="table_dm_td_text">{{NData.dosageForms}}</div></td>
                             <td class="table_dm_td text_center width_200">
-                                <div class="table_dm_td_text">{{MData.dosageForms}}</div></td>
+                                <div class="table_dm_td_text">{{MData.dosageFormsStr}}</div></td>
                         </tr>
                         <tr>
                             <td class="table_dm_td text_bold width_100">药品规格</td>
@@ -108,10 +126,28 @@
                         </tr>
                         <tr>
                             <td class="table_dm_td text_bold width_100">生产厂商</td>
-                            <td class="table_dm_td text_center width_200" :title="NData.producedBy">
-                                <div class="table_dm_td_text">{{NData.producedBy}}</div></td>
-                            <td class="table_dm_td text_center width_200" :title="MData.producedBy">
-                                <div class="table_dm_td_text">{{MData.producedBy}}</div></td>
+                            <td class="table_dm_td text_center width_200">
+                                <div class="table_dm_td_text">
+                                    <a-tooltip>
+                                        <template slot='title'>
+                                            {{NData.producedBy}}
+                                        </template>
+                                        {{NData.producedBy}}
+                                    </a-tooltip>
+                                    <!--{{NData.producedBy}}-->
+                                </div>
+                            </td>
+                            <td class="table_dm_td text_center width_200">
+                                <div class="table_dm_td_text">
+                                    <a-tooltip>
+                                        <template slot='title'>
+                                            {{MData.producedBy}}
+                                        </template>
+                                        {{MData.producedBy}}
+                                    </a-tooltip>
+                                    <!--{{MData.producedBy}}-->
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td class="table_dm_td text_bold width_100">批准文号</td>
@@ -195,7 +231,7 @@
                     { title: '厂商', prop: 'producedBy' },
                     { title: '剂量单位', prop: 'doseUnit',width:80,align:'center' },
                     { title: '批准文号', prop: 'approvalNumber' },
-                    { title: '对码状态', prop: 'status',width:80,align:'center' },
+                    { title: '对码状态', prop: 'isCurrent',width:80,align:'center' },
                 ],
                 total:0,
                 current:1,
@@ -206,7 +242,7 @@
                 api:{
                     hisDrugDataUrl:'/biz/hisDrug/selectPage',
                     similarDrugDataUrl:'/biz/hisDrug/selectSimilarDrugPage',
-                    mapUrl:''
+                    mapUrl:'/biz/dicDrugMapper/insert'
                 },
                 NData:{},
                 MData:{},
@@ -215,8 +251,8 @@
                 similarColumns:[
                     { title: '药品编码', prop: 'drugCode',width:80 },
                     { title: '药品名称', prop: 'drugName' },
-                    { title: '剂型', prop: 'dosageForms' },
-                    { title: '剂量单位', prop: 'doseUnit',width:80,align:'center' },
+                    { title: '剂型', prop: 'dosageFormsStr' },
+                    { title: '剂量单位', prop: 'unit',width:80,align:'center' },
                     { title: '厂商', prop: 'producedBy' },
                 ],
                 similarTotal:0,
@@ -238,10 +274,12 @@
         methods:{
             search() {
                 let params = this.$refs.searchPanel.form.getFieldsValue();
+                this.current = 1;
                 this.getData(params)
             },
             resetForm() {
-                this.$refs.searchPanel.form.resetFields()
+                this.$refs.searchPanel.form.resetFields();
+                this.current = 1;
                 this.getData()
             },
             pageChange(page, size) {
@@ -257,20 +295,28 @@
             },
             similarPageChange(page, size) {
                 let params = {};
-                params.drugName = this.selectData.drugName;
-                params.producedBy = this.selectData.producedBy;
+                params.drugName = this.NData.drugName;
+                params.producedBy = this.NData.producedBy;
                 params.offset = (page - 1) * size;
+                if(this.NData.drugName){
+                    this.getSimilarData(params)
+                }
             },
             similarSizeChange(current, size) {
-                this.current = 1;
+                this.similarCurrent = 1;
                 let params = {};
-                params.drugName = this.selectData.drugName;
-                params.producedBy = this.selectData.producedBy;
+                params.drugName = this.NData.drugName;
+                params.producedBy = this.NData.producedBy;
                 params.pageSize = size;
+                if(this.NData.drugName){
+                    this.getSimilarData(params)
+                }
             },
             edit(row){
                 this.NData = row;
                 this.MData = {};
+                this.M = 1;
+                this.N = 1;
                 this.getSimilarData({
                     drugName:row.drugName,
                     producedBy:row.producedBy
@@ -298,10 +344,23 @@
             submit(){
                 this.loading = true;
                 let params = {};
-
+                params.orgId = this.NData.orgId;
+                params.hisDrugCode = this.NData.drugCode;
+                params.hisDrugName = this.NData.drugName;
+                params.hisSpec = this.NData.spec;
+                params.hisDoseUnit = this.NData.doseUnit;
+                params.hisProducedBy = this.NData.producedBy;
+                params.hisDosageForms = this.NData.dosageForms;
+                params.drugCode = this.MData.drugCode;
+                params.drugName = this.MData.drugName;
+                params.producedBy = this.MData.producedBy;
+                params.dosageForms = this.MData.dosageForms;
+                params.doseUnit = this.MData.unit;
+                params.N = this.N;
+                params.M = this.M;
                 this.$axios({
                     url: this.api.mapUrl,
-                    method: 'put',
+                    method: 'post',
                     data: params
                 }).then(res => {
                     if (res.code == '200') {
@@ -335,6 +394,12 @@
                     if (res.code == '200') {
                         this.dataSource = res.rows;
                         this.total = res.total;
+                        this.M = 1;
+                        this.N = 1;
+                        this.NData = {};
+                        this.MData = {};
+                        this.similarData = [];
+                        this.similarTotal = 0;
                         this.spinning = false;
                     } else {
                         this.spinning = false;
