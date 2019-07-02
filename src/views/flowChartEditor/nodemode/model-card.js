@@ -31,8 +31,8 @@ Flow.registerNode('model-card', {
         width,
         height,
         radius: borderRadius,
-        fill: 'white',
-        stroke: '#CED4D9'
+        fill: '#e6fffb',
+        stroke: '#87e8de'
       }
     })
 

@@ -17,7 +17,9 @@ Flow.registerNode("model-image", {
     const keyShape = group.addShape('path', {
       attrs: {
         path: this.getPath(i),
-        fill: this.getColor(item)
+        fill: '#e6f7ff',
+        stroke: '#a6dbff'
+       // fill: this.getColor(item)
       }
     })
 
@@ -29,8 +31,9 @@ Flow.registerNode("model-image", {
         y: y + 4,
         width: 64,
         height: 64
-      }
+      },
     })
+
     // let index = 0
     // let arrayText = this.addShapePnewline(label);
     // let labely = this.getlabelY(label, arrayText);

@@ -16,7 +16,9 @@ Flow.registerNode("model-rhombus", {
         const keyShape = group.addShape('path', {
             attrs: {
                 path: this.getPath(i),
-                fill: this.getColor(item)
+                //fill: this.getColor(item)
+              fill: '#e6fffb',
+              stroke: '#87e8de'
             }
         })
 

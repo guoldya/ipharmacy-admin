@@ -264,7 +264,6 @@
     },
     mounted() {
       this.getPageData()
-      this.getData();
     },
     computed: {
       list() {
@@ -316,79 +315,6 @@
         this.$refs.searchPanel.form.resetFields()
         this.getPageData()
       },
-      //获取树
-      getData() {
-        this.gData = []
-        let params = {}
-        params.typePid = -1
-        coreRuleTypeSelect(params).then(res => {
-          if (res.code == '200') {
-            this.dealData(res.rows);
-            console.log(this.gData,'gdata')
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.loading = false
-          this.error(err)
-        })
-      },
-      //处理tree初始数据
-      dealData(data) {
-        for (let i in data) {
-          let isleaf = false
-          if (data[i].isleaf == 1) {
-            isleaf = false
-          } else {
-            isleaf = true
-          }
-          this.gData.push({
-            key: data[i].typeId,
-            title: data[i].typeName,
-            isLeaf: isleaf,
-            type: data[i].type,
-            type2: data[i].type2
-          })
-        }
-      },
-
-      //异步加载数据
-      onLoadData(treeNode) {
-        console.log(treeNode);
-        return new Promise((resolve) => {
-          if (treeNode.dataRef.children) {
-            resolve()
-            return
-          }
-          setTimeout(() => {
-            let params = {}
-            params.typePid = treeNode.dataRef.key
-            coreRuleTypeSelect(params).then(res => {
-              if (res.code == '200') {
-                treeNode.dataRef.children = []
-                for (let i in res.rows) {
-                  let isLeaf = false
-                  if (res.rows[i].isleaf == 1) {
-                    isLeaf = false
-                  } else {
-                    isLeaf = true
-                  }
-                  treeNode.dataRef.children.push({
-                    key: res.rows[i].typeId, title: res.rows[i].typeName,
-                    isLeaf: isLeaf, type: res.rows[i].type, type2: res.rows[i].type2, typePid: res.rows[i].typePid
-                  })
-                }
-                this.gData = [...this.gData]
-              } else {
-                this.warn(res.msg)
-              }
-            }).catch(err => {
-              this.error(err)
-            })
-            resolve()
-          }, 500)
-        })
-      },
 
       //查询
       searchRule() {
@@ -406,18 +332,6 @@
         })
       },
 
-      //树形节点点击事件
-      onSelect(selectedKeys, e) {
-        this.drugForm.resetFields()
-        this.typeIds = e.node.dataRef.key
-        this.getPageData()
-        this.selectNode = e.node.dataRef
-        if (e.node.dataRef.type == '2') {
-          this.disable = false
-        } else {
-          this.disable = true
-        }
-      },
       selectType(e){
         console.log(e.target.value);
         if (e.target.value == 1) {
@@ -510,7 +424,6 @@
             for (let key in res.rows) {
               this.coreRule.push({ id: '' + res.rows[key].id, specName: res.rows[key].specName })
             }
-            console.log(this.coreRule)
           } else {
             this.warn(res.msg)
           }

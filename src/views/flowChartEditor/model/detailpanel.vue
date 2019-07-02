@@ -307,7 +307,10 @@
       },
       coreFactTreeChange(value, node, extra){
         let params = extra.selectedNodes[0].data.props;
+        let _this = this;
+        _this.selectNode.itemId = params.id;
         console.log(params,'pa');
+        console.log(_this.selectNode)
         if (params.lo == 1){
           this.boxInitialized.inputType = 'input'
         }else if (params.lo == 2){
@@ -333,11 +336,11 @@
         }else if (params.colDbType == 3){
           this.boxInitialized.inValueType = 'text'
         }
-        this.selectNode.lo = params.lo;
-        this.selectNode.colDbType = params.colDbType;
+        _this.selectNode.lo = params.lo;
+        _this.selectNode.colDbType = params.colDbType;
         this.modelValue = params.title;
-        this.selectNode.label = this.modelValue;
-        this.selectNode.assertVal = null;
+        _this.selectNode.label = this.modelValue;
+        _this.selectNode.assertVal = null;
         this.condition = '';
         this.conditionValue = '';
         this.conditionValue1 = '';
@@ -421,10 +424,11 @@
       //属性节点后线段属性
       attributeEdge(value, node, extra){
         let _this = this;
-        console.log(extra)
+        console.log(_this.selectEdge)
         let params = extra.selectedNodes[0].data.props;
         this.selectNode.lo = params.lo
         _this.selectNode.label = params.title;
+        _this.selectNode.itemId = params.id;
         if (params.lo == 1){
           _this.edgeInitialized.inputEdge = 'input'
         }else if (params.lo == 2){
