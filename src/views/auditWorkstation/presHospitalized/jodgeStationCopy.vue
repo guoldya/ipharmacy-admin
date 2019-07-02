@@ -170,7 +170,7 @@
   </div>
 </template>
 <script>
-import { selectOutDetail } from '@/api/login'
+// import { selectOutDetail } from '@/api/login'
 export default {
  props: {
     visData: {
@@ -183,7 +183,9 @@ export default {
         selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
         selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
         reviewTemplateUpdate: 'sys/reviewTemplate/update',
-        selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId'
+        selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
+         DetailData: 'sys/reviewOrderissue/selectReviewOrderissueDetail'
+        //reviewOrderissue/selectHospitalLeadVisIdAndLagVisId
       },
       loading: false,
        templateText: '',
@@ -215,16 +217,20 @@ console.log(value)
     },
     //右边预判情况基础数据
     getDetailData() {
-      console.log(this.visData)
+      console.log('dddddd')
       let params = { visid: this.visData.visId, submitNo: this.visData.submitNo, clinicPrescNum: '' }
-      selectOutDetail(params)
+      this.$axios({
+        url: this.api.DetailData,
+        method: 'put',
+        data: params
+      })
         .then(res => {
           if (res.code == '200') {
             this.leftData = res.data
-            this.rightData = this.leftData.reviewOrderissueVOList
-            this.tagsData = this.leftData.levelTotalsList
-            this.dealTagsData(this.tagsData)
-            this.deal(this.rightData)
+            this.rightData =res.rows
+            // this.tagsData = this.leftData.levelTotalsList
+            // this.dealTagsData(this.tagsData)
+            // this.deal(this.rightData)
           } else {
             this.warn(res.msg)
           }

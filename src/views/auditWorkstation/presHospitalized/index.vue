@@ -287,7 +287,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.EasonData = res.rows
-            console.log(this.EasonData)
+           
           } else {
             this.loading = false
             this.warn(res.msg)
@@ -669,7 +669,7 @@ export default {
     //单个驳回
     rejectedSingle(data) {
       Object.assign(this.visDatas, { visId: data.row.visId, submitNo: data.row.maxSubmitNo })
-      console.log(this.visDatas)
+     
       this.Modal.visible = true
       //this.problemsData = data.row.problemList
       this.tempRowData = data.row
@@ -683,7 +683,7 @@ export default {
       params.reviewOpinion = this.templateText
       params.reviewVerdict = '1'
       params.reviewIds = []
-      console.log(this.tempRowData)
+    
       params.reviewIds[0] = this.tempRowData.reviewId
       this.$axios({
         url: this.api.updateReviewStatus,

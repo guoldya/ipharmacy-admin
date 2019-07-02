@@ -91,6 +91,12 @@ export default {
       obj: 0
     }
   },
+  watch:{
+ visidId: function() {
+     console.log(this.visidId)
+     this.getdata({ visid: this.visidId })
+    }
+  },
   mounted() {
     this.getdata({ visid: this.visidId })
   },

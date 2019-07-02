@@ -30,10 +30,10 @@
             </span>
             <a-card
               class="margin-top-10 antCard"
-             
               v-for="(op,index) in rightData "
               v-if="op.status"
               :style="{'borderColor':op.borderColor}"
+               @click="clickTagsCard(op)"
               :key="index"
             >
               <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
@@ -125,7 +125,7 @@
         </a-tabs>
       </div>
     </a-card>
-     <a-modal
+    <a-modal
       title="另存为模板"
       :visible="Modal.visible"
       @ok="handleOk"
@@ -172,21 +172,35 @@
 <script>
 import { selectOutDetail } from '@/api/login'
 export default {
- props: {
-    visData: {
-      Object
+  props: {
+    visidId: {
+      type: String
+    },
+     submitNos: {
+      type: String
     },
   },
+  watch:{
+ visidId: function() {
+  // console.log(this.visidId,'dddddddddddd')
+  this.getDetailData({visId:this.visidId,submitNo:this.submitNos})
+    this.getRecord({visId:this.visidId,submitNo:this.submitNos})
+    this.getTemplate({visId:this.visidId,submitNo:this.submitNos})
+    this.basedata({visId:this.visidId,submitNo:this.submitNos})
+    }
+  },
+
   data() {
     return {
       api: {
         selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
         selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
         reviewTemplateUpdate: 'sys/reviewTemplate/update',
-        selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId'
+        selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
+        baseData: 'sys/reviewOrderissue/selectReviewOrderissueDetail'
       },
       loading: false,
-       templateText: '',
+      templateText: '',
       tagsData: [],
       rightData: [],
       reviewTemplates: [],
@@ -198,19 +212,57 @@ export default {
       Modal: {
         visible: false
       },
-      auditStatus:true
+      auditStatus: true,
+      baseDatas: [],
+      prescOrderId:'',
     }
   },
   mounted() {
-    this.getDetailData()
-    this.getRecord()
-    this.getTemplate()
+    this.getDetailData({visId:this.visidId,submitNo:this.submitNos})
+    this.getRecord({visId:this.visidId,submitNo:this.submitNos})
+    this.getTemplate({visId:this.visidId,submitNo:this.submitNos})
+    this.basedata({visId:this.visidId,submitNo:this.submitNos})
   },
   methods: {
+    // 左右互动
+    clickTagsCard(data) {
+      for (let key in this.rightData) {
+        if (this.rightData[key].problemId == data.problemId) {
+          this.rightData[key].borderColor = '#1890ff'
+        } else {
+          this.rightData[key].borderColor = '#d9d9d9'
+        }
+      }
+      this.prescOrderId = data.prescOrderId
+      this.$emit('listStatus',data)
+      this.levelColor = data.levelColor
+      this.rightData.push()
+    },
+    // 渲染颜色
+    //  tableRowStyle({ row, rowIndex }) {
+    //   if (this.prescOrderId == row.clinicPrescId) {
+    //     return { background: 'rgb(' + this.convertHexToRGB(this.levelColor).join(',') + ',0.3)' }
+    //   }
+    // },
+    // 基础数据
+    basedata(params={}) {
+      this.$axios({
+        url: this.api.baseData,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
     //右边预判情况基础数据
-    getDetailData() {
-      
-      let params = { visid: this.visData.visId, submitNo: this.visData.submitNo, clinicPrescNum: '' }
+    getDetailData(params={}) {
       selectOutDetail(params)
         .then(res => {
           if (res.code == '200') {
@@ -220,13 +272,13 @@ export default {
             this.dealTagsData(this.tagsData)
             this.deal(this.rightData)
             // this.$emit('listStatus', 'ddddd')
-             this.leftData.clinicPrescVOList.forEach((item, index) => {
-                if (item.auditingStatus !== '1') {
-                  this.auditStatus = false
-                    this.$emit('listStatus', 'ddddd')
-                    // 逻辑合适的上面的判定没生效
-                }
-              })
+            this.leftData.clinicPrescVOList.forEach((item, index) => {
+              if (item.auditingStatus !== '1') {
+                this.auditStatus = false
+                //this.$emit('listStatus', 'ddddd')
+                // 逻辑合适的上面的判定没生效
+              }
+            })
           } else {
             this.warn(res.msg)
           }
@@ -259,8 +311,8 @@ export default {
       //data.push()
     },
     // 右边预判情况树形结构数据
-    getTemplate() {
-      let params = { visId:this.visData.visId }
+    getTemplate(params={}) {
+      
       this.$axios({
         url: this.api.selectWithReviewId,
         method: 'put',
@@ -403,8 +455,8 @@ export default {
       this.checkedAll = true
     },
     // 右边干预记录
-    getRecord() {
-      let params = { visid:this.visData.visId }
+    getRecord(params={}) {
+     
       this.$axios({
         url: this.api.selectWithVisId,
         method: 'put',

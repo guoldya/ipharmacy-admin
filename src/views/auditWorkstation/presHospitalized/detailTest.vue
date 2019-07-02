@@ -117,6 +117,12 @@ export default {
       type: String
     }
   },
+   watch:{
+ visidId: function() {
+     console.log(this.visidId)
+ this.gettestData({ visid: this.visidId })
+    }
+  },
   data() {
     return {
       api: {

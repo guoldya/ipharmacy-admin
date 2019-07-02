@@ -59,7 +59,7 @@
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
           <a-tab-pane tab="医嘱信息" key="1">
-            <docAdvices :docDatas="docDatas"></docAdvices>
+            <docAdvices :docDatas="docDatas" :prescOrderIds='prescOrderId'></docAdvices>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
             <detailCheck :visidId="visidIdnum"></detailCheck>
@@ -68,14 +68,14 @@
             <DetailTest :visidId="visidIdnum"></DetailTest>
           </a-tab-pane>
           <a-tab-pane tab="手术信息" key="4">
-            <DetailOperate></DetailOperate>
+            <DetailOperate :visidId="visidIdnum"></DetailOperate>
           </a-tab-pane>
           <a-tab-pane tab="电子病历" key="5"></a-tab-pane>
         </a-tabs>
       </a-card>
     </a-col>
     <a-col :span="10" class="padding-left-5">
-      <jodgeStation :visData="visDatas" @listStatus='listStatul'></jodgeStation>
+      <jodgeStation :visidId="visidIdnum" :submitNos="submitNos" @listStatus="listStatul"></jodgeStation>
     </a-col>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
@@ -99,12 +99,11 @@
           class="margin-left-5"
           :loading="loading"
         >下一患者</a-button>
-       
       </template>
       <template slot="center">
-         <div class="paintFoot">
+        <div class="paintFoot">
           <div v-for="(item,index) in this.enum.paintState" class="jianxie">
-            <a-tag :color="item.color">{{item.texts}}</a-tag>
+            <a-tag :color="item.color" class="tags">{{item.texts}}</a-tag>
             <span>{{item.text}}</span>
           </div>
         </div>
@@ -163,13 +162,15 @@ export default {
         selectRecordDel: 'sys/reviewOrderissue/selectHospitalizationRecordDetail',
         selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
         concernedRecord: 'sys/concernedPatient/selectCurrentRecord',
-        concernedPatientUpdate: 'sys/concernedPatient/update'
+        concernedPatientUpdate: 'sys/concernedPatient/update',
+        turnpage: 'sys/reviewOrderissue/selectHospitalLeadVisIdAndLagVisId'
+        //reviewOrderissue/selectHospitalLeadVisIdAndLagVisId
       },
       loading: false,
       inspectionData: [],
       columns: [
         { title: '序号', prop: 'num', width: 50, align: 'right' },
-        { title: '', prop: 'mark', width: 20, align: 'left' },
+        // { title: '', prop: 'mark', width: 20, align: 'left' },
         { title: '药品', prop: 'name' },
         { title: '用法用量', prop: 'way', width: 80, align: 'center' },
         { title: '', prop: 'single', width: 60 },
@@ -198,27 +199,66 @@ export default {
         visible: false
       },
       form: this.$form.createForm(this),
+      // visidIdnum: {visId:this.$route.query.visId,maxSubmitNo: this.$route.query.maxSubmitNo},
       visidIdnum: this.$route.query.visId,
-      visDatas: { visId: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo },
+      visDatas: { visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo },
       docDatas: [],
       previousData: {
         visId: null,
-        maxSubmitNo: null
+        submitNo: null
       },
       nextPerson: {
         visId: null,
-        maxSubmitNo: null
+        submitNo: null
       },
       auditStatus: true,
       carePatient: false,
       patientId: '',
-      visId: ''
+      visId: '',
+      submitNos: this.$route.query.maxSubmitNo,
+      prescOrderId:{}
     }
   },
   mounted() {
-    this.getRecordDelData({ visid: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
+    this.getRecordDelData({ visid: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo })
+    this.turnpage({ visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
   },
   methods: {
+    // 跟换患者
+    turnpage(params = {}) {
+      this.$axios({
+        url: this.api.turnpage,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.previousData.visId = res.data.leadVisId
+            this.previousData.submitNo = res.data.leadsubmitno
+            this.nextPerson.visId = res.data.lagVisId
+            this.nextPerson.submitNo = res.data.lagsubmitno
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 更换患者
+    slePatients(data) {
+      this.$router.push({
+        name: 'presHospitalizedDetail',
+        query: { visId: data.visId, maxSubmitNo: data.submitNo }
+      })
+      this.visidIdnum = data.visId
+      //console.log(this.visidIdnum,'ddddd')
+      this.submitNos =data.submitNo 
+      //this.visDatas = { visId: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo }
+      this.getRecordDelData({ visid: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
+      this.turnpage({ visId: data.visId, maxSubmitNo: data.submitNo })
+    },
+
     // 获取患者个人信息
     getRecordDelData(params = {}) {
       this.$axios({
@@ -264,7 +304,7 @@ export default {
       let params = {}
       params.visId = this.visId
       params.patientId = this.patientId
-   
+
       this.$axios({
         url: this.api.concernedPatientUpdate,
         method: 'post',
@@ -335,10 +375,10 @@ export default {
     },
     // 关注取消功能
 
-    // 上一位下一位患者更替
-    slePatients(data) {},
-    listStatul(data){
-     console.log(data,'dd')
+    // 左右互动
+    listStatul(data) {
+      //console.log(data, '原始值')
+      this.prescOrderId=data
     }
   }
 }
@@ -511,10 +551,13 @@ export default {
 .paintFoot {
   .jianxie {
     float: left;
-  margin-left: 15px;
+    margin-left: 15px;
   }
-  .ant-tag{
+  .ant-tag {
     margin-right: 1px;
+  }
+  .tags {
+    cursor: auto;
   }
 }
 </style>

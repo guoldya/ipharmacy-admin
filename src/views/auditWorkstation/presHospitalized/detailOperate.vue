@@ -42,6 +42,11 @@
 </template>
 <script>
 export default {
+  props:{
+   visidId: {
+      type: String
+    }
+  },
   data() {
     return {
       api: {
@@ -65,8 +70,14 @@ export default {
       surgeryData: []
     }
   },
+  watch:{
+ visidId: function() {
+     console.log(this.visidId)
+  this.getsurgeryData({ visid: this.visidId })
+    }
+  },
   mounted() {
-    this.getsurgeryData({ visid: '1' })
+    this.getsurgeryData({ visid: this.visidId })
   },
   methods: {
     getsurgeryData(params = {}) {
