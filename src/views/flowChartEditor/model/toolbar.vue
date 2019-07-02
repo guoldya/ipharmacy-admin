@@ -31,7 +31,7 @@
           <a-button size="small" v-if="titleData.visible" type="primary" @click="saveFlow" class="margin-left-5">保存</a-button>
           <a-button size="small" v-if="titleData.visible" type="primary" @click="submitFlow" class="margin-left-5">提交</a-button>
           <a-button size="small" v-if="titleData.visible" @click="copyRule" class="margin-left-5"  >复制规则</a-button>
-          <a-button size="small" v-if="titleData.visible" @click="verifyFlow" class="margin-left-5">校验</a-button>
+          <a-button size="small" v-if="titleData.visible" @click="verifyFlow({status:'true'})" class="margin-left-5">校验</a-button>
 
       </div>
       <div class="rightButton">
@@ -40,7 +40,10 @@
           <a-col :span="3">规则：<span class="opacity8">{{titleData.type}}</span></a-col>
           <a-col :span="3">类型：<span class="opacity8" v-html="typeType(titleData.type2)"></span></a-col>
           <a-col :span="9">规则名称：<span class="opacity8">{{titleData.name}}</span></a-col>
-          <a-col :span="7">更新时间：<span class="opacity8">{{titleData.updateTime}}</span></a-col>
+          <a-col :span="7">更新时间：<span class="opacity8">{{titleData.updateTime}}</span>
+            <a-button size="small" @click="addRuleData"  class="margin-left-5">新增</a-button>
+          </a-col>
+
         </a-row>
       </div>
 
@@ -56,6 +59,7 @@ export default {
     verifyFlow: Function,
     submitFlow: Function,
     copyRule: Function,
+    addRuleData:Function
   },
   methods: {
     // saveFlows() {

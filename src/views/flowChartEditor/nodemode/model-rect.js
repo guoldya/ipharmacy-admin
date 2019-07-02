@@ -33,8 +33,8 @@ Flow.registerNode('model-rect', {
           width,
           height,
           radius: borderRadius,
-          fill: color,
-          stroke: color
+          fill: "#e6f7ff",//背景颜色
+          stroke: color//边框颜色
         }
       });
   

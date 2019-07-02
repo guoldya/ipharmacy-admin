@@ -6,6 +6,7 @@
       :verifyFlow="verifyFlow"
       :submitFlow="submitFlow"
       :copyRule="copyRule"
+      :addRuleData="addRuleData"
       :titleData="titleData"
       ref="toolbar"></a-toolbar>
     <div style="height: 42px;"></div>
@@ -39,6 +40,8 @@
       width="600px">
       <a-ruleModal :handleChange="ruleModalChange"></a-ruleModal>
     </a-modal>
+
+      <a-addRule ref="addRule" :visible="addVisible" :addRuleOk="addRuleOk" :addRuleCancel="addRuleCancel"></a-addRule>
   </div>
 </template>
 
@@ -66,7 +69,7 @@
   import navigator from './model/navigator'
   import toolbar from './model/toolbar'
   import ruleModal from './model/ruleModal'
-
+  import addRule from './model/addRule'
   import {
     coreRuleNodeSelectOne,
     coreRuleNodeUpdate,
@@ -87,9 +90,13 @@
       'a-navigator': navigator,
       'a-toolbar': toolbar,
       'a-ruleModal':ruleModal,
+      'a-addRule':addRule,
     },
     data() {
       return {
+        api:{
+          coreRuleUpdate:'/sys/coreRule/update',
+        },
         ruleId: null,
         page: null,
         flow: null,
@@ -167,6 +174,9 @@
         },
         ruleModalId:null,
         submitStatus:true,
+        verifyStatus:true,
+        //新增规则
+          addVisible:false,
       }
     },
     mounted() {
@@ -324,8 +334,11 @@
       selectNodeItemId(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { itemId: newValue })
-          // for (let key in this.getEdgesData) {
-          //   this.flow.update(this.getEdgesData[key].id, { ro: null, assertVal: null, assertVal1: null,label:null })
+          // let data = this.flow.save();
+          // for (let key in data.edges){
+          //   if (data.edges[key].pid == this.selectNode.id){
+          //     this.flow.update(data.edges[key].id, { ro: null, assertVal: null, assertVal1: null,label:null })
+          //   }
           // }
         }
       },
@@ -401,7 +414,6 @@
       }
     },
     methods: {
-
       getHeight() {
         this.conheight.height = window.innerHeight - 48 + 'px'
       },
@@ -499,7 +511,6 @@
           switch (ev.item.type) {
             case 'node':
               this.getEdgesData = ev.item.model.childNodes
-              console.log(ev.item.isSelected)
               if (!ev.item.isSelected) {
                 _this.nodeId = ev.item.model.id
                 let model = ev.item.model
@@ -567,14 +578,12 @@
               } else {
                 _this.multiId.push(ev.item.model.id)
               }
-
               break
             case 'edge':
               //选中后设置颜色 和连接线的宽度
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
               let sourceP = ev.item.source.model
               let params = ev.item.model
-
               if ($.trim(this.edgeInitialized.inputEdge) == 0) {
                 if ($.trim(params.assertVal).length > 0) {
                   if (sourceP.lo == 1) {
@@ -684,14 +693,24 @@
         // })
       },
       //校验数据
-      verifyFlow() {
-        let data = this.flow.save()
-        if (data.nodes.filter(item => item.shape == 'flow-circle-start').length == 0) {
-          this.warn('节点不存在起点!');
+      verifyFlow(status) {
+        this.submitStatus = true;
+        let data = this.flow.save();
+        if ($.trim(data.nodes).length == 0 && $.trim(data.edges).length == 0){
+          this.warn('未选择节点!');
           this.submitStatus = false;
           return
         }
-        console.log(data)
+        if (data.nodes.filter(item => item.shape == 'flow-circle-start').length == 0) {
+          this.warn('起点不存在!');
+          this.submitStatus = false;
+          return
+        }
+        if ($.trim(data.edges).length == 0){
+          this.warn('节点未连线!');
+          this.submitStatus = false;
+          return
+        }
         let list = [];
         if (data.edges){
           list = data.nodes.concat(data.edges);
@@ -702,6 +721,7 @@
           if (list[key].type == 'node') {
             list[key].pid = this.getNodePids(data.edges, list[key].id)
           } else {
+            list[key].type = 'edge'
             list[key].pid = list[key].source
           }
           list[key].disOrder = list[key].index
@@ -711,19 +731,22 @@
         let indexData = this.getNodeTreeData(list)
         let i = 0
         let nodeTree = this.recursiveNodeTree(indexData, '', i);
-        this.verifyTree(nodeTree, data.nodes, data.edges)
+        this.verifyTree(nodeTree, data.nodes, data.edges);
+        if (this.submitStatus && status.status){
+          this.success('校验成功');
+        }
       },
 
       //校验数据
       verifyTree(nodeTree, nodes, edges) {
         for (let key in nodeTree) {
-          if (nodeTree[key].type == 'edge') {
+          if (nodeTree[key].type == 'edge'&& this.submitStatus == true) {
             if(this.judgeEdge(nodeTree[key], nodes)==false)
-              return
+              this.submitStatus = false;
           }
-          if (nodeTree[key].type == 'node') {
+          if (nodeTree[key].type == 'node' && this.submitStatus == true) {
            if(this.judgeNode(nodeTree[key], edges)==false)
-             return
+             this.submitStatus = false;
           }
           if (nodeTree[key].childNodes) {
             this.verifyTree(nodeTree[key].childNodes, nodes, edges)
@@ -768,53 +791,51 @@
       },
       //判断节点父节点
       judgeNode(node, edges) {
-        let pids = node.pid.split(',');
-        for (let key in edges) {
-          for (let i in pids){
-            if (edges[key].id == pids[i]) {
+        // let pids = node.pid.split(',');
+        // for (let key in edges) {
+          // for (let i in pids){
+            // if (edges[key].id == pids[i]) {
               if (node.shape == 'model-rect-attribute'){
-                if ($.trim(node.itemId).length == 0 || $.trim(node.childNodes) == 0 ){
-                  this.warn('属性节点或缺少结论节点')
-                  this.flow.update(node.id, {isSelected:false})
-                  this.flow.update(node.id, {isSelected:true});
+                if ($.trim(node.itemId).length == 0 || $.trim(node.childNodes).length == 0 || node.pid.length == 0){
+                  this.warn('属性节点未完善或缺少结论节点和上级节点')
                   this.submitStatus = false;
                   return false
                 }
               }else if (node.shape == 'model-image-branch' ){
-                if ($.trim(node.label).length == 0 || $.trim(node.childNodes) == 0){
-                  this.warn('分支节点或缺少结论节点');
-                  this.flow.update(node.id, {isSelected:false})
-                  this.flow.update(node.id, {isSelected:true});
+                if ($.trim(node.label).length == 0 || $.trim(node.childNodes) == 0 || node.pid.length == 0){
+                  this.warn('分支节点或缺少结论节点和上级节点');
                   this.submitStatus = false;
                   return false
                 }
               }else if (node.shape == 'flow-rhombus-if'){
-                if ($.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertVal).length == 0 || $.trim(node.childNodes) == 0){
-                  this.warn('条件节点或缺少结论节点');
-                  this.flow.update(node.id, {isSelected:false})
-                  this.flow.update(node.id, {isSelected:true});
+                if ($.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertVal).length == 0 || $.trim(node.childNodes) == 0 || node.pid.length == 0){
+                  this.warn('条件节点或缺少结论节点和上级节点');
                   this.submitStatus = false;
                   return false
                 }
               }else if (node.shape == 'model-card-conclusion'){
-                if ($.trim(node.inAccordanceWith).length == 0 || $.trim(node.levels).length == 0 || ($.trim(node.message).length == 0 || $.trim(node.suggest).length == 0 || $.trim(node.verdictType).length == 0)){
-                  this.warn('结论节点未完善');
+                if ($.trim(node.inAccordanceWith).length == 0 || $.trim(node.levels).length == 0 || ($.trim(node.message).length == 0 || $.trim(node.suggest).length == 0 || $.trim(node.verdictType).length == 0 || node.pid.length == 0)){
+                  this.warn('结论节点未完善或缺少上级节点');
                   this.flow.update(node.id, {isSelected:false})
-                  this.flow.update(node.id, {isSelected:true});
                   this.submitStatus = false;
                   return false
                 }
               }
-            }
-          }
-        }
+            // }
+          // }
+        // }
       },
       /**
        * @description: 保存流图数据
        */
       saveFlow() {
         let data = this.flow.save()
-        let list = data.nodes.concat(data.edges)
+        let list = [];
+        if (data.edges){
+           list = data.nodes.concat(data.edges);
+        }else {
+          list = data.nodes;
+        }
         for (let key in list) {
           delete list[key].childNodes
           if (list[key].type == 'node') {
@@ -823,7 +844,7 @@
             list[key].pid = list[key].source
           }
           list[key].disOrder = list[key].index
-          list[key].ruleId = this.ruleId
+          list[key].ruleId = this.$route.query.id;
           list[key].verdictType = Number(list[key].verdictType)
           delete  list[key].index
         }
@@ -842,8 +863,14 @@
        * @description: 提交流图数据
        */
       submitFlow(){
-        let data = this.flow.save()
-        let list = data.nodes.concat(data.edges)
+        this.verifyStatus = false;
+        let data = this.flow.save();
+        let list = [];
+        if (data.edges){
+          list = data.nodes.concat(data.edges);
+        }else {
+          list = data.nodes;
+        }
         for (let key in list) {
           delete list[key].childNodes
           if (list[key].type == 'node') {
@@ -852,13 +879,12 @@
             list[key].pid = list[key].source
           }
           list[key].disOrder = list[key].index
-          list[key].ruleId = this.ruleId
           list[key].verdictType = Number(list[key].verdictType)
+          list[key].ruleId = this.$route.query.id;
           delete  list[key].index
         }
-        this.submitStatus = true;
-        this.verifyFlow();
-        if (this.submitStatus){
+        this.verifyFlow({status:false});
+        if ( this.submitStatus){
           coreRuleNodeUpdate({ ruleNodeVOS: list,status:'1' }).then(res => {
             if (res.code == '200') {
               this.success('提交成功')
@@ -868,7 +894,6 @@
           }).catch(err => {
             this.error(err)
           })
-          localStorage.setItem('test', JSON.stringify(this.flow.save()))
         } else{
           this.warn('流程图未完善不能提交，可以保存')
         }
@@ -882,18 +907,17 @@
       //选择规则
       ruleModalChange(value){
         this.ruleModalId = ''+value.key;
-
       },
       //保存复制规则
       modalOk(){
         let _this = this;
-        _this.flow.clear();
+        this.modal.visible = false;
+        _this.flow.remove();
         setTimeout(()=>{
           this.getNodeData({ruleId:this.ruleModalId})
-          this.modal.visible = false;
         },0)
 
-
+        console.log(_this.flow.save())
       },
       //取消复制规则
       modalCancel(){
@@ -1053,16 +1077,13 @@
             let list = nodes.concat(edges)
             let indexData = this.getNodeTreeData(list)
             let i = 0
+            this.pieChartData = {};
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
-            let edgeData = this.getNodesData(nodeTree, [], 'edge')
 
+            let edgeData = this.getNodesData(nodeTree, [], 'edge')
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
-            // for (let key in nodesData){
-            //   console.log(nodesData[key])
-            //   this.flow.update(nodesData[key].id,{isSelected:true})
-            // }
           } else {
             this.warn(res.msg)
           }
@@ -1184,7 +1205,61 @@
         }).catch(err => {
           this.error(err)
         })
-      }
+      },
+
+      //
+      addRuleData(){
+        this.$refs.addRule.drugForm.resetFields();
+        this.addVisible = true;
+      },
+      //新增规则
+      addRuleOk(data){
+        this.$refs.addRule.drugForm.validateFields((err, values) => {
+            if (!err) {
+              let params = {};
+              if (values.name){
+                params.name = values.name;
+                params.type2 = values.type2;
+              }else{
+                params.name = data.label
+                params.limitedItemid = data.key
+                params.type2 = values.type2;
+              }
+              this.addVisible = false;
+              this.$axios({
+                url: this.api.coreRuleUpdate,
+                method: 'post',
+                data: params
+              }).then(res => {
+                if (res.code == '200') {
+                  let _this = this;
+                  this.success(res.msg);
+                  this.addVisible = false;
+                  this.$router.push({
+                    name: 'flowChartEditor',
+                    query:{id:res.data.id,type:res.data.type},
+                  })
+                  _this.flow.remove();
+                  setTimeout(()=>{
+                    this.getNodeData({ruleId:res.data.id})
+                  },0)
+                } else {
+                  this.warn(res.msg);
+                  this.addVisible = false;
+                }
+              }).catch(err => {
+                this.error(err);
+                this.addVisible = false;
+              })
+            }
+          }
+        )
+      },
+
+      //取消新增规则
+      addRuleCancel(){
+        this.addVisible = false;
+      },
     }
   }
 </script>
