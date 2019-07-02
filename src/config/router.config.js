@@ -126,6 +126,37 @@ export const asyncRouterMap = [
                     }
                 ]
             },
+            // 全文检索
+            {
+                path: '/AllTextSearch',
+                name: 'AllTextSearch',
+                component: PageView,
+                meta: { title: '全文检索', keepAlive: false, icon: 'zoom-in' },
+                children: [
+                    {
+                        path: '/AllTextSearch/searchText',
+                        name: 'searchText',
+                        component: RouteView,
+                        meta: { title: '全文检索', multistage: true },
+                        children: [
+                            {
+                                path: '/AllTextSearch/searchText/index',
+                                name: 'searchTextIndex',
+                                component: () => import( '@/views/AllTextSearch/searchText/index.vue'),
+                                meta: { title: '全文检索', hiddenHeaderContent: true, index: true }
+                            },
+                            {
+                                path: '/AllTextSearch/searchText/detail/:indexId',
+                                name: 'searchTextDetail',
+                                hidden: true,
+                                component: () => import( '@/views/AllTextSearch/searchText/detail.vue'),
+                                meta: { title: '全文检索详情', detail: true, description: '全文检索设置' }
+                            }
+                        ]
+                    }
+                ]
+            },
+            // 审方
             {
                 path: '/auditWorkstation',
                 name: 'auditWorkstation',
@@ -349,7 +380,7 @@ export const asyncRouterMap = [
                     },
                     {
                         path: '/baseData/question',
-                        name: 'dictionary',
+                        name: 'questions',
                         component: RouteView,
                         meta: { title: '药品分类管理', multistage: true },
                         children: [

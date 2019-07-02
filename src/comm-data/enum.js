@@ -85,12 +85,12 @@ const Enum = {
         { text: '门诊', id: '2' }
     ],
     refreshRate: [
-        { text: '5秒', id: 5000,},
-        { text: '10秒', id: 10000,},
+        { text: '5秒', id: 5000, },
+        { text: '10秒', id: 10000, },
         { text: '20秒', id: 20000, },
         { text: '30秒', id: 30000, },
-        { text: '60秒', id: 60000,},
-        { text: '手动刷新', id: 0,title:'手动刷新' },
+        { text: '60秒', id: 60000, },
+        { text: '手动刷新', id: 0, title: '手动刷新' },
     ],
     ruleClassification: [
         { text: '药品', id: 1 },
@@ -213,28 +213,48 @@ const Enum = {
         { id: '5', text: '五级' },
         { id: '6', text: '六级' },
         { id: '7', text: '七级' },
-       ],
-       auditType:[
-        {id:'1',text:'自动审核'},
-        {id:'2',text:'人工审核'},
-      ],
-      reviewVerdict:[
-        {id:'1',text:'通过'},
-        {id:'2',text:'驳回'},
-      ],
-      passType:[
-        {id:1,text:'记录通过'},
-        {id:2,text:'医生坚持'},
-        {id:3,text:'双签通过'},
-      ],
-      reviewResouce:[
-        {id:'1',text:'处方'},
-        {id:'2',text:'医嘱'},
-      ],
-      patientScope:[
-        {id:'1',text:'门诊'},
-        {id:'2',text:'住院'},
-      ]
-    
+    ],
+    auditType: [
+        { id: '1', text: '自动审核' },
+        { id: '2', text: '人工审核' },
+    ],
+    reviewVerdict: [
+        { id: '1', text: '通过' },
+        { id: '2', text: '驳回' },
+    ],
+    passType: [
+        { id: 1, text: '记录通过' },
+        { id: 2, text: '医生坚持' },
+        { id: 3, text: '双签通过' },
+    ],
+    reviewResouce: [
+        { id: '1', text: '处方' },
+        { id: '2', text: '医嘱' },
+    ],
+    patientScope: [
+        { id: '1', text: '门诊' },
+        { id: '2', text: '住院' },
+    ],
+    paintState: [
+        { id: '0', text: '未确认医嘱',color:'#f5222d',texts:'未' },
+        { id: '1', text: '新医嘱',color:'#1aa0ca' ,texts:'新'},
+        { id: '2', text: '已校对' ,color:'#7227a9',texts:'已'},
+        // { id: '3', text: '手术' ,color:'#909499',texts:'手'},
+        // { id: '4', text: '检验' ,color:'#fbff40',texts:'检'},
+        // { id: '5', text: '检查' ,color:'orange',texts:'检'},
+        { id: '6', text: '已停止', color:'orange',texts:'停'},
+        { id: '7', text: '已确认停止',color:'#909499' ,texts:'确'},
+    ],
+    paintColor: [
+        { id: '0', text: '#f5222d' },
+        { id: '1', text: '#1aa0ca;' },
+        { id: '2', text: '#7227a9' },
+        { id: '3', text: '#909499' },
+        { id: '4', text: '#fbff40' },
+        { id: '5', text: 'orange' },
+        { id: '6', text: '已停止' },
+        { id: '7', text: '已确认停止' },
+    ]
+
 }
 export default Enum
