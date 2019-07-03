@@ -374,17 +374,18 @@ export default {
       return levelText
     },
     checkReviewResouce(data) {
-      if (data.reviewResouce == '1') {
-        this.$router.push({
-          name: 'presOutpatientDetail',
-          query: { visId: data.visId }
-        })
-      } else {
-        this.$router.push({
-          name: 'presHospitalizedDetail',
-          query: { visId: data.visId }
-        })
+    
+       if (data.reviewResouce == '2') {
+       this.$router.push({
+        name: 'presHospitalizedDetail',
+        query: { visId: data.visId, maxSubmitNo: data.subNo }
+      })
       }
+      
+       this.$router.push({
+          name: 'presOutpatientDetail',
+          params: { visId: data.visId, submitNo: data.subNo}
+        })
       console.log(data)
     },
     // 判断等级高低

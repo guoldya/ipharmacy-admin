@@ -5,7 +5,7 @@
         <a-tabs defaultActiveKey="1" size="small" class="width-100">
           <a-tab-pane tab="预判情况" key="1">
             <span class="dealP">问题描述</span>
-            <span v-for="ta in tagsData " style="float: right">
+            <span v-for="ta in tagsData ">
               <a-tag
                 v-if="ta.status == true"
                 class="checkTag tagStyle"
@@ -19,7 +19,7 @@
                 @click="checkableChange(ta)"
               >{{ta.auditName }}</a-tag>
             </span>
-            <span style="float: right">
+            <span >
               <a-tag
                 class="checkTag tagStyle aTag1"
                 v-if="checkedAll"
@@ -50,6 +50,7 @@
                 <a-tag>建议</a-tag>
                 {{op.audSuggest}}
               </div>
+               <div class="subscript" v-if="Number(op.status)===1">已审核</div>
             </a-card>
 
             <div class="margin-top-10">
@@ -99,7 +100,7 @@
                 </a>
                 <a v-else></a>
               </a-dropdown>
-              <a-textarea :rows="4" v-model="templateText"></a-textarea>
+             <a-textarea :rows="4" v-model="templateText" @change='onChangs'   class="texts"></a-textarea>
             </div>
           </a-tab-pane>
           <a-tab-pane tab="干预记录" key="2">
@@ -224,6 +225,10 @@ export default {
     this.basedata({visId:this.visidId,submitNo:this.submitNos})
   },
   methods: {
+    // 传值给父组件
+     onChangs(e){
+     this.$emit('adoptMessage',e.target.value)
+    },
     // 左右互动
     clickTagsCard(data) {
       for (let key in this.rightData) {
@@ -393,6 +398,7 @@ export default {
         }
       }
       this.templateText = pd.reviewTemplate
+        this.$emit('upchange',this.templateText)
       this.templateTitle = pd.titles
       this.rightData.push()
     },
@@ -476,6 +482,31 @@ export default {
   }
 }
 </script>
+<style scoped lang='less'>
+.dealRight {
+  .ant-card {
+    position: relative;
+      overflow: hidden;
+  }
+  .subscript {
+    color: white;
+    height: 30px;
+    width: 100px;
+    position: absolute;
+    right: -25px;
+    top: 9px;
+    text-align: center;
+    line-height: 30px;
+    /* font-family: ""; */
+    background-color: #8a8a8a;
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+}
+</style>
 
     
 

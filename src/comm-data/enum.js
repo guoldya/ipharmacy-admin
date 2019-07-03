@@ -238,7 +238,7 @@ const Enum = {
     paintState: [
         { id: '0', text: '未确认医嘱',color:'#f5222d',texts:'未' },
         { id: '1', text: '新医嘱',color:'#1aa0ca' ,texts:'新'},
-        { id: '2', text: '已校对' ,color:'#7227a9',texts:'已'},
+        { id: '2', text: '已校对' ,color:'#7227a9',texts:'校'},
         // { id: '3', text: '手术' ,color:'#909499',texts:'手'},
         // { id: '4', text: '检验' ,color:'#fbff40',texts:'检'},
         // { id: '5', text: '检查' ,color:'orange',texts:'检'},
@@ -254,7 +254,11 @@ const Enum = {
         { id: '5', text: 'orange' },
         { id: '6', text: '已停止' },
         { id: '7', text: '已确认停止' },
-    ]
-
+    ] ,
+    drugstatus:[
+        {id:'0',text:'未对码'},
+        {id:'1',text:'已对码'}
+      ]
+    
 }
 export default Enum
