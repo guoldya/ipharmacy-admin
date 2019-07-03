@@ -6,7 +6,7 @@
       :row-style="tableRowStyle"
       default-expand-all
     >
-      <el-table-column type="expand">
+      <el-table-column type="expand"  width="1px">
         <template slot-scope="props">
           <div class="shenhe" v-if="props.row.reviewVerdict==1">
             <p>审核意见：{{ props.row.reviewOpinion}}</p>
@@ -26,19 +26,29 @@
       >
         <template slot-scope="props">
           <span
-            v-if="item.prop == 'passType'"
+            v-if="item.prop == 'reviewVerdict'"
             class="tableLineHeight"
-          >{{props.row.passType|passtype}}</span>
+          >{{props.row.passType|reviewVerdict}}</span>
           <span v-else-if="item.prop == 'orderClass'" class="tableLineHeight">
             <a-tag :color="getcolor(props.row.state)">{{states(props.row.state)}}</a-tag>
             {{props.row.orderClass|orderclass}}
           </span>
           <span v-else-if="item.prop == 'creatDocName'">
-            <a href>{{props.row.creatDocName}}</a>
+            <!-- <a href>{{props.row.creatDocName}}</a> -->
+             <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>{{props.row.creatDocName}}</span>
+                  </template>
+                  <a href>
+                    {{props.row.creatDocName}}&nbsp;
+                    
+                  </a>
+                </a-tooltip>
           </span>
           <span v-else-if="item.prop == 'state'">
             <a-tag :color="getcolor(props.row.state)">{{states(props.row.state)}}</a-tag>
           </span>
+          
           <span
             v-else-if="item.prop == 'dosageUnit'"
           >{{props.row.routeName}}；{{props.row.frequency}}；{{props.row.spec}}</span>
@@ -76,15 +86,15 @@ export default {
         { title: '', prop: 'mark', width: 20, align: 'left' },
         { title: '药品名称', prop: 'drugName', align: 'left', width: 140 },
         { title: '用法用量', prop: 'dosageUnit', align: 'left' },
-        { title: '科室', prop: 'creatDept', width: 130 },
+        { title: '科室', prop: 'creatDeptName', width: 130 },
         { title: '医生', prop: 'creatDocName', width: 100, align: 'left' },
-        { title: '状态', prop: 'passType', align: 'center', width: 120 }
+        { title: '状态', prop: 'reviewVerdict', align: 'center', width: 120 }
       ],
       xxx: 'ddd'
     }
   },
   mounted() {
-    console.log(this.docDatas)
+    // console.log(this.docDatas)
   },
 //   watch:{
 //  prescOrderIds: function(){
@@ -92,12 +102,12 @@ export default {
 //  }
 //   },
   filters: {
-    passtype(value) {
+    reviewVerdict(value) {
       if (value == '1') {
-        return '记录通过'
+        return '通过'
       }
       if (value == '2') {
-        return '医生坚持'
+        return '未通过'
       }
       if (value == '3') {
         return '双签通过'
@@ -115,10 +125,10 @@ export default {
   methods: {
     // 颜色
      tableRowStyle({ row, rowIndex }) {
-       console.log(this.prescOrderIds,'prescOrderIds')
-       console.log( row.medicalId,'medicalId')
+      //  console.log(this.prescOrderIds,'prescOrderIds')
+      //  console.log( row.medicalId,'medicalId')
       if (this.prescOrderIds.prescOrderId == row.medicalId) {
-        console.log('chengle')
+        // console.log('chengle')
         return { background: 'rgb(' + this.convertHexToRGB(this.prescOrderIds.levelColor).join(',') + ',0.3)' }
       }
     },
@@ -182,7 +192,7 @@ export default {
 }
 .yizhu {
   .el-table__expanded-cell[class*='cell'] {
-    padding: 10px 16px;
+    padding: 5px 16px;
   }
   .el-icon {
     display: none;
@@ -206,7 +216,7 @@ export default {
     margin: 0px 0px;
   }
   .shenhe {
-    margin-left: 38px;
+    margin-left: 20px;
   }
   .el-table__row > td {
     border: none;

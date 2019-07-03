@@ -244,7 +244,8 @@ export default {
       visDatas: {},
       templateText: '',
       tempRowData: {},
-      EasonData: []
+      EasonData: [],
+      reviewId:''
     }
   },
   computed: {
@@ -299,11 +300,9 @@ export default {
         })
     },
     updateData(value) {
-      //console.log(value, 'dddddddddddd')
       this.templateText = value
     },
     updateDatas(value) {
-      //console.log(value, 'cccc')
       this.templateText = value
     },
     // 刷新数据
@@ -683,7 +682,6 @@ export default {
       params.reviewOpinion = this.templateText
       params.reviewVerdict = '1'
       params.reviewIds = []
-    
       params.reviewIds[0] = this.tempRowData.reviewId
       this.$axios({
         url: this.api.updateReviewStatus,
@@ -716,9 +714,10 @@ export default {
 
     //查看
     looks(data) {
+      console.log(data)
       this.$router.push({
         name: 'presHospitalizedDetail',
-        query: { visId: data.visId, maxSubmitNo: data.maxSubmitNo }
+        query: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId }
       })
     },
     //处方单网格样式

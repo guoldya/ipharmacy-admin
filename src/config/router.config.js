@@ -440,7 +440,22 @@ export const asyncRouterMap = [
                                 meta: { title: '药品组管理详情', hiddenHeaderContent: true, detail: true }
                             }
                         ]
-                    }
+                    },
+                    {
+                        path: '/baseData/drugContrast',
+                        name: 'drugContrast',
+                        component: RouteView,
+                        meta: { title: '药品数据对照', multistage: true },
+                        children: [
+                          {
+                            path: '/baseData/drugContrast/index',
+                            name: 'drugContrastIndex',
+                            component: () => import( '@/views/baseData/drugContrast/index.vue'),
+                            meta: { title: '药品数据对照', hiddenHeaderContent: true, index: true }
+                          },
+                        ]
+                      },
+    
                 ]
             },
 

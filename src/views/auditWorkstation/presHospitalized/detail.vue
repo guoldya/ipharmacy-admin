@@ -7,7 +7,7 @@
             <a-icon type="left"></a-icon>返回
           </a>
           <div class="guanzhu" :loading="loading" v-if="carePatient===true">
-            <a-icon theme="filled" type="star" class="xingxing"/>已关注
+            <a-icon theme="filled" type="star" class="xingxing" />已关注
           </div>
         </div>
         <a-row class="margin-top-10">
@@ -28,7 +28,7 @@
           </a-col>
         </a-row>
 
-        <a-divider type="horizontal" class="detailDivider"/>
+        <a-divider type="horizontal" class="detailDivider" />
         <detail-list>
           <detail-list-item term="身高">
             <span class="opacity8">{{RecordDelData.height}}</span>
@@ -49,7 +49,7 @@
             <span class="opacity8">
               <span class="datetime">
                 {{RecordDelData.attendingDocName}}&nbsp;
-                <a-icon type="message"/>
+                <a-icon type="message" />
                 &nbsp;{{RecordDelData.attendingDocPhone}}
               </span>
             </span>
@@ -59,7 +59,7 @@
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
           <a-tab-pane tab="医嘱信息" key="1">
-            <docAdvices :docDatas="docDatas" :prescOrderIds='prescOrderId'></docAdvices>
+            <docAdvices :docDatas="docDatas" :prescOrderIds="prescOrderId"></docAdvices>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
             <detailCheck :visidId="visidIdnum"></detailCheck>
@@ -75,17 +75,23 @@
       </a-card>
     </a-col>
     <a-col :span="10" class="padding-left-5">
-      <jodgeStation :visidId="visidIdnum" :submitNos="submitNos" @listStatus="listStatul"></jodgeStation>
+      <jodgeStation
+        :visidId="visidIdnum"
+        :submitNos="submitNos"
+        @listStatus="listStatul"
+        @adoptMessage="updateData"
+        @upchange="updateDatas"
+      ></jodgeStation>
     </a-col>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
     >
       <template slot="back">
         <a-button v-if="carePatient" @click="attention" class="margin-left-5" :loading="loading">
-          <a-icon type="star" theme="filled"/>取消关注
+          <a-icon type="star" theme="filled" />取消关注
         </a-button>
         <a-button v-else @click="attention" class="margin-left-5" :loading="loading">
-          <a-icon type="star"/>关注患者
+          <a-icon type="star" />关注患者
         </a-button>
         <a-button
           @click="slePatients(previousData)"
@@ -163,7 +169,8 @@ export default {
         selectWithReviewId: '/sys/reviewTemplate/selectReviewTemplateWithReviewId',
         concernedRecord: 'sys/concernedPatient/selectCurrentRecord',
         concernedPatientUpdate: 'sys/concernedPatient/update',
-        turnpage: 'sys/reviewOrderissue/selectHospitalLeadVisIdAndLagVisId'
+        turnpage: 'sys/reviewOrderissue/selectHospitalLeadVisIdAndLagVisId',
+        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus'
         //reviewOrderissue/selectHospitalLeadVisIdAndLagVisId
       },
       loading: false,
@@ -211,12 +218,12 @@ export default {
         visId: null,
         submitNo: null
       },
-      auditStatus: true,
+      auditStatus: false,
       carePatient: false,
       patientId: '',
       visId: '',
       submitNos: this.$route.query.maxSubmitNo,
-      prescOrderId:{}
+      prescOrderId: {}
     }
   },
   mounted() {
@@ -224,6 +231,50 @@ export default {
     this.turnpage({ visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
   },
   methods: {
+    refuse() {
+       let params = {}
+      params.auditType = '1'
+       params.passType = "1";
+      if (this.templateText) {
+        params.reviewOpinion = this.templateText
+      } else {
+        params.reviewOpinion = '驳回'
+      }
+      params.reviewVerdict = '2'
+      params.reviewIds = []
+      let listData = this.docDatas
+      params.reviewIds.push(listData[0].reviewId)
+      // for (let key in listData) {
+      //   if (listData[key].reviewId == '0') {
+      //     params.reviewIds.push(listData[key].reviewId)
+      //   }
+      // }
+      this.$axios({
+        url: this.api.updateReviewStatus,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 获取子组件不同部位传值
+    updateData(value) {
+      console.log(value, 'ppppp')
+      this.templateText = value
+    },
+    updateDatas(value) {
+      this.templateText = value
+      console.log(value)
+    },
+
     // 跟换患者
     turnpage(params = {}) {
       this.$axios({
@@ -233,10 +284,12 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
+            if(res.data.leadVisId){
             this.previousData.visId = res.data.leadVisId
             this.previousData.submitNo = res.data.leadsubmitno
             this.nextPerson.visId = res.data.lagVisId
             this.nextPerson.submitNo = res.data.lagsubmitno
+            }
           } else {
             this.warn(res.msg)
           }
@@ -253,7 +306,7 @@ export default {
       })
       this.visidIdnum = data.visId
       //console.log(this.visidIdnum,'ddddd')
-      this.submitNos =data.submitNo 
+      this.submitNos = data.submitNo
       //this.visDatas = { visId: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo }
       this.getRecordDelData({ visid: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
       this.turnpage({ visId: data.visId, maxSubmitNo: data.submitNo })
@@ -327,7 +380,32 @@ export default {
           this.error(err)
         })
     },
-    submit() {},
+    // 通过的方法；
+    submit() {
+      this.problemsData
+      let params = {}
+      params.auditType = '1'
+      params.passType = '1'
+      params.reviewOpinion = this.templateText
+      params.reviewVerdict = '1'
+      params.reviewIds = []
+      params.reviewIds[0] = this.$route.query.reviewId
+      this.$axios({
+        url: this.api.updateReviewStatus,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
     cancle() {
       this.$router.push({
         name: 'presHospitalizedIndex'
@@ -377,8 +455,7 @@ export default {
 
     // 左右互动
     listStatul(data) {
-      //console.log(data, '原始值')
-      this.prescOrderId=data
+      this.prescOrderId = data
     }
   }
 }
