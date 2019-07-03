@@ -95,6 +95,8 @@
     data() {
       return {
         api:{
+          RuleNodeAndRuleCable:'sys/coreRuleNode/selectRuleNodeAndRuleCable',
+          selectRuleContent:'sys/coreRuleNode/selectRuleContent',
           coreRuleUpdate:'/sys/coreRule/update',
         },
         ruleId: null,
@@ -184,6 +186,7 @@
       window.addEventListener('resize', this.getHeight)
       this.getHeight()
       this.getNodeData()
+      this.getDataList();
       // this.getReviewLevel();
     },
     computed: {
@@ -961,6 +964,35 @@
         return `${val}%`
       },
 
+      getDataList(params={}){
+        if (params.ruleId == null){
+          params.ruleId = this.$route.query.id
+          this.ruleId = this.$route.query.id
+        }else {
+          this.ruleId = params.ruleId
+        }
+        this.titleData.visible = this.$route.query.type == 1 ? false : true
+
+        this.$axios({
+          url: this.api.selectRuleContent,
+          method: 'put',
+          data: params
+        }).then(res => {
+          if (res.code == '200') {
+            this.titleData.name = res.data.name
+            this.titleData.status = res.data.status ? '启用' : '停用'
+            this.titleData.type = res.data.type ? '系统固定' : '自定义'
+            this.titleData.updateTime = res.data.updateTime
+            this.titleData.type2 = res.data.type2
+          }else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          console.log(err)
+          this.error(err)
+        })
+      },
+
       /**
        * @description:获取节点数据
        */
@@ -971,14 +1003,12 @@
         }else {
           this.ruleId = params.ruleId
         }
-        this.titleData.visible = this.$route.query.type == 1 ? false : true
-        coreRuleNodeSelectOne(params).then(res => {
+        this.$axios({
+          url: this.api.RuleNodeAndRuleCable,
+          method: 'put',
+          data: params
+        }).then(res => {
           if (res.code == '200') {
-            this.titleData.name = res.data.name
-            this.titleData.status = res.data.status ? '启用' : '停用'
-            this.titleData.type = res.data.type ? '系统固定' : '自定义'
-            this.titleData.updateTime = res.data.updateTime
-            this.titleData.type2 = res.data.type2
             let edgesData = res.data.ruleCableVOS
             let nodeData = res.data.ruleNodeVOS
             let edges = []
@@ -1076,13 +1106,18 @@
             }
             let list = nodes.concat(edges)
             let indexData = this.getNodeTreeData(list)
+
             let i = 0
             this.pieChartData = {};
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
-
+            console.log(nodeTree,'nodeTree')
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
+            console.log(edgeData,'edgeData')
             let nodesData = this.getDealPieChart()
+            console.log(nodesData,'nodesData')
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
+
+
             this.flow.read(JSON.parse(temp))
           } else {
             this.warn(res.msg)
@@ -1210,6 +1245,9 @@
       //
       addRuleData(){
         this.$refs.addRule.drugForm.resetFields();
+        setTimeout(()=>{
+          this.$refs.addRule.drugForm.setFieldsValue({type2:1})
+        },0)
         this.addVisible = true;
       },
       //新增规则
@@ -1242,6 +1280,7 @@
                   _this.flow.remove();
                   setTimeout(()=>{
                     this.getNodeData({ruleId:res.data.id})
+                    this.getDataList({ruleId:res.data.id});
                   },0)
                 } else {
                   this.warn(res.msg);

@@ -451,12 +451,13 @@ export default {
       }
     }
   },
-  // mounted() {
-  //   this.getDetailData()
-  //   this.getTemplate()
-  //   this.getRecord()
-  //   this.getAttention()
-  // },
+  mounted() {
+    this.getDetailData()
+    this.getTemplate()
+    this.getRecord()
+    this.getAttention()
+    this.getLeadAndLag()
+  },
   methods: {
     getDetailData() {
       this.visId = this.$route.params.visId
@@ -878,13 +879,6 @@ export default {
     }
   },
 
-  activated() {
-    this.getDetailData()
-    this.getTemplate()
-    this.getRecord()
-    this.getAttention()
-    this.getLeadAndLag()
-  }
 }
 </script>
 

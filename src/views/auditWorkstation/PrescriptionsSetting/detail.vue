@@ -163,6 +163,10 @@
             data: { planId: planId }
           }).then(res => {
             if (res.code == '200') {
+              if (!res.data){
+                this.spinning = false
+                return
+              }
               this.planruleList = res.data.reviewPlanrules
               for (let key in this.planruleList) {
                 this.planruleList[key].spec = '';
@@ -191,7 +195,11 @@
                    }
                 }
                 if (this.planruleList[key].logic == '1') {
-                  this.planruleList[key].inputType = 'input'
+                  if (this.planruleList[key].columnId == 'AGE' || this.planruleList[key].columnId == 'LENGTHOFSTAY'){
+                    this.planruleList[key].inputType = 'inputNumber'
+                  }else{
+                    this.planruleList[key].inputType = 'input'
+                  }
                 } else if (this.planruleList[key].logic == '2') {
                   this.planruleList[key].inputType = 'dataRange'
                 } else if (this.planruleList[key].logic == '3') {

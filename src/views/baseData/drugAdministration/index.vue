@@ -95,19 +95,19 @@
       >
         <a-form :form="form">
               <a-form-item style="padding-top: 20px" label="名称"
-                           :label-col="{ span: 5 }"
-                           :wrapper-col="{ span: 15 }">
-                <a-input v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入名称' }]} ]"/>
+                           :label-col="{ span: 4 }"
+                           :wrapper-col="{ span: 17 }">
+                <a-input v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入名称' },{max: 32,message:'输入名称过长'}]} ]"/>
               </a-form-item>
               <a-form-item label="备注"
-                           :label-col="{ span: 5 }"
-                           :wrapper-col="{ span: 15 }">
-                <a-textarea v-decorator="[ 'remark' ]"/>
+                           :label-col="{ span: 4 }"
+                           :wrapper-col="{ span: 17 }">
+                <a-textarea v-decorator="[ 'remark',{rules: [{max: 250,message:'输入备注过长'}]}  ]"/>
               </a-form-item>
             <a-form-item label="状态"
-                         :label-col="{ span: 5 }"
-                         :wrapper-col="{ span: 15 }">
-              <a-radio-group v-decorator="[ 'status' ]">
+                         :label-col="{ span: 4 }"
+                         :wrapper-col="{ span: 17 }">
+              <a-radio-group v-decorator="[ 'status',{initialValue: 0} ]">
                 <a-radio :value='op.id' v-for="(op,index) in status" :key="index">
                   {{op.text}}
                 </a-radio>
@@ -124,41 +124,45 @@
         @cancel="handleCancel"
         width="600px"
       >
-        <span>选择药品:</span>
-        <a-select style="width: 500px" class="margin-left-5 margin-top-10"
-                  showSearch
-                  allowClear
-                  mode="single"
-                  optionLabelProp="title"
-                  :defaultActiveFirstOption="false"
-                  :showArrow="false"
-                  :filterOption="false"
-                  @search="handleSearch"
-                  @change="handleChange"
-                  placeholder="药品可多选"
-        >
-          <a-select-option
-            v-for="(item,index) in this.drugAllList"
-            :value='item.drugCode'
-            :key="index"
-            :title="item.drugName"
-            :producedBy="item.producedBy"
-            :spec="item.spec"
-            :spellCode="item.spellCode"
+        <a-form :form="drugForm">
+          <a-form-item label="选择药品"
+                       :label-col="{ span: 4 }"
+                       :wrapper-col="{ span: 17 }">
+          <a-select
+                    showSearch
+                    allowClear
+                    mode="single"
+                    optionLabelProp="title"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="false"
+                    :filterOption="false"
+                    @search="handleSearch"
+                    v-decorator="[ 'drugCodes']"
           >
-            <a-row>
-              <a-col>
-                {{item.drugName}}
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col style="opacity: 0.6">
-                生产厂商：{{item.producedBy}}
-              </a-col>
-            </a-row>
-            <a-divider style="margin: 8px 0 0 0;"/>
-          </a-select-option>
-        </a-select>
+            <a-select-option
+              v-for="(item,index) in this.drugAllList"
+              :value='item.drugCode'
+              :key="index"
+              :title="item.drugName"
+              :producedBy="item.producedBy"
+              :spec="item.spec"
+              :spellCode="item.spellCode"
+            >
+              <a-row>
+                <a-col>
+                  {{item.drugName}}
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col style="opacity: 0.6">
+                  生产厂商：{{item.producedBy}}
+                </a-col>
+              </a-row>
+              <a-divider style="margin: 8px 0 0 0;"/>
+            </a-select-option>
+          </a-select>
+          </a-form-item>
+        </a-form>
       </a-modal>
     </a-card>
 </template>
@@ -216,13 +220,13 @@
           isNew:true,
         },
         editData:{},
-        selectDrugData:[],
         classData:{},
         status: [
           { id: 0, text: '停用' },
           { id: 1, text: '启用' }
         ],
         form: this.$form.createForm(this),
+        drugForm:this.$form.createForm(this),
         total: null,
         total1:null,
         pageSize: 10
@@ -313,16 +317,11 @@
       },
       //添加分类
       addClass() {
-        // this.$router.push({
-        //   name: 'drugAdminDetail',
-        //   params: {id:0},
-        // })
         this.form.resetFields();
         this.addModal.visible = true;
         this.addModal.title = '新增分类';
         this.addModal.isNew = true;
       },
-      //
       //启用停用
       changeStatus(data){
         let params = {}
@@ -404,9 +403,9 @@
       },
       //添加药品按钮
       addDrug(){
-        this.selectDrugData = {};
         if (this.classData.id){
           this.Modal.visible = true;
+          this.drugForm.resetFields();
         } else {
           this.warn("请选择药品组");
         }
@@ -416,27 +415,32 @@
         this.Modal.visible = false;
       },
       //确定分配
-      handleOk(){
-        let params = {};
-        params.id = this.classData.id;
-        params.drugCodes = this.selectDrugData;
-        this.$axios({
-          url: this.api.coreGroupingInsert,
-          method: 'post',
-          data: params
+      handleOk(e){
+        e.preventDefault()
+        this.drugForm.validateFields((err, values) => {
+          if (!err) {
+            values.id = this.classData.id;
+            this.$axios({
+              url: this.api.coreGroupingInsert,
+              method: 'post',
+              data: values
+            })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success("保存成功!");
+                  this.Modal.visible = false;
+                  this.getClassDrugData();
+                  this.getDrugList();
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.error(err)
+              })
+          }
         })
-          .then(res => {
-            if (res.code == '200') {
-              this.success("保存成功!");
-              this.Modal.visible = false;
-              this.getClassDrugData();
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
+
       },
       addCancel(){
         this.addModal.visible = false;
@@ -469,7 +473,6 @@
         })
         this.addModal.visible = false;
       },
-
       handleSearch(value){
         let params = {keyword:value,id:this.classData.id};
         this.$axios({
@@ -487,10 +490,6 @@
           .catch(err => {
             this.error(err)
           })
-      },
-      handleChange(value, option) {
-        console.log(value);
-        this.selectDrugData = value;
       },
       deleteDrug(data){
         let params = {};

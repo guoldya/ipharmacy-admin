@@ -143,13 +143,14 @@
         selectDrug: [],
         selectCategory:[],
         coreRule:[],
-        selkeys: '',
+        selkeys: 1,
         ruleName: '',
         //新增规则
       }
 
     },
     mounted(){
+      this.coreRuleSelect({ keyword: '' })
     },
     methods: {
       selectType(e){

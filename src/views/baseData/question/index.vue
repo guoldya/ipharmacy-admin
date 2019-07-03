@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import drugClassification from '@/my-components/drug-classification/drugClassificationCopy'
-import drugVarieties from '@/my-components/drug-varieties/drugVarietiesCopy'
-import drugDictionary from '@/my-components/drug-dictionary/drugDictionaryCopy'
+import drugClassification from '../base-components/drug-classification/drugClassificationCopy'
+import drugVarieties from '../base-components/drug-varieties/drugVarietiesCopy'
+import drugDictionary from '../base-components/drug-dictionary/drugDictionaryCopy'
 
 export default {
   components: {

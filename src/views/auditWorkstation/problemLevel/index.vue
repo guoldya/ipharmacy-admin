@@ -52,18 +52,12 @@
 </template>
 
 <script>
-  import { reviewAuditlevelPage } from '@/api/login'
-  import { Icon } from 'ant-design-vue'
-  import STable from '@/components/table/'
-  const myIcon = Icon.createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_1148820_zonmgh0a7kq.js' // 在 iconfont.cn 上生成
-  })
   export default {
-    components: { myIcon,STable },
     name: 'index',
     data() {
       return {
         api:{
+          selectPage:'sys/reviewAuditlevel/selectPage',
           reviewAuditlevelUpdate:'sys/reviewAuditlevel/update',
         },
         loading: false,
@@ -130,8 +124,11 @@
         if(params.offset==0){
         this.current=1
       }
-        // params.orderId = 1
-        reviewAuditlevelPage(params).then(res => {
+        this.$axios({
+          url: this.api.selectPage,
+          method: 'put',
+          data: params
+        }).then(res => {
           if (res.code == '200') {
             this.dataSource = res.rows
             this.total = res.total;
@@ -153,7 +150,6 @@
       },
       //启用停用
       user(data) {
-        console.log(data);
         if (data.status){
           data.status = '0'
         } else{

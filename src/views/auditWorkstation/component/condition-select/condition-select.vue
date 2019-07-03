@@ -89,14 +89,14 @@
                 {{item.text}}
               </a-select-option>
             </a-select>
-            <a-input style="width:18%;" v-else value="天" disabled>
+            <a-input style="width:18%;" class="margin-left-5" v-else  value="天" disabled>
             </a-input>
           </div>
         </a-col>
         <a-col v-if="cd.inputType=='inputNumber'" :span="3">
           <!--文本数字-->
           <div >
-            <a-input type="number" style="width: 94%" @change="onChange"  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
+            <a-input-number   style="width: 94%" @change="onChange"  class="width-100 marLeft10" v-model="cd.assertVal"></a-input-number>
           </div>
         </a-col>
         <a-col  v-if="cd.columnId == 'AGE' && cd.logic == '1'" :span='1'>
@@ -114,7 +114,10 @@
             </a-select-option>
           </a-select>
         </a-col>
-
+        <a-col v-if="cd.columnId == 'LENGTHOFSTAY'&& cd.logic == '1'" :span='1'>
+          <a-input class="margin-left-5"  value="天" disabled>
+          </a-input>
+        </a-col>
         <a-col :span="1">
           <a-icon class="iconStyle" @click="deleteCon(index)" type="minus-circle" theme="filled"/>
         </a-col>
@@ -163,13 +166,14 @@
       }
     },
     mounted() {
-      console.log(this.conditions)
     },
     methods: {
       relationChange(value,logic,ruleId){
         for (let key in this.conditions){
           if (ruleId == this.conditions[key].ruleId){
             if (logic <'3'){
+              this.conditions[key].assertVal2 = null;
+              this.conditions[key].assertVal = null;
               if (value != '9'){
                 this.conditions[key].inputType = 'inputNumber'
                 this.conditions[key].logic = '1';
