@@ -70,13 +70,17 @@
             </a-tree-select>
           </a-form-item>
           <a-form-item v-if="boxInitialized.inputType !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectNode.ro" @select="selectNodeRo">
+            <a-select v-if="boxInitialized.inputType !='select'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
               <a-select-option :value=3 title="<">小于</a-select-option>
               <a-select-option :value=4 title="≤">小于等于</a-select-option>
               <a-select-option :value=5 title=">">大于</a-select-option>
               <a-select-option :value=6 title="≥">大于等于</a-select-option>
+              <a-select-option :value=7 title="包含">包含</a-select-option>
+              <a-select-option :value=8 title="不包含">不包含</a-select-option>
+            </a-select>
+            <a-select v-else size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=7 title="包含">包含</a-select-option>
               <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
@@ -91,8 +95,9 @@
             <div v-else-if="boxInitialized.inputType =='select'&&boxInitialized.inValueType!='time'">
               <a-select
                 size="small"
-                v-model="selectNode.assertVal"
+                v-model="selectNode.assertValList"
                 showSearch
+                mode="multiple"
                 @search="searchSelect"
                 @change="assertValSelect"
                 :defaultActiveFirstOption="false"
@@ -153,7 +158,7 @@
       <div class="block-container" v-if="selectEdge.sourceType=='model-rect-attribute'">
         <a-form>
           <a-form-item v-if="edgeInitialized.inputEdge !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
+            <a-select v-if="edgeInitialized.inputEdge !='select'" size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
               <a-select-option :value=3 title="<">小于</a-select-option>
@@ -163,20 +168,25 @@
               <a-select-option :value=7 title="包含">包含</a-select-option>
               <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
+            <a-select v-else size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
+              <a-select-option :value=7 title="包含">包含</a-select-option>
+              <a-select-option :value=8 title="不包含">不包含</a-select-option>
+            </a-select>
           </a-form-item>
 
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input :type="edgeInitialized.inValueEdge" v-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inputEdge!='time'" @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
             <div v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge!='time'">
-              <a-input :type="edgeInitialized.inValueEdge" class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal"   v-model="selectEdge.assertVal"/>
-              <a-input :type="edgeInitialized.inValueEdge" class="inputCenter" size="small" placeholder="~" disabled/>
-              <a-input :type="edgeInitialized.inValueEdge" class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
+              <a-input-number  class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal"   v-model="selectEdge.assertVal"/>
+              <a-input-number  class="inputCenter" size="small" placeholder="~" disabled/>
+              <a-input-number  class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
             </div>
             <div v-else-if="edgeInitialized.inputEdge =='select'&&edgeInitialized.inValueEdge!='time'">
               <a-select
                 size="small"
-                v-model="selectEdge.assertVal"
+                v-model="selectEdge.assertValList"
                 showSearch
+                mode="multiple"
                 @search="searchEdge"
                 @select="assertValEdge"
                 :defaultActiveFirstOption="false"
@@ -248,7 +258,6 @@
     },
     methods: {
       textChange(){
-        console.log(1);
       },
       sourceName(value, option){
         this.selectNode.sourcename = option.componentOptions.propsData.title;
@@ -309,8 +318,6 @@
         let params = extra.selectedNodes[0].data.props;
         let _this = this;
         _this.selectNode.itemId = params.id;
-        console.log(params,'pa');
-        console.log(_this.selectNode)
         if (params.lo == 1){
           this.boxInitialized.inputType = 'input'
         }else if (params.lo == 2){
@@ -341,6 +348,7 @@
         this.modelValue = params.title;
         _this.selectNode.label = this.modelValue;
         _this.selectNode.assertVal = null;
+        _this.selectNode.assertValList = null;
         this.condition = '';
         this.conditionValue = '';
         this.conditionValue1 = '';
@@ -391,7 +399,8 @@
         if ($.trim(this.condition).length==0){
           this.condition = this.selectNode.roSymbol;
         }
-        this.conditionValue = option.componentOptions.propsData.title;
+        console.log(option,'1234')
+        this.conditionValue = option[0].componentOptions.propsData.title;
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
       //枚举时搜索下拉框
@@ -424,7 +433,6 @@
       //属性节点后线段属性
       attributeEdge(value, node, extra){
         let _this = this;
-        console.log(_this.selectEdge)
         let params = extra.selectedNodes[0].data.props;
         this.selectNode.lo = params.lo
         _this.selectNode.label = params.title;
@@ -463,7 +471,8 @@
       },
       //线中下拉事件
       assertValEdge(value,option){
-        this.edgeConditionValue = option.componentOptions.propsData.title;
+        this.selectEdge.lo =3;
+        this.edgeConditionValue = option[0].componentOptions.propsData.title;
         this.selectEdge.label =this.edgeCondition+this.edgeConditionValue;
       },
       //线下拉搜索
