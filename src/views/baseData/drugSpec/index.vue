@@ -39,9 +39,9 @@
 </template>
 
 <script>
-import drugClassification from '@/my-components/drug-classification/drugClassification'
-import drugVarieties from '@/my-components/drug-varieties/drugVarieties'
-import drugDictionary from '@/my-components/drug-dictionary/drugDictionary'
+import drugClassification from '../base-components/drug-classification/drugClassification'
+import drugVarieties from '../base-components/drug-varieties/drugVarieties'
+import drugDictionary from '../base-components/drug-dictionary/drugDictionary'
 
 export default {
   components: {
@@ -52,7 +52,7 @@ export default {
   name: 'ruleMgt',
   data() {
     return {
-      nodeData: {},
+      // nodeData: {},
       disable: true,
       api: {
         drugVarietyPageId: 'sys/dicDrugcategory/selectDrugVarietyPageByCategoryId',
@@ -71,7 +71,8 @@ export default {
         drugDictionaryData: [],
         total: 0,
         disable: true,
-        varietyCode: null
+        varietyCode: null,
+        loading:false,
       },
       toxicologyData: [],
       current: 1
@@ -110,18 +111,18 @@ export default {
   },
   methods: {
     //左侧点击事件
-    onSelect(selectedKeys, e) {
-      this.classification.disable = true
-      this.nodeData = e.node.dataRef
-      this.variety.categoryId = e.node.dataRef.key
-      if (this.variety.categoryId) {
-        this.getVarietiesData({ categoryId: this.variety.categoryId })
-        this.dictionary.drugDictionaryData = []
-        this.dictionary.disable = true
-        this.dictionary.total = 0
-      }
-      this.disable = false
-    },
+    // onSelect(selectedKeys, e) {
+    //   this.classification.disable = true
+    //   this.nodeData = e.node.dataRef
+    //   this.variety.categoryId = e.node.dataRef.key
+    //   if (this.variety.categoryId) {
+    //     this.getVarietiesData({ categoryId: this.variety.categoryId })
+    //     this.dictionary.drugDictionaryData = []
+    //     this.dictionary.disable = true
+    //     this.dictionary.total = 0
+    //   }
+    //   this.disable = false
+    // },
     getVarietiesData(params = {}) {
       this.$axios({
         url: this.api.drugVarietyPageId,
@@ -178,6 +179,7 @@ export default {
       this.getDictionary({ varietyCode: row.varietyCode })
     },
     getDictionary(params = {}) {
+      this.dictionary.loading = true;
       this.$axios({
         url: this.api.dicDrugSelectPage,
         method: 'put',
@@ -187,12 +189,15 @@ export default {
           if (res.code == '200') {
             this.dictionary.drugDictionaryData = res.rows
             this.dictionary.total = res.total
+            this.dictionary.loading = false;
           } else {
-            this.warn(res.msg)
+            this.warn(res.msg);
+            this.dictionary.loading = false;
           }
         })
         .catch(err => {
-          this.error(err)
+          this.error(err);
+          this.dictionary.loading = false;
         })
     },
     getDicBase() {

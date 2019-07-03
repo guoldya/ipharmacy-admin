@@ -58,14 +58,14 @@
             <a-form-item style="padding-top: 20px" label="品种名称"
                          :label-col="{ span: 6 }"
                          :wrapper-col="{ span: 15 }">
-              <a-input v-decorator="[ 'varietyName',{rules: [{ required: true, message: '请输入分类名称' }]} ]"/>
+              <a-input v-decorator="[ 'varietyName',{rules: [{ required: true, message: '请输入分类名称' },{max: 255,message:'输入品种名称过长'}]} ]"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item style="padding-top: 20px" label="英文名称"
                          :label-col="{ span: 6 }"
                          :wrapper-col="{ span: 15 }">
-              <a-input v-decorator="[ 'engName',{rules: [{ required: true, message: '请输入英文名称' }]} ]"/>
+              <a-input v-decorator="[ 'engName',{rules: [{ required: true, message: '请输入英文名称' },{max: 255,message:'输入英文名称过长'}]} ]"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -74,7 +74,7 @@
             <a-form-item  label="拼音码"
                          :label-col="{ span: 6 }"
                          :wrapper-col="{ span: 15 }">
-              <a-input v-decorator="[ 'spellCode' ]"/>
+              <a-input v-decorator="[ 'spellCode',{rules: [{max: 150,message:'输入拼音码过长'}]} ]"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -105,7 +105,7 @@
             <a-form-item label="合成药"
                          :label-col="{ span: 6 }"
                          :wrapper-col="{ span: 15 }">
-              <a-radio-group v-decorator="[ 'iscompound' ]">
+              <a-radio-group v-decorator="[ 'iscompound',{initialValue: '0'} ]">
                 <a-radio :value='op.id' v-for="(op,index) in this.enum.yesNo" :key="index">
                   {{op.text}}
                 </a-radio>

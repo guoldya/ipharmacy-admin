@@ -157,7 +157,6 @@
         @ok="drugOk"
         :confirmLoading="drugModal.confirmLoading"
         @cancel="drugCancel"
-        class="drugModal"
         width="600px"
       >
         <a-form :form="drugForm">
@@ -927,7 +926,7 @@ export default {
 }
 
 .drugModal .ant-modal-body {
-  text-align: right;
+  /*text-align: right;*/
 }
 
 .selectCol {

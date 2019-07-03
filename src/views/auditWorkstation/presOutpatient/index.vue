@@ -262,22 +262,16 @@
           </a-tab-pane>
         </a-tabs>
       </a-modal>
-
     </a-card>
   </div>
 </template>
 <script>
   import { selectTribunalRecord } from '@/api/login'
-  import { Icon } from 'ant-design-vue'
   import countText from '../component/count-text'
   import prescriptionTabs from '../component/prescription-tabs'
 
-  const myIcon = Icon.createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_1148820_wj1pz1p40xm.js' // 在 iconfont.cn 上生成
-  })
   export default {
     components: {
-      myIcon,
       countText,
       prescriptionTabs,
     },
@@ -327,7 +321,7 @@
           { title: '年龄', prop: 'age', width: 60 }
         ],
         //页码初始化
-        total: 2,
+        total: null,
         current: 1,
         //已分配科室
         dis: false,
@@ -350,8 +344,6 @@
         tempRowData: {},
         treeDatas: [],
         recordList:[],
-        // 刷新频率
-        refreshFreq:null,
         tagsData:[],
         tagsDetailData:[],
         checkedAll: true,
@@ -387,9 +379,9 @@
       this.openTrialTime = setInterval(()=>{
         this.getOpenTrial()
       },15000)
-      console.log(this.iconSpin)
       if (this.iconSpin){
-        clearInterval(this.timeInitialize)
+        this.fetchYJSMapData();
+        this.getCountText();
         this.setTimeRval(10000)
       }
     },
@@ -556,39 +548,31 @@
 
       //开始审方
       buttonClick() {
-        let status = null;
         let _this = this;
         if (this.buttonText == '开始审方') {
-          // setTimeout(()=>{
-          //   this.fetchYJSMapData();
-          //   this.getCountText();
-          // },1000)
-          //获取头部数据
-          this.getCountText();
-          this.refreshFreq = Number(10000);
-          this.setTimeRval(10000)
           this.buttonText = '停止审方'
           this.buttonType = 'danger'
           this.disable = false
-          status = '1';
-          let params = { status: status,planScope:1,planType:1 }
+          let params = { status: '1',planScope:1,planType:1 }
           this.$axios({
             url: this.api.reviewUpdateStatus,
             method: 'post',
             data: params
-          })
-            .then(res => {
+          }).then(res => {
               if (res.code == '200') {
+                setTimeout(()=>{
+                  this.fetchYJSMapData();
+                  this.getCountText();
+                },1000)
+                this.setTimeRval(10000)
               } else {
                 this.warn(res.msg)
               }
-            })
-            .catch(err => {
+            }).catch(err => {
               this.error(err)
             })
         } else {
-          status = '0';
-          let params = { status: status,planScope:1,planType:1 }
+          let params = { status: '0',planScope:1,planType:1 }
           this.$axios({
             url: this.api.reviewUpdateStatus,
             method: 'post',
@@ -601,52 +585,40 @@
                 this.buttonType = 'primary'
                 this.disable = true;
                 this.countText=[];
+                this.dataSource = [];
+                this.total = null;
                 if (res.data >0){
                   this.$confirm({
                     title: '批量通过或者批量驳回！',
                     okText: '批量通过',
                     cancelText: '批量驳回',
                     onOk() {
-                      let passParams = {};
-                      passParams.reviewVerdict = 1;
-                      passParams.planScope = 1;
                       _this.$axios({
                         url: _this.api.updateReviewList,
                         method: 'put',
-                        data: passParams
-                      })
-                        .then(res => {
+                        data: {reviewVerdict:1,planScope:1}
+                      }).then(res => {
                           if (res.code == '200') {
                             _this.success('批量通过成功');
-                            _this.fetchYJSMapData();
-                            _this.getCountText();
                           } else {
                             _this.warn(res.msg)
                           }
-                        })
-                        .catch(err => {
+                        }).catch(err => {
                           _this.error(err)
                         })
                     },
                     onCancel() {
-                      let passParams = {};
-                      passParams.reviewVerdict =2;
-                      passParams.planScope = 1;
                       _this.$axios({
                         url: _this.api.updateReviewList,
                         method: 'put',
-                        data: passParams
-                      })
-                        .then(res => {
+                        data: {reviewVerdict:2,planScope:1}
+                      }).then(res => {
                           if (res.code == '200') {
                             _this.success('批量驳回成功');
-                            _this.fetchYJSMapData();
-                            _this.getCountText();
                           } else {
                             _this.warn(res.msg)
                           }
-                        })
-                        .catch(err => {
+                        }).catch(err => {
                           _this.error(err)
                         })
                     },
@@ -907,7 +879,7 @@
         console.log(data, 'data')
         this.templateText = data.reviewTemplate
       },
-      //弹窗提交
+      //弹窗提交 单个驳回
       handleOk() {
         this.problemsData
         let params = {}
@@ -959,7 +931,6 @@
         this.tabsData.clinicPrescNum = data.orderNo;
         this.tabsData.maxSubmitNo = data.maxSubmitNo;
         this.tabsData.visId = data.visId;
-
       },
 
       getDataChildren(bdata, pid) {

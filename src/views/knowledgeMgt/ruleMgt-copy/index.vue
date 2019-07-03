@@ -65,26 +65,26 @@
         @ok="drugOk"
         :confirmLoading="drugModal.confirmLoading"
         @cancel="drugCancel"
-        class="drugModal"
         width="700px"
       >
         <a-form :form="drugForm">
           <a-form-item label="类型"
                        :label-col="{ span: 4 }"
                        :wrapper-col="{ span: 17 }">
-            <a-radio-group v-decorator="[ 'type2',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
-                      @change="selectType"
-                      placeholder="请选择类型">
+            <a-radio-group
+              v-decorator="[ 'type2',  {rules: [{ required: true,message: '请选择类型'}]}  ]"
+              @change="selectType"
+              placeholder="请选择类型">
               <a-radio :value='op.id' v-for="(op,index) in this.enum.ruleClassification" :key="index">
                 {{op.text}}
               </a-radio>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="药品"
-                       :label-col="{ span: 4 }"
-                       :wrapper-col="{ span: 17 }"
-                       v-if="selkeys == 1"
-          >
+          <a-form-item
+            label="药品"
+            :label-col="{ span: 4 }"
+            :wrapper-col="{ span: 17 }"
+            v-if="selkeys == 1">
             <a-select v-decorator="[ 'limitedItemid',  {rules: [{ required: true,message: '请选择药品'  }]} ]"
                       showSearch
                       allowClear
@@ -252,7 +252,7 @@
         drugForm: this.$form.createForm(this),
         //选择分类Id
         typeIds: '-1',
-        selkeys: '',
+        selkeys:1,
         parentData: {},
         //编辑新增树
         treeEditor: false,
@@ -263,7 +263,8 @@
       }
     },
     mounted() {
-      this.getPageData()
+      this.getPageData();
+      this.coreRuleSelect({ keyword: '' })
     },
     computed: {
       list() {
@@ -337,7 +338,6 @@
         if (e.target.value == 1) {
           // this.drugModal.modalTitle = '添加药品规则'
           this.selkeys = 1
-          this.coreRuleSelect({ keyword: '' })
         } else if (e.target.value == 2) {
           // this.drugModal.modalTitle = '添加药品分类规则'
           this.selkeys = 2
@@ -436,7 +436,10 @@
       addMdc() {
         this.drugModal.visible = true;
         this.drugForm.resetFields();
-        this.selkeys = null;
+        this.selkeys = 1;
+        setTimeout(()=>{
+          this.drugForm.setFieldsValue({type2:1})
+        },0)
       },
       //药品确认选
       drugOk(e) {
