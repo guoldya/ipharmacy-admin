@@ -120,6 +120,7 @@
           lo: null,
           roSymbol: null,
           assertVal: null,
+          assertValList: null,
           assertVal1: null,
           levelColor: '#ffffff',
           levels: 0,
@@ -139,6 +140,7 @@
           targetId: null,
           targetType: null,
           assertVal: null,
+          assertValList: null,
           assertVal1: null,
           ro: null,
           lo: null
@@ -242,6 +244,9 @@
       selectNodeAssertVal() {
         return this.selectNode.assertVal
       },
+      selectNodeAssertValList(){
+        return this.selectNode.assertValList
+      },
       selectNodeAssertVal1() {
         return this.selectNode.assertVal1
       },
@@ -262,6 +267,9 @@
       },
       selectEdgeAssertVal() {
         return this.selectEdge.assertVal
+      },
+      selectEdgeAssertValList() {
+        return this.selectEdge.assertValList
       },
       selectEdgeAssertVal1() {
         return this.selectEdge.assertVal1
@@ -375,6 +383,11 @@
           this.flow.update(this.selectNode.id, { assertVal: newValue })
         }
       },
+      selectNodeAssertValList(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { assertValList: newValue })
+        }
+      },
       selectNodeAssertVal1(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { assertVal1: newValue })
@@ -403,6 +416,11 @@
       selectEdgeAssertVal(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { assertVal: newValue })
+        }
+      },
+      selectEdgeAssertValList(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { assertValList: newValue })
         }
       },
       selectEdgeAssertVal1(newValue, oldValue) {
@@ -575,6 +593,7 @@
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.selectNode.assertVal = model.assertVal != null ? model.assertVal : shape.assertVal
+                    _this.selectNode.assertValList = model.assertValList != null ? model.assertValList : shape.assertValList
                     _this.selectNode.assertVal1 = model.assertVal1 != null ? model.assertVal1 : shape.assertVal1
                     _this.selectNode.roSymbol = model.roSymbol != null ? model.roSymbol : shape.roSymbol
                 }
@@ -622,6 +641,7 @@
                 _this.selectEdge.value = ev.item.model.value
                 _this.selectEdge.sourceId = ev.item.source.id
                 _this.selectEdge.assertVal = ev.item.model.assertVal
+                _this.selectEdge.assertValList = ev.item.model.assertValList
                 _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                 _this.selectEdge.ro = ev.item.model.ro
                 if (ev.item.source.model) {
@@ -1074,6 +1094,7 @@
                 itemName: nodeData[key].itemName,
                 itemId: nodeData[key].itemId,
                 assertVal: nodeData[key].assertVal,
+                assertValList: nodeData[key].assertValList,
                 assertVal1: nodeData[key].assertVal1,
                 size: nodeSize,
                 y: y,
@@ -1099,6 +1120,7 @@
                 lo: edgesData[key].lo,
                 roSymbol: edgesData[key].roSymbol,
                 assertVal: edgesData[key].assertVal,
+                assertValList: edgesData[key].assertValList,
                 assertVal1: edgesData[key].assertVal1,
                 targetAnchor: 0,
                 type: 'edge'
