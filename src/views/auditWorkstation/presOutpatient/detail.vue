@@ -125,7 +125,7 @@
               </div>
             </a-tab-pane>
             <a-tab-pane tab="检查报告" key="2">
-              <detailCheck :visidId="visId"></detailCheck>
+              <detailCheck :visId="visId"></detailCheck>
             </a-tab-pane>
             <a-tab-pane tab="检验报告" key="3">
               <DetailTest :visId="visId"></DetailTest>
@@ -138,8 +138,8 @@
           <div class="dealRight">
             <a-tabs defaultActiveKey="1" size="small" class="width-100">
               <a-tab-pane tab="预判情况" key="1">
-                <span class="dealP">问题描述</span>
-                <span v-for="ta in tagsData " style="float: right">
+                <span class="dealP">问题描述：</span>
+                <span v-for="ta in tagsData " class="margin-left-5">
                   <a-tag
                     v-if="ta.status == true"
                     class="checkTag tagStyle"
@@ -153,15 +153,16 @@
                     @click="checkableChange(ta)"
                   >{{ta.auditName }}</a-tag>
                 </span>
-                <span style="float: right">
-                  <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" @click="handleChange">全部</a-tag>
-                  <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
+                <span >
+                  <a-tag class="checkTag tagStyle aTag1 margin-left-5" v-if="checkedAll" @click="handleChange">全部</a-tag>
+                  <a-tag class="checkTag tagStyle aTag2 margin-left-5" v-else @click="handleChange">全部</a-tag>
                 </span>
 
                 <a-card
                   class="margin-top-10 antCard"
                   @click="clickTagsCard(op)"
                   v-for="(op,index) in rightData "
+                  v-if="op.status"
                   :style="{'borderColor':op.borderColor}"
                   :key="index"
                 >
@@ -176,13 +177,13 @@
                     <span class="opacity8">{{op.auditDescription}}</span>
                   </div>
                   <div :rows="3" :maxRows="4" read-only>
-                    <a-tag>建议</a-tag>
+                    <a-tag>描述</a-tag>
                     {{op.audSuggest}}
                   </div>
-                  <div class="subscript" v-if="Number(op.status)===1">已审核</div>
+                  <div class="subscript" v-if="op.reviewStatus == 1">已审核</div>
                 </a-card>
 
-                <div class="margin-top-10" v-if="this.auditStatus===false">
+                <div class="margin-top-10" v-if="auditStatus">
                   <p class="dealP margin-top-10" style="float: left">审核意见:</p>
                   <a-button
                     type="primary"
@@ -333,6 +334,7 @@
           :disabled="leftData.subNo>1? false:true"
           class="margin-left-5"
           :loading="loading"
+          v-if="auditStatus"
         >
           <i type="star" class="iconfont action action-tubiaozhizuomoban-"/>
           <span class="margin-left-5">版本对比</span>
@@ -342,27 +344,29 @@
           :disabled="previousData.visId==0? true:false"
           class="margin-left-5"
           :loading="loading"
+          v-if="auditStatus"
         >上一患者</a-button>
         <a-button
           @click="slePatients(nextPerson)"
           :disabled="nextPerson.visId==0? true:false"
           class="margin-left-5"
           :loading="loading"
+          v-if="auditStatus"
         >下一患者</a-button>
       </template>
-      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
+      <a-button @click="cancel" v-if="routerData.isNew == 1" class="margin-left-5" :loading="loading">返回</a-button>
       <a-button
         @click="refuse"
         style="margin-left: 5px"
         :loading="loading"
-        v-if="this.auditStatus===false"
+        v-if="auditStatus"
       >驳回</a-button>
       <a-button
         type="primary"
         class="margin-left-5"
         @click="submit"
         :loading="loading"
-        v-if="this.auditStatus===false"
+        v-if="auditStatus"
       >通过</a-button>
     </footer-tool-bar>
   </div>
@@ -376,6 +380,7 @@ import { mixin, mixinDevice } from '@/utils/mixin'
 import versionComp from '../component/version-comparison'
 import detailCheck from '../presHospitalized/detailCheck.vue'
 import DetailTest from '../presHospitalized/detailTest.vue'
+import {mapActions} from 'vuex'
 
 const DetailListItem = DetailList.Item
 export default {
@@ -439,8 +444,9 @@ export default {
       levelColor: '',
       visId: null,
       propData: { visId: null, submitNo: null },
+      routerData:{},
       phyStatelist: [],
-      auditStatus: true,
+      auditStatus: false,
       previousData: {
         visId: null,
         maxSubmitNo: null
@@ -456,11 +462,19 @@ export default {
     this.getTemplate()
     this.getRecord()
     this.getAttention()
-    this.getLeadAndLag()
+    if (this.$route.params.isNew == 1){
+      this.getLeadAndLag()
+    }else{
+      this.auditStatus = false
+    }
   },
   methods: {
+    ...mapActions( 'page',[
+      'closeTag',
+    ]),
     getDetailData() {
       this.visId = this.$route.params.visId
+      this.routerData = this.$route.params;
       this.propData.visId = this.$route.params.visId
       this.propData.submitNo = this.$route.params.submitNo
       let params = this.$route.params
@@ -471,13 +485,17 @@ export default {
             this.allLoading = false
             this.leftData = res.data
             this.rightData = this.leftData.reviewOrderissueVOList
-            this.tagsData = this.leftData.levelTotalsList
+            this.tagsData = this.leftData.levelTotalsList;
+            this.dealTagsData(this.tagsData)
+            this.deal(this.rightData)
             if (res.data.physiologicalState) {
               this.phyStatelist = res.data.physiologicalState.split(',')
             }
             this.leftData.clinicPrescVOList.forEach((item, index) => {
-              if (item.auditingStatus !== '1') {
+              if (item.auditingStatus == '1') {
                 this.auditStatus = false
+              }else{
+                this.auditStatus = true
               }
             })
           } else {
@@ -489,6 +507,12 @@ export default {
           this.allLoading = false
           this.error(err)
         })
+    },
+    // 配置状态状态控制显示
+    dealTagsData(data) {
+      for (let key in data) {
+        data[key].status = true
+      }
     },
     deal(data) {
       if (data) {
@@ -573,11 +597,6 @@ export default {
         .catch(err => {
           this.error(err)
         })
-    },
-    cancle() {
-      this.$router.push({
-        name: 'presOutpatientIndex'
-      })
     },
     tagsClick(pd) {
       // var event = window.event || arguments.callee.caller.arguments[0]
@@ -830,17 +849,23 @@ export default {
     // 更换患者
     slePatients(data) {
       console.log(data)
-      this.$router.push({
-        name: 'presOutpatientDetail',
-        params: { visId: data.visId, submitNo: data.maxSubmitNo }
-      })
-      // this.$route.params.visId = data.visId;
-      // this.$route.params.submitNo  = data.submitNo;
+      // this.$router.push({
+      //   name: 'presOutpatientDetail',
+      //   params: { visId: data.visId, submitNo: data.maxSubmitNo,isNew:true }
+      // })
+      this.$route.params.visId = data.visId;
+      this.$route.params.submitNo  = data.maxSubmitNo;
+      this.$route.params.isNew  = 1;
+      console.log(data)
       this.getDetailData()
       this.getTemplate()
       this.getRecord()
       this.getAttention()
-      this.getLeadAndLag()
+      if (this.$route.params.isNew == 1){
+        this.getLeadAndLag()
+      }else{
+        this.auditStatus = false
+      }
     },
 
     getLeadAndLag() {
@@ -865,7 +890,18 @@ export default {
         .catch(err => {
           this.error(err)
         })
-    }
+    },
+
+    cancel() {
+      this.closeTag({
+        tagName:'presOutpatientDetail',
+        aimName:'presOutpatientIndex',
+        vm: this
+      })
+      // this.$router.push({
+      //   name: 'presOutpatientIndex'
+      // })
+    },
   },
   filters: {
     control_type(value) {

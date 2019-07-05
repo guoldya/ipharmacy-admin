@@ -20,12 +20,7 @@
               >{{ta.auditName }}</a-tag>
             </span>
             <span >
-              <a-tag
-                class="checkTag tagStyle aTag1"
-                v-if="checkedAll"
-                style
-                @click="handleChange"
-              >全部</a-tag>
+              <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" @click="handleChange">全部</a-tag>
               <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
             </span>
             <a-card
@@ -47,10 +42,10 @@
                 <span class="opacity8">{{op.auditDescription}}</span>
               </div>
               <div :rows="3" :maxRows="4" read-only>
-                <a-tag>建议</a-tag>
+                <a-tag>描述</a-tag>
                 {{op.audSuggest}}
               </div>
-               <div class="subscript" v-if="Number(op.status)===1">已审核</div>
+               <div class="subscript" v-if="op.reviewStatus == 1">已审核</div>
             </a-card>
 
             <div class="margin-top-10">
@@ -313,7 +308,6 @@ export default {
           }
         }
       }
-      //data.push()
     },
     // 右边预判情况树形结构数据
     getTemplate(params={}) {

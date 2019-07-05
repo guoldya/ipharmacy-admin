@@ -917,7 +917,7 @@
       looks(data) {
         this.$router.push({
           name: 'presOutpatientDetail',
-          params: { visId: data.visId, submitNo: data.maxSubmitNo}
+          params: { visId: data.visId, submitNo: data.maxSubmitNo,isNew:1}
         })
       },
       //TODO:处方单数据暂未处理

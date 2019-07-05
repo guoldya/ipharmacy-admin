@@ -68,8 +68,8 @@
           </a-col>
           <a-col :span="12">
             <a-form-item style="padding-top: 20px" label="拼音码"
-                         :label-col="{ span: 6 }"
-                         :wrapper-col="{ span: 15 }">
+                         :label-col="{ span: 4 }"
+                         :wrapper-col="{ span: 16}">
               <a-input v-decorator="[ 'spellCode',{rules: [{max:100,message:'输入拼音码过长'}]}  ]"></a-input>
             </a-form-item>
           </a-col>
@@ -85,8 +85,8 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="单位"
-                         :label-col="{ span: 6 }"
-                         :wrapper-col="{ span: 15 }">
+                         :label-col="{ span: 4 }"
+                         :wrapper-col="{ span: 16 }">
               <a-input
                 v-decorator="[ 'unit',{rules: [{ required: true, message: '请输入单位' },{max:10,message:'输入单位过长'}]}  ]"/>
             </a-form-item>
@@ -104,8 +104,8 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="剂型"
-                         :label-col="{ span: 6 }"
-                         :wrapper-col="{ span: 15 }">
+                         :label-col="{ span: 4 }"
+                         :wrapper-col="{ span: 16 }">
               <a-tree-select
                 showSearch
                 :treeData="dosageList"

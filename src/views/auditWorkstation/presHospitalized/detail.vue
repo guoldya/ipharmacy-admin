@@ -3,9 +3,6 @@
     <a-col :span="14">
       <a-card>
         <div class="cardHead">
-          <a href="#" @click.prevent="cancle" class="fanhui">
-            <a-icon type="left"></a-icon>返回
-          </a>
           <div class="guanzhu" :loading="loading" v-if="carePatient===true">
             <a-icon theme="filled" type="star" class="xingxing" />已关注
           </div>
@@ -95,12 +92,14 @@
         </a-button>
         <a-button
           @click="slePatients(previousData)"
+          v-if="routerData.isNew == 1? true:false"
           :disabled="previousData.visId==0? true:false"
           class="margin-left-5"
           :loading="loading"
         >上一患者</a-button>
         <a-button
           @click="slePatients(nextPerson)"
+          v-if="routerData.isNew == 1? true:false"
           :disabled="nextPerson.visId==0? true:false"
           class="margin-left-5"
           :loading="loading"
@@ -122,7 +121,7 @@
         </div>
       </template>
 
-      <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
+      <a-button @click="cancle" v-if="routerData.isNew == 1" class="margin-left-5" :loading="loading">返回</a-button>
       <a-button
         @click="refuse"
         style="margin-left: 5px"
@@ -150,6 +149,7 @@ import jodgeStation from './jodgeStation.vue'
 import docAdvices from './docAdvices.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
 import { selectOutDetail } from '@/api/login'
+import {mapActions} from 'vuex'
 const DetailListItem = DetailList.Item
 export default {
   components: {
@@ -232,14 +232,22 @@ export default {
       submitNos: this.$route.query.maxSubmitNo,
       prescOrderId: {},
       docDatasCopy: [],
-      onactive: ''
+      onactive: '',
+      routerData:{},
     }
   },
   mounted() {
+    this.routerData = this.$route.query;
     this.getRecordDelData({ visid: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo })
-    this.turnpage({ visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
+    if (this.routerData.isNew == 1){
+      this.turnpage({ visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
+    }
+
   },
   methods: {
+    ...mapActions( 'page',[
+      'closeTag',
+    ]),
     // 点击状态标签
     checkableChange(item) {
       // 改变原本
@@ -333,7 +341,9 @@ export default {
       this.submitNos = data.submitNo
       //this.visDatas = { visId: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo }
       this.getRecordDelData({ visid: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
-      this.turnpage({ visId: data.visId, maxSubmitNo: data.submitNo })
+      if (this.routerData.isNew == 1){
+        this.turnpage({visId: data.visId, maxSubmitNo: data.submitNo,isNew:1})
+      }
     },
 
     // 获取患者个人信息
@@ -432,8 +442,10 @@ export default {
         })
     },
     cancle() {
-      this.$router.push({
-        name: 'presHospitalizedIndex'
+      this.closeTag({
+        tagName:'presHospitalizedDetail',
+        aimName:'presHospitalizedIndex',
+        vm: this
       })
     },
 
