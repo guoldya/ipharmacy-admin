@@ -60,59 +60,15 @@
           <a-col :span="8">知识库药品</a-col>
         </a-row>
         <a-row class="box">
-          <a-col :span="6" class="textRight">编号：</a-col>
-          <a-col :span="8">{{NData.drugCode}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.drugCode}}</a-Col>
+          <a-col :span="6" class="textRight">编码：</a-col>
+          <a-col :span="8">{{NData.frequenceId}}</a-col>
+          <a-Col :span="8" class="td-content">{{MData.id}}</a-Col>
         </a-row>
         <a-row class="box">
-          <a-col :span="6" class="textRight">药品名称：</a-col>
-          <a-col :span="8">
-            <a-tooltip placement="topLeft">
-              <template slot="title">
-                <span>{{NData.drugName}}</span>
-              </template>
-              {{NData.drugName}}
-            </a-tooltip>
-          </a-col>
-          <a-Col :span="8" class="td-content">
-            <a-tooltip placement="topLeft">
-              <template slot="title">
-                <span>{{MData.drugName}}</span>
-              </template>
-              {{MData.drugName}}
-            </a-tooltip>
-          </a-Col>
+          <a-col :span="6" class="textRight">名称：</a-col>
+          <a-col :span="8">{{NData.frequenceName}}</a-col>
+          <a-Col :span="8" class="td-content">{{MData.remark}}</a-Col>
         </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">生产厂商：</a-col>
-          <a-col :span="8">{{NData.producedBy}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.producedBy}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">剂型：</a-col>
-          <a-col :span="8">{{NData.dosageForms}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.dosageFormsStr}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">剂量单位：</a-col>
-          <a-col :span="8">{{NData.doseUnit}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.doseUnit}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">规格：</a-col>
-          <a-col :span="8">{{NData.spec}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.spec}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">剂量系数：</a-col>
-          <a-col :span="8">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="N" />
-          </a-col>
-          <a-Col :span="8" class="td-content">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="M" />
-          </a-Col>
-        </a-row>
-
         <div class="surea">
           <a-button @click="clickCancel">取消</a-button>
           <a-button
@@ -170,19 +126,17 @@ export default {
       dataSource: [],
       spinning: false,
       columns: [
-        { title: '药品编码', prop: 'drugCode', width: 80 },
-        { title: '药品名称', prop: 'drugName' },
-        { title: '剂型', prop: 'dosageForms', width: 130 },
-        { title: '规格', prop: 'spec', width: 130 },
-        { title: '厂商', prop: 'producedBy' },
-        { title: '剂量单位', prop: 'doseUnit', width: 80, align: 'center' },
+        { title: '医疗结构代码', prop: 'orgId', width: 80 },
+        { title: '编码', prop: 'frequenceId' ,width:80},
+        { title: '英文名', prop: 'frequenceCode' },
+        { title: '名称', prop: 'frequenceName'},
         { title: '对码状态', prop: 'isCurrent', width: 80, align: 'center' }
       ],
       pageSize: 20,
       total: 1,
       api: {
-        hisDrugDataUrl: '/sys/hisDrug/selectPage',
-        similarDrugDataUrl: '/sys/hisDrug/selectSimilarDrugPage',
+        hisDrugDataUrl: '/sys/hisFrequence/selectPage',
+        similarDrugDataUrl: '/sys/hisFrequence/selectSimilarDicFrequencePage',
         mapUrl: 'sys/dicDrugMapper/insert'
       },
       loading: false,
@@ -225,18 +179,13 @@ export default {
   methods: {
     //点击第左边的table列事件
     clickLeftRow(row) {
-      console.log(row)
+      let params = { frequenceName: row.frequenceName }
       this.NData = row
       this.MData = {}
-      let params = {}
       if (this.NData.isCurrent == '0') {
-        params = {
-          drugName: this.NData.drugName,
-          producedBy: this.NData.producedBy
-        }
-         this.getSimilarData(params)
+        this.getSimilarData(params)
       } else {
-        this.MData = row.dicDrugMapperVO
+        this.MData = row.dicFrequence
         this.getSimilarData(params)
       }
     },

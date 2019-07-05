@@ -226,6 +226,7 @@ export default {
     //搜索
     search() {
       let params = this.getFormData()
+       params.pageSize=this.pageSize
       this.dateList = params.searchDate
       this.getData(params)
     },

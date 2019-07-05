@@ -125,10 +125,9 @@
         selectSysOrgs(params)
           .then(res => {
             if (res.code == '200') {
-              console.log(this.getDataChildren(res.rows, undefined))
+              //console.log(this.getDataChildren(res.rows, undefined))
               this.dataSource = this.getDataChildren(res.rows, undefined)
-              //console.log(this.dataSource, 'dataSource')
-              //children
+              console.log(this.dataSource, 'dddd')   
               this.loading = false
             } else {
               this.loading = false

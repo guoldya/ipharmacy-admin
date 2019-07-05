@@ -27,7 +27,8 @@
               :align="item.align"
             >
               <template slot-scope="scope">
-                <span v-if="item.prop == 'isCurrent'">
+                <span v-if="item.prop == 'editDate'">{{changeTime(scope.row.editDate)}}</span>
+                <span v-else-if="item.prop == 'isCurrent'">
                   <a-badge
                     :status="scope.row.isCurrent == 0? 'default':'processing'"
                     :text="scope.row.isCurrent ==0?'未对码':'已对码'"
@@ -53,66 +54,23 @@
     </a-Col>
 
     <a-Col :span="10" class="details">
-      <a-card :bodyStyle="{padding:'12px 10px'}" title="药品对码">
+      <a-card :bodyStyle="{padding:'12px 10px'}" title="ICD对码">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
-          <a-col :span="8">医院药品</a-col>
-          <a-col :span="8">知识库药品</a-col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">编号：</a-col>
-          <a-col :span="8">{{NData.drugCode}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.drugCode}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">药品名称：</a-col>
-          <a-col :span="8">
-            <a-tooltip placement="topLeft">
-              <template slot="title">
-                <span>{{NData.drugName}}</span>
-              </template>
-              {{NData.drugName}}
-            </a-tooltip>
-          </a-col>
-          <a-Col :span="8" class="td-content">
-            <a-tooltip placement="topLeft">
-              <template slot="title">
-                <span>{{MData.drugName}}</span>
-              </template>
-              {{MData.drugName}}
-            </a-tooltip>
-          </a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">生产厂商：</a-col>
-          <a-col :span="8">{{NData.producedBy}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.producedBy}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">剂型：</a-col>
-          <a-col :span="8">{{NData.dosageForms}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.dosageFormsStr}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">剂量单位：</a-col>
-          <a-col :span="8">{{NData.doseUnit}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.doseUnit}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">规格：</a-col>
-          <a-col :span="8">{{NData.spec}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.spec}}</a-Col>
-        </a-row>
-        <a-row class="box">
-          <a-col :span="6" class="textRight">剂量系数：</a-col>
-          <a-col :span="8">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="N" />
-          </a-col>
-          <a-Col :span="8" class="td-content">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="M" />
-          </a-Col>
+          <a-col :span="8">医院诊断</a-col>
+          <a-col :span="8">知识库诊断</a-col>
         </a-row>
 
+        <a-row class="box">
+          <a-col :span="6" class="textRight">icd编码：</a-col>
+          <a-col :span="8">{{NData.icdid}}</a-col>
+          <a-Col :span="8" class="td-content">{{MData.id}}</a-Col>
+        </a-row>
+        <a-row class="box">
+          <a-col :span="6" class="textRight">icd名称：</a-col>
+          <a-col :span="8">{{NData.icdname}}</a-col>
+          <a-Col :span="8" class="td-content">{{MData.icdname}}</a-Col>
+        </a-row>
         <div class="surea">
           <a-button @click="clickCancel">取消</a-button>
           <a-button
@@ -125,7 +83,7 @@
         </div>
       </a-card>
 
-      <a-card class="margin-top-5" title="相似药品">
+      <a-card class="margin-top-5" title="相似诊断">
         <a-spin tip="加载中..." :spinning="similarSpin">
           <el-table @row-click="clickRightRow" :data="similarData" :highlight-current-row="true">
             <el-table-column
@@ -170,27 +128,26 @@ export default {
       dataSource: [],
       spinning: false,
       columns: [
-        { title: '药品编码', prop: 'drugCode', width: 80 },
-        { title: '药品名称', prop: 'drugName' },
-        { title: '剂型', prop: 'dosageForms', width: 130 },
-        { title: '规格', prop: 'spec', width: 130 },
-        { title: '厂商', prop: 'producedBy' },
-        { title: '剂量单位', prop: 'doseUnit', width: 80, align: 'center' },
+        { title: 'icd编码', prop: 'icdid', width: 80 },
+
+        { title: 'icd名称', prop: 'icdname' },
+
         { title: '对码状态', prop: 'isCurrent', width: 80, align: 'center' }
       ],
       pageSize: 20,
       total: 1,
       api: {
-        hisDrugDataUrl: '/sys/hisDrug/selectPage',
-        similarDrugDataUrl: '/sys/hisDrug/selectSimilarDrugPage',
-        mapUrl: 'sys/dicDrugMapper/insert'
+        // hisDrugDataUrl: '/sys/hisDrug/selectPage',
+        similarDrugDataUrl: '/sys/hisIcd/selectSimilarDicIcdPage',
+        mapUrl: 'sys/dicIcdMapper/insert',
+        icdAll: 'sys/hisIcd/selectPage'
       },
       loading: false,
       columnscheckdtl: [
-        { title: '药品编码', prop: 'drugCode', width: 90, align: 'right' },
-        { title: '药品名称', prop: 'drugName' },
-        { title: '剂型', prop: 'dosageFormsStr', width: 80 },
-        { title: '生产厂商', prop: 'producedBy' }
+        { title: 'icd编码', prop: 'id', width: 80 },
+
+        { title: 'icd名称', prop: 'icdname' },
+        { title: '拼音码', prop: 'spellcode' }
       ],
       similarData: [],
       NData: {},
@@ -204,8 +161,8 @@ export default {
     list() {
       return [
         {
-          name: '药品名称',
-          dataField: 'drugName',
+          name: 'ICD名称',
+          dataField: 'icdName',
           type: 'text'
         },
         {
@@ -225,29 +182,14 @@ export default {
   methods: {
     //点击第左边的table列事件
     clickLeftRow(row) {
-      console.log(row)
+      let params = { icdName: row.icdname }
       this.NData = row
       this.MData = {}
-      let params = {}
       if (this.NData.isCurrent == '0') {
-        params = {
-          drugName: this.NData.drugName,
-          producedBy: this.NData.producedBy
-        }
-         this.getSimilarData(params)
-      } else {
-        this.MData = row.dicDrugMapperVO
         this.getSimilarData(params)
-      }
-    },
-    nchange(val) {
-      if (val > 1) {
-        this.M = 1
-      }
-    },
-    mchange(val) {
-      if (val > 1) {
-        this.N = 1
+      } else {
+        this.MData = row.dicIcd
+        this.getSimilarData(params)
       }
     },
     //右边部分数据的获取
@@ -263,6 +205,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.similarData = res.rows
+
             this.similarTotal = res.total
             this.similarSpin = false
           } else {
@@ -279,7 +222,7 @@ export default {
     getData(params = { pageSize: 20, offset: 0 }) {
       this.spinning = true
       this.$axios({
-        url: this.api.hisDrugDataUrl,
+        url: this.api.icdAll,
         method: 'put',
         data: params
       })
@@ -301,25 +244,17 @@ export default {
     //点击右边的table事件
     clickRightRow(row) {
       this.MData = row
-        this.disable = false
+      this.disable = false
     },
     //点击确定的处理事件
     clickSure() {
-      let params = {}
-      params.orgId = this.NData.orgId
-      params.hisDrugCode = this.NData.drugCode
-      params.hisDrugName = this.NData.drugName
-      params.hisSpec = this.NData.spec
-      params.hisDoseUnit = this.NData.doseUnit
-      params.hisProducedBy = this.NData.producedBy
-      params.hisDosageForms = this.NData.dosageForms
-      params.drugCode = this.MData.drugCode
-      params.drugName = this.MData.drugName
-      params.producedBy = this.MData.producedBy
-      params.dosageForms = this.MData.dosageForms
-      params.doseUnit = this.MData.doseUnit
-      params.M = this.M
-      params.N = this.N
+      let params = {
+        orgId: this.NData.orgId,
+        hisicdid: this.NData.icdid,
+        hisicdname: this.NData.icdname,
+        icdid: this.MData.id,
+        icdname: this.MData.icdname
+      }
       this.loading = true
       this.$axios({
         url: this.api.mapUrl,
@@ -361,7 +296,8 @@ export default {
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
       this.getData({ pageSize: 20, offset: 0 })
-      // this.getData(params)
+      this.current = 1
+      this.getData(params)
     },
     //页码数change事件
     pageChangeSize(page, pageSize) {
@@ -387,6 +323,24 @@ export default {
       params.producedBy = this.MData.producedBy
       params.pageSize = size
       this.getSimilarData(params)
+    },
+    // 改时间格式
+    changeTime(data) {
+      // let times = data.slice(0, data.lastIndexOf(':'))
+      let times=data.replace(/:\d{2}$/,'')
+      console.log(times)
+      return times
+    },
+    // 过滤
+    nchange(val) {
+      if (val > 1) {
+        this.M = 1
+      }
+    },
+    mchange(val) {
+      if (val > 1) {
+        this.N = 1
+      }
     }
   }
 }

@@ -67,7 +67,8 @@ export default {
         { title: '愈合', prop: 'heal', width: 120 },
         { title: '更新时间', prop: 'updateTime', width: 120 }
       ],
-      surgeryData: []
+      surgeryData: [],
+      arr:[{age:1},{age:2},{age:3},{age:4},{age:5}]
     }
   },
   watch:{
@@ -80,6 +81,10 @@ export default {
     this.getsurgeryData({ visid: this.visidId })
   },
   methods: {
+    clicks(data){
+      console.log('dddd')
+     data=4;
+    },
     getsurgeryData(params = {}) {
       this.loading = true
       this.$axios({

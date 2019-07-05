@@ -37,7 +37,7 @@
             <!-- <a href>{{props.row.creatDocName}}</a> -->
              <a-tooltip placement="top">
                   <template slot="title">
-                    <span>{{props.row.creatDocName}}</span>
+                    <span>{{props.row.creatDocPhone}}</span>
                   </template>
                   <a href>
                     {{props.row.creatDocName}}&nbsp;

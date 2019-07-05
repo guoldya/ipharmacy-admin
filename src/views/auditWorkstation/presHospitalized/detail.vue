@@ -108,9 +108,16 @@
       </template>
       <template slot="center">
         <div class="paintFoot">
-          <div v-for="(item,index) in this.enum.paintState" class="jianxie">
-            <a-tag :color="item.color" class="tags">{{item.texts}}</a-tag>
-            <span>{{item.text}}</span>
+          <div
+            v-for="(item,index) in this.enum.paintState"
+            class="jianxie"
+            @click="checkableChange(item)"
+            :key='item.id'
+          >
+            <div :class="{active : onactive == item.id}">
+              <a-tag :color="item.color" class="tags">{{item.texts}}</a-tag>
+              <span >{{item.text}}</span>
+            </div>
           </div>
         </div>
       </template>
@@ -223,7 +230,9 @@ export default {
       patientId: '',
       visId: '',
       submitNos: this.$route.query.maxSubmitNo,
-      prescOrderId: {}
+      prescOrderId: {},
+      docDatasCopy: [],
+      onactive: ''
     }
   },
   mounted() {
@@ -231,10 +240,30 @@ export default {
     this.turnpage({ visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
   },
   methods: {
+    // 点击状态标签
+    checkableChange(item) {
+      // 改变原本
+      this.onactive = item.id
+      if (item.id == 8) {
+        // console.log(this.docDatasCopy)
+        this.docDatas = this.docDatasCopy
+        return
+      }
+      this.docDatas = this.docDatasCopy
+      let arr = []
+      this.docDatas.forEach(value => {
+        if (value.state == item.id) {
+          arr.push(value)
+        } else {
+          value.bg = null
+        }
+      })
+      this.docDatas = arr
+    },
     refuse() {
-       let params = {}
+      let params = {}
       params.auditType = '1'
-       params.passType = "1";
+      params.passType = '1'
       if (this.templateText) {
         params.reviewOpinion = this.templateText
       } else {
@@ -244,11 +273,6 @@ export default {
       params.reviewIds = []
       let listData = this.docDatas
       params.reviewIds.push(listData[0].reviewId)
-      // for (let key in listData) {
-      //   if (listData[key].reviewId == '0') {
-      //     params.reviewIds.push(listData[key].reviewId)
-      //   }
-      // }
       this.$axios({
         url: this.api.updateReviewStatus,
         method: 'put',
@@ -284,11 +308,11 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            if(res.data.leadVisId){
-            this.previousData.visId = res.data.leadVisId
-            this.previousData.submitNo = res.data.leadsubmitno
-            this.nextPerson.visId = res.data.lagVisId
-            this.nextPerson.submitNo = res.data.lagsubmitno
+            if (res.data.leadVisId) {
+              this.previousData.visId = res.data.leadVisId
+              this.previousData.submitNo = res.data.leadsubmitno
+              this.nextPerson.visId = res.data.lagVisId
+              this.nextPerson.submitNo = res.data.lagsubmitno
             }
           } else {
             this.warn(res.msg)
@@ -323,6 +347,7 @@ export default {
           if (res.code == '200') {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
+            this.docDatasCopy = this.docDatas
             this.visId = this.$route.query.visId
             this.patientId = res.data.patientId
           } else {
@@ -629,12 +654,23 @@ export default {
   .jianxie {
     float: left;
     margin-left: 15px;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 10px;
+    cursor: pointer;
   }
   .ant-tag {
     margin-right: 1px;
   }
-  .tags {
-    cursor: auto;
+  .bagrd {
+    background: #2eabff;
+  }
+  .active {
+    background: #79668a;
+    border: 1px solid #79668a;
+    color: #fff;
+    border-radius: 6px;
+    padding: 1px 1px;
   }
 }
 </style>

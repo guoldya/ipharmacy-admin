@@ -242,8 +242,8 @@ export const asyncRouterMap = [
                                 path: '/auditWorkstation/presHospitalized/detail',
                                 name: 'presHospitalizedDetail',
                                 hidden: true,
-                                component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue')
-                                // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
+                                component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
+                                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, detail: true }
                             }
                         ]
                     },
@@ -452,6 +452,34 @@ export const asyncRouterMap = [
                             name: 'drugContrastIndex',
                             component: () => import( '@/views/baseData/drugContrast/index.vue'),
                             meta: { title: '药品数据对照', hiddenHeaderContent: true, index: true }
+                          },
+                        ]
+                      },
+                      {
+                        path: '/baseData/Icdtrast',
+                        name: 'Icdtrast',
+                        component: RouteView,
+                        meta: { title: 'Icd数据对照', multistage: true },
+                        children: [
+                          {
+                            path: '/baseData/Icdtrast/index',
+                            name: 'IcdtrastIndex',
+                            component: () => import( '@/views/baseData/Icdtrast/index.vue'),
+                            meta: { title: 'Icd数据对照', hiddenHeaderContent: true, index: true }
+                          },
+                        ]
+                      },
+                      {
+                        path: '/baseData/Frequence',
+                        name: 'Frequence',
+                        component: RouteView,
+                        meta: { title: '用药频次', multistage: true },
+                        children: [
+                          {
+                            path: '/baseData/Frequence/index',
+                            name: 'FrequenceIndex',
+                            component: () => import( '@/views/baseData/Frequence/index.vue'),
+                            meta: { title: '用药频次', hiddenHeaderContent: true, index: true }
                           },
                         ]
                       },
