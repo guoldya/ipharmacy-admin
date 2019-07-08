@@ -350,14 +350,14 @@
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { itemId: newValue })
         }
-        if (oldValue != null && newValue != oldValue && newValue != null){
-          let data = this.flow.save();
-          for (let key in data.edges){
-            if (data.edges[key].pid == this.selectNode.id){
-              this.flow.update(data.edges[key].id, { assertVal: null, assertValList:[],assertVal1: null})
-            }
-          }
-        }
+        // if (oldValue != null && newValue != oldValue && newValue != null){
+        //   let data = this.flow.save();
+        //   for (let key in data.edges){
+        //     if (data.edges[key].pid == this.selectNode.id){
+        //       this.flow.update(data.edges[key].id, { assertVal: null, assertValList:[],assertVal1: null})
+        //     }
+        //   }
+        // }
       },
       selectNodeItemName(newValue, oldValue) {
         if (newValue != oldValue) {
@@ -894,7 +894,7 @@
             list[key].pid = list[key].source
           }
           list[key].disOrder = list[key].index
-          list[key].ruleId = this.$route.query.id;
+          list[key].ruleId = this.$route.params.id;
           list[key].verdictType = Number(list[key].verdictType)
           delete  list[key].index
         }
@@ -930,7 +930,7 @@
           }
           list[key].disOrder = list[key].index
           list[key].verdictType = Number(list[key].verdictType)
-          list[key].ruleId = this.$route.query.id;
+          list[key].ruleId = this.$route.params.id;
           delete  list[key].index
         }
         this.verifyFlow({status:false});
@@ -1012,8 +1012,8 @@
 
       getDataList(params={}){
         if (params.ruleId == null){
-          params.ruleId = this.$route.query.id
-          this.ruleId = this.$route.query.id
+          params.ruleId = this.$route.params.id
+          this.ruleId = this.$route.params.id
         }else {
           this.ruleId = params.ruleId
         }
@@ -1043,8 +1043,8 @@
        */
       getNodeData(params={}) {
         if (params.ruleId == null){
-          params.ruleId = this.$route.query.id
-          this.ruleId = this.$route.query.id
+          params.ruleId = this.$route.params.id
+          this.ruleId = this.$route.params.id
         }else {
           this.ruleId = params.ruleId
         }
@@ -1319,7 +1319,7 @@
                   this.addVisible = false;
                   this.$router.push({
                     name: 'flowChartEditor',
-                    query:{id:res.data.id,type:res.data.type},
+                    params:{id:res.data.id,type:res.data.type},
                   })
                   _this.flow.remove();
                   setTimeout(()=>{

@@ -5,7 +5,8 @@ const { Flow } = G6Editor;
 Flow.registerNode(
     'model-image-branch',
     {
-      iconImg: "http://192.168.0.22:6823/branch.png",
+      // iconImg: "http://192.168.0.22:6823/branch.png",
+      iconImg:window.location.origin  +'/loading/option2/branchOne.png',
       // 设置锚点
       anchor: [
        // [0.5, 0, { type: 'input' }],

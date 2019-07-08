@@ -93,7 +93,8 @@
                     deptUrl:'/sys/sysOrgs/selectDeptsByOrgId',
                     updateUrl:'/sys/sysDepts/update',
                     delDeptUrl:'/sys/sysDepts/delete',
-                    orgUserUrl: '/sys/sysDeptpersons/selectPersonsListWithDeptId'
+                    orgUserUrl: '/sys/sysDeptpersons/selectPersonsListWithDeptId',
+                    updateStatus:'/sys/sysDepts/updateStatus'
                 },
                 dataSource:[],
                 orgColumns:[
@@ -182,7 +183,7 @@
                     params.status = '1'
                 }
                 this.$axios({
-                    url: this.api.updateUrl,
+                    url: this.api.updateStatus,
                     method: 'post',
                     data: params
                 }).then(res => {

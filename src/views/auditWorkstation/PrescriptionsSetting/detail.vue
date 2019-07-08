@@ -129,12 +129,12 @@
         selectMode: 'tags',
         treeList: [],
         CoreFactAllTree: [],
-        defaults:{
-          drugCategory:'DRUGCATEGORY',
-          drugTypes:'DRUGTYPES',
-          drugGrade:'DRUGGRADE',
-          anestheticDrugs:'ANESTHETICDRUGS',
-          essentialDrugs:'ESSENTIALDRUGS',
+        defaults: {
+          drugCategory: 'DRUGCATEGORY',
+          drugTypes: 'DRUGTYPES',
+          drugGrade: 'DRUGGRADE',
+          anestheticDrugs: 'ANESTHETICDRUGS',
+          essentialDrugs: 'ESSENTIALDRUGS'
         }
       }
     },
@@ -142,10 +142,10 @@
       this.form = this.$form.createForm(this)
     },
     mounted() {
-      this.getListTypeData();
-      setTimeout(()=>{
+      this.getListTypeData()
+      setTimeout(() => {
         this.init()
-      },500)
+      }, 500)
 
     },
     methods: {
@@ -163,41 +163,41 @@
             data: { planId: planId }
           }).then(res => {
             if (res.code == '200') {
-              if (!res.data){
+              if (!res.data) {
                 this.spinning = false
                 return
               }
               this.planruleList = res.data.reviewPlanrules
               for (let key in this.planruleList) {
-                this.planruleList[key].spec = '';
+                this.planruleList[key].spec = ''
                 this.planruleList[key].inputType = ''
                 this.planruleList[key].operators = []
                 this.planruleList[key].treeData = []
-                if (this.planruleList[key].columnId == 'AGE'){
-                  let assertVal = '';
-                  let assertVal2 = '';
-                  let spec = '';
-                  assertVal = this.planruleList[key].assertVal;
-                  assertVal2 = this.planruleList[key].assertVal2;
+                if (this.planruleList[key].columnId == 'AGE') {
+                  let assertVal = ''
+                  let assertVal2 = ''
+                  let spec = ''
+                  assertVal = this.planruleList[key].assertVal
+                  assertVal2 = this.planruleList[key].assertVal2
                   if (assertVal) {
-                    this.planruleList[key].assertVal = Number(assertVal.slice(0,$.trim(assertVal).length-1));
-                    spec  = assertVal.slice($.trim(assertVal).length-1,$.trim(assertVal).length);
+                    this.planruleList[key].assertVal = Number(assertVal.slice(0, $.trim(assertVal).length - 1))
+                    spec = assertVal.slice($.trim(assertVal).length - 1, $.trim(assertVal).length)
                   }
-                  if (assertVal2){
-                    this.planruleList[key].assertVal2 =Number(assertVal2.slice(0,$.trim(assertVal2).length-1));
+                  if (assertVal2) {
+                    this.planruleList[key].assertVal2 = Number(assertVal2.slice(0, $.trim(assertVal2).length - 1))
                   }
-                   if (spec == '岁'){
-                     this.planruleList[key].spec = '3'
-                   }else if (spec == '月'){
-                     this.planruleList[key].spec = '2'
-                   } else if (spec == '天'){
-                     this.planruleList[key].spec = '1'
-                   }
+                  if (spec == '岁') {
+                    this.planruleList[key].spec = '3'
+                  } else if (spec == '月') {
+                    this.planruleList[key].spec = '2'
+                  } else if (spec == '天') {
+                    this.planruleList[key].spec = '1'
+                  }
                 }
                 if (this.planruleList[key].logic == '1') {
-                  if (this.planruleList[key].columnId == 'AGE' || this.planruleList[key].columnId == 'LENGTHOFSTAY'){
+                  if (this.planruleList[key].columnId == 'AGE' || this.planruleList[key].columnId == 'LENGTHOFSTAY') {
                     this.planruleList[key].inputType = 'inputNumber'
-                  }else{
+                  } else {
                     this.planruleList[key].inputType = 'input'
                   }
                 } else if (this.planruleList[key].logic == '2') {
@@ -249,7 +249,7 @@
                       })
                   }
                 }
-                this.treeList = this.deletePresOut(this.treeList,res.data.planScope);
+                this.treeList = this.deletePresOut(this.treeList, res.data.planScope)
                 let loadData = this.getItemTreeData(this.planruleList[key].columnId, this.treeList)
                 for (let j in this.classData) {
                   for (let k in loadData.operators) {
@@ -258,8 +258,8 @@
                     }
                   }
                 }
-                if (loadData.logic == '2'){
-                  this.planruleList[key].operators.push( { id: '9', text: '区间' },)
+                if (loadData.logic == '2') {
+                  this.planruleList[key].operators.push({ id: '9', text: '区间' })
                 }
               }
               setTimeout(() => {
@@ -283,29 +283,29 @@
         }
       },
       //门诊或者住院
-      radioGroup(value){
-        this.treeList = this.deletePresOut(this.treeList,value.target.value);
-        if (value.target.value == 1){
+      radioGroup(value) {
+        this.treeList = this.deletePresOut(this.treeList, value.target.value)
+        if (value.target.value == 1) {
           console.log(this.planruleList)
-          for (let key in this.planruleList){
-            if (this.planruleList[key].columnId == 'LENGTHOFSTAY'){
+          for (let key in this.planruleList) {
+            if (this.planruleList[key].columnId == 'LENGTHOFSTAY') {
               this.planruleList.splice(key, 1)
             }
-          } 
+          }
         }
       },
       //删除住院费用
-      deletePresOut(data,value){
+      deletePresOut(data, value) {
         data.map((item) => {
-          if (item.code == 'LENGTHOFSTAY'){
-            if (value == 1){
+          if (item.code == 'LENGTHOFSTAY') {
+            if (value == 1) {
               item.disabled = true
-            } else{
+            } else {
               item.disabled = false
             }
           }
           if (item.children) {
-            this.deletePresOut(item.children,value)
+            this.deletePresOut(item.children, value)
           }
         })
         this.treeList.push()
@@ -326,27 +326,27 @@
             let params = {}
             params = values
             let listData = this.planruleList
-            let specText = '';
+            let specText = ''
             for (let key in listData) {
-              if (listData[key].columnId == 'AGE'){
-                if (listData[key].spec == '3'){
+              if (listData[key].columnId == 'AGE') {
+                if (listData[key].spec == '3') {
                   specText = '岁'
-                }else if (listData[key].spec == '2') {
+                } else if (listData[key].spec == '2') {
                   specText = '月'
-                }else if (listData[key].spec == '1') {
+                } else if (listData[key].spec == '1') {
                   specText = '天'
                 }
-                if (listData[key].logic == '1'){
-                  listData[key].assertVal =  ''+listData[key].assertVal+specText
-                } else{
-                  listData[key].assertVal =  ''+listData[key].assertVal+specText
-                  listData[key].assertVal2 =  ''+listData[key].assertVal2+specText
+                if (listData[key].logic == '1') {
+                  listData[key].assertVal = '' + listData[key].assertVal + specText
+                } else {
+                  listData[key].assertVal = '' + listData[key].assertVal + specText
+                  listData[key].assertVal2 = '' + listData[key].assertVal2 + specText
                 }
               }
-                delete listData[key].spec
-                delete listData[key].inputType
-                delete listData[key].operators
-                delete listData[key].treeData
+              delete listData[key].spec
+              delete listData[key].inputType
+              delete listData[key].operators
+              delete listData[key].treeData
             }
             params.sampling = '1'
             params.distribution = '1'
@@ -354,7 +354,7 @@
             if (this.$route.params.planId) {
               params.planId = this.$route.params.planId
             }
-            console.log(params.reviewPlanrules )
+            console.log(params.reviewPlanrules)
             this.$axios({
               url: this.api.reviewPlanUpdate,
               method: 'post',
@@ -363,22 +363,20 @@
               .then(res => {
                 if (res.code == '200') {
                   this.success(res.msg)
-                  setTimeout(() => {
-                    this.$router.push({
-                      name: 'PrescriptionsSettingIndex'
-                    })
-                  }, 500)
+                  this.$router.push({
+                    name: 'PrescriptionsSettingIndex'
+                  })
                 } else {
                   this.warn(res.msg)
                 }
-                 this.loading = false
+                this.loading = false
               })
               .catch(err => {
-             this.loading = false
+                this.loading = false
                 this.error(err)
               })
           } else {
-             this.loading = false
+            this.loading = false
           }
         })
       },
@@ -389,7 +387,7 @@
           columnId: '',
           relation: null,
           operators: [],
-          logic:'',
+          logic: '',
           status: '1',
           inputType: 'input',
           assertVal: null,
@@ -443,17 +441,17 @@
         item.assertVal = null
         item.assertVal2 = null
         let data = this.getItemTreeData(item.columnId, this.treeList)
-          for (let key in this.classData) {
-            for (let i in data.operators) {
-              if (this.classData[key].id == data.operators[i]) {
-                item.operators.push(this.classData[key])
-                item.relation = this.classData[key].id
-              }
+        for (let key in this.classData) {
+          for (let i in data.operators) {
+            if (this.classData[key].id == data.operators[i]) {
+              item.operators.push(this.classData[key])
+              item.relation = this.classData[key].id
             }
           }
-        if (data.logic == '2'){
-          item.operators.push({ id: '9', text: '区间' },)
-          item.relation = '9';
+        }
+        if (data.logic == '2') {
+          item.operators.push({ id: '9', text: '区间' })
+          item.relation = '9'
         }
         item.logic = data.logic
         if (data.logic == '1') {
@@ -499,7 +497,7 @@
                   item.inputType = 'select'
                   item.treeData = res.rows
                 }
-                this.planruleList.push();
+                this.planruleList.push()
 
               } else {
                 this.warn(res.msg)

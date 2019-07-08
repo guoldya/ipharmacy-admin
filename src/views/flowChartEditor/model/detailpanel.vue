@@ -605,7 +605,7 @@
     right: 0px;
     z-index: 2;
     background: #f7f9fb;
-    width: 300px;
+    width: 350px;
     border-left: 1px solid #e6e9ed;
   }
 

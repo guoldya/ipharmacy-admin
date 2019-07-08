@@ -471,7 +471,7 @@
 
       //翻页事件
       customerPageChange(page, pageSize) {
-        let params = {}
+        let params = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = pageSize
         params.offset = (page - 1) * pageSize
         if (this.buttonText != '开始审方'){
@@ -976,7 +976,8 @@
       if (this.openTrialTime){
         clearInterval(this.openTrialTime)
       }
-    }
+    },
+
   }
 </script>
 <style>
