@@ -234,7 +234,7 @@ export default {
           drugName: this.NData.drugName,
           producedBy: this.NData.producedBy
         }
-         this.getSimilarData(params)
+        this.getSimilarData(params)
       } else {
         this.MData = row.dicDrugMapperVO
         this.getSimilarData(params)
@@ -301,7 +301,7 @@ export default {
     //点击右边的table事件
     clickRightRow(row) {
       this.MData = row
-        this.disable = false
+      this.disable = false
     },
     //点击确定的处理事件
     clickSure() {
@@ -321,29 +321,34 @@ export default {
       params.M = this.M
       params.N = this.N
       this.loading = true
-      this.$axios({
-        url: this.api.mapUrl,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success('对码成功', () => {
-              this.NData = {}
-              this.MData = {}
-              this.similarData = []
-              this.getData()
+      let arrs = Object.keys(this.MData)
+      if (arrs.length == 0) {
+        this.$message.info('请添加知识库数据!')
+      } else {
+        this.$axios({
+          url: this.api.mapUrl,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('对码成功', () => {
+                this.NData = {}
+                this.MData = {}
+                this.similarData = []
+                this.getData()
+                this.loading = false
+              })
+            } else {
               this.loading = false
-            })
-          } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
             this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.loading = false
-          this.error(err)
-        })
+            this.error(err)
+          })
+      }
     },
     //点击取消
     clickCancel() {

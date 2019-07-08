@@ -72,7 +72,7 @@
 <script>
 export default {
   props: {
-    visidId: {
+    visId: {
       type: String
     }
   },
@@ -92,13 +92,13 @@ export default {
     }
   },
   watch:{
- visidId: function() {
-     console.log(this.visidId)
-     this.getdata({ visid: this.visidId })
+ visId: function() {
+     console.log(this.visId)
+     this.getdata({ visid: this.visId })
     }
   },
   mounted() {
-    this.getdata({ visid: this.visidId })
+    this.getdata({ visid: this.visId })
   },
   methods: {
     //点击详情功能

@@ -27,7 +27,8 @@
               :align="item.align"
             >
               <template slot-scope="scope">
-                <span v-if="item.prop == 'isCurrent'">
+                <span v-if="item.prop == 'editDate'">{{changeTime(scope.row.editDate)}}</span>
+                <span v-else-if="item.prop == 'isCurrent'">
                   <a-badge
                     :status="scope.row.isCurrent == 0? 'default':'processing'"
                     :text="scope.row.isCurrent ==0?'未对码':'已对码'"
@@ -53,21 +54,22 @@
     </a-Col>
 
     <a-Col :span="10" class="details">
-      <a-card :bodyStyle="{padding:'12px 10px'}" title="用药频次对码">
+      <a-card :bodyStyle="{padding:'12px 10px'}" title="给药途径">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
-          <a-col :span="8">医院用药频次</a-col>
-          <a-col :span="8">知识库用药频次</a-col>
+          <a-col :span="8">医院给药途径</a-col>
+          <a-col :span="8">知识库给药途径</a-col>
         </a-row>
+
         <a-row class="box">
           <a-col :span="6" class="textRight">编码：</a-col>
-          <a-col :span="8">{{NData.frequenceId}}</a-col>
+          <a-col :span="8">{{NData.id}}</a-col>
           <a-Col :span="8" class="td-content">{{MData.id}}</a-Col>
         </a-row>
         <a-row class="box">
           <a-col :span="6" class="textRight">名称：</a-col>
-          <a-col :span="8">{{NData.frequenceName}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.remark}}</a-Col>
+          <a-col :span="8">{{NData.name}}</a-col>
+          <a-Col :span="8" class="td-content">{{MData.name}}</a-Col>
         </a-row>
         <div class="surea">
           <a-button @click="clickCancel">取消</a-button>
@@ -81,7 +83,7 @@
         </div>
       </a-card>
 
-      <a-card class="margin-top-5" title="相似用药频次">
+      <a-card class="margin-top-5" title="相似诊断">
         <a-spin tip="加载中..." :spinning="similarSpin">
           <el-table @row-click="clickRightRow" :data="similarData" :highlight-current-row="true">
             <el-table-column
@@ -126,23 +128,22 @@ export default {
       dataSource: [],
       spinning: false,
       columns: [
-        { title: '编码', prop: 'frequenceId', width: 80 },
-        { title: '代码', prop: 'frequenceCode' },
-        { title: '名称', prop: 'frequenceName' },
+        { title: '编码', prop: 'id', width: 80 },
+        { title: '名称', prop: 'name' },
         { title: '对码状态', prop: 'isCurrent', width: 80, align: 'center' }
       ],
       pageSize: 20,
       total: 1,
       api: {
-        hisDrugDataUrl: '/sys/hisFrequence/selectPage',
-        similarDrugDataUrl: '/sys/hisFrequence/selectSimilarDicFrequencePage',
-        mapUrl: 'sys/dicFrequenceMapper/insert'
+        similarDrugDataUrl: '/sys/hisWay/selectSimilarDicWayPage',
+        mapUrl: 'sys/dicWayMapper/insert',
+        icdAll: 'sys/hisWay/selectPage'
       },
       loading: false,
       columnscheckdtl: [
-        { title: '编码', prop: 'id', width: 90, align: 'right' },
-        { title: '名称', prop: 'remark' },
-        { title: '代码', prop: 'code', width: 80 }
+        { title: '编码', prop: 'id', width: 80 },
+        { title: '名称', prop: 'name' },
+        { title: '拼音码', prop: 'spellCode' }
       ],
       similarData: [],
       NData: {},
@@ -150,7 +151,7 @@ export default {
       M: 1,
       N: 1,
       disable: true,
-      frequenceName: ''
+      icdnames: ''
     }
   },
   computed: {
@@ -158,7 +159,7 @@ export default {
       return [
         {
           name: '名称',
-          dataField: 'frequenceName',
+          dataField: 'name',
           type: 'text'
         },
         {
@@ -178,31 +179,21 @@ export default {
   methods: {
     //点击第左边的table列事件
     clickLeftRow(row) {
-      let params = { frequenceName: row.frequenceName }
-      this.frequenceName = row.frequenceName
-      console.log(row)
+      let params = { icdName: row.icdname }
+      this.icdnames = row.icdname
       this.NData = row
       this.MData = {}
       if (this.NData.isCurrent == '0') {
         this.getSimilarData(params)
       } else {
-        this.MData = row.dicFrequence
+        this.MData = row.dicBase
         this.getSimilarData(params)
-      }
-    },
-    nchange(val) {
-      if (val > 1) {
-        this.M = 1
-      }
-    },
-    mchange(val) {
-      if (val > 1) {
-        this.N = 1
       }
     },
     //右边部分数据的获取
     getSimilarData(params = {}) {
       this.similarSpin = true
+      params.wayName = this.NData.name
       this.$axios({
         url: this.api.similarDrugDataUrl,
         method: 'put',
@@ -211,6 +202,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.similarData = res.rows
+
             this.similarTotal = res.total
             this.similarSpin = false
           } else {
@@ -227,7 +219,7 @@ export default {
     getData(params = { pageSize: 20, offset: 0 }) {
       this.spinning = true
       this.$axios({
-        url: this.api.hisDrugDataUrl,
+        url: this.api.icdAll,
         method: 'put',
         data: params
       })
@@ -255,40 +247,40 @@ export default {
     clickSure() {
       let params = {
         orgId: this.NData.orgId,
-        hisfrequenceId: this.NData.frequenceId,
-        hisfrequenceName: this.NData.frequenceName,
-        hisfrequenceCode: this.NData.frequenceCode,
-        frequenceCode: this.MData.code,
-        frequenceId: this.MData.id,
-        frequenceName: this.MData.remark
+        hisWayId: this.NData.id,
+        hisWayName: this.NData.name,
+        wayId: this.MData.id,
+        wayName: this.MData.name
       }
-      if (Object.keys(this.MData).length == 0) {
-        $message.info('请添加知识库数据')
-      }
-      this.loading = true
-      this.$axios({
-        url: this.api.mapUrl,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success('对码成功', () => {
-              this.NData = {}
-              this.MData = {}
-              this.similarData = []
-              this.getData()
+      const arrl = Object.keys(this.MData)
+      if (arrl.length == 0) {
+        this.$message.info('请添加知识库数据!')
+      } else {
+        this.loading = true
+        this.$axios({
+          url: this.api.mapUrl,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('对码成功', () => {
+                this.NData = {}
+                this.MData = {}
+                this.similarData = []
+                this.getData()
+                this.loading = false
+              })
+            } else {
               this.loading = false
-            })
-          } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
             this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.loading = false
-          this.error(err)
-        })
+            this.error(err)
+          })
+      }
     },
     //点击取消
     clickCancel() {
@@ -306,7 +298,8 @@ export default {
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
       this.getData({ pageSize: 20, offset: 0 })
-      // this.getData(params)
+      this.current = 1
+      this.getData(params)
     },
     //页码数change事件
     pageChangeSize(page, pageSize) {
@@ -319,7 +312,7 @@ export default {
     //页码跳转
     similarPageChange(page, size) {
       let params = {}
-      params.frequenceName = this.frequenceName
+      params.icdName = this.icdnames
       params.offset = (page - 1) * size
       this.getSimilarData(params)
     },
@@ -327,9 +320,26 @@ export default {
     similarSizeChange(current, size) {
       this.current = 1
       let params = {}
-      params.frequenceName = this.frequenceName
+      params.icdName = this.icdnames
       params.pageSize = size
       this.getSimilarData(params)
+    },
+    // 改时间格式
+    changeTime(time) {
+      let times = time.replace(/:\d{2}$/, '')
+      console.log(times)
+      return times
+    },
+    // 过滤
+    nchange(val) {
+      if (val > 1) {
+        this.M = 1
+      }
+    },
+    mchange(val) {
+      if (val > 1) {
+        this.N = 1
+      }
     }
   }
 }

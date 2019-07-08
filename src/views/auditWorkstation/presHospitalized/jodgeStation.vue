@@ -240,6 +240,7 @@ export default {
       }
       this.prescOrderId = data.prescOrderId
       this.$emit('listStatus',data)
+      this.$store.state.faData = data;
       this.levelColor = data.levelColor
       this.rightData.push()
     },

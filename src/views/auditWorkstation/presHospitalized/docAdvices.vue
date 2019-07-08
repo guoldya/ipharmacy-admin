@@ -125,12 +125,12 @@ export default {
   methods: {
     // 颜色
      tableRowStyle({ row, rowIndex }) {
-      //  console.log(this.prescOrderIds,'prescOrderIds')
-      //  console.log( row.medicalId,'medicalId')
       if (this.prescOrderIds.prescOrderId == row.medicalId) {
-        // console.log('chengle')
         return { background: 'rgb(' + this.convertHexToRGB(this.prescOrderIds.levelColor).join(',') + ',0.3)' }
       }
+      //  if (this.$store.state.faData.prescOrderId == row.medicalId) {
+      //   return { background: 'rgb(' + this.convertHexToRGB(this.$store.state.faData.levelColor).join(',') + ',0.3)' }
+      // }
     },
     //颜色处理
     convertHexToRGB(str) {

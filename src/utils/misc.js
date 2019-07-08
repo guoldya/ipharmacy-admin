@@ -196,6 +196,13 @@ export function hasChild(route) {
     return false
   }
 }
+export function checkArray(data) {
+    if(data!==undefined&&data!==null&&data.length>0){
+      return true;
+    }else{
+      return false
+    }
+  }
 
 /*
 ** 数据里的时间格式处理

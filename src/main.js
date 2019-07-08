@@ -30,7 +30,7 @@ import msgHandler from '@/comm-msg/msg-handler.js'
 import Searchpanel from '@/components/search-panel'
 
 import util from '@utils/util'
-import { getFormat, dateFormat } from '@/utils/misc'
+import { getFormat, dateFormat,checkArray } from '@/utils/misc'
 import { asyncRouterMap } from '@/config/router.config'
 import Enum from '@/comm-data/enum.js'
 
@@ -71,6 +71,7 @@ Vue.prototype.enum = Enum//公用枚举源
 Vue.prototype.$debuger = util.debuger
 Vue.prototype.$notification = notification
 Vue.prototype.$dateFormat = dateFormat
+Vue.prototype.$checkArray = checkArray
 
 /**
  * @description 全局注册应用配置

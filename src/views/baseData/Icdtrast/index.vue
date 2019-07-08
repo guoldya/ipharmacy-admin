@@ -131,6 +131,7 @@ export default {
         { title: 'icd编码', prop: 'icdid', width: 80 },
 
         { title: 'icd名称', prop: 'icdname' },
+        // { title: 'icd名称', prop: 'editDate' },
 
         { title: '对码状态', prop: 'isCurrent', width: 80, align: 'center' }
       ],
@@ -154,7 +155,8 @@ export default {
       MData: {},
       M: 1,
       N: 1,
-      disable: true
+      disable: true,
+      icdnames: ''
     }
   },
   computed: {
@@ -183,6 +185,7 @@ export default {
     //点击第左边的table列事件
     clickLeftRow(row) {
       let params = { icdName: row.icdname }
+      this.icdnames = row.icdname
       this.NData = row
       this.MData = {}
       if (this.NData.isCurrent == '0') {
@@ -255,30 +258,35 @@ export default {
         icdid: this.MData.id,
         icdname: this.MData.icdname
       }
-      this.loading = true
-      this.$axios({
-        url: this.api.mapUrl,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success('对码成功', () => {
-              this.NData = {}
-              this.MData = {}
-              this.similarData = []
-              this.getData()
+      const arrl = Object.keys(this.MData)
+      if (arrl.length == 0) {
+        this.$message.info('请添加知识库数据!')
+      } else {
+        this.loading = true
+        this.$axios({
+          url: this.api.mapUrl,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('对码成功', () => {
+                this.NData = {}
+                this.MData = {}
+                this.similarData = []
+                this.getData()
+                this.loading = false
+              })
+            } else {
               this.loading = false
-            })
-          } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
             this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.loading = false
-          this.error(err)
-        })
+            this.error(err)
+          })
+      }
     },
     //点击取消
     clickCancel() {
@@ -310,8 +318,7 @@ export default {
     //页码跳转
     similarPageChange(page, size) {
       let params = {}
-      params.drugName = this.MData.drugName
-      params.producedBy = this.MData.producedBy
+      params.icdName = this.icdnames
       params.offset = (page - 1) * size
       this.getSimilarData(params)
     },
@@ -319,15 +326,13 @@ export default {
     similarSizeChange(current, size) {
       this.current = 1
       let params = {}
-      params.drugName = this.MData.drugName
-      params.producedBy = this.MData.producedBy
+      params.icdName = this.icdnames
       params.pageSize = size
       this.getSimilarData(params)
     },
     // 改时间格式
-    changeTime(data) {
-      // let times = data.slice(0, data.lastIndexOf(':'))
-      let times=data.replace(/:\d{2}$/,'')
+    changeTime(time) {
+      let times = time.replace(/:\d{2}$/, '')
       console.log(times)
       return times
     },

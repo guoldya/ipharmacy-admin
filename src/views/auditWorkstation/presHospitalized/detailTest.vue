@@ -1,126 +1,126 @@
 <template>
-<div>
- <div v-if="testDatas.length>0">
-  <a-Row class="testchk">
-    <a-Col :span="6">
-      <el-table
-        @row-click="checkclick"
-        class
-        :data="testDatas"
-        highlight-current-row
-        :show-header="false"
-      >
-        <el-table-column
-          :prop="item.prop"
-          :label="item.title"
-          :key="index"
-          v-for="(item,index) in columnscheck"
-          :width="item.width"
-          :align="item.align"
-          :formatter="item.formatter"
-        >
-          <template slot-scope="props">
-            <span v-if="item.prop == 'itemName'" class="tableLineHeight">
-              <div class="pageone">
-                <span>{{props.row.itemName}}</span>
-                <span v-if="props.row.quesNum>0">
-                  <a-tag color="red" :key="index">{{props.row.quesNum}}</a-tag>
+  <div>
+    <div v-if="testDatas.length>0">
+      <a-Row class="testchk">
+        <a-Col :span="6">
+          <el-table
+            @row-click="checkclick"
+            class
+            :data="testDatas"
+            highlight-current-row
+            :show-header="false"
+          >
+            <el-table-column
+              :prop="item.prop"
+              :label="item.title"
+              :key="index"
+              v-for="(item,index) in columnscheck"
+              :width="item.width"
+              :align="item.align"
+              :formatter="item.formatter"
+            >
+              <template slot-scope="props">
+                <span v-if="item.prop == 'itemName'" class="tableLineHeight">
+                  <div class="pageone">
+                    <span>{{props.row.itemName}}</span>
+                    <span v-if="props.row.quesNum>0">
+                      <a-tag color="red" :key="index">{{props.row.quesNum}}</a-tag>
+                    </span>
+                  </div>
+                  <div class="pagetwo">
+                    <a-tag style="cursor: default;" :key="index">{{props.row.testType}}</a-tag>
+                    <span>{{props.row.dateReportStr}}</span>
+                  </div>
                 </span>
-              </div>
-              <div class="pagetwo">
-                <a-tag style="cursor: default;" :key="index">{{props.row.testType}}</a-tag>
-                <span>{{props.row.dateReportStr}}</span>
-              </div>
-            </span>
-          </template>
-        </el-table-column>
-      </el-table>
-    </a-Col>
+              </template>
+            </el-table-column>
+          </el-table>
+        </a-Col>
 
-    <a-Col :span="18" class="details">
-      <div class="borders"></div>
-      <div class="contents">
-        <a-row>
-          <a-col :span="12">
-            日期：
-            <span class="font-bold">{{testsDeltopdata.dateReportStr}}</span>
-          </a-col>
-          <a-col :span="12">
-            条码号：
-            <span class="font-bold">{{testsDeltopdata.reportNo}}</span>
-          </a-col>
-        </a-row>
-        <a-row class="dealRowchild">
-          <a-col :span="12">
-            类型：
-            <span class="font-bold">{{testsDeltopdata.sampleType}}</span>
-          </a-col>
-          <a-col :span="8">
-            标本号：
-            <span class="font-bold">{{testsDeltopdata.specimenNo}}</span>
-          </a-col>
-          <a-col :span="4">
-            <a-checkbox @change="onChangeNormal" :checked="checkes">显示异常</a-checkbox>
-          </a-col>
-        </a-row>
-        <a-row class="dealRow">
-          <div >
-            <el-table class="margin-top-10" :data="testsDeldata" highlight-current-row>
-              <el-table-column
-                :prop="item.prop"
-                :label="item.title"
-                :key="index"
-                v-for="(item,index) in columnscheckdtl"
-                :width="item.width"
-                :align="item.align"
-                :formatter="item.formatter"
-                :show-overflow-tooltip="true"
-              >
-                <template slot-scope="props">
-                  <span
-                    class="grades"
-                    v-if="item.prop == 'resultDesc'&&props.row.resultDesc&&(Number(props.row.resultSign)>=2||Number(props.row.resultSign)==1)"
+        <a-Col :span="18" class="details">
+          <div class="borders"></div>
+          <div class="contents">
+            <a-row>
+              <a-col :span="12">
+                日期：
+                <span class="font-bold">{{testsDeltopdata.dateReportStr}}</span>
+              </a-col>
+              <a-col :span="12">
+                条码号：
+                <span class="font-bold">{{testsDeltopdata.reportNo}}</span>
+              </a-col>
+            </a-row>
+            <a-row class="dealRowchild">
+              <a-col :span="12">
+                类型：
+                <span class="font-bold">{{testsDeltopdata.sampleType}}</span>
+              </a-col>
+              <a-col :span="8">
+                标本号：
+                <span class="font-bold">{{testsDeltopdata.specimenNo}}</span>
+              </a-col>
+              <a-col :span="4">
+                <a-checkbox @change="onChangeNormal" :checked="checkes">显示异常</a-checkbox>
+              </a-col>
+            </a-row>
+            <a-row class="dealRow">
+              <div>
+                <el-table class="margin-top-10" :data="testsDeldata" highlight-current-row>
+                  <el-table-column
+                    :prop="item.prop"
+                    :label="item.title"
+                    :key="index"
+                    v-for="(item,index) in columnscheckdtl"
+                    :width="item.width"
+                    :align="item.align"
+                    :formatter="item.formatter"
+                    :show-overflow-tooltip="true"
                   >
-                    <a-tag :color="getcolor(props.row.resultSign)">{{props.row.resultDesc}}</a-tag>
-                    <!-- <p class="jiantou">{{props.row.resultSignEng}}</p> -->
-                    <a-icon
-                      v-if="props.row.resultSignEng==0"
-                      type="arrow-down"
-                      class="jiantou"
-                      style="color:#1890ff"
-                    />
-                    <a-icon
-                      v-else-if="props.row.resultSignEng==1"
-                      type="arrow-up"
-                      class="jiantou"
-                      style="color:#f5222d"
-                    />
-                    <a v-else-if="props.row.resultSignEng==2">（异常)</a>
-                  </span>
-                  <span v-else>{{props.row[item.prop]}}</span>
-                </template>
-              </el-table-column>
-            </el-table>
+                    <template slot-scope="props">
+                      <span
+                        class="grades"
+                        v-if="item.prop == 'resultDesc'&&props.row.resultDesc&&(Number(props.row.resultSign)>=2||Number(props.row.resultSign)==1)"
+                      >
+                        <a-tag :color="getcolor(props.row.resultSign)">{{props.row.resultDesc}}</a-tag>
+                        <!-- <p class="jiantou">{{props.row.resultSignEng}}</p> -->
+                        <a-icon
+                          v-if="props.row.resultSignEng==0"
+                          type="arrow-down"
+                          class="jiantou"
+                          style="color:#1890ff"
+                        />
+                        <a-icon
+                          v-else-if="props.row.resultSignEng==1"
+                          type="arrow-up"
+                          class="jiantou"
+                          style="color:#f5222d"
+                        />
+                        <a v-else-if="props.row.resultSignEng==2">（异常)</a>
+                      </span>
+                      <span v-else>{{props.row[item.prop]}}</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </a-row>
           </div>
-        </a-row>
-      </div>
-    </a-Col>
-  </a-Row>
+        </a-Col>
+      </a-Row>
+    </div>
+    <div v-else-if="testDatas.length==0" class="zwsjs">暂无数据</div>
   </div>
-<div v-else-if="testDatas.length==0" class="zwsjs">暂无数据</div>
-</div>
 </template>
 <script>
 export default {
   props: {
-    visidId: {
+    visId: {
       type: String
     }
   },
-   watch:{
- visidId: function() {
-     console.log(this.visidId)
- this.gettestData({ visid: this.visidId })
+  watch: {
+    visId: function() {
+      console.log(this.visId)
+      this.gettestData({ visid: this.visId })
     }
   },
   data() {
@@ -145,11 +145,11 @@ export default {
       testsDeltopdata: [],
       testsDeldata: [],
       checkes: false,
-      storeArr: [],
+      storeArr: []
     }
   },
   mounted() {
-    this.gettestData({ visid: this.visidId })
+    this.gettestData({ visid: this.visId })
   },
   methods: {
     // 点击详情功能
@@ -208,8 +208,10 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.testDatas = res.rows
-            this.testid = res.rows[0].testId
-            this.getBeginData(res.rows[0])
+            if (this.$checkArray(this.testDatas)) {
+              this.testid = res.rows[0].testId
+              this.getBeginData(res.rows[0])
+            }
             this.loading = false
           } else {
             this.loading = false
@@ -326,11 +328,11 @@ export default {
     z-index: 9999;
   }
 }
-.zwsjs{
- text-align: center;
-    margin-top: 25px;
-    font-size: 14px;
-    color: #909399;
+.zwsjs {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #909399;
 }
 </style>
 
