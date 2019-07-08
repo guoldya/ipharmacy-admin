@@ -30,10 +30,10 @@
                     <a @click="look(props)" v-if="props.row.type == 1">查看</a>
                     <a @click="edit(props)" v-else>编辑</a>
                     <a-divider type="vertical"/>
-                    <a-popconfirm  title="确认启用吗？" placement="topLeft" @confirm="updateStatus(props.row,1)" v-if="props.row.status == '0'">
+                    <a-popconfirm  title="确认启用吗？" placement="topRight" @confirm="updateStatus(props.row,1)" v-if="props.row.status == '0'">
                       <a>启用</a>
                     </a-popconfirm>
-                    <a-popconfirm title="确认停用吗？" placement="topLeft" @confirm="updateStatus(props.row,0)" v-else>
+                    <a-popconfirm title="确认停用吗？" placement="topRight" @confirm="updateStatus(props.row,0)" v-else>
                       <a>停用</a>
                     </a-popconfirm>
                     <a-divider type="vertical" v-if="props.row.type == 2"/>
@@ -513,7 +513,7 @@
         console.log(data);
         let newPage = this.$router.resolve({
           name: 'flowChartEditor',
-          query:{id:data.row.id},
+          params:{id:data.row.id},
         })
         window.open(newPage.href, '_blank')
       },
@@ -521,7 +521,7 @@
       look(data){
         let newPage = this.$router.resolve({
           name: 'flowChartEditor',
-          query:{id:data.row.id},
+          params:{id:data.row.id},
         })
         window.open(newPage.href, '_blank')
       },

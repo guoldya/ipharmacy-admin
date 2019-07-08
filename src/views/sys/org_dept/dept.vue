@@ -27,6 +27,7 @@
                                 :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
                                 :treeData="orgData"
                                 placeholder='请选择'
+                                @change="changeOrg"
                                 treeDefaultExpandAll
                                 v-decorator="[
                                 'orgId',
@@ -39,7 +40,7 @@
                             label="父级部门"
                             v-bind="formItemLayout"
                     >
-                        <a-select placeholder="请选择..." v-decorator="[
+                        <a-select placeholder="请选择..." allowClear v-decorator="[
                                 'parentId'
                                 ]"
                         >
@@ -133,7 +134,7 @@
                 },
                 api: {
                     orgUrl: '/sys/sysOrgs/selectList',
-                    deptUrl:'/sys/sysOrgs/selectDeptsByOrgId',
+                    deptUrl:'/sys/sysOrgs/selectDeptsListWithOutDeptId',
                     updateUrl:'/sys/sysDepts/update',
                     detail:'/sys/sysDepts/selectOne'
                 },
@@ -147,7 +148,7 @@
         },
         mounted(){
             this.getOrgData();
-            this.getDeptData();
+            this.getDeptData({ orgId:this.$route.params.orgId,deptId:this.$route.params.deptId });
             this.init();
         },
         methods:{
@@ -245,11 +246,11 @@
                 })
                 return tree
             },
-            getDeptData(val) {
+            getDeptData(params={}) {
                 this.$axios({
                     url: this.api.deptUrl,
                     method: 'put',
-                    data: { orgId:this.$route.params.orgId }
+                    data: params
                 }).then(res => {
                     if (res.code == '200') {
                         this.parentData = res.rows;
@@ -260,6 +261,9 @@
                     this.error(err);
                 })
             },
+          changeOrg(value, label, extra){
+              this.getDeptData({ orgId:value,deptId:this.$route.params.deptId })
+          }
         }
     }
 </script>

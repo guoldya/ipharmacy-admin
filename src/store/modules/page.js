@@ -177,7 +177,6 @@ export default {
       return new Promise(async resolve => {
         // 下个新的页面
         let newPage = state.opened[0]
-        console.log(state.current)
         const isCurrent = state.current === tagName
         // 如果关闭的页面就是当前显示的页面
         if (isCurrent) {

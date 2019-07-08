@@ -748,7 +748,7 @@ export const constantRouterMap = [
         redirect: '/g6/flowChartEditor',
         children: [
             {
-                path: 'flowChartEditor',
+                path: 'flowChartEditor/:id/',
                 name: 'flowChartEditor',
                 component: () => import('@/views/flowChartEditor/flowChartEditor')
             }

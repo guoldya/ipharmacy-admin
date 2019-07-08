@@ -21,6 +21,7 @@
     <a-button type="primary" @click="handleAdd">记录</a-button>
     <a-button type="primary" @click="handleNewError">触发一个错误</a-button>
     <i class="iconfont action action-user-lock"></i>
+    <i class="iconfont action action-xinzeng"  title="新增"></i>
     <a-card>
       <div id="gante-test">  </div>
     </a-card>

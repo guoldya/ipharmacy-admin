@@ -915,6 +915,27 @@ export default {
     }
   },
 
+  watch: {
+    //监听相同路由下参数变化的时候，从而实现异步刷新
+    '$route'(to, from) {
+      console.log(to,'to')
+      console.log(from,'from')
+      //做一些路由变化的响应
+      //打开加载动画
+      //重新获取数据
+      this.getDetailData()
+      this.getTemplate()
+      this.getRecord()
+      this.getAttention()
+      if (this.$route.params.isNew == 1){
+        this.getLeadAndLag()
+      }else{
+        this.auditStatus = false
+      }
+    }
+  }
+
+
 }
 </script>
 

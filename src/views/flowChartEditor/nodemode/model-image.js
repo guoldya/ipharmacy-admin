@@ -6,12 +6,9 @@ Flow.registerNode("model-image", {
     let group = item.getGraphicGroup();
     let model = item.getModel();
     let shapeObj = item.getShapeObj();
-
     let label = model.label != null ? model.label : shapeObj.label;
     const iconImg = model.iconImg != null ? model.iconImg : shapeObj.iconImg;
-
     var i = model.size.split('*');
-
     const x = -i[0] / 2
     const y = -i[1] / 2
     const keyShape = group.addShape('path', {

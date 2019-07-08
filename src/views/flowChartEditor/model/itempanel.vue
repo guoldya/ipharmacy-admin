@@ -10,16 +10,8 @@
             data-color="#FA8C16"
             data-label="开始"
           >
-            <span class="panel-type-icon"></span>开始节点
-          </li>
-          <li
-            class="getItem"
-            data-type="node"
-            data-shape="model-rect-attribute"
-            data-size="180*70"
-            data-color="#1890FF"
-          >
-            <span class="panel-type-icon"></span>属性节点
+            <!--<img src="~@/assets/editorPic/attribute.png" width="45px" height="26px">-->
+            <div class="start"></div>
           </li>
           <li
             class="getItem"
@@ -29,7 +21,8 @@
             data-color="#13C2C2"
             data-label="判断节点"
           >
-            <span class="panel-type-icon"></span>判断节点
+            <!--<span class="panel-type-icon"></span>判断节点-->
+            <div class="rhombusIf"></div>
           </li>
           <li
             class="getItem"
@@ -39,9 +32,19 @@
             data-color="#1890FF"
             data-label="分支节点"
           >
-            <span class="panel-type-icon"></span>分支节点
+            <!--<span class="panel-type-icon"></span>分支节点-->
+            <div class="branchs"></div>
           </li>
-
+          <li
+            class="getItem"
+            data-type="node"
+            data-shape="model-rect-attribute"
+            data-size="180*70"
+            data-color="#1890FF"
+          >
+            <!--<span class="panel-type-icon"></span>属性节点-->
+            <div class="attributes"></div>
+          </li>
           <li
             class="getItem"
             data-type="node"
@@ -49,15 +52,21 @@
             data-size="290*80"
             data-color="#13C2C2"
           >
-            <span class="panel-type-icon"></span>结论节点
+            <!--<span class="panel-type-icon"></span>结论节点-->
+            <div class="conclusions"></div>
           </li>
         </ul>
       </div>
+
 </template>
 
 <script>
 export default {
-
+  data(){
+    return{
+      disabled:false,
+    }
+  }
 
 }
 </script>
@@ -69,21 +78,21 @@ export default {
   left: 0px;
   z-index: 2;
   background: #f7f9fb;
-  width: 200px;
+  width:93px;
   padding-top: 8px;
   border-right: 1px solid #e6e9ed;
 }
 .itempanel ul {
   padding: 0px;
-  padding-left: 16px;
 }
 .itempanel li {
   color: rgba(0, 0, 0, 0.65);
   border-radius: 4px;
-  width: 160px;
-  height: 28px;
+  /*width: 160px;*/
+  /*height: 28px;*/
   line-height: 26px;
-  padding-left: 8px;
+  margin-top: 20px;
+
   border: 1px solid rgba(0, 0, 0, 0);
   list-style-type: none;
 }
@@ -100,4 +109,49 @@ export default {
   border: 1px solid #ced4d9;
   cursor: move;
 }
+  .itempanel .start{
+    width: 93px;
+    height: 65px;
+    background-size:100%;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-image:url('~@/assets/editorPic/start.png');
+  }
+  .itempanel .attributes{
+    width: 95px;
+    height: 36px;
+    background-size:100%;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-image:url('~@/assets/editorPic/attribute.png');
+  }
+  .itempanel .rhombusIf{
+    width: 93px;
+    height: 65px;
+    background-size:100%;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-image:url('~@/assets/editorPic/rhombus-if.png');
+  }
+.itempanel .branchs{
+  width: 93px;
+  height: 59px;
+  background-size:100%;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-image:url('~@/assets/editorPic/branch.png');
+}
+.itempanel .conclusions{
+  width: 93px;
+  height: 35px;
+  background-size:100%;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-image:url('~@/assets/editorPic/conclusion.png');
+}
+
+.disablePic{
+  background-image:url('~@/assets/branchOne.png');
+}
+
 </style>

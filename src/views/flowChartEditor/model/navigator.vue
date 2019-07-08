@@ -58,7 +58,7 @@ export default {
 <style>
 
 #navigator {
-  width: 300px;
+  width: 350px;
   height: 276px;
   position: absolute;
   bottom: 0px;
@@ -71,7 +71,7 @@ export default {
   width: 220px;
 }
 #navigator #minimap {
-  width: 300px;
+  width: 350px;
   height: 220px;
 }
 .zoom-dropdown-btn {
