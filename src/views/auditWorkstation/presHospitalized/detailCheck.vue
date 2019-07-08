@@ -42,14 +42,14 @@
                 {{formData.deptName}}
               </p>
             </div>
-            <a-divider/>
+            <a-divider />
             <div class="boxtwo">
               <h3>检查所见：</h3>
               <p class="checks">{{formData.objectiveSeen}}</p>
               <h3>建议：</h3>
               <p>{{formData.subjectivePrompt}}</p>
             </div>
-            <a-divider/>
+            <a-divider />
             <div class="boxthree">
               <p>
                 <span>报告人姓名：</span>
@@ -60,7 +60,7 @@
                 {{formData.checkDate}}
               </p>
             </div>
-            <a-divider/>
+            <a-divider />
           </div>
           <!-- </div> -->
         </a-Col>
@@ -91,10 +91,10 @@ export default {
       obj: 0
     }
   },
-  watch:{
- visId: function() {
-     console.log(this.visId)
-     this.getdata({ visid: this.visId })
+  watch: {
+    visId: function() {
+      console.log(this.visId)
+      this.getdata({ visid: this.visId })
     }
   },
   mounted() {
@@ -272,10 +272,10 @@ export default {
   }
 }
 .zwsj {
- text-align: center;
-    margin-top: 25px;
-    font-size: 14px;
-    color: #909399;
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #909399;
 }
 </style>
 

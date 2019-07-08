@@ -507,7 +507,20 @@ export const asyncRouterMap = [
                           },
                         ]
                       },
-
+                      {
+                        path: '/baseData/medicineWay',
+                        name: 'medicineWay',
+                        component: RouteView,
+                        meta: { title: '给药途径', multistage: true },
+                        children: [
+                          {
+                            path: '/baseData/medicineWay/index',
+                            name: 'medicineWayIndex',
+                            component: () => import( '@/views/baseData/medicineWay/index.vue'),
+                            meta: { title: '给药途径', hiddenHeaderContent: true, index: true }
+                          },
+                        ]
+                      },
                 ]
             },
 
