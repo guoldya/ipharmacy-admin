@@ -717,7 +717,7 @@ export default {
       console.log(data)
       this.$router.push({
         name: 'presHospitalizedDetail',
-        query: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId }
+        query: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId,isNew:1, }
       })
     },
     //处方单网格样式

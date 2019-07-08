@@ -513,7 +513,7 @@
         console.log(data);
         let newPage = this.$router.resolve({
           name: 'flowChartEditor',
-          query:{id:data.row.id,type:data.row.type},
+          query:{id:data.row.id},
         })
         window.open(newPage.href, '_blank')
       },
@@ -521,7 +521,7 @@
       look(data){
         let newPage = this.$router.resolve({
           name: 'flowChartEditor',
-          query:{id:data.row.id,type:data.row.type},
+          query:{id:data.row.id},
         })
         window.open(newPage.href, '_blank')
       },

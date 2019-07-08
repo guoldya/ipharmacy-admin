@@ -217,15 +217,30 @@ export const asyncRouterMap = [
                                 component: () => import( '@/views/auditWorkstation/presOutpatient/index.vue'),
                                 meta: { title: '审方中心(门诊)',  hiddenHeaderContent: true, index: true }
                             },
-                            {
-                                path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo',
-                                name: 'presOutpatientDetail',
-                                hidden: true,
-                                component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-                                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, detail: true }
-                            }
+                            // {
+                            //     path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo/:isNew/',
+                            //     name: 'presOutpatientDetail',
+                            //     hidden: true,
+                            //     component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
+                            //     meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, detail: true }
+                            // }
                         ]
                     },
+                  {
+                    path: '/auditWorkstation/presOutpatient/detail',
+                    name: 'presOutpatientDetail',
+                    component: RouteView,
+                    hidden:true,
+                    meta: { title: '审方中心详情(门诊)', multistage: true },
+                    children: [
+                      {
+                        path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo/:isNew/',
+                        name: 'presOutpatientDetail',
+                        component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
+                        meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, index: true }
+                      }
+                    ]
+                  },
                     {
                         path: '/auditWorkstation/presHospitalized',
                         name: 'presHospitalized',
@@ -238,15 +253,33 @@ export const asyncRouterMap = [
                                 component: () => import( '@/views/auditWorkstation/presHospitalized/index.vue'),
                                 meta: { title: '审方中心(住院)', hiddenHeaderContent: true, index: true }
                             },
-                            {
-                                path: '/auditWorkstation/presHospitalized/detail',
-                                name: 'presHospitalizedDetail',
-                                hidden: true,
-                                component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
-                                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, detail: true }
-                            }
+                            // {
+                            //     path: '/auditWorkstation/presHospitalized/detail',
+                            //     name: 'presHospitalizedDetail',
+                            //     hidden: true,
+                            //     component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
+                            //     meta: { title: '审方中心详情(住院)', hiddenHeaderContent: true, detail: true }
+                            // }
                         ]
                     },
+
+                  {
+                    path: '/auditWorkstation/presHospitalDetail',
+                    name: 'presHospitalDetail',
+                    component: RouteView,
+                    hidden:true,
+                    meta: { title: '审方中心详情(住院)', multistage: true },
+                    children:[
+                      {
+                        path: '/auditWorkstation/presHospitalized/detail',
+                        name: 'presHospitalizedDetail',
+                        component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
+                        meta: { title: '审方中心详情(住院)', hiddenHeaderContent: true, index: true }
+                      }
+                    ]
+                  },
+
+
                     {
                         path: '/auditWorkstation/presHistory',
                         name: 'presHistory',
@@ -259,13 +292,6 @@ export const asyncRouterMap = [
                                 component: () => import( '@/views/auditWorkstation/presHistory/index.vue'),
                                 meta: { title: '审方记录', hiddenHeaderContent: true, index: true }
                             },
-                            {
-                                path: '/auditWorkstation/presHistory/detail',
-                                name: 'presHistoryDetail',
-                                hidden: true,
-                                component: () => import( '@/views/auditWorkstation/presHistory/detail.vue')
-                                // meta: { title: '审方中心详情(住院)', detail: true, description: '审方中心详情页设置' }
-                            }
                         ]
                     }
                 ]
@@ -276,33 +302,31 @@ export const asyncRouterMap = [
                 component: PageView,
                 meta: { title: '规则管理', keepAlive: false, icon: 'diff' },
                 children: [
-                    {
-                        path: '/knowledgeMgt/ruleMgt',
-                        name: 'ruleMgt',
-                        component: RouteView,
-                        meta: { title: '规则管理', multistage: true },
-                        children: [
-                            {
-                                path: '/knowledgeMgt/ruleMgt/index',
-                                name: 'ruleIndex',
-                                component: () => import( '@/views/knowledgeMgt/ruleMgt/index.vue'),
-                                meta: { title: '规则管理', hiddenHeaderContent: true, index: true }
-                            }
-                        ]
-                    },
-
-
+                    // {
+                    //     path: '/knowledgeMgt/ruleMgt',
+                    //     name: 'ruleMgt',
+                    //     component: RouteView,
+                    //     meta: { title: '规则管理', multistage: true },
+                    //     children: [
+                    //         {
+                    //             path: '/knowledgeMgt/ruleMgt/index',
+                    //             name: 'ruleIndex',
+                    //             component: () => import( '@/views/knowledgeMgt/ruleMgt/index.vue'),
+                    //             meta: { title: '规则管理', hiddenHeaderContent: true, index: true }
+                    //         }
+                    //     ]
+                    // },
                     {
                         path: '/knowledgeMgt/ruleMgt-copy',
                         name: 'ruleMgt-copy',
                         component: RouteView,
-                        meta: { title: '规则管理副本', multistage: true },
+                        meta: { title: '规则管理', multistage: true },
                         children: [
                             {
                                 path: '/knowledgeMgt/ruleMgt-copy/index',
                                 name: 'ruleMgtCopyIndex',
                                 component: () => import( '@/views/knowledgeMgt/ruleMgt-copy/index.vue'),
-                                meta: { title: '规则管理副本', hiddenHeaderContent: true, index: true }
+                                meta: { title: '规则管理', hiddenHeaderContent: true, index: true }
                             }
                         ]
                     },
@@ -483,7 +507,7 @@ export const asyncRouterMap = [
                           },
                         ]
                       },
-    
+
                 ]
             },
 

@@ -177,6 +177,7 @@ export default {
       return new Promise(async resolve => {
         // 下个新的页面
         let newPage = state.opened[0]
+        console.log(state.current)
         const isCurrent = state.current === tagName
         // 如果关闭的页面就是当前显示的页面
         if (isCurrent) {
@@ -217,6 +218,56 @@ export default {
         resolve()
       })
     },
+
+    /**
+     *
+     * @class opened
+     * @description 关闭一个tag
+     * @param {Object} state vuex state
+     * @param {Object} param { tagName: 要关闭的标签名字, vm: vue }
+     */
+    closeTag ({ state, commit, dispatch }, { tagName,aimName, vm }) {
+      return new Promise(async resolve => {
+        // 下个新的页面
+        let newPage = state.opened[0]
+        const isCurrent = state.curRoute.name === tagName
+        // 如果关闭的页面就是当前显示的页面
+        if (isCurrent) {
+          // 去找一个新的页面
+          let len = state.opened.length
+          for (let i = 1; i < len; i++) {
+            if (state.opened[i].fullPath === tagName) {
+              if (i < len - 1) {
+                newPage = state.opened[i + 1]
+              } else {
+                newPage = state.opened[i - 1]
+              }
+              break
+            }
+          }
+        }
+        // 找到这个页面在已经打开的数据里是第几个
+        const index = state.opened.findIndex(page => page.fullPath === tagName)
+        commit('keepAliveRemove', tagName)
+        // 更新数据 删除关闭的页面
+        state.opened.splice(index, 1)
+        // 持久化
+        await dispatch('opend2db')
+        // 最后需要判断是否需要跳到指定页面
+        if (isCurrent) {
+          const {  params = {}, query = {} } = newPage
+          let routerObj = {
+            name:aimName,
+            params,
+            query
+          }
+          vm.$router.push(routerObj)
+        }
+        // end
+        resolve()
+      })
+    },
+
     /**
      * @class opened
      * @description 关闭当前标签左边的标签

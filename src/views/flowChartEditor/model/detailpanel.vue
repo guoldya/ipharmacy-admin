@@ -177,9 +177,9 @@
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input :type="edgeInitialized.inValueEdge" v-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inputEdge!='time'" @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
             <div v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge!='time'">
-              <a-input-number  class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal"   v-model="selectEdge.assertVal"/>
+              <a-input-number  class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal" :max="selectEdge.assertVal1"  v-model="selectEdge.assertVal"/>
               <a-input-number  class="inputCenter" size="small" placeholder="~" disabled/>
-              <a-input-number  class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
+              <a-input-number  class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" :min="selectEdge.assertVal" v-model="selectEdge.assertVal1"/>
             </div>
             <div v-else-if="edgeInitialized.inputEdge =='select'&&edgeInitialized.inValueEdge!='time'">
               <a-select
@@ -188,7 +188,7 @@
                 showSearch
                 mode="multiple"
                 @search="searchEdge"
-                @select="assertValEdge"
+                @change="assertValEdge"
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
                 :filterOption="false"
@@ -348,7 +348,8 @@
         this.modelValue = params.title;
         _this.selectNode.label = this.modelValue;
         _this.selectNode.assertVal = null;
-        _this.selectNode.assertValList = null;
+        _this.selectNode.assertVal1 = null;
+        _this.selectNode.assertValList = [];
         this.condition = '';
         this.conditionValue = '';
         this.conditionValue1 = '';
@@ -359,6 +360,7 @@
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
         }
+        console.log(option)
         this.selectNode.ro = value
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
@@ -399,8 +401,15 @@
         if ($.trim(this.condition).length==0){
           this.condition = this.selectNode.roSymbol;
         }
-        console.log(option,'1234')
-        this.conditionValue = option[0].componentOptions.propsData.title;
+        this.conditionValue = '';
+        for (let key in option){
+          if (key < 1){
+            this.conditionValue = option[0].componentOptions.propsData.title;
+          } else{
+            this.conditionValue = option[0].componentOptions.propsData.title+'...';
+          }
+        }
+
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
       //枚举时搜索下拉框
@@ -471,8 +480,19 @@
       },
       //线中下拉事件
       assertValEdge(value,option){
+        console.log(this.selectEdge)
         this.selectEdge.lo =3;
-        this.edgeConditionValue = option[0].componentOptions.propsData.title;
+        if ($.trim(this.edgeCondition).length==0){
+          this.edgeCondition = this.selectEdge.roSymbol;
+        }
+        this.edgeConditionValue = '';
+        for (let key in option){
+          if (key < 1){
+            this.edgeConditionValue = option[0].componentOptions.propsData.title;
+          } else{
+            this.edgeConditionValue = option[0].componentOptions.propsData.title+'...';
+          }
+        }
         this.selectEdge.label =this.edgeCondition+this.edgeConditionValue;
       },
       //线下拉搜索
@@ -505,14 +525,14 @@
       edgeAssertVal(e){
         // edgeCondition:'',
         //   edgeConditionValue:'',
-        this.edgeConditionValue = ''+ e.srcElement.value;
+        this.edgeConditionValue = ''+ e;
         if ($.trim(this.edgeConditionValue1).length==0){
           this.edgeConditionValue1 = ''+ this.selectNode.assertVal1;
         }
         this.selectEdge.label ='范围'+'['+this.edgeConditionValue+'-'+this.edgeConditionValue1+']';
       },
       edgeAssertVal1(e){
-        this.edgeConditionValue1 =  ''+e.srcElement.value;
+        this.edgeConditionValue1 =  ''+e
         if ($.trim(this.edgeConditionValue).length==0){
           this.edgeConditionValue = ''+ this.selectNode.assertVal;
         }

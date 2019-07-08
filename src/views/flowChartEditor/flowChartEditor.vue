@@ -143,7 +143,8 @@
           assertValList: null,
           assertVal1: null,
           ro: null,
-          lo: null
+          lo: null,
+          roSymbol: null,
         },
         conheight: {
           height: '700px'
@@ -276,7 +277,10 @@
       },
       selectEdgeRo() {
         return this.selectEdge.ro
-      }
+      },
+      selectEdgeRoSymbol() {
+        return this.selectEdge.roSymbol
+      },
     },
 
     watch: {
@@ -345,12 +349,14 @@
       selectNodeItemId(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { itemId: newValue })
-          // let data = this.flow.save();
-          // for (let key in data.edges){
-          //   if (data.edges[key].pid == this.selectNode.id){
-          //     this.flow.update(data.edges[key].id, { ro: null, assertVal: null, assertVal1: null,label:null })
-          //   }
-          // }
+        }
+        if (oldValue != null && newValue != oldValue && newValue != null){
+          let data = this.flow.save();
+          for (let key in data.edges){
+            if (data.edges[key].pid == this.selectNode.id){
+              this.flow.update(data.edges[key].id, { assertVal: null, assertValList:[],assertVal1: null})
+            }
+          }
         }
       },
       selectNodeItemName(newValue, oldValue) {
@@ -432,7 +438,12 @@
         if (newValue != oldValue && newValue != null) {
           this.flow.update(this.selectEdge.id, { ro: newValue })
         }
-      }
+      },
+      selectEdgeRoSymbol(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { roSymbol: newValue })
+        }
+      },
     },
     methods: {
       getHeight() {
@@ -501,7 +512,6 @@
         // if (temp != null) {
         //   this.flow.read(JSON.parse(temp))
         // }
-        // console.log(temp,1);
         // 获取流图的graph示例
         this.graph = this.flow.getGraph()
         // 居中画布中的内容
@@ -605,9 +615,7 @@
               //选中后设置颜色 和连接线的宽度
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
               let sourceP = ev.item.source.model
-              let params = ev.item.model
               if ($.trim(this.edgeInitialized.inputEdge) == 0) {
-                if ($.trim(params.assertVal).length > 0) {
                   if (sourceP.lo == 1) {
                     this.edgeInitialized.inputEdge = 'input'
                   } else if (sourceP.lo == 2) {
@@ -633,17 +641,18 @@
                   } else if (sourceP.colDbType == 3) {
                     this.edgeInitialized.inValueEdge = 'text'
                   }
-                }
               }
               setTimeout(() => {
                 _this.selectEdge.id = ev.item.model.id
                 _this.selectEdge.label = ev.item.model.label
+                _this.selectEdge.lo = ev.item.model.lo
                 _this.selectEdge.value = ev.item.model.value
                 _this.selectEdge.sourceId = ev.item.source.id
                 _this.selectEdge.assertVal = ev.item.model.assertVal
                 _this.selectEdge.assertValList = ev.item.model.assertValList
                 _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                 _this.selectEdge.ro = ev.item.model.ro
+                _this.selectEdge.roSymbol = ev.item.model.roSymbol
                 if (ev.item.source.model) {
                   _this.selectEdge.sourceType = ev.item.source.model.shape
                 }
@@ -788,12 +797,22 @@
                 return false
               }
             } else if (nodes[i].shape == 'model-rect-attribute' ) {
-              if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertVal).length == 0) {
-                this.warn('请输入线段值');
-                this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-                this.submitStatus = false;
-                return false
+              if (edge.lo == 3){
+                if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertValList).length == 0) {
+                  this.warn('请输入线段值');
+                  this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
+                  this.submitStatus = false;
+                  return false
+                }
+              } else{
+                if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertVal).length == 0) {
+                  this.warn('请输入线段值');
+                  this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
+                  this.submitStatus = false;
+                  return false
+                }
               }
+
             } else if (nodes[i].shape == 'flow-rhombus-if') {
               if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0) {
                 this.warn('请输入线段值');
@@ -831,10 +850,18 @@
                   return false
                 }
               }else if (node.shape == 'flow-rhombus-if'){
-                if ($.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertVal).length == 0 || $.trim(node.childNodes) == 0 || node.pid.length == 0){
-                  this.warn('条件节点或缺少结论节点和上级节点');
-                  this.submitStatus = false;
-                  return false
+                if (node.lo == 3){
+                  if ($.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertValList).length == 0 ||$.trim(node.childNodes) == 0 || node.pid.length == 0){
+                    this.warn('条件节点或缺少结论节点和上级节点');
+                    this.submitStatus = false;
+                    return false
+                  }
+                } else{
+                  if ( $.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertVal).length == 0||  $.trim(node.childNodes) == 0 || node.pid.length == 0){
+                    this.warn('条件节点或缺少结论节点和上级节点');
+                    this.submitStatus = false;
+                    return false
+                  }
                 }
               }else if (node.shape == 'model-card-conclusion'){
                 if ($.trim(node.inAccordanceWith).length == 0 || $.trim(node.levels).length == 0 || ($.trim(node.message).length == 0 || $.trim(node.suggest).length == 0 || $.trim(node.verdictType).length == 0 || node.pid.length == 0)){
@@ -939,7 +966,6 @@
         setTimeout(()=>{
           this.getNodeData({ruleId:this.ruleModalId})
         },0)
-
         console.log(_this.flow.save())
       },
       //取消复制规则
@@ -991,8 +1017,6 @@
         }else {
           this.ruleId = params.ruleId
         }
-        this.titleData.visible = this.$route.query.type == 1 ? false : true
-
         this.$axios({
           url: this.api.selectRuleContent,
           method: 'put',
@@ -1002,6 +1026,7 @@
             this.titleData.name = res.data.name
             this.titleData.status = res.data.status ? '启用' : '停用'
             this.titleData.type = res.data.type ? '系统固定' : '自定义'
+            this.titleData.visible = this.titleData.type == 1 ? false : true
             this.titleData.updateTime = res.data.updateTime
             this.titleData.type2 = res.data.type2
           }else {
@@ -1132,11 +1157,8 @@
             let i = 0
             this.pieChartData = {};
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
-            console.log(nodeTree,'nodeTree')
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
-            console.log(edgeData,'edgeData')
             let nodesData = this.getDealPieChart()
-            console.log(nodesData,'nodesData')
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
 
 
