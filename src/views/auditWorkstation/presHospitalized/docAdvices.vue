@@ -1,7 +1,6 @@
 <template>
   <div class="yizhu">
     <el-table
-      class="margin-top-10"
       :data="docDatas"
       :row-style="tableRowStyle"
       default-expand-all

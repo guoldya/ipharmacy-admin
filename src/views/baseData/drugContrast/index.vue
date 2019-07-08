@@ -96,7 +96,7 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">剂量单位：</a-col>
           <a-col :span="8">{{NData.doseUnit}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.doseUnit}}</a-Col>
+          <a-Col :span="8" class="td-content">{{MData.unit}}</a-Col>
         </a-row>
         <a-row class="box">
           <a-col :span="6" class="textRight">规格：</a-col>

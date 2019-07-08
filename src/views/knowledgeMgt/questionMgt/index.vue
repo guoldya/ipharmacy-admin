@@ -101,7 +101,7 @@ export default {
           //  let arr=params[item].split('').filter(item =>{
           //       return item!==' '
           //     }).join('')
-          let arr = this.trim(params[item])
+          let arr = this.delSpace(params[item])
           params[item] = arr
         }
       }
@@ -214,6 +214,10 @@ export default {
         }
       }
       return str
+    },
+    delSpace(str){
+     let strs=str.replace(/^(\s*)|(\s*)$/g,'')
+     return strs
     }
   }
 }

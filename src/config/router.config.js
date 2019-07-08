@@ -264,14 +264,14 @@ export const asyncRouterMap = [
                     },
 
                   {
-                    path: '/auditWorkstation/presHospitalDetail',
+                    path: '/auditWorkstation/presHospitalDetail/detail',
                     name: 'presHospitalDetail',
                     component: RouteView,
                     hidden:true,
                     meta: { title: '审方中心详情(住院)', multistage: true },
                     children:[
                       {
-                        path: '/auditWorkstation/presHospitalized/detail',
+                        path: '/auditWorkstation/presHospitalized/detail/:visId/:maxSubmitNo/:reviewId/:isNew/',
                         name: 'presHospitalizedDetail',
                         component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
                         meta: { title: '审方中心详情(住院)', hiddenHeaderContent: true, index: true }

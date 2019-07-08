@@ -42,14 +42,15 @@
 </template>
 <script>
 export default {
-  props:{
-   visidId: {
+  props: {
+    visidId: {
       type: String
     }
   },
   data() {
     return {
       api: {
+        
         selectsurgeryDel: 'sys/reviewOrderissue/selectHospitalOperationListByVisId',
         loading: false
       },
@@ -68,22 +69,22 @@ export default {
         { title: '更新时间', prop: 'updateTime', width: 120 }
       ],
       surgeryData: [],
-      arr:[{age:1},{age:2},{age:3},{age:4},{age:5}]
+      arr: [{ age: 1 }, { age: 2 }, { age: 3 }, { age: 4 }, { age: 5 }]
     }
   },
-  watch:{
- visidId: function() {
-     console.log(this.visidId)
-  this.getsurgeryData({ visid: this.visidId })
+  watch: {
+    visidId: function() {
+      console.log(this.visidId)
+      this.getsurgeryData({ visid: this.visidId })
     }
   },
   mounted() {
     this.getsurgeryData({ visid: this.visidId })
   },
   methods: {
-    clicks(data){
+    clicks(data) {
       console.log('dddd')
-     data=4;
+      data = 4
     },
     getsurgeryData(params = {}) {
       this.loading = true

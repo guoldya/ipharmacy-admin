@@ -89,9 +89,6 @@
           <el-table-column
             prop="problem"
             label="问题"
-            :filters="this.enum.patientProblem"
-            :filter-method="filterTag"
-            filter-placement="bottom"
             min-width="500"
           >
             <template slot-scope="props">
@@ -717,7 +714,7 @@ export default {
       console.log(data)
       this.$router.push({
         name: 'presHospitalizedDetail',
-        query: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId,isNew:1, }
+        params: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId,isNew:1, }
       })
     },
     //处方单网格样式

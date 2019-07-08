@@ -72,7 +72,7 @@
 <script>
 export default {
   props: {
-    visId: {
+    visidId: {
       type: String
     }
   },
@@ -92,13 +92,13 @@ export default {
     }
   },
   watch: {
-    visId: function() {
-      console.log(this.visId)
-      this.getdata({ visid: this.visId })
+    visidId: function() {
+      console.log(this.visidId)
+      this.getdata({ visid: this.visidId })
     }
   },
   mounted() {
-    this.getdata({ visid: this.visId })
+    this.getdata({ visid: this.visidId })
   },
   methods: {
     //点击详情功能
@@ -111,6 +111,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
+           
             this.formData = res.data
             this.obj = Object.keys(this.formData).length
           } else {

@@ -236,12 +236,12 @@ const Enum = {
         { id: '2', text: '住院' },
     ],
     paintState: [
-        { id: '0', text: '未确认医嘱', color: '#f5222d', texts: '未' },
-        { id: '1', text: '新医嘱', color: '#1aa0ca', texts: '新' },
-        { id: '2', text: '已校对', color: '#7227a9', texts: '校' },
+        { id: '0', text: '未确认医嘱', color: '#f5222d', texts: '未',size:'bold',border:'1px solid #f5222d' },
+        { id: '1', text: '新医嘱', color: '#1aa0ca', texts: '新' ,size:'bold',border:'1px solid #1aa0ca'},
+        { id: '2', text: '已校对', color: '#7227a9', texts: '校' ,size:'bold',border:'1px solid #7227a9'},
 
-        { id: '6', text: '已停止', color: 'orange', texts: '停' },
-        { id: '7', text: '已确认停止', color: '#909499', texts: '确' },
+        { id: '6', text: '已停止', color: 'orange', texts: '停' ,size:'bold',border:'1px solid orange'},
+        { id: '7', text: '已确认停止', color: '#909499', texts: '确',size:'bold' ,border:'1px solid #909499'},
         // { id: '8', text: '全部', color: 'green', texts: '全' },
     ],
     paintColor: [

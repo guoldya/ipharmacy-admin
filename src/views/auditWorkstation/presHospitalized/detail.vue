@@ -111,30 +111,34 @@
             v-for="(item,index) in this.enum.paintState"
             class="jianxie"
             @click="checkableChange(item)"
-            :key='item.id'
+            :key="item.id"
           >
             <div :class="{active : onactive == item.id}">
               <a-tag :color="item.color" class="tags">{{item.texts}}</a-tag>
-              <span >{{item.text}}</span>
+              <span
+                :style="{'font-weight':item.Size, 'color':item.Color,}"
+                class="dengji"
+              >{{item.text}}</span>
             </div>
           </div>
         </div>
       </template>
-
-      <a-button @click="cancle" v-if="routerData.isNew == 1" class="margin-left-5" :loading="loading">返回</a-button>
-      <a-button
-        @click="refuse"
-        style="margin-left: 5px"
-        :loading="loading"
-        v-if="this.auditStatus===false"
-      >驳回</a-button>
-      <a-button
-        type="primary"
-        class="margin-left-5"
-        @click="submit"
-        :loading="loading"
-        v-if="this.auditStatus===false"
-      >通过</a-button>
+      <div >
+        <a-button @click="cancle" class="margin-left-5" :loading="loading" v-if="routerData.isNew == 1">返回</a-button>
+        <a-button
+          @click="refuse"
+          style="margin-left: 5px"
+          :loading="loading"
+          v-if="this.auditStatus===false"
+        >驳回</a-button>
+        <a-button
+          type="primary"
+          class="margin-left-5"
+          @click="submit"
+          :loading="loading"
+          v-if="this.auditStatus===false"
+        >通过</a-button>
+      </div>
     </footer-tool-bar>
   </div>
 </template>
@@ -147,9 +151,10 @@ import DetailTest from './detailTest.vue'
 import detailCheck from './detailCheck.vue'
 import jodgeStation from './jodgeStation.vue'
 import docAdvices from './docAdvices.vue'
+
 import { mixin, mixinDevice } from '@/utils/mixin'
 import { selectOutDetail } from '@/api/login'
-import {mapActions} from 'vuex'
+import { mapActions } from 'vuex'
 const DetailListItem = DetailList.Item
 export default {
   components: {
@@ -160,7 +165,7 @@ export default {
     DetailTest,
     detailCheck,
     jodgeStation,
-    docAdvices
+   
   },
   mixins: [mixin, mixinDevice],
   name: 'detail',
@@ -184,7 +189,6 @@ export default {
       inspectionData: [],
       columns: [
         { title: '序号', prop: 'num', width: 50, align: 'right' },
-        // { title: '', prop: 'mark', width: 20, align: 'left' },
         { title: '药品', prop: 'name' },
         { title: '用法用量', prop: 'way', width: 80, align: 'center' },
         { title: '', prop: 'single', width: 60 },
@@ -213,9 +217,8 @@ export default {
         visible: false
       },
       form: this.$form.createForm(this),
-      // visidIdnum: {visId:this.$route.query.visId,maxSubmitNo: this.$route.query.maxSubmitNo},
-      visidIdnum: this.$route.query.visId,
-      visDatas: { visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo },
+      visidIdnum: this.$route.params.visId,
+      visDatas: { visId: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo },
       docDatas: [],
       previousData: {
         visId: null,
@@ -229,44 +232,70 @@ export default {
       carePatient: false,
       patientId: '',
       visId: '',
-      submitNos: this.$route.query.maxSubmitNo,
+      submitNos: this.$route.params.maxSubmitNo,
       prescOrderId: {},
       docDatasCopy: [],
       onactive: '',
-      routerData:{},
+      routerData: {},
+      docDatasdb: [
+        {
+          amountUnit: '2盒',
+          state: '0'
+        },
+        {
+          amountUnit: '2盒',
+          state: '1'
+        },
+        {
+          amountUnit: '2盒',
+          state: '2'
+        },
+        {
+          amountUnit: '2盒',
+          state: '6'
+        },
+        {
+          amountUnit: '2盒',
+          state: '7'
+        }
+      ],
     }
   },
   mounted() {
-    this.routerData = this.$route.query;
-    this.getRecordDelData({ visid: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo })
-    if (this.routerData.isNew == 1){
-      this.turnpage({ visId: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
+    this.routerData = this.$route.params
+    this.getRecordDelData({ visid: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo })
+    if (this.routerData.isNew == 1) {
+      this.turnpage({ visId: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
     }
-
   },
   methods: {
-    ...mapActions( 'page',[
-      'closeTag',
-    ]),
+    ...mapActions('page', ['closeTag']),
     // 点击状态标签
     checkableChange(item) {
-      // 改变原本
-      this.onactive = item.id
-      if (item.id == 8) {
-        // console.log(this.docDatasCopy)
+      if (item.Color == undefined) {
+        item.Color = '#1890ff'
+        item.Border = item.border
         this.docDatas = this.docDatasCopy
-        return
+        this.docDatas.forEach(value => {
+          if (value.state == item.id) {
+            this.arrs.push(value)
+          }
+        })
+        this.docDatas = this.arrs
+      } else {
+        item.Color = null
+        item.Border = null
+        //this.docDatas = this.docDatasCopy
+        console.log(item.id)
+        let newArrs = []
+        this.arrs.forEach(value => {
+          if (value.state !== item.id) {
+            newArrs.push(value)
+          }
+        })
+        this.arrs = newArrs
+        this.docDatas = this.arrs
       }
-      this.docDatas = this.docDatasCopy
-      let arr = []
-      this.docDatas.forEach(value => {
-        if (value.state == item.id) {
-          arr.push(value)
-        } else {
-          value.bg = null
-        }
-      })
-      this.docDatas = arr
     },
     refuse() {
       let params = {}
@@ -334,15 +363,15 @@ export default {
     slePatients(data) {
       this.$router.push({
         name: 'presHospitalizedDetail',
-        query: { visId: data.visId, maxSubmitNo: data.submitNo }
+        params: { visId: data.visId, maxSubmitNo: data.submitNo }
       })
       this.visidIdnum = data.visId
       //console.log(this.visidIdnum,'ddddd')
       this.submitNos = data.submitNo
-      //this.visDatas = { visId: this.$route.query.visId, submitNo: this.$route.query.maxSubmitNo }
-      this.getRecordDelData({ visid: this.$route.query.visId, maxSubmitNo: this.$route.query.maxSubmitNo })
-      if (this.routerData.isNew == 1){
-        this.turnpage({visId: data.visId, maxSubmitNo: data.submitNo,isNew:1})
+      //this.visDatas = { visId: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo }
+      this.getRecordDelData({ visid: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
+      if (this.routerData.isNew == 1) {
+        this.turnpage({ visId: data.visId, maxSubmitNo: data.submitNo, isNew: 1 })
       }
     },
 
@@ -358,7 +387,7 @@ export default {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
             this.docDatasCopy = this.docDatas
-            this.visId = this.$route.query.visId
+            this.visId = this.$route.params.visId
             this.patientId = res.data.patientId
           } else {
             this.warn(res.msg)
@@ -370,7 +399,7 @@ export default {
     },
     //获取关注患者信息
     getAttention() {
-      let params = this.$route.query
+      let params = this.$route.params
       this.$axios({
         url: this.api.concernedRecord,
         method: 'post',
@@ -424,7 +453,7 @@ export default {
       params.reviewOpinion = this.templateText
       params.reviewVerdict = '1'
       params.reviewIds = []
-      params.reviewIds[0] = this.$route.query.reviewId
+      params.reviewIds[0] = this.$route.params.reviewId
       this.$axios({
         url: this.api.updateReviewStatus,
         method: 'put',
@@ -443,8 +472,8 @@ export default {
     },
     cancle() {
       this.closeTag({
-        tagName:'presHospitalizedDetail',
-        aimName:'presHospitalizedIndex',
+        tagName: 'presHospitalizedDetail',
+        aimName: 'presHospitalizedIndex',
         vm: this
       })
     },
@@ -683,6 +712,11 @@ export default {
     color: #fff;
     border-radius: 6px;
     padding: 1px 1px;
+  }
+  .dengji {
+    padding: 2px 3px;
+    border-radius: 2px;
+    border-radius: 7px;
   }
 }
 </style>

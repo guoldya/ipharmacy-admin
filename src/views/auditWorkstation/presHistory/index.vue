@@ -235,10 +235,11 @@
       resetForm() {
         this.$refs.searchPanel.form.resetFields(['reviewResouce', 'passType', 'auditLevel', 'reviewVerdict', []])
         let params = this.getFormData()
+        params.pageSize='20'
         this.dateList = params.searchDate
         this.getData(params)
       },
-      getData(params = { pageSize: 10, offset: 0 }) {
+      getData(params = { pageSize: 20, offset: 0 }) {
         this.loading = true
         this.$axios({
           url: this.api.selectRevisionHistory,
@@ -266,6 +267,7 @@
       },
       pageChange(page, pageSize) {
         let params = this.$refs.searchPanel.form.getFieldsValue(['searchDate', []])
+        params.pageSize= this.pageSize
         if (params.searchDate) {
           params.searchDate = [
             params.searchDate[0].format('YYYY-MM-DD HH:mm'),
@@ -273,7 +275,7 @@
           ]
         }
 
-        this.getData({ offset: (page - 1) * pageSize / 2, pageSize: this.pageSize, searchDate: params.searchDate })
+        this.getData({ offset: (page - 1) * 10, pageSize: this.pageSize, searchDate: params.searchDate })
       },
       pageChangeSize(page, pageSize) {
         this.pageSize = pageSize
@@ -289,6 +291,7 @@
       timeFormat(data) {
         if (data != null) {
           var crtTime = new Date(data)
+          //console.log(crtTime)
           return this.dateFtt('yyyy-MM-dd hh:mm', crtTime) //直接调用公共JS里面的时间类处理的办法
         }
         return ''
@@ -380,7 +383,8 @@
         if (data.reviewResouce == '2') {
           this.$router.push({
             name: 'presHospitalizedDetail',
-            query: { visId: data.visId, maxSubmitNo: data.subNo }
+            params: { visId: data.visId, maxSubmitNo: data.subNo,reviewId:data.reviewId,isNew:0 }
+            // params: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId,isNew:1, }
           })
         }
         else {

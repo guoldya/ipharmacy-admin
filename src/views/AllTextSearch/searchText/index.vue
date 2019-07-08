@@ -24,7 +24,9 @@ export default {
   },
   computed: {},
   mounted() {},
-  methods: {}
+  methods: {
+    onSearch(){}
+  }
 }
 </script>
 
