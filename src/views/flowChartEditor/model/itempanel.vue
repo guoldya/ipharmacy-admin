@@ -10,7 +10,6 @@
             data-color="#FA8C16"
             data-label="开始"
           >
-            <!--<img src="~@/assets/editorPic/attribute.png" width="45px" height="26px">-->
             <div class="start"></div>
           </li>
           <li
@@ -21,7 +20,6 @@
             data-color="#13C2C2"
             data-label="判断节点"
           >
-            <!--<span class="panel-type-icon"></span>判断节点-->
             <div class="rhombusIf"></div>
           </li>
           <li
@@ -32,7 +30,6 @@
             data-color="#1890FF"
             data-label="分支节点"
           >
-            <!--<span class="panel-type-icon"></span>分支节点-->
             <div class="branchs"></div>
           </li>
           <li
@@ -42,7 +39,6 @@
             data-size="180*70"
             data-color="#1890FF"
           >
-            <!--<span class="panel-type-icon"></span>属性节点-->
             <div class="attributes"></div>
           </li>
           <li
@@ -52,7 +48,6 @@
             data-size="290*80"
             data-color="#13C2C2"
           >
-            <!--<span class="panel-type-icon"></span>结论节点-->
             <div class="conclusions"></div>
           </li>
         </ul>
@@ -90,6 +85,8 @@ export default {
   border-radius: 4px;
   /*width: 160px;*/
   /*height: 28px;*/
+  padding-top: 5px;
+  padding-bottom: 5px;
   line-height: 26px;
   margin-top: 20px;
 

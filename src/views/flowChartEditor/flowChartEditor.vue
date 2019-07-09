@@ -1025,7 +1025,7 @@
           if (res.code == '200') {
             this.titleData.name = res.data.name
             this.titleData.status = res.data.status ? '启用' : '停用'
-            this.titleData.type = res.data.type ? '系统固定' : '自定义'
+            this.titleData.type = res.data.type ==1 ? '系统':null
             this.titleData.visible = this.titleData.type == 1 ? false : true
             this.titleData.updateTime = res.data.updateTime
             this.titleData.type2 = res.data.type2

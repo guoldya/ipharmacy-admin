@@ -14,22 +14,25 @@
         :highlight-current-row="true"
         style="width: 100%"
       >
-        <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
-                         :prop="item.dataIndex" :width="item.width" :align="item.align">
-          <template slot-scope="props">
-            <span v-if="item.dataIndex == 'action'">
-              <opcol :items="items" :more="false" :data="props.row" :filterItem="['status']"></opcol>
-            </span>
-            <span v-if="item.dataIndex == 'levelName'">
-              <a-tag :color="props.row.levelColor" style="cursor: default;"> {{props.row.levelName}}</a-tag>
-            </span>
-            <span v-else-if="item.dataIndex == 'levelType'" v-html="levelFormatter(props.row.levelType)"></span>
-            <span v-else-if="item.dataIndex == 'handleType'" v-html="handleFormatter(props.row.handleType)"></span>
-            <span v-else-if="item.dataIndex == 'status'">
-              <a-badge :status="props.row.status == 0? 'default':'processing'"
-                       :text="props.row.status==0?'停用':'启用'"/>
-            </span>
-            <span v-else>{{props.row[item.dataIndex]}}</span>
+        <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
+          <template slot-scope="scope">
+            <opcol :items="items" :more="false" :data="scope.row" :filterItem="['status']"></opcol>
+          </template>
+        </el-table-column>
+        <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.value" :label="item.title"
+                         :prop="item.value" :width="item.width" :align="item.align">
+          <template slot-scope="scope">
+            <span v-if="item.value == 'status'">
+              <a-badge
+                :status="scope.row.status == 0? 'default':'processing'"
+                :text="scope.row.status==0?'停用':'启用'"
+              />
+              </span>
+            <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
+            <span v-else-if="item.value == 'levelName'">
+                <a-tag :color="scope.row.levelColor" style="cursor: default;"> {{scope.row.levelName}}</a-tag>
+              </span>
+            <span v-else>{{scope.row[item.value]}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -65,19 +68,23 @@
         curent: 1,
         pageSize: 10,
         columns: [
-          { title: '编号', dataIndex: 'auditLevel', width: 60, align: 'right' },
-          { title: '等级类型', dataIndex: 'levelType', align: 'center', width: 100 },
-          { title: '问题等级', dataIndex: 'levelName', align: 'center', width: 100 },
-          { title: '处理类型', dataIndex: 'handleType', align: 'center', width: 110 },
-          { title: '等级说明', dataIndex: 'levelDescription' },
-          { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
-          { title: '操作', width: 100, dataIndex: 'action', align: 'center' }
+          { title: '编号', value: 'auditLevel', width: 60, align: 'right' },
+          { title: '等级类型', value: 'levelType', align: 'center', width: 100 , format:this.levelFormatter  },
+          { title: '问题等级', value: 'levelName', align: 'center', width: 100 },
+          { title: '处理类型', value: 'handleType', align: 'center', width: 110, format:this.handleFormatter   },
+          { title: '等级说明', value: 'levelDescription' },
+          { title: '状态', value: 'status', width: 80, align: 'center' },
         ],
-        items:[
-          {text:'编辑',showtip:false,click:this.edits},
-          {text:'启用',showtip:true,tip:'确认启用吗？',click:this.user,status:'1'},
-          {text:'停用',showtip:true,tip:'确认停用吗？',click:this.user,status:'0'},
+        items: [
+          { text: '编辑', showtip: false, click: this.edits },
+          { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
+          { text: '停用', color: '#ff9900', showtip: true, tip: '确认停用吗？', click: this.user, status: '0' }
         ],
+        // items:[
+        //   {text:'编辑',showtip:false,click:this.edits},
+        //   {text:'启用',showtip:true,tip:'确认启用吗？',click:this.user,status:'1'},
+        //   {text:'停用',showtip:true,tip:'确认停用吗？',click:this.user,status:'0'},
+        // ],
         levelColor: '#ffffff',
         dataSource: [],
         current:1
@@ -122,8 +129,8 @@
       getData(params = { pageSize: 10, offset: 0 }) {
         this.loading = true
         if(params.offset==0){
-        this.current=1
-      }
+          this.current=1
+        }
         this.$axios({
           url: this.api.selectPage,
           method: 'put',
@@ -143,10 +150,16 @@
         })
       },
       pageChange(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        params.offset = (page - 1) * pageSize;
+        params.pageSize = pageSize;
+        this.getData(params)
       },
       pageChangeSize(page, pageSize){
-        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        params.offset = (page - 1) * pageSize;
+        params.pageSize = pageSize;
+        this.getData(params)
       },
       //启用停用
       user(data) {
@@ -170,11 +183,6 @@
           .catch(err => {
             this.error(err)
           })
-
-
-      },
-      //停用
-      ban(data) {
       },
       edits(data) {
         this.$router.push({
@@ -182,7 +190,6 @@
           params: {auditLevel:data.auditLevel}
         })
       },
-
       cellStyle(row) {
         if (row.column.label === '显示颜色') {
           return 'backgroundColor:' + row.row.levelColor
@@ -200,7 +207,7 @@
       levelFormatter(data) {
         let levelText
         this.enum.levelType.forEach(item => {
-          if (Number(data) == item.id) {
+          if (Number(data.levelType) == item.id) {
             levelText = item.text
             return
           }
@@ -210,7 +217,7 @@
       handleFormatter(data){
         let levelText
         this.enum.handleType.forEach(item => {
-          if (Number(data) == item.id) {
+          if (Number(data.handleType) == item.id) {
             levelText = item.text
             return
           }

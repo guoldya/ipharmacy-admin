@@ -8,7 +8,7 @@
               :min="50"
               :max="200"
               v-model="zoomRatio"
-              style="float: left; width: 220px;margin: 7px 10px 10px;"
+              style="float: left; width: 270px;margin: 7px 10px 10px;"
             />
             <a-dropdown>
               <span class="ant-dropdown-link" href="javascript:void(0);">

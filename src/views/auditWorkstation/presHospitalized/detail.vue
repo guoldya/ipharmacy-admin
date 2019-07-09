@@ -165,7 +165,7 @@ export default {
     DetailTest,
     detailCheck,
     jodgeStation,
-   
+
   },
   mixins: [mixin, mixinDevice],
   name: 'detail',
