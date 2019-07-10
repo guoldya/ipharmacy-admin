@@ -109,12 +109,12 @@
                     <template slot="title" style="width: 300px">
                       {{op.auditClass}}：{{op.auditDescription}}
                       <br>
-                      建议：{{op.auditSuggest}}
+                      描述：{{op.auditSuggest}}
                     </template>
                     <div class="multiLineText">
                       <span class="auditClass">{{op.auditClass}}：</span>
                       {{op.auditDescription}}
-                      <span class="auditClass">建议：</span>
+                      <span class="auditClass">描述：</span>
                       {{op.auditSuggest}}
                     </div>
                   </a-tooltip>
@@ -182,7 +182,7 @@
                 <span class="opacity8">{{op.auditDescription}}</span>
               </div>
               <div :rows="3" :maxRows="4" read-only>
-                <a-tag>建议</a-tag>
+                <a-tag>描述</a-tag>
                 {{op.audSuggest}}
               </div>
               <div class="subscript" v-if="Number(op.status)===1">已审核</div>
