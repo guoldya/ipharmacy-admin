@@ -70,7 +70,7 @@
                   </template>
                   <a href>
                     {{props.row[item.prop]}}&nbsp;
-                    <a-icon type="message"/>
+                    <a-icon type="message"/> 
                   </a>
                 </a-tooltip>
               </span>
