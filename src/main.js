@@ -42,16 +42,11 @@ import { Icon } from 'ant-design-vue'
 import opcol from '@/my-components/opcol/opcol.vue'
 import api from '@/api/index'
 import gante from "@/components/gante/gante"
-import VXETable from 'vxe-table'
-import 'vxe-table/lib/index.css'
-import XEUtils from 'xe-utils'
-import VXEUtils from 'vxe-utils'
 
-Vue.use(VXEUtils, XEUtils)
 
 Vue.use(gante)
 //引入一个表格
-Vue.use(VXETable)
+
 // 核心插件
 Vue.use(admin)
 Vue.use(Table)
