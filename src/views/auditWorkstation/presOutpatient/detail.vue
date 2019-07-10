@@ -11,7 +11,11 @@
                         <span
                             class="titleText margin-left-5"
                         >
-                        <a-tag v-if="leftData.gestationalWeeks" class="tagStyle" :color="'#DD4A68'">孕{{leftData.gestationalWeeks}}周</a-tag>
+                            <a-tag
+                                v-if="leftData.gestationalWeeks"
+                                class="tagStyle"
+                                :color="'#DD4A68'"
+                            >孕{{leftData.gestationalWeeks}}周</a-tag>
                             <a-tag
                                 class="tagStyle"
                                 :color="'#40a9ff'"
@@ -39,12 +43,15 @@
                         </detail-list-item>
                         <detail-list-item term="临床诊断">
                             <a-tooltip placement="topLeft" :title="leftData.diseaseName">
-                                    <p class="opacity8 detilNowrap" >{{leftData.diseaseName}}</p>
+                                <p class="opacity8 detilNowrap">{{leftData.diseaseName}}</p>
                             </a-tooltip>
                         </detail-list-item>
                         <detail-list-item term="过敏史">
                             <a-tooltip placement="topLeft" :title="leftData.irritabilityNames">
-                                    <p class="opacity8 detilNowrap" >{{leftData.irritabilityNames}}</p>
+                                <p
+                                    class="opacity8 detilNowrap"
+                                    style="width:220px"
+                                >{{leftData.irritabilityNames}}</p>
                             </a-tooltip>
                         </detail-list-item>
                         <detail-list-item term="处方医生">
@@ -529,8 +536,9 @@ export default {
                         if (res.data.physiologicalState) {
                             this.phyStatelist = res.data.physiologicalState.split(',')
                         }
-                        this.leftData.clinicPrescVOList.forEach((item, index) => {
-                            if (item.auditingStatus == '1') {
+                        this.rightData.forEach((item, index) => {
+                          console.log(item,'item')
+                            if (item.auditStatus == '1') {
                                 this.auditStatus = false
                             } else {
                                 this.auditStatus = true
@@ -595,6 +603,15 @@ export default {
                 .then(res => {
                     if (res.code == '200') {
                         this.success(res.msg)
+                        this.getDetailData()
+                        this.getTemplate()
+                        this.getRecord()
+                        this.getAttention()
+                        if (this.$route.params.isNew == 1) {
+                            this.getLeadAndLag()
+                        } else {
+                            this.auditStatus = false
+                        }
                     } else {
                         this.warn(res.msg)
                     }
@@ -617,7 +634,7 @@ export default {
             let listData = this.leftData.clinicPrescVOList
             for (let key in listData) {
                 if (listData[key].auditingStatus == '0') {
-                    params.reviewIds.push(listData[key].auditingStatus)
+                    params.reviewIds.push(listData[key].reviewId)
                 }
             }
             this.$axios({
@@ -628,6 +645,15 @@ export default {
                 .then(res => {
                     if (res.code == '200') {
                         this.success(res.msg)
+                        this.getDetailData()
+                        this.getTemplate()
+                        this.getRecord()
+                        this.getAttention()
+                        if (this.$route.params.isNew == 1) {
+                            this.getLeadAndLag()
+                        } else {
+                            this.auditStatus = false
+                        }
                     } else {
                         this.warn(res.msg)
                     }
@@ -915,12 +941,12 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                      if(res.data){
-                        this.previousData.visId = res.data.lagVisId
-                        this.previousData.maxSubmitNo = res.data.lagsubmitno
-                        this.nextPerson.visId = res.data.leadVisId
-                        this.nextPerson.maxSubmitNo = res.data.leadsubmitno
-                      }
+                        if (res.data) {
+                            this.previousData.visId = res.data.lagVisId
+                            this.previousData.maxSubmitNo = res.data.lagsubmitno
+                            this.nextPerson.visId = res.data.leadVisId
+                            this.nextPerson.maxSubmitNo = res.data.leadsubmitno
+                        }
                     } else {
                         this.warn(res.msg)
                     }
