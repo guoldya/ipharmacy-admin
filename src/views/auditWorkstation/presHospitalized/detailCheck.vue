@@ -196,7 +196,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="less" >
 .text-reprot {
   .el-table th {
     background-color: white !important;

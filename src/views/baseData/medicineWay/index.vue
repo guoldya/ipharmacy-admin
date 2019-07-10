@@ -60,7 +60,6 @@
           <a-col :span="8">医院给药途径</a-col>
           <a-col :span="8">知识库给药途径</a-col>
         </a-row>
-
         <a-row class="box">
           <a-col :span="6" class="textRight">编码：</a-col>
           <a-col :span="8">{{NData.id}}</a-col>
@@ -83,7 +82,7 @@
         </div>
       </a-card>
 
-      <a-card class="margin-top-5" title="相似诊断">
+      <a-card class="margin-top-5" title="相似给药途径">
         <a-spin tip="加载中..." :spinning="similarSpin">
           <el-table @row-click="clickRightRow" :data="similarData" :highlight-current-row="true">
             <el-table-column
@@ -174,13 +173,15 @@ export default {
     }
   },
   mounted() {
-    this.getData()
+    this.getData({ pageSize: 20, offset: 0 })
   },
   methods: {
     //点击第左边的table列事件
     clickLeftRow(row) {
       let params = { icdName: row.icdname }
+      console.log(row)
       this.icdnames = row.icdname
+      this.isCurrent=row.isCurrent
       this.NData = row
       this.MData = {}
       if (this.NData.isCurrent == '0') {
@@ -216,7 +217,7 @@ export default {
         })
     },
     //左边部分的数据获取
-    getData(params = { pageSize: 20, offset: 0 }) {
+    getData(params = {}) {
       this.spinning = true
       this.$axios({
         url: this.api.icdAll,
@@ -242,6 +243,7 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.disable = false
+    
     },
     //点击确定的处理事件
     clickSure() {
@@ -250,7 +252,8 @@ export default {
         hisWayId: this.NData.id,
         hisWayName: this.NData.name,
         wayId: this.MData.id,
-        wayName: this.MData.name
+        wayName: this.MData.name,
+         id:this.NData.mapperId
       }
       const arrl = Object.keys(this.MData)
       if (arrl.length == 0) {
@@ -268,7 +271,8 @@ export default {
                 this.NData = {}
                 this.MData = {}
                 this.similarData = []
-                this.getData()
+                console.log(this.NData.name)
+                this.getData({pageSize:20,offset:(this.current-1)*10,name:params.hisWayName})
                 this.loading = false
               })
             } else {
@@ -299,15 +303,19 @@ export default {
       this.$refs.searchPanel.form.resetFields()
       this.getData({ pageSize: 20, offset: 0 })
       this.current = 1
-      this.getData(params)
+      //this.getData(params)
     },
     //页码数change事件
     pageChangeSize(page, pageSize) {
-      this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      // let params = Object.assign(this.$refs.searchPanel.form.getFieldsValue(),{ offset: (page - 1) * pageSize, pageSize: pageSize, })
+      this.current = page
+      // console.log(params)
+      this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
-      this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+        let params = Object.assign(this.$refs.searchPanel.form.getFieldsValue(),{ offset: (page - 1) * pageSize, pageSize: pageSize, })
+      this.getData(params)
     },
     //页码跳转
     similarPageChange(page, size) {

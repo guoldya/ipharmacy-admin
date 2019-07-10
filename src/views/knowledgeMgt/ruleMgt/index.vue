@@ -6,7 +6,7 @@
           <a-card>
             <a-row>
               <a-col :span="13">
-                <a-input @pressEnter="pressEnterChange" placeholder="请输入" @change="onChange"/>
+                <a-input @pressEnter="pressEnterChange" placeholder="请输入" @change="onChange" />
               </a-col>
               <a-col class="treeCol" :span="5">
                 <a-button size="small" type="primary" @click="searchRule">查询</a-button>
@@ -20,7 +20,7 @@
                   </a-menu>
                   <a :disabled="disable">
                     操作
-                    <a-icon type="down"/>
+                    <a-icon type="down" />
                   </a>
                 </a-dropdown>
               </a-col>
@@ -76,7 +76,7 @@
                   <span v-else-if="item.prop == 'action'">
                     <a @click="look(props)" v-if="props.row.type == 1">查看</a>
                     <a @click="edit(props)" v-else>编辑</a>
-                    <a-divider type="vertical"/>
+                    <a-divider type="vertical" />
                     <a-popconfirm
                       title="确认启用吗？"
                       placement="topLeft"
@@ -93,7 +93,7 @@
                     >
                       <a>停用</a>
                     </a-popconfirm>
-                    <a-divider type="vertical" v-if="props.row.type == 2"/>
+                    <a-divider type="vertical" v-if="props.row.type == 2" />
                     <a-popconfirm
                       style="width: 50px"
                       title="确定删除?"
@@ -138,7 +138,7 @@
             :label-col="{ span: 5 }"
             :wrapper-col="{ span: 15 }"
           >
-            <a-input v-decorator="[ 'title' ]"/>
+            <a-input v-decorator="[ 'title' ]" />
           </a-form-item>
           <a-form-item label="类型" :label-col="{ span: 5 }" :wrapper-col="{ span: 15 }">
             <a-select v-decorator="[ 'type2' ]" :disabled="treeEditor">
@@ -193,7 +193,7 @@
                 <a-row>
                   <a-col class="opacity8">{{op.producedBy}}</a-col>
                 </a-row>
-                <a-divider style="margin: 8px 0 0 0;"/>
+                <a-divider style="margin: 8px 0 0 0;" />
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -229,7 +229,7 @@
                 <a-row>
                   <a-col style="opacity: 0.6">{{op.categoryPath}}</a-col>
                 </a-row>
-                <a-divider style="margin: 8px 0 0 0;"/>
+                <a-divider style="margin: 8px 0 0 0;" />
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -854,7 +854,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
-              this.getPageData({offset:(this.current-1)*10,pageSize:10})
+              this.getPageData({ offset: (this.current - 1) * 10, pageSize: 10 })
             })
           } else {
             this.warn(res.msg)

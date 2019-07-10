@@ -260,7 +260,8 @@ export default {
         hisfrequenceCode: this.NData.frequenceCode,
         frequenceCode: this.MData.code,
         frequenceId: this.MData.id,
-        frequenceName: this.MData.remark
+        frequenceName: this.MData.remark,
+         id:this.NData.mapperId
       }
       if (Object.keys(this.MData).length == 0) {
         $message.info('请添加知识库数据')

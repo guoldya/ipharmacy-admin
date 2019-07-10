@@ -256,7 +256,8 @@ export default {
         hisicdid: this.NData.icdid,
         hisicdname: this.NData.icdname,
         icdid: this.MData.id,
-        icdname: this.MData.icdname
+        icdname: this.MData.icdname,
+        id:this.NData.mapperId
       }
       const arrl = Object.keys(this.MData)
       if (arrl.length == 0) {

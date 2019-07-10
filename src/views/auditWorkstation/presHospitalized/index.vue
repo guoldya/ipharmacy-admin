@@ -754,7 +754,7 @@ export default {
   }
 }
 </script>
-<style lang='less'>
+<style lang='less' scoped>
 .divInfo span {
   margin-left: 10px;
 }

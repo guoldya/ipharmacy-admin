@@ -252,7 +252,7 @@ export default {
   }
 }
 </script>
-<style lang='less'>
+<style lang='less' scoped>
 .testchk {
   .el-table th {
     background-color: white !important;

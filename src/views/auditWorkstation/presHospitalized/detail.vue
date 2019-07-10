@@ -123,8 +123,13 @@
           </div>
         </div>
       </template>
-      <div >
-        <a-button @click="cancle" class="margin-left-5" :loading="loading" v-if="routerData.isNew == 1">返回</a-button>
+      <div>
+        <a-button
+          @click="cancle"
+          class="margin-left-5"
+          :loading="loading"
+          v-if="routerData.isNew == 1"
+        >返回</a-button>
         <a-button
           @click="refuse"
           style="margin-left: 5px"
@@ -151,7 +156,6 @@ import DetailTest from './detailTest.vue'
 import detailCheck from './detailCheck.vue'
 import jodgeStation from './jodgeStation.vue'
 import docAdvices from './docAdvices.vue'
-
 import { mixin, mixinDevice } from '@/utils/mixin'
 import { selectOutDetail } from '@/api/login'
 import { mapActions } from 'vuex'
@@ -165,7 +169,7 @@ export default {
     DetailTest,
     detailCheck,
     jodgeStation,
-   
+    docAdvices
   },
   mixins: [mixin, mixinDevice],
   name: 'detail',
@@ -237,28 +241,7 @@ export default {
       docDatasCopy: [],
       onactive: '',
       routerData: {},
-      docDatasdb: [
-        {
-          amountUnit: '2盒',
-          state: '0'
-        },
-        {
-          amountUnit: '2盒',
-          state: '1'
-        },
-        {
-          amountUnit: '2盒',
-          state: '2'
-        },
-        {
-          amountUnit: '2盒',
-          state: '6'
-        },
-        {
-          amountUnit: '2盒',
-          state: '7'
-        }
-      ],
+      arrs: [],
     }
   },
   mounted() {
@@ -286,7 +269,7 @@ export default {
         item.Color = null
         item.Border = null
         //this.docDatas = this.docDatasCopy
-        console.log(item.id)
+
         let newArrs = []
         this.arrs.forEach(value => {
           if (value.state !== item.id) {
@@ -328,12 +311,10 @@ export default {
     },
     // 获取子组件不同部位传值
     updateData(value) {
-      console.log(value, 'ppppp')
       this.templateText = value
     },
     updateDatas(value) {
       this.templateText = value
-      console.log(value)
     },
 
     // 跟换患者
@@ -366,7 +347,7 @@ export default {
         params: { visId: data.visId, maxSubmitNo: data.submitNo }
       })
       this.visidIdnum = data.visId
-      //console.log(this.visidIdnum,'ddddd')
+
       this.submitNos = data.submitNo
       //this.visDatas = { visId: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo }
       this.getRecordDelData({ visid: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })

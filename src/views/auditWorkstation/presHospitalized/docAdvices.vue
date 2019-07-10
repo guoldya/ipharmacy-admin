@@ -73,6 +73,7 @@ export default {
        type: Object
     }
   },
+  name: 'docAdvices',
   data() {
     return {
       api: {
