@@ -54,11 +54,11 @@
     </a-Col>
 
     <a-Col :span="10" class="details">
-      <a-card :bodyStyle="{padding:'12px 10px'}" title="给药途径">
+      <a-card :bodyStyle="{}" title="给药途径">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
           <a-col :span="8">医院给药途径</a-col>
-          <a-col :span="8">知识库给药途径</a-col>
+          <a-col :span="8" class="zhishiku">知识库给药途径</a-col>
         </a-row>
         <a-row class="box">
           <a-col :span="6" class="textRight">编码：</a-col>
@@ -354,6 +354,19 @@ export default {
 </script>
 <style lang='less'>
 .testchk {
+  .zhishiku {
+    padding-left: 5px;
+  }
+  .ant-card-body {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1px;
+  }
+   .table-th {
+      background: #fafafa;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.85);
+    }
 }
 
 .details {
@@ -369,11 +382,11 @@ export default {
     height: 30px;
     padding-left: 5px;
   }
-  .table-th {
-    background: #ebeef5;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.85);
-  }
+   .table-th {
+      background: #fafafa;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.85);
+    }
   .ant-row {
     line-height: 30px;
   }

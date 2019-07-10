@@ -1,5 +1,5 @@
 <template>
-  <a-Row class="testchk">
+  <a-Row class="testchks">
     <a-Col :span="14">
       <a-card :bodyStyle="{padding:'12px 16px'}">
         <Searchpanel ref="searchPanel" :list="list" :col="12">
@@ -53,12 +53,12 @@
       </a-card>
     </a-Col>
 
-    <a-Col :span="10" class="details">
-      <a-card :bodyStyle="{padding:'12px 10px'}" title="ICD对码">
+    <a-Col :span="10" class="detailsa">
+      <a-card  title="ICD对码">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
           <a-col :span="8">医院诊断</a-col>
-          <a-col :span="8">知识库诊断</a-col>
+          <a-col :span="8" class="zhishiku">知识库诊断</a-col>
         </a-row>
 
         <a-row class="box">
@@ -352,10 +352,28 @@ export default {
 }
 </script>
 <style lang='less'>
-.testchk {
+.testchks {
+  .zhishiku {
+    padding-left: 5px;
+  }
+  .ant-card-body {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1px;
+  }
+   .table-th {
+      background: #fafafa;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.85);
+    }
 }
 
-.details {
+.detailsa {
+  .table-th {
+      background: #fafafa;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.85);
+    }
   .ant-input-number {
     margin-top: 3px;
   }
@@ -367,11 +385,6 @@ export default {
     border-left: 1px solid rgb(235, 238, 245);
     height: 30px;
     padding-left: 5px;
-  }
-  .table-th {
-    background: #ebeef5;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.85);
   }
   .ant-row {
     line-height: 30px;
@@ -389,13 +402,11 @@ export default {
     }
   }
 }
-
 .surea {
   float: right;
   margin-top: 10px;
   margin-bottom: 5px;
 }
-
 .ant-input-number {
   width: 100% !important;
 }

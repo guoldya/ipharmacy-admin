@@ -74,85 +74,49 @@
               {{NData.drugName}}
             </a-tooltip>
           </a-col>
-          <a-Col :span="10" class="td-content"  @click="changeFormat">
-            <div>
-              <header v-if='isShow'>
-              <a-tooltip placement="topLeft" style="cursor: pointer;">
-                <template slot="title">
-                  <span>{{ this.drugName}}</span>
-                </template>
-                {{ this.drugName}}
-              </a-tooltip>
+          <a-Col :span="10" class="td-content" @click="changeFormat">
+            <div :class="{'pt':isActive}">
+              <header v-if="isShow" class="headers">
+                <a-tooltip placement="topLeft" style="cursor: pointer;">
+                  <template slot="title">
+                    <span>{{ this.drugName}}</span>
+                  </template>
+                  {{ this.drugName}}
+                </a-tooltip>
               </header>
               <footer v-if="!isShow">
-                  <a-select
+                <a-select
                   style="width:100%"
-                    showSearch
-                    allowClear
-                    mode="single"
-                    optionLabelProp="title"
-                    :defaultActiveFirstOption="false"
-                    :showArrow="false"
-                    :filterOption="false"
-                    @search="handleSearch"
-                    @change="handleChange" 
-                    v-decorator="[ 'drugCodes']"
-          >
-            <a-select-option
-              v-for="(item,index) in this.drugAllList"
-              :value='item.drugCode'
-              :key="index"
-              :title="item.drugName"
-              :producedBy="item.producedBy"
-              :spec="item.spec"
-              :spellCode="item.spellCode"
-            >
-              <a-row>
-                <a-col>
-                  {{item.drugName}}
-                </a-col>
-              </a-row>
-              <a-row>
-                <a-col style="opacity: 0.6">
-                  生产厂商：{{item.producedBy}}
-                </a-col>
-              </a-row>
-              <a-divider style="margin: 8px 0 0 0;"/>
-            </a-select-option>
-          </a-select>
-
-
-               <!-- <a-select
-          style="width:100%"
-          showSearch
-          allowClear
-          mode="single"
-          optionLabelProp="title"
-          autoClearSearchValue
-          :defaultActiveFirstOption="false"
-          :showArrow="false"
-          :filterOption="false"
-          @search="handleSearch"
-          @change="handleChange"    
-        >
-          <a-select-option
-            v-for="(item,index) in this.similarData"
-            :value="item.drugName"
-            :key="index"
-            :engname="item.engName"
-            :drugkinds="item.drugIndicator"
-          >
-            <div class="ypmingcheng">
-              <span>{{item.drugName}}</span>
-            </div>
-            <div class="hechengayaos" style="margin-top:4px;">
-              {{item.producedBy}}
-            </div>
-             <div class="hechengayaos" style="margin-top:4px;">
-             <a-tag> {{item.dosageFormsStr}}</a-tag>
-            </div>      
-          </a-select-option>
-        </a-select> -->
+                  showSearch
+                  allowClear
+                  mode="single"
+                  optionLabelProp="title"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="false"
+                  :filterOption="false"
+                  @search="handleSearch"
+                  @change="handleChange"
+                  v-decorator="[ 'drugCodes']"
+                >
+                  <a-select-option
+                    v-for="(item,index) in this.drugAllList"
+                    :value="item.drugCode"
+                    :key="item.dosageForms"
+                    :producedBy="item.producedBy"
+                    :spec="item.spec"
+                    :spellCode="item.spellCode"
+                    :drugName="item.drugName"
+                    :dosageFormsStr="item.dosageFormsStr"
+                  >
+                    <a-row>
+                      <a-col>{{item.drugName}}</a-col>
+                    </a-row>
+                    <a-row>
+                      <a-col style="opacity: 0.6">生产厂商：{{item.producedBy}}</a-col>
+                    </a-row>
+                    <a-divider style="margin: 8px 0 0 0;" />
+                  </a-select-option>
+                </a-select>
               </footer>
             </div>
           </a-Col>
@@ -226,7 +190,7 @@
             :pageSizeOptions="['10', '20','50']"
             @showSizeChange="similarSizeChange"
             @change="similarPageChange"
-            @blur='lostFocus'
+            @blur="lostFocus"
             size="small"
           ></a-pagination>
         </a-spin>
@@ -238,7 +202,7 @@
 import debounce from 'lodash/debounce'
 export default {
   data() {
-     this.handleSearch = debounce(this.handleSearch, 800)
+    this.handleSearch = debounce(this.handleSearch, 800)
     return {
       similarSpin: false,
       similarTotal: 0,
@@ -261,7 +225,7 @@ export default {
         hisDrugDataUrl: '/sys/hisDrug/selectPage',
         similarDrugDataUrl: '/sys/hisDrug/selectSimilarDrugPage',
         mapUrl: 'sys/dicDrugMapper/insert',
-        dicDrugSelectList:'sys/dicDrug/selectDrugListByKeywordAndWithOutCurrentDrug',
+        dicDrugSelectList: 'sys/dicDrug/selectDrugListByKeyword'
       },
       loading: false,
       columnscheckdtl: [
@@ -278,9 +242,9 @@ export default {
       disable: true,
       marpperId: '',
       drugName: '',
-      isShow:true,
-       drugAllList:[],
-       isActive:true
+      isShow: true,
+      drugAllList: [],
+      isActive: true
     }
   },
   computed: {
@@ -308,69 +272,72 @@ export default {
 
   methods: {
     // 搜索
-     handleSearch(value){
-        let params = {keyword:value,id:this.marpperId};
-        this.$axios({
-          url: this.api.dicDrugSelectList,
-          method: 'put',
-          data: params
+    handleSearch(value) {
+      let params = { keyword: value, id: this.marpperId }
+      this.$axios({
+        url: this.api.dicDrugSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
         })
-          .then(res => {
-            if (res.code == '200') {
-              this.drugAllList = res.rows;
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
-      },
-     //获取药品list
-      getDrugList(){
-        let params = {keyword:'',id:this.marpperId};
-        this.$axios({
-          url: this.api.dicDrugSelectList,
-          method: 'put',
-          data: params
+        .catch(err => {
+          this.error(err)
         })
-          .then(res => {
-            if (res.code == '200') {
-              this.drugAllList = res.rows;
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
-      },
+    },
+    //获取药品list
+    getDrugList() {
+      let params = { keyword: '', id: this.marpperId }
+      this.$axios({
+        url: this.api.dicDrugSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
     changeFormat() {
-     this.isShow=false
-     this.disable=true
+      this.isShow = false
+      this.disable = true
       this.getDrugList()
     },
     // 实例
-    handleChange(value) {
-      console.log(value)
-      this.disable=false
-      this.isShow=true; 
-      this.drugName=value.drugName
-      // this.MData=value
-      this.MData.producedBy=value.producedBy
-       this.MData.spec=value.spec
-        this.MData.drugCode=value.drugCode
+    handleChange(value, option) {
+      console.log(option)
+      let params = option.data.attrs
+      this.disable = false
+      this.isShow = true
+      this.drugName = params.drugName
+      this.MData.dosageFormsStr = params.dosageFormsStr
+      this.MData.producedBy = params.producedBy
+      this.MData.spec = params.spec
+      this.MData.drugCode = value
+      this.MData.unit=params.unit
     },
-    lostFocus(){
+    lostFocus() {
       //this.drugName=value
       console.log('ddd')
-       this.isShow=true; 
+      this.isShow = true
     },
-  
+
     //点击第左边的table列事件
     clickLeftRow(row) {
-      this.isActive=false
-       this.drugName=''
+      this.isActive = false
+      this.drugName = ''
+      this.isShow=true
       console.log(row)
       this.NData = row
       this.MData = {}
@@ -424,6 +391,7 @@ export default {
     },
     //左边部分的数据获取
     getData(params = { pageSize: 20, offset: 0 }) {
+      
       this.spinning = true
       this.$axios({
         url: this.api.hisDrugDataUrl,
@@ -450,6 +418,7 @@ export default {
       this.MData = row
       this.drugName = this.MData.drugName
       this.disable = false
+      this.isShow=true
     },
     //点击确定的处理事件
     clickSure() {
@@ -468,8 +437,8 @@ export default {
       params.producedBy = this.MData.producedBy
       params.dosageForms = this.MData.dosageForms
       params.doseUnit = this.MData.doseUnit
-      params.M = this.M
-      params.N = this.N
+      // params.M = this.M
+      // params.N = this.N
       this.loading = true
       let arrs = Object.keys(this.MData)
       if (arrs.length == 0) {
@@ -486,8 +455,11 @@ export default {
                 this.NData = {}
                 this.MData = {}
                 this.similarData = []
-                this.getData()
+                this.drugName=''
+                this.getData({pageSize:this.pageSize,offset:(this.current-1)*10})
+                
                 this.loading = false
+                this.isActive=true
               })
             } else {
               this.loading = false
@@ -520,10 +492,12 @@ export default {
     },
     //页码数change事件
     pageChangeSize(page, pageSize) {
+      this.pageSize=pageSize
       this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
     },
     //页码跳转事件
     pageChange(page, pageSize) {
+      this.current=page
       this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
     },
     //页码跳转
@@ -536,7 +510,7 @@ export default {
     },
     //页码数的改变
     similarSizeChange(current, size) {
-      this.current = 1
+      //this.current = 1
       let params = {}
       params.drugName = this.MData.drugName
       params.producedBy = this.MData.producedBy
@@ -548,6 +522,9 @@ export default {
 </script>
 <style lang='less'>
 .testchk {
+  .headers{
+    line-height: 46px;
+  }
   .ant-card-body {
     padding-left: 0;
     padding-right: 0;
@@ -555,7 +532,8 @@ export default {
   }
   .details {
     .ant-select {
-      margin-top: 2px;
+      // margin-top: 4px;
+          margin-left: -3px;
     }
     .ant-input-number {
       margin-top: 3px;
@@ -613,7 +591,7 @@ export default {
   opacity: 0.8;
   font-size: 13px;
 }
-.pt{
+.pt {
   pointer-events: none;
 }
 </style>

@@ -179,7 +179,7 @@ export default {
     pageChange(page, pageSize) {
       this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
     },
-    pageChangeSize(page, pageSize) {
+    pageChangeSize(page, pageSize) {zz
       this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
     },
     edits(data) {

@@ -53,11 +53,11 @@
     </a-Col>
 
     <a-Col :span="10" class="details">
-      <a-card :bodyStyle="{padding:'12px 10px'}" title="用药频次对码">
+      <a-card  title="用药频次对码">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
           <a-col :span="8">医院用药频次</a-col>
-          <a-col :span="8">知识库用药频次</a-col>
+          <a-col :span="8" class="zhishiku">知识库用药频次</a-col>
         </a-row>
         <a-row class="box">
           <a-col :span="6" class="textRight">编码：</a-col>
@@ -142,7 +142,7 @@ export default {
       columnscheckdtl: [
         { title: '编码', prop: 'id', width: 90, align: 'right' },
         { title: '名称', prop: 'remark' },
-        { title: '代码', prop: 'code', width: 80 }
+        { title: '代码', prop: 'code', width: 100 }
       ],
       similarData: [],
       NData: {},
@@ -337,6 +337,15 @@ export default {
 </script>
 <style lang='less'>
 .testchk {
+   .zhishiku {
+    padding-left: 5px;
+  }
+  .ant-card-body {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1px;
+  }
+ 
 }
 
 .details {
@@ -352,11 +361,11 @@ export default {
     height: 30px;
     padding-left: 5px;
   }
-  .table-th {
-    background: #ebeef5;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.85);
-  }
+    .table-th {
+      background: #fafafa;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.85);
+    }
   .ant-row {
     line-height: 30px;
   }
