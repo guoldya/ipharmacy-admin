@@ -30,10 +30,10 @@
                     <a @click="look(props)" v-if="props.row.type == 1">查看</a>
                     <a @click="edit(props)" v-else>编辑</a>
                     <a-divider type="vertical"/>
-                    <a-popconfirm  title="确认启用吗？" placement="topRight" @confirm="updateStatus(props.row,1)" v-if="props.row.status == '0'">
+                    <a-popconfirm  title="确认启用吗？" placement="topRight" @confirm="updateStatus(props.row)" v-if="props.row.status == '0'">
                       <a>启用</a>
                     </a-popconfirm>
-                    <a-popconfirm title="确认停用吗？" placement="topRight" @confirm="updateStatus(props.row,0)" v-else>
+                    <a-popconfirm title="确认停用吗？" placement="topRight" @confirm="updateStatus(props.row)" v-else>
                       <a>停用</a>
                     </a-popconfirm>
                     <a-divider type="vertical" v-if="props.row.type == 2"/>
@@ -317,37 +317,16 @@
         this.getPageData()
       },
 
-      //查询
-      searchRule() {
-        const expandedKeys = this.dataList.map((item) => {
-          if (this.values) {
-            if (item.title.indexOf(this.values) > -1) {
-              return this.getParentKey(item.title, this.gData)
-            }
-          }
-          return null
-        }).filter((item, i, self) => item && self.indexOf(item) === i)
-        Object.assign(this, {
-          expandedKeys,
-          searchValue: this.values
-        })
-      },
-
       selectType(e){
-        console.log(e.target.value);
         if (e.target.value == 1) {
-          // this.drugModal.modalTitle = '添加药品规则'
           this.selkeys = 1
         } else if (e.target.value == 2) {
-          // this.drugModal.modalTitle = '添加药品分类规则'
           this.selkeys = 2
           this.coreRuleCategory({keyword:''})
         } else if (e.target.value == 3) {
-          // this.drugModal.modalTitle = '添加药品组规则'
           this.coreRuleGroup({ keyword: '' })
           this.selkeys = 3
         } else if (e.target.value == 4) {
-          // this.drugModal.modalTitle = '添加全局规则'
           this.selkeys = 4
         }
       },
@@ -455,9 +434,6 @@
                 params.limitedItemid = this.ruleName.key
                 params.type2 = values.type2;
               }
-              // params.type = this.selectNode.type
-              // params.type2 = this.selectNode.type2
-              // params.typeId = this.selectNode.key
               coreRuleUpdate(params).then(res => {
                 if (res.code == '200') {
                   this.getPageData()
@@ -478,9 +454,6 @@
       drugCancel() {
         this.drugModal.visible = false
       },
-      //药品搜索
-      searchDrug(e) {
-      },
 
       //获取网格分页
       getPageData(params = {}) {
@@ -488,7 +461,7 @@
         this.loadingTable = true
         coreRuleTypePage(params).then(res => {
           if (res.code == '200') {
-            this.loadData = res.rows
+            this.loadData = this.$dateFormat(res.rows,['updateTime']);
             this.total = res.total
             this.loadingTable = false
           } else {
@@ -502,11 +475,19 @@
       },
       //页面数change事件
       pageChangeSize(page, pageSize) {
-        this.getPageData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+        console.log(pageSize,'pageSize');
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        params.offset = (page - 1) * pageSize;
+        params.pageSize = pageSize;
+        this.getPageData(params)
       },
       //页面跳转事件
       pageChange(page, pageSize) {
-        this.getPageData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+        // this.pageSize = pageSize;
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        params.offset = (page - 1) * pageSize;
+        params.pageSize = pageSize;
+        this.getPageData(params)
       },
       //编辑操作
       edit(data) {
@@ -531,14 +512,20 @@
       },
 
       //操作启用停用
-      updateStatus(row, val) {
+      updateStatus(row) {
+        console.log(row,'row');
         let params = {}
+        if (row.status == 1){
+          params.status = 0
+        }else{
+          params.status = 1
+        }
         params.id = row.id
-        params.status = val
         coreRuleUpdate(params).then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
-              this.getPageData()
+              row.status = params.status;
+              console.log(row)
             })
           } else {
             this.warn(res.msg)

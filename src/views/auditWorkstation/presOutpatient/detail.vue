@@ -125,10 +125,10 @@
               </div>
             </a-tab-pane>
             <a-tab-pane tab="检查报告" key="2">
-              <detailCheck :visId="visId"></detailCheck>
+              <detailCheck :visidId="visId"></detailCheck>
             </a-tab-pane>
             <a-tab-pane tab="检验报告" key="3">
-              <DetailTest :visId="visId"></DetailTest>
+              <DetailTest :visidId="visId"></DetailTest>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -473,7 +473,8 @@ export default {
       'closeTag',
     ]),
     getDetailData() {
-      this.visId = this.$route.params.visId
+      this.visId = this.$route.params.visId;
+      console.log(this.visId,'11')
       this.routerData = this.$route.params;
       this.propData.visId = this.$route.params.visId
       this.propData.submitNo = this.$route.params.submitNo

@@ -27,22 +27,18 @@
       <i data-command="unGroup" class="command iconfont icon-ungroup" title="解组"></i> -->
       <!-- <a href="https://www.yuque.com/antv/g6-editor">G6-Editor 文档</a> -->
       <!--<a href="javascript:void(0); " @click="saveFlow">保存节点信息</a>-->
+      <span class="separator"></span>
       <i v-if="titleData.visible" class="operating icon-font action action-xinzeng"  title="新增" @click="addRuleData" ></i>
-      <!--<a-button size="small" @click="addRuleData" class="margin-left-5">新增</a-button>-->
-      <i  v-if="titleData.visible" class="operating icon-font action action-baocun"  title="保存" style="color: #52c41a"  @click="saveFlow" ></i>
-      <!--<a-button size="small" v-if="titleData.visible" type="primary" @click="saveFlow" class="margin-left-5">保存</a-button>-->
-      <i  v-if="titleData.visible" class="operating icon-font action action-tijiao2" style="color: #2eabff"  title="提交"  @click="submitFlow" ></i>
-      <!--<a-button size="small" v-if="titleData.visible" type="primary" @click="submitFlow" class="margin-left-5">提交</a-button>-->
       <i  v-if="titleData.visible" class="operating icon-font action action-fuzhi1"  title="复制规则"  @click="copyRule" ></i>
-      <!--<a-button size="small" v-if="titleData.visible" @click="copyRule" class="margin-left-5">复制规则</a-button>-->
       <i  v-if="titleData.visible" class="operating icon-font action action-xiaoyan2"  title="校验"  @click="verifyFlow({status:'true'})" ></i>
-      <!--<a-button size="small" v-if="titleData.visible" @click="verifyFlow({status:'true'})" class="margin-left-5">校验</a-button>-->
-
+      <span class="separator"></span>
+      <i  v-if="titleData.visible" class="operating icon-font action action-baocun"  title="保存" style="color: #52c41a"  @click="saveFlow" ></i>
+      <i  v-if="titleData.visible" class="operating icon-font action action-tijiao2" style="color: #2eabff"  title="提交"  @click="submitFlow" ></i>
     </div>
     <div class="rightButton" style="text-align:right;">
       <a-row>
         <span class="opacity8 margin-left-5"><a-tag color="blue">{{titleData.type2 | typeType}}</a-tag></span>
-        <span class="opacity8 margin-right-15"><a-tag color="blue">{{titleData.type}}</a-tag></span>
+        <span class="opacity8 margin-right-15" v-if="titleData.type"><a-tag color="blue">{{titleData.type}}</a-tag></span>
         <span class="opacity8 margin-right-15">{{titleData.name}}</span>
         <span v-if="titleData.status =='启用'" style="color: #2D8cF0;" class="opacity8 margin-right-15"> {{titleData.status}}  </span>
         <span v-else style="color: #ff9900;" class="opacity8 margin-right-15"> {{titleData.status}}  </span>

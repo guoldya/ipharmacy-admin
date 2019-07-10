@@ -14,24 +14,20 @@
         :highlight-current-row="true"
         @row-click="checkRol"
       >
+        <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
+          <template slot-scope="scope">
+            <opcol :items="items" :more="false" :data="scope.row" :filterItem="['status']"></opcol>
+          </template>
+        </el-table-column>
         <el-table-column v-for="item in columns" :show-overflow-tooltip="true" :key="item.dataIndex" :label="item.title"
                          :prop="item.dataIndex" :width="item.width" :align="item.align">
-          <template slot-scope="props">
-            <span v-if="item.dataIndex == 'action'">
-               <opcol :items="items" :more="false" :data="props.row" :filterItem="['status']"></opcol>
+          <template slot-scope="scope">
+            <span v-if="item.dataIndex == 'status'">
+                <a-badge :status="scope.row.status == 0? 'default':'processing'"
+                         :text="scope.row.status==0?'停用':'启用'"/>
             </span>
-            <span v-else-if="item.dataIndex == 'planType'" v-html="planType(props.row.planType)"></span>
-            <span v-else-if="item.dataIndex == 'planScope'">
-              {{props.row.planScope=='1'?'门诊':'住院' }}
-            </span>
-            <span v-else-if="item.dataIndex == 'status'">
-                <a-badge :status="props.row.status == 0? 'default':'processing'"
-                         :text="props.row.status==0?'停用':'启用'"/>
-            </span>
-            <!--<span v-else-if="item.dataIndex == 'userNum'">-->
-              <!--<a-badge :showZero="true" :count="props.row.userNum" @click="checkRol(props)" :numberStyle="{backgroundColor: '#1694fb',cursor: 'pointer'}"/>-->
-            <!--</span>-->
-            <span v-else>{{props.row[item.dataIndex]}}</span>
+            <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
+            <span v-else>{{scope.row[item.dataIndex]}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -106,11 +102,10 @@
         confirmLoading: false,
         columns: [
           { title: '方案名称', dataIndex: 'planName', width: 250 },
-          { title: '方案类型', dataIndex: 'planType', align: 'center', width: 80 },
-          { title: '方案范围', dataIndex: 'planScope', align: 'center', width: 80 },
+          { title: '方案类型', dataIndex: 'planType', align: 'center', width: 80,format:this.planType },
+          { title: '方案范围', dataIndex: 'planScope', align: 'center', width: 80,format:this.planScope },
           { title: '方案描述', dataIndex: 'describe' },
           { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
-          { title: '操作', dataIndex: 'action', align: 'center', width: 140 }
         ],
         items: [
           { text: '编辑', showtip: false, click: this.edits },
@@ -146,7 +141,7 @@
             valueExpr: 'text',
             dataSource: this.enum.packageType
           },
-            {
+          {
             name: '方案范围',
             dataField: 'planScope',
             type: 'select',
@@ -175,9 +170,9 @@
       },
       getData(params = { pageSize: 10, offset: 0 }) {
         this.loading = true
-         if(params.offset==0){
-        this.current=1
-      }
+        if(params.offset==0){
+          this.current=1
+        }
         // params.orderId = 1
         reviewPlanPage(params).then(res => {
           if (res.code == '200') {
@@ -194,10 +189,16 @@
         })
       },
       pageChange(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        params.offset=(page - 1) * pageSize;
+        // params.pageSize=pageSize;
+        this.getData(params)
       },
       pageChangeSize(page, pageSize){
-        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+        this.current = 1;
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        params.pageSize = pageSize;
+        this.getData(params)
       },
       //新增
       add() {
@@ -215,7 +216,6 @@
           params.status = 1
         }
         params.planId = data.planId
-        console.log(params)
         this.$axios({
           url: this.api.updateStatus,
           method: 'post',
@@ -223,14 +223,14 @@
         })
           .then(res => {
             if (res.code == '200') {
-              if (data.status == '1') {
+              data.status = params.status;
+              if (data.status == '0') {
                 this.success('停用成功')
               } else {
                 this.success('启用成功')
               }
-              this.getData({offset:(this.current-1)*10})
             } else {
-              if (data.status == '1') {
+              if (data.status == '0') {
                 this.warn('停用失败')
               } else {
                 this.warn('启用失败')
@@ -255,10 +255,21 @@
         this.getPersonsOutPlan({planId:data.planId});
       },
       planType(value) {
-        if (value == '1') {
+        if (value.planType == '1') {
           return '药师审方'
-        } else if (value == '2') {
+        } else if (value.planType == '2') {
           return '处方点评'
+        }else{
+          return '未知'
+        }
+      },
+      planScope(value){
+        if (value.planScope == '1') {
+          return '门诊'
+        } else if (value.planScope == '2') {
+          return '住院'
+        }else{
+          return '未知'
         }
       },
       addDoctor(){
