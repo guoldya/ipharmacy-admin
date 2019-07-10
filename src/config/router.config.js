@@ -125,6 +125,36 @@ export const asyncRouterMap = [
           }
         ]
       },
+      {
+        path: '/engine',
+        name: 'engine',
+        component: PageView,
+        meta: { title: '引擎规则', keepAlive: false, icon: 'database' },
+        children: [
+          {
+            path: '/engine/ruleEng',
+            name: 'ruleEng',
+            component: RouteView,
+            meta: { title: '引擎数据', multistage: true },
+            children: [
+              {
+                path: '/engine/ruleEng/index',
+                name: 'ruleEngindex',
+                component: () => import('@/views/engine/ruleEng/index.vue'),
+                meta: { title: '引擎数据', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/engine/ruleEng/detail/:id/',
+                name: 'ruleEngDetail',
+                hidden: true,
+                component: () => import('@/views/engine/ruleEng/detail.vue/'),
+                meta: { title: '数据详情', detail: true, description: '数据详情自定义设置' }
+              }
+            ]
+          },
+          
+        ]
+      },
       // 全文检索
       {
         path: '/AllTextSearch',
@@ -162,27 +192,7 @@ export const asyncRouterMap = [
         component: PageView,
         meta: { title: '审方工作站', keepAlive: false, icon: 'laptop' },
         children: [
-          {
-            path: '/auditWorkstation/problemLevel',
-            name: 'problemLevel',
-            component: RouteView,
-            meta: { title: '问题等级设置', multistage: true },
-            children: [
-              {
-                path: '/auditWorkstation/problemLevel/index',
-                name: 'problemLevelIndex',
-                component: () => import('@/views/auditWorkstation/problemLevel/index.vue'),
-                meta: { title: '问题等级设置', hiddenHeaderContent: true, index: true }
-              },
-              {
-                path: '/auditWorkstation/problemLevel/detail/:auditLevel',
-                name: 'problemLevelDetail',
-                hidden: true,
-                component: () => import('@/views/auditWorkstation/problemLevel/detail.vue'),
-                meta: { title: '问题等级详情', hiddenHeaderContent: true, detail: true }
-              }
-            ]
-          },
+         
           {
             path: '/auditWorkstation/PrescriptionsSetting',
             name: 'PrescriptionsSetting',
@@ -208,13 +218,13 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/presOutpatient',
             name: 'presOutpatient',
             component: RouteView,
-            meta: { title: '审方中心(门诊)', multistage: true },
+            meta: { title: '门诊审方中心', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presOutpatient/index',
                 name: 'presOutpatientIndex',
                 component: () => import('@/views/auditWorkstation/presOutpatient/index.vue'),
-                meta: { title: '审方中心(门诊)', hiddenHeaderContent: true, index: true }
+                meta: { title: '门诊审方中心', hiddenHeaderContent: true, index: true }
               }
               // {
               //     path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo/:isNew/',
@@ -230,13 +240,13 @@ export const asyncRouterMap = [
             name: 'presOutpatientDetail',
             component: RouteView,
             hidden: true,
-            meta: { title: '审方中心详情(门诊)', multistage: true },
+            meta: { title: '门诊审方中心详情', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo/:isNew/',
                 name: 'presOutpatientDetail',
                 component: () => import('@/views/auditWorkstation/presOutpatient/detail.vue'),
-                meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, index: true }
+                meta: { title: '门诊审方中心详情', hiddenHeaderContent: true, index: true }
               }
             ]
           },
@@ -244,13 +254,13 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/presHospitalized',
             name: 'presHospitalized',
             component: RouteView,
-            meta: { title: '审方中心(住院)', multistage: true },
+            meta: { title: '住院审方中心', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presHospitalized/index',
                 name: 'presHospitalizedIndex',
                 component: () => import('@/views/auditWorkstation/presHospitalized/index.vue'),
-                meta: { title: '审方中心(住院)', hiddenHeaderContent: true, index: true }
+                meta: { title: '住院审方中心', hiddenHeaderContent: true, index: true }
               }
               // {
               //     path: '/auditWorkstation/presHospitalized/detail',
@@ -267,13 +277,13 @@ export const asyncRouterMap = [
             name: 'presHospitalDetail',
             component: RouteView,
             hidden: true,
-            meta: { title: '审方中心详情(住院)', multistage: true },
+            meta: { title: '住院审方中心详情', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presHospitalized/detail/:visId/:maxSubmitNo/:reviewId/:isNew/',
                 name: 'presHospitalizedDetail',
                 component: () => import('@/views/auditWorkstation/presHospitalized/detail.vue'),
-                meta: { title: '审方中心详情(住院)', hiddenHeaderContent: true, index: true }
+                meta: { title: '住院审方中心详情', hiddenHeaderContent: true, index: true }
               }
             ]
           },
@@ -300,20 +310,27 @@ export const asyncRouterMap = [
         component: PageView,
         meta: { title: '规则管理', keepAlive: false, icon: 'diff' },
         children: [
-          // {
-          //     path: '/knowledgeMgt/ruleMgt',
-          //     name: 'ruleMgt',
-          //     component: RouteView,
-          //     meta: { title: '规则管理', multistage: true },
-          //     children: [
-          //         {
-          //             path: '/knowledgeMgt/ruleMgt/index',
-          //             name: 'ruleIndex',
-          //             component: () => import( '@/views/knowledgeMgt/ruleMgt/index.vue'),
-          //             meta: { title: '规则管理', hiddenHeaderContent: true, index: true }
-          //         }
-          //     ]
-          // },
+          {
+            path: '/knowledgeMgt/problemLevel',
+            name: 'problemLevel',
+            component: RouteView,
+            meta: { title: '问题等级设置', multistage: true },
+            children: [
+              {
+                path: '/knowledgeMgt/problemLevel/index',
+                name: 'problemLevelIndex',
+                component: () => import('@/views/knowledgeMgt/problemLevel/index.vue'),
+                meta: { title: '问题等级设置', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/knowledgeMgt/problemLevel/detail/:auditLevel',
+                name: 'problemLevelDetail',
+                hidden: true,
+                component: () => import('@/views/knowledgeMgt/problemLevel/detail.vue'),
+                meta: { title: '问题等级详情', hiddenHeaderContent: true, detail: true }
+              }
+            ]
+          },
           {
             path: '/knowledgeMgt/ruleMgt-copy',
             name: 'ruleMgt-copy',
@@ -442,83 +459,6 @@ export const asyncRouterMap = [
               }
             ]
           },
-          {
-            path: '/baseData/drugAdministration',
-            name: 'drugAdministration',
-            component: RouteView,
-            meta: { title: '药品组管理', multistage: true },
-            children: [
-              {
-                path: '/baseData/drugAdministration/index',
-                name: 'drugAdminIndex',
-                component: () => import('@/views/baseData/drugAdministration/index.vue'),
-                meta: { title: '药品组管理', hiddenHeaderContent: true, index: true }
-              },
-              {
-                path: '/baseData/drugAdministration/detail',
-                name: 'drugAdminDetail',
-                hidden: true,
-                component: () => import('@/views/baseData/drugAdministration/detail.vue'),
-                meta: { title: '药品组管理详情', hiddenHeaderContent: true, detail: true }
-              }
-            ]
-          },
-          {
-            path: '/baseData/drugContrast',
-            name: 'drugContrast',
-            component: RouteView,
-            meta: { title: '药品数据对照', multistage: true },
-            children: [
-              {
-                path: '/baseData/drugContrast/index',
-                name: 'drugContrastIndex',
-                component: () => import('@/views/baseData/drugContrast/index.vue'),
-                meta: { title: '药品数据对照', hiddenHeaderContent: true, index: true }
-              }
-            ]
-          },
-          {
-            path: '/baseData/Icdtrast',
-            name: 'Icdtrast',
-            component: RouteView,
-            meta: { title: 'Icd数据对照', multistage: true },
-            children: [
-              {
-                path: '/baseData/Icdtrast/index',
-                name: 'IcdtrastIndex',
-                component: () => import('@/views/baseData/Icdtrast/index.vue'),
-                meta: { title: 'Icd数据对照', hiddenHeaderContent: true, index: true }
-              }
-            ]
-          },
-          {
-            path: '/baseData/Frequence',
-            name: 'Frequence',
-            component: RouteView,
-            meta: { title: '用药频次', multistage: true },
-            children: [
-              {
-                path: '/baseData/Frequence/index',
-                name: 'FrequenceIndex',
-                component: () => import('@/views/baseData/Frequence/index.vue'),
-                meta: { title: '用药频次', hiddenHeaderContent: true, index: true }
-              }
-            ]
-          },
-          {
-            path: '/baseData/medicineWay',
-            name: 'medicineWay',
-            component: RouteView,
-            meta: { title: '给药途径', multistage: true },
-            children: [
-              {
-                path: '/baseData/medicineWay/index',
-                name: 'medicineWayIndex',
-                component: () => import('@/views/baseData/medicineWay/index.vue'),
-                meta: { title: '给药途径', hiddenHeaderContent: true, index: true }
-              }
-            ]
-          }
         ]
       },
 
@@ -675,23 +615,75 @@ export const asyncRouterMap = [
             meta: { title: '模块管理', keepAlive: false }
           }
         ]
-      }
-      // {
-      //     path: '/mapMgt',
-      //     name: 'mapMgt',
-      //     component: RouteView,
-      //     meta: { title: '对码管理', icon: 'check-circle-o' },
-      //     children:[
-      //         {
-      //             path: '/mapMgt/mapping',
-      //             name: 'mapping',
-      //             component: () => import('@/views/mapMgt/mapping.vue'),
-      //             meta: { title: '对码', keepAlive: false }
-      //         },
-      //     ]
-      // }
+      },
+      {
+          path: '/mapMgt',
+          name: 'mapMgt',
+          component: RouteView,
+          meta: { title: '对码管理', icon: 'check-circle-o' },
+          children:[
+              {
+                path: '/mapMgt/drugContrast',
+                name: 'drugContrast',
+                component: RouteView,
+                meta: { title: '药品对码', multistage: true },
+                children: [
+                  {
+                    path: '/mapMgt/drugContrast/index',
+                    name: 'drugContrastIndex',
+                    component: () => import('@/views/mapMgt/drugContrast/index.vue'),
+                    meta: { title: '药品对码', hiddenHeaderContent: true, index: true }
+                  },   
+                ]
+              },
+              {
+                path: '/mapMgt/Icdtrast',
+                name: 'Icdtrast',
+                component: RouteView,
+                meta: { title: 'Icd数据对码', multistage: true },
+                children: [
+                  {
+                    path: '/mapMgt/Icdtrast/index',
+                    name: 'IcdtrastIndex',
+                    component: () => import('@/views/mapMgt/Icdtrast/index.vue'),
+                    meta: { title: 'Icd数据对码', hiddenHeaderContent: true, index: true }
+                  }
+                ]
+              },
+              {
+                path: '/mapMgt/Frequence',
+                name: 'Frequence',
+                component: RouteView,
+                meta: { title: '用药频次对码', multistage: true },
+                children: [
+                  {
+                    path: '/mapMgt/Frequence/index',
+                    name: 'FrequenceIndex',
+                    component: () => import('@/views/mapMgt/Frequence/index.vue'),
+                    meta: { title: '用药频次对码', hiddenHeaderContent: true, index: true }
+                  }
+                ]
+              },
+              {
+                path: '/mapMgt/medicineWay',
+                name: 'medicineWay',
+                component: RouteView,
+                meta: { title: '给药途径对码', multistage: true },
+                children: [
+                  {
+                    path: '/mapMgt/medicineWay/index',
+                    name: 'medicineWayIndex',
+                    component: () => import('@/views/mapMgt/medicineWay/index.vue'),
+                    meta: { title: '给药途径对码', hiddenHeaderContent: true, index: true }
+                  }
+                ]
+              }
+          ]
+      },
+      
     ]
   },
+
   {
     path: '*',
     redirect: '/404',
