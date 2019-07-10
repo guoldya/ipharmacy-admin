@@ -87,7 +87,8 @@
         // ],
         levelColor: '#ffffff',
         dataSource: [],
-        current:1
+        current:1,
+        searchData:{},
       }
     },
     computed: {
@@ -116,6 +117,7 @@
     methods: {
       //搜索
       search() {
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
         let params = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = 10
         params.offset = 0
@@ -123,6 +125,7 @@
       },
       //重置
       resetForm() {
+        this.searchData = {};
         this.$refs.searchPanel.form.resetFields()
         this.getData({ pageSize: 10, offset: 0 })
       },
@@ -150,13 +153,13 @@
         })
       },
       pageChange(page, pageSize) {
-        let params = this.$refs.searchPanel.form.getFieldsValue();
+        let params = this.searchData;
         params.offset = (page - 1) * pageSize;
         params.pageSize = pageSize;
         this.getData(params)
       },
       pageChangeSize(page, pageSize){
-        let params = this.$refs.searchPanel.form.getFieldsValue();
+        let params = this.searchData;
         params.offset = (page - 1) * pageSize;
         params.pageSize = pageSize;
         this.getData(params)

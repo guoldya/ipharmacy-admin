@@ -349,6 +349,7 @@
         checkedAll: true,
         iconSpin:true,
         openTrialTime:null,
+         pageChangeFilter:{},
       }
     },
     computed: {
@@ -453,7 +454,8 @@
       },
       //搜索
       search() {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        this.pageChangeFilter =  this.$refs.searchPanel.form.getFieldsValue();
         params.pageSize = 10
         params.offset = 0
         if (this.buttonText != '开始审方'){
@@ -463,6 +465,7 @@
       },
       //重置
       resetForm() {
+        this.pageChangeFilter  = {};
         this.$refs.searchPanel.form.resetFields()
         if (this.buttonText != '开始审方'){
           this.fetchYJSMapData({ pageSize: 10, offset: 0 })
@@ -471,7 +474,7 @@
 
       //翻页事件
       customerPageChange(page, pageSize) {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        let params = this.pageChangeFilter 
         params.pageSize = pageSize
         params.offset = (page - 1) * pageSize
         if (this.buttonText != '开始审方'){
@@ -488,6 +491,7 @@
           this.fetchYJSMapData(params)
         }
       },
+      //获取数据
       fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
         this.loading = true
         params.orderId = 1

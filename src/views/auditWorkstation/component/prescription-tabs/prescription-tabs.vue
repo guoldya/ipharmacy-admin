@@ -57,7 +57,7 @@
         loading:false,
         tabsOne: [],
         columns: [
-          { title: '序号', prop: 'auditId', width: 50, align: 'right' },
+          { title: '序号', prop: 'seqNum', width: 50, align: 'right' },
           { title: '', prop: 'mark', width: 20, align: 'left' },
           { title: '名称', prop: 'drugName' },
           { title: '规格', prop: 'spec', width: 80 },
