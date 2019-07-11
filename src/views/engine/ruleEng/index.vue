@@ -36,6 +36,9 @@
                 :text="scope.row.status==0?'停用':'启用'"
               />
             </span>
+              <span v-else-if="item.value == 'updateTime'">
+              {{changeTime(scope.row.updateTime)}}
+            </span>
             <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
             <span v-else>{{scope.row[item.value]}}</span>
           </template>
@@ -78,7 +81,7 @@ export default {
         { title: '显示名称', value: 'display', align: 'left', width: 100 },
         { title: '数据库文本', value: 'sqlText', align: 'left' },
         { title: '更新人', value: 'updateBy', width: 120 },
-        { title: '更新时间', value: 'updateTime', width: 140, format: this.levelFormatter },
+        { title: '更新时间', value: 'updateTime', width: 140, },
         { title: '状态', value: 'status', width: 80, align: 'center' }
       ],
       items: [
@@ -100,7 +103,7 @@ export default {
           type: 'text'
         },
          {
-          name: '数据源名称',
+          name: '名称',
           dataField: 'dsName',
           type: 'text'
         },
@@ -141,6 +144,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.dataSource = res.rows
+            console.log(this.dataSource)
             this.total = res.total
             this.loading = false
           } else {
@@ -203,10 +207,12 @@ export default {
     },
 
     //枚举
-    levelFormatter(data) {
-      let str = data.updateTime.replace(/:\d{2}$/, '')
-      return str
-    }
+    // 改时间格式
+    changeTime(time) {
+      if(time){
+          return time.replace(/(:\d{2})$/, '')
+      }
+    },
   }
 }
 </script>

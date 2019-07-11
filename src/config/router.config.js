@@ -135,20 +135,41 @@ export const asyncRouterMap = [
             path: '/engine/ruleEng',
             name: 'ruleEng',
             component: RouteView,
-            meta: { title: '引擎数据', multistage: true },
+            meta: { title: '引擎规则', multistage: true },
             children: [
               {
                 path: '/engine/ruleEng/index',
                 name: 'ruleEngindex',
                 component: () => import('@/views/engine/ruleEng/index.vue'),
-                meta: { title: '引擎数据', hiddenHeaderContent: true, index: true }
+                meta: { title: '引擎规则', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/engine/ruleEng/detail/:id/',
                 name: 'ruleEngDetail',
                 hidden: true,
                 component: () => import('@/views/engine/ruleEng/detail.vue/'),
-                meta: { title: '数据详情', detail: true, description: '数据详情自定义设置' }
+                meta: { title: '规则详情', detail: true, description: '规则详情自定义设置' }
+              }
+            ]
+          },
+          {
+            path: '/engine/dataEng',
+            name: 'dataEng',
+            component: RouteView,
+            meta: { title: '数据源', multistage: true },
+            children: [
+              {
+                path: '/engine/dataEng/index',
+                name: 'dataEngindex',
+                component: () => import('@/views/engine/dataEng/index.vue'),
+                meta: { title: '数据源', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/engine/dataEng/detail/:id/',
+                name: 'dataEngDetail',
+                hidden: true,
+                component: () => import('@/views/engine/dataEng/detail.vue/'),
+                meta: { title: '数据源详情', detail: true, description: '数据源详情自定义设置' }
               }
             ]
           },
