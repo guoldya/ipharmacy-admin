@@ -16,6 +16,7 @@
         :items="items"
         :opColWidth="110"
         :moreOp="false"
+        height="430"
         :currentChange="currentChange"
       ></a-treeTable>
     </a-spin>
@@ -51,7 +52,7 @@ export default {
       items: [
         { text: '编辑', showtip: false, click: this.edits },
         { text: '启用', color: '#2D8cF0', showtip: true, click: this.changeStatus, tip: '确认启用吗？', status: '1' },
-        { text: '停用', showtip: true, tip: '确认停用吗？', click: this.changeStatus, status: '0' }
+        { text: '停用', color:'#ff9900',showtip: true, tip: '确认停用吗？', click: this.changeStatus, status: '0' }
       ],
       colors: '#ffffff',
       dataSource: [],

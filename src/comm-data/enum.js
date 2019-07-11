@@ -73,7 +73,6 @@ const Enum = {
         { text: '提示', id: 2 },
         { text: '医师确认', id: 3 },
         { text: '双签确认', id: 4 },
-        { text: '药师确认', id: 5 },
         { text: '驳回', id: 9 }
     ],
     packageType: [

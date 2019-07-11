@@ -70,7 +70,7 @@
                   </template>
                   <a href>
                     {{props.row[item.prop]}}&nbsp;
-                    <a-icon type="message"/>
+                    <a-icon type="message"/> 
                   </a>
                 </a-tooltip>
               </span>
@@ -109,12 +109,12 @@
                     <template slot="title" style="width: 300px">
                       {{op.auditClass}}：{{op.auditDescription}}
                       <br>
-                      建议：{{op.auditSuggest}}
+                      描述：{{op.auditSuggest}}
                     </template>
                     <div class="multiLineText">
                       <span class="auditClass">{{op.auditClass}}：</span>
                       {{op.auditDescription}}
-                      <span class="auditClass">建议：</span>
+                      <span class="auditClass">描述：</span>
                       {{op.auditSuggest}}
                     </div>
                   </a-tooltip>
@@ -182,7 +182,7 @@
                 <span class="opacity8">{{op.auditDescription}}</span>
               </div>
               <div :rows="3" :maxRows="4" read-only>
-                <a-tag>建议</a-tag>
+                <a-tag>描述</a-tag>
                 {{op.audSuggest}}
               </div>
               <div class="subscript" v-if="Number(op.status)===1">已审核</div>
@@ -349,6 +349,7 @@
         checkedAll: true,
         iconSpin:true,
         openTrialTime:null,
+         pageChangeFilter:{},
       }
     },
     computed: {
@@ -453,7 +454,8 @@
       },
       //搜索
       search() {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        this.pageChangeFilter =  this.$refs.searchPanel.form.getFieldsValue();
         params.pageSize = 10
         params.offset = 0
         if (this.buttonText != '开始审方'){
@@ -463,6 +465,7 @@
       },
       //重置
       resetForm() {
+        this.pageChangeFilter  = {};
         this.$refs.searchPanel.form.resetFields()
         if (this.buttonText != '开始审方'){
           this.fetchYJSMapData({ pageSize: 10, offset: 0 })
@@ -471,7 +474,7 @@
 
       //翻页事件
       customerPageChange(page, pageSize) {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        let params = this.pageChangeFilter 
         params.pageSize = pageSize
         params.offset = (page - 1) * pageSize
         if (this.buttonText != '开始审方'){
@@ -488,6 +491,7 @@
           this.fetchYJSMapData(params)
         }
       },
+      //获取数据
       fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
         this.loading = true
         params.orderId = 1

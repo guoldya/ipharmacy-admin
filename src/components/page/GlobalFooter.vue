@@ -1,7 +1,7 @@
 <template>
     <div class="footer">
         <div class="copyright">
-          <span>临床药学</span>
+          <span>药师审方干预系统</span>
         </div>
     </div>
 </template>

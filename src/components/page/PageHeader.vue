@@ -106,13 +106,12 @@
     background: #fff;
     padding: 16px 32px 0;
     border-bottom: 1px solid #e8e8e8;
-
     .breadcrumb {
       margin-bottom: 16px;
     }
 
     .detail {
-      display: flex;
+      display: none;
       /*margin-bottom: 16px;*/
 
       .avatar {

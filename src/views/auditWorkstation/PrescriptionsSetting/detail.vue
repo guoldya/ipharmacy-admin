@@ -218,7 +218,8 @@
                     this.planruleList[key].treeData = this.enum.patientType
                   } else if (this.planruleList[key].columnId) {
                     let params = {}
-                    params.code = this.planruleList[key].columnId
+                    params.code = this.planruleList[key].columnId;
+                    params.valueList = this.planruleList[key].values;
                     this.$axios({
                       url: this.api.planSelectData,
                       method: 'put',

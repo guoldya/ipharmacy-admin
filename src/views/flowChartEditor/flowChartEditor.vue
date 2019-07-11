@@ -578,7 +578,8 @@
                     } else if (params.lo == 3) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
-                      coreRuleNodeSelectColId({ id: params.itemId }).then(res => {
+                      console.log(params,'params');
+                      coreRuleNodeSelectColId({ id: params.itemId, valueList:params.assertValList }).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = res.rows
                         } else {
@@ -623,7 +624,8 @@
                   } else if (sourceP.lo == 3) {
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId
-                    coreRuleNodeSelectColId({ id: sourceP.itemId }).then(res => {
+                    console.log(ev.item.model);
+                    coreRuleNodeSelectColId({ id: sourceP.itemId, valueList:ev.item.model.assertValList }).then(res => {
                       if (res.code == '200') {
                         this.edgeInitialized.inputEdgeSelect = res.rows
                       } else {
@@ -966,7 +968,6 @@
         setTimeout(()=>{
           this.getNodeData({ruleId:this.ruleModalId})
         },0)
-        console.log(_this.flow.save())
       },
       //取消复制规则
       modalCancel(){

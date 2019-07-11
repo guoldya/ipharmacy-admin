@@ -105,6 +105,8 @@
           { title: '方案类型', dataIndex: 'planType', align: 'center', width: 80,format:this.planType },
           { title: '方案范围', dataIndex: 'planScope', align: 'center', width: 80,format:this.planScope },
           { title: '方案描述', dataIndex: 'describe' },
+          { title: '创建人', dataIndex: 'creator', width: 130 },
+          { title: '创建时间', dataIndex: 'createDate', width: 150 },
           { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
         ],
         items: [
@@ -122,7 +124,8 @@
         current:null,
         Modal:{
           visible:false,
-        }
+        },
+        pageChangeFilter:{},
       }
     },
     computed: {
@@ -148,7 +151,15 @@
             keyExpr: 'id',
             valueExpr: 'text',
             dataSource: this.enum.patientScope
-          }
+          },
+          {
+            name: '状态',
+            dataField: 'status',
+            type: 'select',
+            keyExpr: 'id',
+            valueExpr: 'text',
+            dataSource: this.enum.status
+          },
         ]
       }
     },
@@ -159,6 +170,7 @@
       //搜索
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue()
+        this.pageChangeFilter = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = 10
         params.offset = 0
         this.getData(params)
@@ -176,7 +188,7 @@
         // params.orderId = 1
         reviewPlanPage(params).then(res => {
           if (res.code == '200') {
-            this.dataSource = res.rows
+            this.dataSource = this.$dateFormat(res.rows,['createDate']);
             this.total = res.total
             this.loading = false
           } else {
@@ -189,14 +201,14 @@
         })
       },
       pageChange(page, pageSize) {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        let params =this.pageChangeFilter
         params.offset=(page - 1) * pageSize;
-        // params.pageSize=pageSize;
+        params.pageSize=pageSize;
         this.getData(params)
       },
       pageChangeSize(page, pageSize){
         this.current = 1;
-        let params = this.$refs.searchPanel.form.getFieldsValue();
+        let params = this.pageChangeFilter
         params.pageSize = pageSize;
         this.getData(params)
       },
@@ -230,7 +242,7 @@
                 this.success('启用成功')
               }
             } else {
-              if (data.status == '0') {
+              if (data.status == '1') {
                 this.warn('停用失败')
               } else {
                 this.warn('启用失败')
