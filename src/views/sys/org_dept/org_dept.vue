@@ -24,6 +24,7 @@
                             ref="deptTable"
                             :filterItem="['status']"
                             :items="items"
+                            height='390'
                             :currentChange="deptCurrentChange"
                     ></a-treeTable>
                 </a-spin>

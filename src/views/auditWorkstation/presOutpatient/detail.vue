@@ -3,6 +3,9 @@
         <a-spin tip="加载中..." :spinning="allLoading">
             <a-col :span="14">
                 <a-card>
+                    <a-row v-if="carePatient===true">
+                        
+                    </a-row>
                     <a-row class="margin-top-10">
                         <span class="titleText">{{leftData.patientDeptName}}</span>
                         <span class="font-bold fontSize14 marLeft10">{{leftData.patientName}}</span>
@@ -23,11 +26,9 @@
                                 :key="index"
                             >{{op}}</a-tag>
                         </span>
-                        <a-col v-if="carePatient===true" :md="3" :lg="2" :xxl="3">
-                            <div class="guanzhu" :loading="loading">
-                                <a-icon theme="filled" type="star" class="xingxing" />已关注
-                            </div>
-                        </a-col>
+                        <span class="guanzhu" :loading="loading">
+                            <a-icon theme="filled" type="star" class="xingxing" />已关注
+                        </span>
                     </a-row>
                     <a-divider type="horizontal" class="detailDivider" />
 
@@ -182,7 +183,6 @@
                                         @click="handleChange"
                                     >全部</a-tag>
                                 </span>
-
                                 <a-card
                                     class="margin-top-10 antCard"
                                     @click="clickTagsCard(op)"
@@ -200,13 +200,13 @@
                                         />
                                         {{op.drugName}}
                                     </span>
-                                    <div :rows="3" :maxRows="4" read-only class="textArea">
+                                    <div :rows="3" :maxRows="4" class="textArea">
                                         <a-tag>问题</a-tag>
                                         <span class="opacity8">{{op.auditDescription}}</span>
                                     </div>
-                                    <div :rows="3" :maxRows="4" read-only>
+                                    <div :rows="3" :maxRows="4" class="textArea">
                                         <a-tag>描述</a-tag>
-                                        {{op.audSuggest}}
+                                        <span class="opacity8">{{op.audSuggest}}</span>
                                     </div>
                                     <div class="subscript" v-if="op.reviewStatus == 1">已审核</div>
                                 </a-card>
@@ -480,10 +480,10 @@ export default {
                 { title: '', prop: 'mark', width: 20, align: 'left' },
                 { title: '药品', prop: 'drugName' },
                 { title: '规格', prop: 'spec', width: 100 },
-                { title: '单量', prop: 'dosageStr', width: 100 },
-                { title: '总量', prop: 'amountStr', width: 100 },
-                { title: '频次', prop: 'frequency', align: 'center' },
-                { title: '用法', prop: 'useType' }
+                { title: '单量', prop: 'dosageStr', width: 80 },
+                { title: '总量', prop: 'amountStr', width: 60 },
+                { title: '频次', prop: 'frequency', align: 'center', width: 90 },
+                { title: '用法', prop: 'useType', width: 100 }
             ],
             problemId: '122',
             checkedAll: true,
@@ -523,7 +523,7 @@ export default {
             this.propData.visId = this.$route.params.visId
             this.propData.submitNo = this.$route.params.submitNo
             let params = this.$route.params
-            this.allLoading = true
+            this.allLoading = false
             selectOutDetail(params)
                 .then(res => {
                     if (res.code == '200') {
@@ -536,11 +536,9 @@ export default {
                         if (res.data.physiologicalState) {
                             this.phyStatelist = res.data.physiologicalState.split(',')
                         }
+                        console.log(this.rightData)
                         this.rightData.forEach((item, index) => {
-                          console.log(item,'item')
-                            if (item.auditStatus == '1') {
-                                this.auditStatus = false
-                            } else {
+                            if (item.reviewStatus == '0') {
                                 this.auditStatus = true
                             }
                         })
@@ -721,6 +719,8 @@ export default {
             this.rightData.push()
         },
         clickTagsCard(data) {
+            this.problemType = data.auditClassNum
+            this.getTemplateDetail()
             for (let key in this.rightData) {
                 if (this.rightData[key].problemId == data.problemId) {
                     this.rightData[key].borderColor = '#1890ff'
@@ -776,6 +776,7 @@ export default {
                 })
         },
         selectTemp(data) {
+            console.log(this.problemType, '111')
             this.problemType = data
             this.getTemplateDetail()
         },
@@ -1169,6 +1170,7 @@ export default {
     color: white;
     line-height: 26px;
     text-align: center;
+    float: right;
     font-weight: bold;
     i {
         font-size: 20px;

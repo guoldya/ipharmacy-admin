@@ -17,7 +17,7 @@
           :wrapper-col="wrapperCol"
         >
           <a-input :read-only="readOnly" v-decorator="['auditLevel',
-        {rules: [{ required: true, message: '请输入编号' },{pattern: /^([1-9][0-9]{0,1}|100)$/,message:'请输入数字'}]}]"/>
+        {rules: [{ required: true, message: '请输入编号' },{pattern:/^([1-9][0-9]{0,1}|100)$/,message:'请输入数字'}]}]"/>
         </a-form-item>
         <a-form-item
           label="等级名称"

@@ -40,7 +40,6 @@
           <a-select
             mode='multiple'
             @search="searchSelect($event,cd.treeData,cd.columnId,cd)"
-
             class="width-100 marLeft10"
             v-model="cd.values"
             :filterOption="false"
@@ -62,7 +61,7 @@
             multiple
             @search="searchTreeSelect($event,cd.treeData,cd.columnId,cd)"
             :treeData="cd.treeData"
-
+            treeDefaultExpandAll
             class="width-100 marLeft10"
             v-model="cd.values"
             @change="onChange"
@@ -155,7 +154,6 @@
       }
     },
     data() {
-
       return {
         api:{
           planSelectData: 'sys/reviewPlan/selectData',

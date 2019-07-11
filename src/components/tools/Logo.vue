@@ -13,7 +13,7 @@
     props: {
       title: {
         type: String,
-        default: '药师审方干预',
+        default: '药师审方系统',
         required: false
       },
       showTitle: {
