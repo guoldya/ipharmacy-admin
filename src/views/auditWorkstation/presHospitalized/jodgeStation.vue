@@ -276,10 +276,9 @@ export default {
             this.leftData.clinicPrescVOList.forEach((item, index) => {
               if (item.auditingStatus !== '1') {
                 this.auditStatus = false
-                //this.$emit('listStatus', 'ddddd')
-                // 逻辑合适的上面的判定没生效
-              }
+              }        
             })
+             this.$emit('saveStatus', this.auditStatus)
           } else {
             this.warn(res.msg)
           }

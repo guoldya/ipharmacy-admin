@@ -78,6 +78,7 @@
         @listStatus="listStatul"
         @adoptMessage="updateData"
         @upchange="updateDatas"
+        @saveStatus='saveStatu'
       ></jodgeStation>
     </a-col>
     <footer-tool-bar
@@ -134,14 +135,14 @@
           @click="refuse"
           style="margin-left: 5px"
           :loading="loading"
-          v-if="this.auditStatus===false"
+          v-if="this.auditStatus"
         >驳回</a-button>
         <a-button
           type="primary"
           class="margin-left-5"
           @click="submit"
           :loading="loading"
-          v-if="this.auditStatus===false"
+          v-if="this.auditStatus"
         >通过</a-button>
       </div>
     </footer-tool-bar>
@@ -498,11 +499,12 @@ export default {
       let times = data.slice(5, 20)
       return times
     },
-    // 关注取消功能
-
     // 左右互动
     listStatul(data) {
       this.prescOrderId = data
+    },
+    saveStatu(data){
+this.auditStatus=data
     }
   }
 }

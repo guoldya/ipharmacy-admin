@@ -15,7 +15,7 @@
                                 v-if="!item.type || item.type=='text'"
                                 v-bind="formItemLayout"
                             >
-                                <a-input v-decorator="[item.dataField]" placeholder="请输入..."></a-input>
+                               <a-input v-decorator="[item.dataField,{rules: [{pattern:item.pattern,message:item.message}]}   ]" placeholder="请输入..."></a-input>
                             </a-form-item>
                             <a-form-item
                                 :label="item.name"
