@@ -1,269 +1,309 @@
 <template>
-  <div>
-    <a-card>
-      <Searchpanel ref="searchPanel" :list="list">
-        <div slot="control">
-          <a-button type="primary" @click="search">查询</a-button>
-          <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
-        </div>
-      </Searchpanel>
-      <a-row>
-        <a-col :span="10" style="padding-top: 15px">
-          <a-popconfirm v-if="buttonType == 'danger'" title="确定停止审方?" @confirm="buttonClick" okText="确定" cancelText="取消">
-            <a-button class="margin-left-5" :type="buttonType">{{buttonText}}</a-button>
-          </a-popconfirm>
-          <a-button v-else class="margin-left-5" @click="buttonClick" :type="buttonType">{{buttonText}}</a-button>
-          <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
-          <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
-            <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
-          </a-popconfirm>
-          <a-select
-            style="width: 120px"
-            class="margin-left-5"
-            placeholder="刷新频率"
-            @change="rateChange"
-            :disabled="disable"
-            defaultValue="10秒"
-          >
-            <a-select-option
-              :value="op.id"
-              v-for="(op,index) in this.enum.refreshRate"
-              :key="index"
-            >{{op.text}}</a-select-option>
-          </a-select>
-        </a-col>
-        <a-col :span="14" class="countCol">
-          <countText :countList="countText"></countText>
-        </a-col>
-      </a-row>
+    <div>
+        <a-card>
+            <Searchpanel ref="searchPanel" :list="list">
+                <div slot="control">
+                    <a-button type="primary" @click="search">查询</a-button>
+                    <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
+                </div>
+            </Searchpanel>
+            <a-row>
+                <a-col :span="10" style="padding-top: 15px">
+                    <a-popconfirm
+                        v-if="buttonType == 'danger'"
+                        title="确定停止审方?"
+                        @confirm="buttonClick"
+                        okText="确定"
+                        cancelText="取消"
+                    >
+                        <a-button class="margin-left-5" :type="buttonType">{{buttonText}}</a-button>
+                    </a-popconfirm>
+                    <a-button
+                        v-else
+                        class="margin-left-5"
+                        @click="buttonClick"
+                        :type="buttonType"
+                    >{{buttonText}}</a-button>
+                    <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
+                    <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
+                        <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
+                    </a-popconfirm>
+                    <a-select
+                        style="width: 120px"
+                        class="margin-left-5"
+                        placeholder="刷新频率"
+                        @change="rateChange"
+                        :disabled="disable"
+                        defaultValue="10秒"
+                    >
+                        <a-select-option
+                            :value="op.id"
+                            v-for="(op,index) in this.enum.refreshRate"
+                            :key="index"
+                        >{{op.text}}</a-select-option>
+                    </a-select>
+                </a-col>
+                <a-col :span="14" class="countCol">
+                    <countText :countList="countText"></countText>
+                </a-col>
+            </a-row>
 
-      <a-spin tip="加载中..." :spinning="loading">
-        <el-table
-          ref="multipleTable"
-          class="multipleEl"
-          :data="dataSource"
-          border
-          style="width: 100%"
-          @select="selectBox"
-          @select-all="selectAll"
-          highlight-current-row
-        >
-          <!--多选框checkbox-->
-          <el-table-column type="selection" width="55" align="center" :show-overflow-tooltip="true"></el-table-column>
-          <!--状态列-->
-          <!--处方、处方数、患者列-->
-          <el-table-column
-            :prop="item.prop"
-            :label="item.title"
-            :key="index"
-            v-for="(item,index) in columns"
-            :width="item.width"
-            :align="item.align"
-            :formatter="item.formatter"
-          >
-            <template slot-scope="props">
-              <span v-if="item.prop == 'submitName'">
-                <!-- <a href="">{{props.row[item.prop]}}&nbsp;<a-icon type="message"/></a> -->
-                <a-tooltip placement="top">
-                  <template slot="title">
-                    <span>{{props.row.submitDocPhone}}</span>
-                  </template>
-                  <a href>
-                    {{props.row[item.prop]}}&nbsp;
-                    <a-icon type="message"/> 
-                  </a>
-                </a-tooltip>
-              </span>
-              <span v-else-if="item.prop == 'orderNo'">
-                <a-popover placement="topLeft" @click="mouseHover(props.row)" trigger="click">
-                  <template slot="content">
-                    <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
-                  </template>
-                  <a-tag color="#1694fb">{{props.row.orderNo}}</a-tag>
-                </a-popover>
-              </span>
-              <span v-else-if="item.prop == 'updateTime'">
-                <a-tooltip placement="top">
-                  <template slot="title">
-                    <span>{{props.row.updateTime}}</span>
-                  </template>
-                  <span>{{timeFormat(props.row.updateTime)}}</span>
-                </a-tooltip>
-              </span>
-              <span v-else>{{props.row[item.prop]}}</span>
-            </template>
-          </el-table-column>
-          <!--问题tags列-->
-          <el-table-column
-            prop="problem"
-            label="问题"
-            min-width="500"
-          >
-            <template slot-scope="props">
-              <a-row v-for="(op,index) in props.row.orderissueVOS" class="problemRow" :key="index">
-                <a-col :span="2">
-                  <a-tag :color="op.levelColor" style="cursor: default;">{{op.auditName }}</a-tag>
-                </a-col>
-                <a-col :span="22">
-                  <a-tooltip placement="top" :key="index">
-                    <template slot="title" style="width: 300px">
-                      {{op.auditClass}}：{{op.auditDescription}}
-                      <br>
-                      描述：{{op.auditSuggest}}
-                    </template>
-                    <div class="multiLineText">
-                      <span class="auditClass">{{op.auditClass}}：</span>
-                      {{op.auditDescription}}
-                      <span class="auditClass">描述：</span>
-                      {{op.auditSuggest}}
-                    </div>
-                  </a-tooltip>
-                </a-col>
-                <a-divider v-if="index<props.row.orderissueVOS.length-1" type="horizontal"/>
-              </a-row>
-            </template>
-          </el-table-column>
-          <el-table-column prop="action" label="操作" width="140" align="center">
-            <template slot-scope="props">
-              <a @click="looks(props.row)">查看</a>
-              <a-divider type="vertical"/>
-              <a-popconfirm
-                title="确定通过?"
-                @confirm="passSingle(props.row)"
-                okText="通过"
-                cancelText="取消"
-              >
-                <a href="javascript:;">通过</a>
-              </a-popconfirm>
-              <a-divider type="vertical"/>
-              <a @click="rejectedSingle(props)">驳回</a>
-            </template>
-          </el-table-column>
-        </el-table>
-        <a-pagination
-          showSizeChanger
-          showQuickJumper
-          :total="total"
-          class="pnstyle"
-          v-model="current"
-          :defaultPageSize="10"
-          :pageSizeOptions="['10', '20','50']"
-          @showSizeChange="clientSizeChange"
-          @change="customerPageChange"
-          size="small"
-        ></a-pagination>
-      </a-spin>
-      <a-modal
-        title="驳回理由"
-        :visible="Modal.visible"
-        @ok="handleOk"
-        :confirmLoading="Modal.confirmLoading"
-        @cancel="handleCancel"
-        width="600px"
-        class="modals"
-      >
-        <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
-          <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
-            <span class="dealP margin-top-10">问题描述</span>
-            <a-card
-              class="margin-top-10 antCard"
-              v-for="(op,index) in tagsDetailData"
-              :style="{'borderColor':op.borderColor}"
-              :key="index"
+            <a-spin tip="加载中..." :spinning="loading">
+                <el-table
+                    ref="multipleTable"
+                    class="multipleEl"
+                    :data="dataSource"
+                    border
+                    style="width: 100%"
+                    @select="selectBox"
+                    @select-all="selectAll"
+                    highlight-current-row
+                >
+                    <!--多选框checkbox-->
+                    <el-table-column
+                        type="selection"
+                        width="55"
+                        align="center"
+                        :show-overflow-tooltip="true"
+                    ></el-table-column>
+                    <!--状态列-->
+                    <!--处方、处方数、患者列-->
+                    <el-table-column
+                        :prop="item.prop"
+                        :label="item.title"
+                        :key="index"
+                        v-for="(item,index) in columns"
+                        :width="item.width"
+                        :align="item.align"
+                        :formatter="item.formatter"
+                    >
+                        <template slot-scope="props">
+                            <span v-if="item.prop == 'submitName'">
+                                <!-- <a href="">{{props.row[item.prop]}}&nbsp;<a-icon type="message"/></a> -->
+                                <a-tooltip placement="top">
+                                    <template slot="title">
+                                        <span>{{props.row.submitDocPhone}}</span>
+                                    </template>
+                                    <a href>
+                                        {{props.row[item.prop]}}&nbsp;
+                                        <a-icon type="message" />
+                                    </a>
+                                </a-tooltip>
+                            </span>
+                            <span v-else-if="item.prop == 'orderNo'">
+                                <a-popover
+                                    placement="topLeft"
+                                    @click="mouseHover(props.row)"
+                                    trigger="click"
+                                >
+                                    <template slot="content">
+                                        <prescriptionTabs :tabsData="tabsData"></prescriptionTabs>
+                                    </template>
+                                    <a-tag color="#1694fb">{{props.row.orderNo}}</a-tag>
+                                </a-popover>
+                            </span>
+                            <span v-else-if="item.prop == 'updateTime'">
+                                <a-tooltip placement="top">
+                                    <template slot="title">
+                                        <span>{{props.row.updateTime}}</span>
+                                    </template>
+                                    <span>{{timeFormat(props.row.updateTime)}}</span>
+                                </a-tooltip>
+                            </span>
+                            <span v-else>{{props.row[item.prop]}}</span>
+                        </template>
+                    </el-table-column>
+                    <!--问题tags列-->
+                    <el-table-column prop="problem" label="问题" min-width="500">
+                        <template slot-scope="props">
+                            <a-row
+                                v-for="(op,index) in props.row.orderissueVOS"
+                                class="problemRow"
+                                :key="index"
+                            >
+                                <a-col :span="2">
+                                    <a-tag
+                                        :color="op.levelColor"
+                                        style="cursor: default;"
+                                    >{{op.auditName }}</a-tag>
+                                </a-col>
+                                <a-col :span="22">
+                                    <a-tooltip placement="top" :key="index">
+                                        <template slot="title" style="width: 300px">
+                                            {{op.auditClass}}：{{op.auditDescription}}
+                                            <br />
+                                            描述：{{op.auditSuggest}}
+                                        </template>
+                                        <div class="multiLineText">
+                                            <span class="auditClass">{{op.auditClass}}：</span>
+                                            {{op.auditDescription}}
+                                            <span
+                                                class="auditClass"
+                                            >描述：</span>
+                                            {{op.auditSuggest}}
+                                        </div>
+                                    </a-tooltip>
+                                </a-col>
+                                <a-divider
+                                    v-if="index<props.row.orderissueVOS.length-1"
+                                    type="horizontal"
+                                />
+                            </a-row>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="action" label="操作" width="140" align="center">
+                        <template slot-scope="props">
+                            <a @click="looks(props.row)">查看</a>
+                            <a-divider type="vertical" />
+                            <a-popconfirm
+                                title="确定通过?"
+                                @confirm="passSingle(props.row)"
+                                okText="通过"
+                                cancelText="取消"
+                            >
+                                <a href="javascript:;">通过</a>
+                            </a-popconfirm>
+                            <a-divider type="vertical" />
+                            <a @click="rejectedSingle(props)">驳回</a>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <a-pagination
+                    showSizeChanger
+                    showQuickJumper
+                    :total="total"
+                    class="pnstyle"
+                    v-model="current"
+                    :defaultPageSize="10"
+                    :pageSizeOptions="['10', '20','50']"
+                    @showSizeChange="clientSizeChange"
+                    @change="customerPageChange"
+                    size="small"
+                ></a-pagination>
+            </a-spin>
+            <a-modal
+                title="驳回理由"
+                :visible="Modal.visible"
+                @ok="handleOk"
+                :confirmLoading="Modal.confirmLoading"
+                @cancel="handleCancel"
+                width="600px"
+                class="modals"
             >
-              <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
-              <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
-              <span class="marLeft10">
-                  <i class="iconfont action action-yaopin1" style="color: #2eabff"/>
-                  {{op.drugName}}
-                </span>
-              <div :rows="3" :maxRows="4" read-only class="textArea">
-                <a-tag>问题</a-tag>
-                <span class="opacity8">{{op.auditDescription}}</span>
-              </div>
-              <div :rows="3" :maxRows="4" read-only>
-                <a-tag>描述</a-tag>
-                {{op.audSuggest}}
-              </div>
-              <div class="subscript" v-if="Number(op.status)===1">已审核</div>
-            </a-card>
-            <div class="margin-top-10">
-              <p class="dealP margin-top-10" style="float: left">审核意见：</p>
-              <a-popconfirm title="确定存为模板?" @confirm="saveTemplate()" okText="确定" cancelText="取消">
-                <a-button type="primary" class="saveButton" size="small">存为模板</a-button>
-              </a-popconfirm>
-              <a-select
-                class="saveButton"
-                size="small"
-                style="width: 150px"
-                @change="selectTemp"
-                v-model="problemType"
-              >
-                <a-select-option
-                  :value="op.tabooId"
-                  v-for="(op,index) in reviewTemplates"
-                  :key="index"
-                >{{op.tabooTitle}}</a-select-option>
-              </a-select>
-              <a-tooltip placement="top" :key="index" v-for="(tt,index) in templateTags">
-                <template slot="title" style="width: 100px">{{tt.titles}}</template>
-                <a-tag
-                  class="problemTag saveButton"
-                  v-if="index<5 && tt.bgColor == '#2eabff'"
-                  :key="index"
-                  @click="tagsClick(tt)"
-                  color="#2eabff"
-                >{{tt.updateTitles}}</a-tag>
-                <a-tag
-                  class="problemTag saveButton"
-                  v-else-if="index<5"
-                  :key="index"
-                  @click="tagsClick(tt)"
-                >{{tt.updateTitles}}</a-tag>
-              </a-tooltip>
-              <a-dropdown :trigger="['hover']">
-                <a-menu slot="overlay">
-                  <a-menu-item
-                    v-for="(gd,index) in templateTags"
-                    @click="tagsClick(gd)"
-                    v-if="index>=5"
-                    :key="index"
-                  >{{gd.updateTitles}}</a-menu-item>
-                </a-menu>
-                <a v-if="templateTags.length>5" class="margin-left-5 saveButton">
-                  更多
-                  <a-icon type="down"/>
-                </a>
-                <a v-else></a>
-              </a-dropdown>
-              <a-textarea :rows="4" v-model="templateText"></a-textarea>
-            </div>
-
-          </a-tab-pane>
-          <a-tab-pane tab="干预记录" key="2">
-            <a-timeline style="margin-top: 20px;margin-left: 10px">
-              <a-timeline-item v-for="(rd,index) in recordList" class="timelineItem" :key="index">
-                <a-icon
-                  v-if="index+1 == recordList.length"
-                  slot="dot"
-                  type="clock-circle-o"
-                  style="font-size: 16px;"
-                />
-                <p>
-                  <a-tag>{{rd.eventPerson}}</a-tag>
-                  {{rd.eventTime}}
-                </p>
-                <p>
-                  <span class="font-bold">{{rd.event}}:</span>
-                  <span>{{rd.eventText}}</span>
-                </p>
-              </a-timeline-item>
-            </a-timeline>
-          </a-tab-pane>
-        </a-tabs>
-      </a-modal>
-    </a-card>
-  </div>
+                <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
+                    <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
+                        <span class="dealP margin-top-10">问题描述</span>
+                        <a-card
+                            class="margin-top-10 antCard"
+                            v-for="(op,index) in tagsDetailData"
+                            :style="{'borderColor':op.borderColor}"
+                            :key="index"
+                        >
+                            <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
+                            <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
+                            <span class="marLeft10">
+                                <i class="iconfont action action-yaopin1" style="color: #2eabff" />
+                                {{op.drugName}}
+                            </span>
+                            <div :rows="3" :maxRows="4" read-only class="textArea">
+                                <a-tag>问题</a-tag>
+                                <span class="opacity8">{{op.auditDescription}}</span>
+                            </div>
+                            <div :rows="3" :maxRows="4" read-only>
+                                <a-tag>描述</a-tag>
+                                {{op.audSuggest}}
+                            </div>
+                            <div class="subscript" v-if="Number(op.status)===1">已审核</div>
+                        </a-card>
+                        <div class="margin-top-10">
+                            <p class="dealP margin-top-10" style="float: left">审核意见：</p>
+                            <a-popconfirm
+                                title="确定存为模板?"
+                                @confirm="saveTemplate()"
+                                okText="确定"
+                                cancelText="取消"
+                            >
+                                <a-button type="primary" class="saveButton" size="small">存为模板</a-button>
+                            </a-popconfirm>
+                            <a-select
+                                class="saveButton"
+                                size="small"
+                                style="width: 150px"
+                                @change="selectTemp"
+                                v-model="problemType"
+                            >
+                                <a-select-option
+                                    :value="op.tabooId"
+                                    v-for="(op,index) in reviewTemplates"
+                                    :key="index"
+                                >{{op.tabooTitle}}</a-select-option>
+                            </a-select>
+                            <a-tooltip
+                                placement="top"
+                                :key="index"
+                                v-for="(tt,index) in templateTags"
+                            >
+                                <template slot="title" style="width: 100px">{{tt.titles}}</template>
+                                <a-tag
+                                    class="problemTag saveButton"
+                                    v-if="index<5 && tt.bgColor == '#2eabff'"
+                                    :key="index"
+                                    @click="tagsClick(tt)"
+                                    color="#2eabff"
+                                >{{tt.updateTitles}}</a-tag>
+                                <a-tag
+                                    class="problemTag saveButton"
+                                    v-else-if="index<5"
+                                    :key="index"
+                                    @click="tagsClick(tt)"
+                                >{{tt.updateTitles}}</a-tag>
+                            </a-tooltip>
+                            <a-dropdown :trigger="['hover']">
+                                <a-menu slot="overlay">
+                                    <a-menu-item
+                                        v-for="(gd,index) in templateTags"
+                                        @click="tagsClick(gd)"
+                                        v-if="index>=5"
+                                        :key="index"
+                                    >{{gd.updateTitles}}</a-menu-item>
+                                </a-menu>
+                                <a v-if="templateTags.length>5" class="margin-left-5 saveButton">
+                                    更多
+                                    <a-icon type="down" />
+                                </a>
+                                <a v-else></a>
+                            </a-dropdown>
+                            <a-textarea :rows="4" v-model="templateText"></a-textarea>
+                        </div>
+                    </a-tab-pane>
+                    <a-tab-pane tab="干预记录" key="2">
+                        <a-timeline style="margin-top: 20px;margin-left: 10px">
+                            <a-timeline-item
+                                v-for="(rd,index) in recordList"
+                                class="timelineItem"
+                                :key="index"
+                            >
+                                <a-icon
+                                    v-if="index+1 == recordList.length"
+                                    slot="dot"
+                                    type="clock-circle-o"
+                                    style="font-size: 16px;"
+                                />
+                                <p>
+                                    <a-tag>{{rd.eventPerson}}</a-tag>
+                                    {{rd.eventTime}}
+                                </p>
+                                <p>
+                                    <span class="font-bold">{{rd.event}}:</span>
+                                    <span>{{rd.eventText}}</span>
+                                </p>
+                            </a-timeline-item>
+                        </a-timeline>
+                    </a-tab-pane>
+                </a-tabs>
+            </a-modal>
+        </a-card>
+    </div>
 </template>
 <script>
   import { selectTribunalRecord } from '@/api/login'
@@ -880,7 +920,6 @@
             list[i].bgColor = '#d9d9d9'
           }
         }
-        console.log(data, 'data')
         this.templateText = data.reviewTemplate
       },
       //弹窗提交 单个驳回
@@ -919,9 +958,11 @@
 
       //查看
       looks(data) {
+        let objData = {};
+        objData = { visId: data.visId, submitNo: data.maxSubmitNo,isNew:1};
+        window.localStorage.setItem('outpatientData',JSON.stringify(objData));
         this.$router.push({
           name: 'presOutpatientDetail',
-          params: { visId: data.visId, submitNo: data.maxSubmitNo,isNew:1}
         })
       },
       //TODO:处方单数据暂未处理
@@ -985,41 +1026,40 @@
   }
 </script>
 <style>
-  .divInfo span {
+.divInfo span {
     margin-left: 10px;
-  }
+}
 
-  /*自定义图标样式*/
-  .myIcon {
+/*自定义图标样式*/
+.myIcon {
     font-size: 22px;
     font-weight: bold;
     padding-top: 40px;
-  }
+}
 
-  /*网格样式*/
-  .multipleEl {
+/*网格样式*/
+.multipleEl {
     margin-top: 10px;
-  }
-  .auditClass {
+}
+.auditClass {
     font-weight: bold;
     color: #000000;
     opacity: 0.9;
-  }
+}
 
-
-  .multipleEl .has-gutter tr th:nth-child(11) {
+.multipleEl .has-gutter tr th:nth-child(11) {
     border-right: 0px;
-  }
+}
 
-  .problemRow {
+.problemRow {
     line-height: 30px;
-  }
+}
 
-  .problemRow .ant-divider-horizontal {
+.problemRow .ant-divider-horizontal {
     margin: 0 0;
-  }
+}
 
-  .multipleEl .multiLineText {
+.multipleEl .multiLineText {
     word-break: break-all;
     display: -webkit-box;
     -webkit-line-clamp: 1; /*限制在一个块元素显示的文本的行数*/
@@ -1027,78 +1067,77 @@
     overflow: hidden;
     height: 100%;
     /*text-indent:2em;*/
-  }
+}
 
-
-  .modals .ant-form-item {
+.modals .ant-form-item {
     margin-bottom: 5px;
-  }
+}
 
-  .modals .ant-modal-body {
+.modals .ant-modal-body {
     padding: 20px 24px;
-  }
+}
 
-  .modals .ant-form-item-control {
+.modals .ant-form-item-control {
     line-height: 30px;
-  }
+}
 
-  .modals .ant-form-item-label {
+.modals .ant-form-item-label {
     line-height: 30px;
-  }
+}
 
-  .modals .ant-tabs-bar {
+.modals .ant-tabs-bar {
     margin: 0 0 0px 0;
-  }
+}
 
-  .modals .ant-card-body {
+.modals .ant-card-body {
     padding: 10px 21px;
-  }
+}
 
-  .modals .ant-timeline {
+.modals .ant-timeline {
     margin-top: 20px;
-  }
+}
 
-  .modals .selectInput {
+.modals .selectInput {
     line-height: 24px;
     font-size: 14px;
     width: 100%;
-  }
-  .countCol .countStyle {
+}
+.countCol .countStyle {
     margin-top: 0px !important;
-  }
-  .countCol .countFor {
+}
+.countCol .countFor {
     margin-bottom: 0px !important;
-  }
-  .saveButton {
+}
+.saveButton {
     margin-top: 10px;
     margin-left: 10px;
     float: left;
-  }
+}
 
-  .problemTag {
+.problemTag {
     font-size: 12px;
     margin-left: 7px;
     margin-bottom: 5px;
-  }
-  .timelineItem p {
+}
+.timelineItem p {
     margin-bottom: 5px;
-  }
+}
 
-  .timelineItem p:nth-child(n + 2) {
+.timelineItem p:nth-child(n + 2) {
     opacity: 0.8;
-  }
+}
 
-  .radioStyle{
+.radioStyle {
     display: block;
     height: 30px;
     line-height: 30px;
-  }
-  .tagStyle {
+}
+.tagStyle {
     font-size: 12px;
     /*margin-left: 7px;*/
     margin-bottom: 5px;
-  }
-  .textArea {
+}
+.textArea {
     word-break: break-all;
     display: -webkit-box;
     -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
@@ -1108,8 +1147,8 @@
     margin-top: 5px;
     margin-bottom: 5px;
     /*text-indent: 2em*/
-  }
-  .subscript {
+}
+.subscript {
     color: white;
     height: 30px;
     width: 100px;
@@ -1125,14 +1164,14 @@
     -o-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
-  }
-  .dealP {
+}
+.dealP {
     font-size: 14px;
     font-weight: bold;
     margin-top: 10px;
-  }
-  .icons-list{
+}
+.icons-list {
     margin-right: 6px;
     font-size: 18px;
-  }
+}
 </style>

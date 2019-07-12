@@ -3,9 +3,6 @@
         <a-spin tip="加载中..." :spinning="allLoading">
             <a-col :span="14">
                 <a-card>
-                    <a-row v-if="carePatient===true">
-                        
-                    </a-row>
                     <a-row class="margin-top-10">
                         <span class="titleText">{{leftData.patientDeptName}}</span>
                         <span class="font-bold fontSize14 marLeft10">{{leftData.patientName}}</span>
@@ -26,36 +23,26 @@
                                 :key="index"
                             >{{op}}</a-tag>
                         </span>
-                        <span class="guanzhu" :loading="loading">
+                        <span v-if="carePatient===true" class="guanzhu" :loading="loading">
                             <a-icon theme="filled" type="star" class="xingxing" />已关注
                         </span>
                     </a-row>
                     <a-divider type="horizontal" class="detailDivider" />
-
-                    <detail-list>
-                        <detail-list-item term="体重">
+                    <a-row class="patientDetail">
+                        <a-col span="4">
+                            体重：
                             <span class="opacity8">{{leftData.weight}}Kg</span>
-                        </detail-list-item>
-                        <detail-list-item term="身高">
+                        </a-col>
+                        <a-col span="4">
+                            身高：
                             <span class="opacity8">{{leftData.height}}Cm</span>
-                        </detail-list-item>
-                        <detail-list-item term="体表面积">
+                        </a-col>
+                        <a-col span="6">
+                            体表面积：
                             <span class="opacity8">{{leftData.bSA}}㎡</span>
-                        </detail-list-item>
-                        <detail-list-item term="临床诊断">
-                            <a-tooltip placement="topLeft" :title="leftData.diseaseName">
-                                <p class="opacity8 detilNowrap">{{leftData.diseaseName}}</p>
-                            </a-tooltip>
-                        </detail-list-item>
-                        <detail-list-item term="过敏史">
-                            <a-tooltip placement="topLeft" :title="leftData.irritabilityNames">
-                                <p
-                                    class="opacity8 detilNowrap"
-                                    style="width:220px"
-                                >{{leftData.irritabilityNames}}</p>
-                            </a-tooltip>
-                        </detail-list-item>
-                        <detail-list-item term="处方医生">
+                        </a-col>
+                        <a-col span="10">
+                            处方医生：
                             <span class="opacity8">
                                 <span class="datetime">
                                     {{leftData.attendingDocName}}&nbsp;
@@ -63,8 +50,16 @@
                                     &nbsp;{{leftData.attendingDocPhone}}
                                 </span>
                             </span>
-                        </detail-list-item>
-                    </detail-list>
+                        </a-col>
+                    </a-row>
+                    <a-row class="patientDetail">
+                        临床诊断：
+                        <span class="opacity8">{{leftData.diseaseName}}</span>
+                    </a-row>
+                    <a-row class="patientDetail">
+                        过敏史：
+                        <span class="opacity8">{{leftData.irritabilityNames}}</span>
+                    </a-row>
                 </a-card>
                 <a-card class="cardHeight">
                     <a-tabs defaultActiveKey="1" size="small" class="width-100">
@@ -145,9 +140,13 @@
                         <a-tab-pane tab="检查报告" key="2">
                             <detailCheck visidId="1"></detailCheck>
                         </a-tab-pane>
-                        <a-tab-pane tab="检验报告" key="3">
-                            <DetailTest visidId="1"></DetailTest>
+                        <a-tab-pane key="3">
+                            <span slot="tab">
+                                <a-badge :count="quesNumTotal" :offset="[6,0]">检验报告</a-badge>
+                            </span>
+                            <DetailTest visidId="1" :setquesNumAll="setquesNumAll"></DetailTest>
                         </a-tab-pane>
+                        <a-tab-pane tab="门诊病历" key="4"></a-tab-pane>
                     </a-tabs>
                 </a-card>
             </a-col>
@@ -156,63 +155,8 @@
                     <div class="dealRight">
                         <a-tabs defaultActiveKey="1" size="small" class="width-100">
                             <a-tab-pane tab="预判情况" key="1">
-                                <span class="dealP">问题描述：</span>
-                                <span v-for="ta in tagsData " class="margin-left-5">
-                                    <a-tag
-                                        v-if="ta.status == true"
-                                        class="checkTag tagStyle"
-                                        :style="{'background':ta.levelColor, 'color':'#fff'}"
-                                        @click="checkableChange(ta)"
-                                    >{{ta.auditName }}</a-tag>
-                                    <a-tag
-                                        v-else-if="ta.status == false"
-                                        class="checkTag tagStyle"
-                                        :style="{'background':'#fff', 'color':ta.levelColor}"
-                                        @click="checkableChange(ta)"
-                                    >{{ta.auditName }}</a-tag>
-                                </span>
-                                <span>
-                                    <a-tag
-                                        class="checkTag tagStyle aTag1 margin-left-5"
-                                        v-if="checkedAll"
-                                        @click="handleChange"
-                                    >全部</a-tag>
-                                    <a-tag
-                                        class="checkTag tagStyle aTag2 margin-left-5"
-                                        v-else
-                                        @click="handleChange"
-                                    >全部</a-tag>
-                                </span>
-                                <a-card
-                                    class="margin-top-10 antCard"
-                                    @click="clickTagsCard(op)"
-                                    v-for="(op,index) in rightData "
-                                    v-if="op.status"
-                                    :style="{'borderColor':op.borderColor}"
-                                    :key="index"
-                                >
-                                    <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
-                                    <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
-                                    <span class="marLeft10">
-                                        <i
-                                            class="iconfont action action-yaopin1"
-                                            style="color: #2eabff"
-                                        />
-                                        {{op.drugName}}
-                                    </span>
-                                    <div :rows="3" :maxRows="4" class="textArea">
-                                        <a-tag>问题</a-tag>
-                                        <span class="opacity8">{{op.auditDescription}}</span>
-                                    </div>
-                                    <div :rows="3" :maxRows="4" class="textArea">
-                                        <a-tag>描述</a-tag>
-                                        <span class="opacity8">{{op.audSuggest}}</span>
-                                    </div>
-                                    <div class="subscript" v-if="op.reviewStatus == 1">已审核</div>
-                                </a-card>
-
-                                <div class="margin-top-10" v-if="auditStatus">
-                                    <p class="dealP margin-top-10" style="float: left">审核意见:</p>
+                                <div class="auditOpinion" v-if="auditStatus">
+                                    <p class="dealP" style="float: left">审核意见:</p>
                                     <a-button
                                         type="primary"
                                         class="saveButton"
@@ -270,8 +214,65 @@
                                         </a>
                                         <a v-else></a>
                                     </a-dropdown>
-                                    <a-textarea :rows="4" v-model="templateText"></a-textarea>
                                 </div>
+                                <a-textarea :rows="4" v-model="templateText"></a-textarea>
+                                <div class="margin-top-10">
+                                    <span class="dealP">问题描述：</span>
+                                    <span v-for="ta in tagsData " class="margin-left-5">
+                                        <a-tag
+                                            v-if="ta.status == true"
+                                            class="checkTag tagStyle"
+                                            :style="{'background':ta.levelColor, 'color':'#fff'}"
+                                            @click="checkableChange(ta)"
+                                        >{{ta.auditName }}</a-tag>
+                                        <a-tag
+                                            v-else-if="ta.status == false"
+                                            class="checkTag tagStyle"
+                                            :style="{'background':'#fff', 'color':ta.levelColor}"
+                                            @click="checkableChange(ta)"
+                                        >{{ta.auditName }}</a-tag>
+                                    </span>
+                                    <span>
+                                        <a-tag
+                                            class="checkTag tagStyle aTag1 margin-left-5"
+                                            v-if="checkedAll"
+                                            @click="handleChange"
+                                        >全部</a-tag>
+                                        <a-tag
+                                            class="checkTag tagStyle aTag2 margin-left-5"
+                                            v-else
+                                            @click="handleChange"
+                                        >全部</a-tag>
+                                    </span>
+                                    <a-checkbox style="float:right" @change="onChangeNormal">仅显示未审核</a-checkbox>
+                                </div>
+                                <a-card
+                                    class="margin-top-10 antCard"
+                                    @click="clickTagsCard(op)"
+                                    v-for="(op,index) in rightData "
+                                    v-if="op.status"
+                                    :style="{'borderColor':op.borderColor}"
+                                    :key="index"
+                                >
+                                    <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
+                                    <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
+                                    <span class="marLeft10">
+                                        <i
+                                            class="iconfont action action-yaopin1"
+                                            style="color: #2eabff"
+                                        />
+                                        {{op.drugName}}
+                                    </span>
+                                    <div :rows="3" :maxRows="4" class="textArea">
+                                        <a-tag>问题</a-tag>
+                                        <span class="opacity8">{{op.auditDescription}}</span>
+                                    </div>
+                                    <div :rows="3" :maxRows="4" class="textArea">
+                                        <a-tag>描述</a-tag>
+                                        <span class="opacity8">{{op.audSuggest}}</span>
+                                    </div>
+                                    <div class="subscript" v-if="op.reviewStatus == 1">已审核</div>
+                                </a-card>
                             </a-tab-pane>
                             <a-tab-pane tab="干预记录" key="2">
                                 <a-timeline style="margin-top: 20px;margin-left: 10px">
@@ -354,7 +355,8 @@
             @cancel="versionCancel"
             width="900px"
         >
-            <versionComp :propData="propData"></versionComp>
+            <versionComp :propData="routerData"></versionComp>
+            <!-- <versionCompBeta  :propData="routerData"></versionCompBeta> -->
         </a-modal>
         <footer-tool-bar
             :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
@@ -376,7 +378,6 @@
                     :disabled="leftData.subNo>1? false:true"
                     class="margin-left-5"
                     :loading="loading"
-                    v-if="auditStatus"
                 >
                     <i type="star" class="iconfont action action-tubiaozhizuomoban-" />
                     <span class="margin-left-5">版本对比</span>
@@ -425,9 +426,11 @@ import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/FooterToolbar'
 import { mixin, mixinDevice } from '@/utils/mixin'
 import versionComp from '../component/version-comparison'
+import versionCompBeta from '../component/version-comparison/versionCompBeta'
 import detailCheck from '../presHospitalized/detailCheck.vue'
 import DetailTest from '../presHospitalized/detailTest.vue'
 import { mapActions } from 'vuex'
+import { fail } from 'assert'
 
 const DetailListItem = DetailList.Item
 export default {
@@ -436,6 +439,7 @@ export default {
         DetailListItem,
         FooterToolBar,
         versionComp,
+        versionCompBeta,
         detailCheck,
         DetailTest
     },
@@ -452,8 +456,9 @@ export default {
                 reviewTemplateUpdate: 'sys/reviewTemplate/update',
                 concernedRecord: 'sys/concernedPatient/selectCurrentRecord',
                 concernedPatientUpdate: 'sys/concernedPatient/update',
-                turnAudit: 'sys/reviewOrderissue/selectLeadVisIdAndLagVisId'
+                turnAudit: 'sys/reviewOrderissue/selectLeadVisIdAndLagVisId',
                 //reviewOrderissue/selectLeadVisIdAndLagVisId
+                selectTestVisId: 'sys/reviewOrderissue/selectClinicTestListByVisId'
             },
             Modal: {
                 visible: false
@@ -490,7 +495,6 @@ export default {
             prescOrderId: '',
             levelColor: '',
             visId: null,
-            propData: { visId: null, submitNo: null },
             routerData: {},
             phyStatelist: [],
             auditStatus: false,
@@ -501,7 +505,8 @@ export default {
             nextPerson: {
                 visId: null,
                 maxSubmitNo: null
-            }
+            },
+            quesNumTotal: 0
         }
     },
     mounted() {
@@ -509,22 +514,20 @@ export default {
         this.getTemplate()
         this.getRecord()
         this.getAttention()
-        if (this.$route.params.isNew == 1) {
+        if ( this.routerData.isNew == 1) {
             this.getLeadAndLag()
         } else {
             this.auditStatus = false
         }
+        this.setquesNumAll()
     },
     methods: {
         ...mapActions('page', ['closeTag']),
         getDetailData() {
-            this.visId = this.$route.params.visId
-            this.routerData = this.$route.params
-            this.propData.visId = this.$route.params.visId
-            this.propData.submitNo = this.$route.params.submitNo
-            let params = this.$route.params
+            this.visId =  JSON.parse(window.localStorage.getItem('outpatientData')).visId
+            this.routerData = JSON.parse(window.localStorage.getItem('outpatientData'))
             this.allLoading = false
-            selectOutDetail(params)
+            selectOutDetail(this.routerData)
                 .then(res => {
                     if (res.code == '200') {
                         this.allLoading = false
@@ -536,7 +539,6 @@ export default {
                         if (res.data.physiologicalState) {
                             this.phyStatelist = res.data.physiologicalState.split(',')
                         }
-                        console.log(this.rightData)
                         this.rightData.forEach((item, index) => {
                             if (item.reviewStatus == '0') {
                                 this.auditStatus = true
@@ -605,7 +607,7 @@ export default {
                         this.getTemplate()
                         this.getRecord()
                         this.getAttention()
-                        if (this.$route.params.isNew == 1) {
+                        if (  this.routerData.isNew == 1) {
                             this.getLeadAndLag()
                         } else {
                             this.auditStatus = false
@@ -613,6 +615,7 @@ export default {
                     } else {
                         this.warn(res.msg)
                     }
+                    this.setquesNumAll()
                 })
                 .catch(err => {
                     this.error(err)
@@ -647,7 +650,7 @@ export default {
                         this.getTemplate()
                         this.getRecord()
                         this.getAttention()
-                        if (this.$route.params.isNew == 1) {
+                        if ( this.routerData.isNew == 1) {
                             this.getLeadAndLag()
                         } else {
                             this.auditStatus = false
@@ -655,6 +658,7 @@ export default {
                     } else {
                         this.warn(res.msg)
                     }
+                    this.setquesNumAll()
                 })
                 .catch(err => {
                     this.error(err)
@@ -733,11 +737,10 @@ export default {
             this.rightData.push()
         },
         getTemplate() {
-            let params = this.$route.params
             this.$axios({
                 url: this.api.selectWithReviewId,
                 method: 'put',
-                data: params
+                data:  this.routerData
             })
                 .then(res => {
                     if (res.code == '200') {
@@ -776,7 +779,6 @@ export default {
                 })
         },
         selectTemp(data) {
-            console.log(this.problemType, '111')
             this.problemType = data
             this.getTemplateDetail()
         },
@@ -834,11 +836,10 @@ export default {
 
         //获取记录
         getRecord() {
-            let params = this.$route.params
             this.$axios({
                 url: this.api.selectWithVisId,
                 method: 'put',
-                data: params
+                data:  this.routerData
             })
                 .then(res => {
                     if (res.code == '200') {
@@ -861,11 +862,10 @@ export default {
         },
         //获取关注患者信息
         getAttention() {
-            let params = this.$route.params
             this.$axios({
                 url: this.api.concernedRecord,
                 method: 'post',
-                data: params
+                data:  this.routerData
             })
                 .then(res => {
                     if (res.code == '200') {
@@ -913,28 +913,24 @@ export default {
         },
         // 更换患者
         slePatients(data) {
-            // this.$router.push({
-            //   name: 'presOutpatientDetail',
-            //   params: { visId: data.visId, submitNo: data.maxSubmitNo,isNew:true }
-            // })
-            this.$route.params.visId = data.visId
-            this.$route.params.submitNo = data.maxSubmitNo
-            this.$route.params.isNew = 1
+            window.localStorage.removeItem('outpatientData')
+            window.localStorage.setItem('outpatientData',JSON.stringify({visId:data.visId,submitNo: data.maxSubmitNo,isNew:1}))
             this.getDetailData()
             this.getTemplate()
             this.getRecord()
             this.getAttention()
-            if (this.$route.params.isNew == 1) {
+            if (this.routerData.isNew == 1) {
                 this.getLeadAndLag()
             } else {
                 this.auditStatus = false
             }
+            this.setquesNumAll()
         },
 
         getLeadAndLag() {
             let params = {}
             params.visId = this.visId
-            params.maxSubmitNo = this.$route.params.submitNo
+            params.maxSubmitNo = this.routerData.submitNo
             this.$axios({
                 url: this.api.turnAudit,
                 method: 'put',
@@ -972,6 +968,45 @@ export default {
                 name: 'drugSpecDetail',
                 params: { drugCode: data.drugId }
             })
+        },
+        //显示异常
+        onChangeNormal(e) {
+            let data = this.rightData
+            if (e.target.checked) {
+                for (let key in data) {
+                    if (data[key].reviewStatus == '0') {
+                        data[key].status = true
+                    } else {
+                        data[key].status = false
+                    }
+                }
+            } else {
+                for (let key in data) {
+                    data[key].status = true
+                }
+            }
+            this.rightData.push()
+        },
+        //获取检验报告异常
+        setquesNumAll() {
+            this.quesNumTotal = 0;
+            this.$axios({
+                url: this.api.selectTestVisId,
+                method: 'put',
+                data: { visid: 1 }
+            })
+                .then(res => {
+                    if (res.code == '200') {
+                        for (let key in res.rows) {
+                            this.quesNumTotal += Number(res.rows[key].quesNum)
+                        }
+                    } else {
+                        this.warn(res.msg)
+                    }
+                })
+                .catch(err => {
+                    this.error(err)
+                })
         }
     },
     filters: {
@@ -996,13 +1031,17 @@ export default {
             this.getTemplate()
             this.getRecord()
             this.getAttention()
-            if (this.$route.params.isNew == 1) {
+            if ( this.routerData.isNew == 1) {
                 this.getLeadAndLag()
             } else {
                 this.auditStatus = false
             }
+            this.setquesNumAll()
         }
-    }
+    },
+    // beforeDestroy(){
+    //        window.localStorage.removeItem('outpatientData')
+    // }
 }
 </script>
 
@@ -1032,6 +1071,10 @@ export default {
 .detailDivider {
     margin-bottom: 30px;
     margin-top: 20px;
+}
+.patientDetail {
+    font-size: 14px;
+    line-height: 30px;
 }
 
 .hiddenOpacity {
@@ -1070,7 +1113,6 @@ export default {
 }
 
 .saveButton {
-    margin-top: 10px;
     margin-left: 10px;
     float: left;
 }
@@ -1124,7 +1166,6 @@ export default {
 .dealP {
     font-size: 14px;
     font-weight: bold;
-    margin-top: 10px;
 }
 
 .dealRow {
@@ -1199,6 +1240,9 @@ export default {
         -o-transform: rotate(45deg);
         -ms-transform: rotate(45deg);
         transform: rotate(45deg);
+    }
+    .auditOpinion {
+        height: 53px;
     }
 }
 .detilNowrap {

@@ -152,18 +152,7 @@
       return {
 
         newData: [
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日三次', num: 1 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日八次', num: 1 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日一次', num: 2 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日一次', num: 2 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日一次', num: 2 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日三次', num: 2 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日三次', num: 2 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日两次', num: 2 },
-          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日五次', num: 2 },
-          { name: '阿莫西林', spec: '90mg', dosage: '口服', frequency: '一日一次', num: 1 },
-          { name: '阿莫西林', spec: '90mg', dosage: '口服', frequency: '一日一次', num: 2 },
-          { name: '阿莫西林', spec: '90mg', dosage: '口服', frequency: '一日三次', num: 2 }
+          { name: '阿司匹林', spec: '80mg', dosage: '口服', frequency: '一日二次', num: 1 },
         ],
         oldData: [
           {
