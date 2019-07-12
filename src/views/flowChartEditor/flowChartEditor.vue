@@ -578,7 +578,6 @@
                     } else if (params.lo == 3) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
-                      console.log(params,'params');
                       coreRuleNodeSelectColId({ id: params.itemId, valueList:params.assertValList }).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = res.rows
@@ -687,7 +686,10 @@
         })
         this.page.on('dragedge:beforeshowanchor', ev => {
           // 只允许目标锚点是输入，源锚点是输出，才能连接
-          if (!(ev.targetAnchor.type === 'input' && ev.sourceAnchor.type === 'output')) {
+          // if (!(ev.targetAnchor.type === 'input' && ev.sourceAnchor.type === 'output')) {
+          //   ev.cancel = true
+          // }
+            if (!(ev.targetAnchor.type === 'input')) {
             ev.cancel = true
           }
           // 如果拖动的是目标方向，则取消显示目标节点中已被连过的锚点
@@ -695,6 +697,16 @@
             //已经连接过的点禁用
             if (ev.target.model.shape != 'model-image-branch' && ev.target.model.shape != 'model-card-conclusion' && this.page.anchorHasBeenLinked(ev.target, ev.targetAnchor)) {
               ev.cancel = true
+            }
+            //起始节点不能直接连接分支节点
+            if(ev.source.model.shape =='flow-circle-start' && ev.target.model.shape =='model-image-branch'){
+            ev.cancel = true
+            }
+            //分支节点可以有多个接入节点，但输出节点只有一个
+            if(ev.target.model.shape =='model-image-branch'){
+              if(ev.target.getEdges().length>0){
+               ev.cancel = true
+               }
             }
             //目标和源都是同一个模块 禁用
             if (ev.target.model.id == ev.source.model.id) {
@@ -711,6 +723,7 @@
               }
             }
           }
+
           // 如果拖动的是源方向，则取消显示源节点中已被连过的锚点
           if (ev.dragEndPointType === 'source' && this.page.anchorHasBeenLinked(ev.source, ev.sourceAnchor)) {
             ev.cancel = true

@@ -286,7 +286,7 @@ export const asyncRouterMap = [
             meta: { title: '门诊审方中心详情', multistage: true },
             children: [
               {
-                path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo/:isNew/',
+                path: '/auditWorkstation/presOutpatient/detail',
                 name: 'presOutpatientDetail',
                 component: () => import('@/views/auditWorkstation/presOutpatient/detail.vue'),
                 meta: { title: '门诊审方中心详情', hiddenHeaderContent: true, index: true }
@@ -554,7 +554,7 @@ export const asyncRouterMap = [
       {
         path: '/sys',
         name: 'sys',
-        component: RouteView,
+        component: PageView,
         redirect: '/sys/org',
         meta: { title: '系统设置', icon: 'check-circle-o', permission: ['result'] },
         children: [
@@ -571,7 +571,7 @@ export const asyncRouterMap = [
                 meta: { title: '机构维护', index: true }
               },
               {
-                path: '/sys/org/detail',
+                path: '/sys/org/detail/:orgId/',
                 name: 'sys_org_detail',
                 hidden: true,
                 component: () => import('@/views/sys/org/detail.vue'),

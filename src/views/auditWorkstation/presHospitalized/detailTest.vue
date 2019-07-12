@@ -62,7 +62,7 @@
                 <span class="font-bold">{{testsDeltopdata.specimenNo}}</span>
               </a-col>
               <a-col :span="4">
-                <a-checkbox @change="onChangeNormal" :checked="checkes">显示异常</a-checkbox>
+                <a-checkbox @change="onChangeNormal" :checked="checkes">仅显示异常</a-checkbox>
               </a-col>
             </a-row>
             <a-row class="dealRow">
