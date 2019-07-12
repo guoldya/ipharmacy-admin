@@ -112,7 +112,7 @@
                       <a-col>{{item.drugName}}</a-col>
                     </a-row>
                     <a-row>
-                      <a-col style="opacity: 0.6">生产厂商：{{item.producedBy}}</a-col>
+                      <a-col style="opacity: 0.6">{{item.producedBy}}</a-col>
                     </a-row>
                     <a-divider style="margin: 8px 0 0 0;" />
                   </a-select-option>
@@ -309,12 +309,13 @@ export default {
           this.error(err)
         })
     },
+    // 点击名称栏
     changeFormat() {
       this.isShow = false
       this.disable = true
       this.getDrugList()
     },
-    // 实例
+    // 实例化右边相似
     handleChange(value, option) {
       console.log(option)
       let params = option.data.attrs
@@ -328,7 +329,7 @@ export default {
       this.MData.unit=params.unit
     },
     lostFocus() {
-      //this.drugName=value
+      this.drugName=value
       console.log('ddd')
       this.isShow = true
     },
@@ -437,8 +438,8 @@ export default {
       params.producedBy = this.MData.producedBy
       params.dosageForms = this.MData.dosageForms
       params.doseUnit = this.MData.doseUnit
-      // params.M = this.M
-      // params.N = this.N
+      params.M = this.M
+      params.N = this.N
       this.loading = true
       let arrs = Object.keys(this.MData)
       if (arrs.length == 0) {
@@ -522,6 +523,9 @@ export default {
 </script>
 <style lang='less'>
 .testchk {
+  .ant-card{
+    padding-top: 12px;
+  }
   .headers{
     line-height: 46px;
   }

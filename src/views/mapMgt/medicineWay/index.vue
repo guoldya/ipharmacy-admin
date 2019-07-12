@@ -1,6 +1,6 @@
 <template>
   <a-Row class="testchk">
-    <a-Col :span="14">
+    <a-Col :span="13">
       <a-card :bodyStyle="{padding:'12px 16px'}">
         <Searchpanel ref="searchPanel" :list="list" :col="12">
           <div slot="control">
@@ -53,7 +53,7 @@
       </a-card>
     </a-Col>
 
-    <a-Col :span="10" class="details">
+    <a-Col :span="11" class="details">
       <a-card :bodyStyle="{}" title="给药途径">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
@@ -354,6 +354,9 @@ export default {
 </script>
 <style lang='less'>
 .testchk {
+   .ant-card{
+    padding-top: 12px;
+  }
   .zhishiku {
     padding-left: 5px;
   }

@@ -144,7 +144,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.dataSource = res.rows
-            console.log(this.dataSource)
             this.total = res.total
             this.loading = false
           } else {

@@ -33,7 +33,7 @@
           <a-input :read-only="readOnly" v-decorator="['initialSize',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]} ]" />
         </a-form-item>
         <a-form-item label="最大活跃" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['maxActive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字'}]}]" />
+          <a-input :read-only="readOnly" v-decorator="['maxActive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]}]" />
         </a-form-item>
         <a-form-item label="验证查询" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input :read-only="readOnly" v-decorator="['testSql',{rules:[{message:'请输入验证查询',required:true}]}]" />
@@ -98,7 +98,6 @@ export default {
           .then(res => {
             if (res.code == '200') {
              let reqArr = res.data
-              console.log('dddd')
               let {
                   id,
                   dsName,

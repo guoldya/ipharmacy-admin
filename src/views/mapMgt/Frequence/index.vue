@@ -1,6 +1,6 @@
 <template>
   <a-Row class="testchk">
-    <a-Col :span="14">
+    <a-Col :span="13">
       <a-card :bodyStyle="{padding:'12px 16px'}">
         <Searchpanel ref="searchPanel" :list="list" :col="12">
           <div slot="control">
@@ -52,7 +52,7 @@
       </a-card>
     </a-Col>
 
-    <a-Col :span="10" class="details">
+    <a-Col :span="11" class="details">
       <a-card  title="用药频次对码">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
@@ -67,7 +67,51 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">名称：</a-col>
           <a-col :span="8">{{NData.frequenceName}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.remark}}</a-Col>
+          <a-Col :span="10" class="td-content"  @click="changeFormat"> 
+            <div :class="{'pt':isActive}">
+              <header v-if="isShow" class="headers">
+                <a-tooltip placement="topLeft" style="cursor: pointer;">
+                  <template slot="title">
+                    <span>{{ this.drugName}}</span>
+                  </template>
+                  {{ this.drugName}}
+                </a-tooltip>
+              </header>
+              <footer v-if="!isShow">
+                <a-select
+                  style="width:100%"
+                  showSearch
+                  allowClear
+                  mode="single"
+                  optionLabelProp="title"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="false"
+                  :filterOption="false"
+                  @search="handleSearch"
+                  @change="handleChange"
+                  v-decorator="[ 'drugCodes']"
+                >
+                  <a-select-option
+                    v-for="(item,index) in this.drugAllList"
+                    :value="item.drugCode"
+                    :key="item.dosageForms"
+                    :producedBy="item.producedBy"
+                    :spec="item.spec"
+                    :spellCode="item.spellCode"
+                    :drugName="item.drugName"
+                    :dosageFormsStr="item.dosageFormsStr"
+                  >
+                    <a-row>
+                      <a-col>{{item.drugName}}</a-col>
+                    </a-row>
+                    <a-row>
+                      <a-col style="opacity: 0.6">{{item.producedBy}}</a-col>
+                    </a-row>
+                    <a-divider style="margin: 8px 0 0 0;" />
+                  </a-select-option>
+                </a-select>
+              </footer>
+            </div></a-Col>
         </a-row>
         <div class="surea">
           <a-button @click="clickCancel">取消</a-button>
@@ -116,8 +160,10 @@
   </a-Row>
 </template>
 <script>
+import debounce from 'lodash/debounce'
 export default {
   data() {
+     this.handleSearch = debounce(this.handleSearch, 800)
     return {
       similarSpin: false,
       similarTotal: 0,
@@ -136,7 +182,9 @@ export default {
       api: {
         hisDrugDataUrl: '/sys/hisFrequence/selectPage',
         similarDrugDataUrl: '/sys/hisFrequence/selectSimilarDicFrequencePage',
-        mapUrl: 'sys/dicFrequenceMapper/insert'
+        mapUrl: 'sys/dicFrequenceMapper/insert',
+         dicDrugSelectList: 'sys/dicFrequence/selectDicFrequenceByKeyword',
+         
       },
       loading: false,
       columnscheckdtl: [
@@ -150,7 +198,12 @@ export default {
       M: 1,
       N: 1,
       disable: true,
-      frequenceName: ''
+      frequenceName: '',
+       marpperId: '',
+      drugName: '',
+      isShow: true,
+      drugAllList: [],
+      isActive: true
     }
   },
   computed: {
@@ -176,8 +229,73 @@ export default {
     this.getData()
   },
   methods: {
+       // 搜索
+    handleSearch(value) {
+      let params = { keyword: value, id: this.marpperId }
+      this.$axios({
+        url: this.api.dicDrugSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    //获取药品list
+    getDrugList() {
+      let params = { keyword: '', id: this.marpperId }
+      this.$axios({
+        url: this.api.dicDrugSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 点击名称栏
+    changeFormat() {
+      this.isShow = false
+      this.disable = true
+      this.getDrugList()
+    },
+    // 实例化右边相似
+    handleChange(value, option) {
+      console.log(option)
+      let params = option.data.attrs
+      this.disable = false
+      this.isShow = true
+      this.drugName = params.drugName
+      this.MData.dosageFormsStr = params.dosageFormsStr
+      this.MData.producedBy = params.producedBy
+      this.MData.spec = params.spec
+      this.MData.drugCode = value
+      this.MData.unit=params.unit
+    },
+    lostFocus() {
+      this.drugName=value
+      console.log('ddd')
+      this.isShow = true
+    },
     //点击第左边的table列事件
     clickLeftRow(row) {
+       this.drugName = ''
+      this.isShow=true
+       this.isActive = false
       let params = { frequenceName: row.frequenceName }
       this.frequenceName = row.frequenceName
       console.log(row)
@@ -187,6 +305,7 @@ export default {
         this.getSimilarData(params)
       } else {
         this.MData = row.dicFrequence
+         this.drugName = this.MData.remark
         this.getSimilarData(params)
       }
     },
@@ -250,6 +369,8 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.disable = false
+        this.isShow=true
+         this.drugName = this.MData.remark
     },
     //点击确定的处理事件
     clickSure() {
@@ -280,6 +401,8 @@ export default {
               this.similarData = []
               this.getData()
               this.loading = false
+               this.isActive=true
+                this.drugName=''
             })
           } else {
             this.loading = false
@@ -337,6 +460,9 @@ export default {
 </script>
 <style lang='less'>
 .testchk {
+   .headers{
+    line-height: 46px;
+  }
    .zhishiku {
     padding-left: 5px;
   }
@@ -345,7 +471,9 @@ export default {
     padding-right: 0;
     padding-top: 1px;
   }
- 
+   .ant-card{
+    padding-top: 12px;
+  }
 }
 
 .details {
@@ -374,6 +502,7 @@ export default {
     color: rgba(0, 0, 0, 0.85);
   }
   .box {
+      line-height: 35px;
     border-bottom: 1px solid #ebeef5;
     div {
       text-overflow: ellipsis;

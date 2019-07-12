@@ -24,7 +24,9 @@
                   <div class="pageone">
                     <span>{{props.row.itemName}}</span>
                     <span v-if="props.row.quesNum>0">
-                      <a-tag color="red" :key="index">{{props.row.quesNum}}</a-tag>
+                      <!-- <a-tag color="red" :key="index">{{props.row.quesNum}}</a-tag> -->
+                      <!-- z-index: 5; -->
+                       <a-badge :count="props.row.quesNum" />
                     </span>
                   </div>
                   <div class="pagetwo">

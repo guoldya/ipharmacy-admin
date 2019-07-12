@@ -125,30 +125,31 @@ export const asyncRouterMap = [
           }
         ]
       },
+      // 引擎
       {
         path: '/engine',
         name: 'engine',
         component: PageView,
-        meta: { title: '引擎规则', keepAlive: false, icon: 'database' },
+        meta: { title: '规则数据', keepAlive: false, icon: 'database' },
         children: [
           {
             path: '/engine/ruleEng',
             name: 'ruleEng',
             component: RouteView,
-            meta: { title: '引擎规则', multistage: true },
+            meta: { title: '规则数据', multistage: true },
             children: [
               {
                 path: '/engine/ruleEng/index',
                 name: 'ruleEngindex',
                 component: () => import('@/views/engine/ruleEng/index.vue'),
-                meta: { title: '引擎规则', hiddenHeaderContent: true, index: true }
+                meta: { title: '规则数据', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/engine/ruleEng/detail/:id/',
                 name: 'ruleEngDetail',
                 hidden: true,
                 component: () => import('@/views/engine/ruleEng/detail.vue/'),
-                meta: { title: '规则详情', detail: true, description: '规则详情自定义设置' }
+                meta: { title: '规则数据详情', detail: true, description: '规则数据详情自定义设置' }
               }
             ]
           },
@@ -168,8 +169,29 @@ export const asyncRouterMap = [
                 path: '/engine/dataEng/detail/:id/',
                 name: 'dataEngDetail',
                 hidden: true,
-                component: () => import('@/views/engine/dataEng/detail.vue/'),
+                component: () => import('@/views/engine/dataEng/detail.vue'),
                 meta: { title: '数据源详情', detail: true, description: '数据源详情自定义设置' }
+              }
+            ]
+          },
+          {
+            path: '/engine/factEng',
+            name: 'factEng',
+            component: RouteView,
+            meta: { title: '事实原型', multistage: true },
+            children: [
+              {
+                path: '/engine/factEng/index',
+                name: 'factEngindex',
+                component: () => import('@/views/engine/factEng/index.vue'),
+                meta: { title: '事实原型', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/engine/factEng/detail/:id/',
+                name: 'factEngDetail',
+                hidden: true,
+                component: () => import('@/views/engine/factEng/detail.vue'),
+                meta: { title: '事实原型详情', detail: true, description: '事实原型详情自定义设置' }
               }
             ]
           },

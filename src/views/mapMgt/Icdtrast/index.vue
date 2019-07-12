@@ -1,6 +1,6 @@
 <template>
   <a-Row class="testchks">
-    <a-Col :span="14">
+    <a-Col :span="13">
       <a-card :bodyStyle="{padding:'12px 16px'}">
         <Searchpanel ref="searchPanel" :list="list" :col="12">
           <div slot="control">
@@ -53,8 +53,8 @@
       </a-card>
     </a-Col>
 
-    <a-Col :span="10" class="detailsa">
-      <a-card  title="ICD对码">
+    <a-Col :span="11" class="detailsa">
+      <a-card title="ICD对码">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
           <a-col :span="8">医院诊断</a-col>
@@ -69,7 +69,52 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">icd名称：</a-col>
           <a-col :span="8">{{NData.icdname}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.icdname}}</a-Col>
+          <a-Col :span="10" class="td-content" @click="changeFormat">
+            <div :class="{'pt':isActive}">
+              <header v-if="isShow" class="headers">
+                <a-tooltip placement="topLeft" style="cursor: pointer;">
+                  <template slot="title">
+                    <span>{{ this.icdname}}</span>
+                  </template>
+                  {{ this.icdname}}
+                </a-tooltip>
+              </header>
+              <footer v-if="!isShow">
+                <a-select
+                  style="width:100%"
+                  showSearch
+                  allowClear
+                  mode="single"
+                  optionLabelProp="title"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="false"
+                  :filterOption="false"
+                  @search="handleSearch"
+                  @change="handleChange"
+                  v-decorator="[ 'drugCodes']"
+                >
+                  <a-select-option
+                    v-for="(item,index) in this.drugAllList"
+                    :value="item.drugCode"
+                    :key="item.dosageForms"
+                    :producedBy="item.producedBy"
+                    :spec="item.spec"
+                    :spellCode="item.spellCode"
+                    :icdname="item.icdname"
+                    :dosageFormsStr="item.dosageFormsStr"
+                  >
+                    <a-row>
+                      <a-col>{{item.icdname}}</a-col>
+                    </a-row>
+                    <a-row>
+                      <a-col style="opacity: 0.6">编码：{{item.id}}</a-col>
+                    </a-row>
+                    <a-divider style="margin: 8px 0 0 0;" />
+                  </a-select-option>
+                </a-select>
+              </footer>
+            </div>
+          </a-Col>
         </a-row>
         <div class="surea">
           <a-button @click="clickCancel">取消</a-button>
@@ -118,8 +163,10 @@
   </a-Row>
 </template>
 <script>
+import debounce from 'lodash/debounce'
 export default {
   data() {
+     this.handleSearch = debounce(this.handleSearch, 800)
     return {
       similarSpin: false,
       similarTotal: 0,
@@ -141,7 +188,9 @@ export default {
         // hisDrugDataUrl: '/sys/hisDrug/selectPage',
         similarDrugDataUrl: '/sys/hisIcd/selectSimilarDicIcdPage',
         mapUrl: 'sys/dicIcdMapper/insert',
-        icdAll: 'sys/hisIcd/selectPage'
+        icdAll: 'sys/hisIcd/selectPage',
+        dicDrugSelectList: 'sys/dicDrug/selectDrugListByKeyword',
+         icdSelectList: 'sys/dicIcd/selectDicIcdByKeyword',
       },
       loading: false,
       columnscheckdtl: [
@@ -156,7 +205,13 @@ export default {
       M: 1,
       N: 1,
       disable: true,
-      icdnames: ''
+      icdnames: '',
+      isActive: true,
+      isShow: true,
+      marpperId:'',
+      icdname:'',
+      icdname:'',
+      drugAllList:[]
     }
   },
   computed: {
@@ -182,8 +237,68 @@ export default {
     this.getData()
   },
   methods: {
+     // 搜索
+    handleSearch(value) {
+      let params = { keyword: value, id: this.marpperId }
+      this.$axios({
+        url: this.api.icdSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+     // 获取选择框数据
+     getDrugList() {
+      let params = { keyword: '', id: this.marpperId }
+      this.$axios({
+        url: this.api.icdSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 数据实例化
+     handleChange(value, option) {
+      console.log(option)
+      let params = option.data.attrs
+      this.disable = false
+      this.isShow = true
+      this.icdname = params.icdname
+      this.MData.dosageFormsStr = params.dosageFormsStr
+      this.MData.producedBy = params.producedBy
+      this.MData.spec = params.spec
+      this.MData.drugCode = value
+      this.MData.unit=params.unit
+    },
+     // 点击名称栏
+     changeFormat() {
+      this.isShow = false
+      this.disable = true
+      this.getDrugList()
+    },
     //点击第左边的table列事件
     clickLeftRow(row) {
+       this.icdname = ''
+      this.isShow=true
+      this.isActive = false
       let params = { icdName: row.icdname }
       this.icdnames = row.icdname
       this.NData = row
@@ -192,14 +307,17 @@ export default {
         this.getSimilarData(params)
       } else {
         this.MData = row.dicIcd
+        this.icdname = this.MData.icdname
         this.getSimilarData(params)
       }
     },
+     
+   
     //右边部分数据的获取
     getSimilarData(params = {}) {
       this.similarSpin = true
       params.producedBy = this.NData.producedBy
-      params.drugName = this.NData.drugName
+      params.icdname = this.NData.icdname
       this.$axios({
         url: this.api.similarDrugDataUrl,
         method: 'put',
@@ -246,8 +364,10 @@ export default {
     },
     //点击右边的table事件
     clickRightRow(row) {
+      this.isShow=true
       this.MData = row
       this.disable = false
+       this.icdname = this.MData.icdname
     },
     //点击确定的处理事件
     clickSure() {
@@ -257,8 +377,9 @@ export default {
         hisicdname: this.NData.icdname,
         icdid: this.MData.id,
         icdname: this.MData.icdname,
-        id:this.NData.mapperId
+        id: this.NData.mapperId
       }
+       this.marpperId = this.NData.mapperId
       const arrl = Object.keys(this.MData)
       if (arrl.length == 0) {
         this.$message.info('请添加知识库数据!')
@@ -277,6 +398,8 @@ export default {
                 this.similarData = []
                 this.getData()
                 this.loading = false
+                this.isActive = true
+                 this.icdname=''
               })
             } else {
               this.loading = false
@@ -347,12 +470,18 @@ export default {
       if (val > 1) {
         this.N = 1
       }
+    },
+    lostFocus(){
+
     }
   }
 }
 </script>
 <style lang='less'>
 .testchks {
+   .ant-card{
+    padding-top: 12px;
+  }
   .zhishiku {
     padding-left: 5px;
   }
@@ -361,19 +490,21 @@ export default {
     padding-right: 0;
     padding-top: 1px;
   }
-   .table-th {
-      background: #fafafa;
-      font-weight: bold;
-      color: rgba(0, 0, 0, 0.85);
-    }
+  .table-th {
+    background: #fafafa;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+  }
 }
-
+.headers{
+    line-height: 36px;
+  }
 .detailsa {
   .table-th {
-      background: #fafafa;
-      font-weight: bold;
-      color: rgba(0, 0, 0, 0.85);
-    }
+    background: #fafafa;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+  }
   .ant-input-number {
     margin-top: 3px;
   }
@@ -393,14 +524,16 @@ export default {
     text-align: right;
     color: rgba(0, 0, 0, 0.85);
   }
+  
   .box {
-    border-bottom: 1px solid #ebeef5;
-    div {
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
+      line-height: 35px;
+      border-bottom: 1px solid #ebeef5;
+      div {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
     }
-  }
 }
 .surea {
   float: right;
@@ -410,4 +543,8 @@ export default {
 .ant-input-number {
   width: 100% !important;
 }
+.pt {
+  pointer-events: none;
+}
+ 
 </style>

@@ -5,7 +5,7 @@ const Enum = {
     ],
     sex: [
         { id: '1', text: '男' },
-        { id: '2', text: '女' },
+        { id:2, text: '女' },
         { id: '0', text: '未知' }
     ],
     status: [
@@ -256,6 +256,21 @@ const Enum = {
     drugstatus: [
         { id: '0', text: '未对码' },
         { id: '1', text: '已对码' }
+    ],
+    coltype:[
+        {id:1,text:'系统'},
+        {id:2,text:'自定义'}
+    ],
+    attributeType:[
+        { id: 1, text: '数字' },
+        { id: 2, text: '时间' },
+        { id: 3, text: '字符串' },
+        { id: 4, text: '数组' },
+    ],
+    logical:[
+        { id: 1, text: '常量判断' },
+        { id:2, text: '数值区间判断' },
+        { id:3, text: '外部数据判断' },
     ]
 
 }
