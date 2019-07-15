@@ -35,6 +35,7 @@
         <a-pagination
           showSizeChanger
           showQuickJumper
+          hideOnSinglePage
           :total="dictionary.total"
           class="pnstyle"
           :defaultPageSize="pageSize"
@@ -42,7 +43,7 @@
           @showSizeChange="pageChangeSize"
           @change="pageChange"
           size="small"
-          v-model="currents"
+          v-model="current"
         >
         </a-pagination>
       </a-spin>
@@ -180,7 +181,6 @@
       dictionary: {
         Object
       },
-      currents: Number
     },
     data() {
       this.handleComposition = debounce(this.handleComposition, 500)
@@ -205,9 +205,9 @@
           { title: '药品编码', value: 'drugCode', align: 'right', width: 80 },
           // { title: '品种编码', value: 'varietyCode' },
           { title: '药品名称', value: 'drugName' },
-          { title: '规格', value: 'spec', width: 120 },
+          { title: '规格', value: 'spec', width: 200 },
           { title: '单位', value: 'unit', width: 80, align: 'center' },
-          { title: '生产厂商', value: 'producedBy', width: 150 },
+          { title: '生产厂商', value: 'producedBy', width: 200 },
           { title: '拼音码', value: 'spellCode', width: 100 },
           { title: '剂型', value: 'dosageFormsStr', width: 100, align: 'center' },
           { title: '状态', value: 'status', align: 'center', width: 80 }
@@ -230,13 +230,9 @@
       this.getDosageList()
       this.getDrugComposition()
     },
-    watch: {
-      currents: function() {
-        console.log(this.currents)
-      }
-    },
     methods: {
       pageChangeSize(page, pageSize) {
+         this.current = 1;
         this.getDictionary({
           offset: (page - 1) * pageSize,
           pageSize: pageSize,
@@ -251,6 +247,9 @@
         })
       },
       getDictionary(params = {}) {
+        if (params.offset == 0) {
+                this.current = 1
+            }
         this.loading = true
         this.$axios({
           url: this.api.dicDrugSelectPage,

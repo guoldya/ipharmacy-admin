@@ -40,6 +40,7 @@
       <a-pagination
         showSizeChanger
         showQuickJumper
+        hideOnSinglePage
         :total="total"
         class="pnstyle"
         :defaultPageSize="pageSize"
@@ -163,7 +164,7 @@
       },
       //启用停用
       user(data) {
-        if (data.status){
+        if (data.status == '1'){
           data.status = '0'
         } else{
           data.status = '1'

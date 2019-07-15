@@ -34,6 +34,7 @@
       <a-pagination
         showSizeChanger
         showQuickJumper
+        hideOnSinglePage
         :total="total"
         class="pnstyle"
         :defaultPageSize="pageSize"
@@ -121,7 +122,7 @@
         planId:'',
         selectPersons:[],
         pageInPlanData:[],
-        current:null,
+        current:1,
         Modal:{
           visible:false,
         },
@@ -177,6 +178,7 @@
       },
       //重置
       resetForm() {
+           this.pageChangeFilter={}
         this.$refs.searchPanel.form.resetFields()
         this.getData({ pageSize: 10, offset: 0 })
       },

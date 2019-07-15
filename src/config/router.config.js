@@ -662,7 +662,7 @@ export const asyncRouterMap = [
       {
           path: '/mapMgt',
           name: 'mapMgt',
-          component: RouteView,
+          component: PageView,
           meta: { title: '对码管理', icon: 'check-circle-o' },
           children:[
               {

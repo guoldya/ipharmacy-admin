@@ -15,19 +15,10 @@
       </a-col>
       <a-col :xl="19" :xxl="19">
         <a-card title="药品品种">
-          <Searchpanel ref="searchPanel" :list="list">
-            <div slot="control">
-              <a-button type="primary" @click="varietiesSearch">查询</a-button>
-              <a-button style="margin-left: 5px" @click="varietiesResetForm">重置</a-button>
-            </div>
-          </Searchpanel>
           <drugVarieties
             :variety="variety"
             :disable="disable"
-            :pageChangeSize="varietiesPageSize"
-            :pageChange="varietiesPageChange"
             :clickRow="clickRow"
-            :currents="current"
           ></drugVarieties>
         </a-card>
         <a-card class="margin-top-5" title="药品字典">
@@ -81,33 +72,7 @@ export default {
     this.getDicBase()
     this.getVarietiesData()
   },
-  computed: {
-    list() {
-      return [
-        {
-          name: '品种名称',
-          dataField: 'drugvarietyCode',
-          type: 'text'
-        },
-        {
-          name: '合成药',
-          dataField: 'iscompound',
-          type: 'select',
-          dataSource: this.enum.yesNo,
-          keyExpr: 'id',
-          valueExpr: 'text'
-        },
-        {
-          name: '毒理分类',
-          dataField: 'toxicology',
-          type: 'select',
-          dataSource: this.toxicologyData,
-          keyExpr: 'id',
-          valueExpr: 'name'
-        }
-      ]
-    }
-  },
+
   methods: {
     //左侧点击事件
     onSelect(selectedKeys, e) {
@@ -131,6 +96,9 @@ export default {
       this.disable = false
     },
     getVarietiesData(params = {}) {
+  if(params.offset==0){
+          this.current=1
+        }
       this.$axios({
         url: this.api.drugVarietyPageId,
         method: 'put',
@@ -149,36 +117,8 @@ export default {
           this.error(err)
         })
     },
-    //页码数change事件
-    varietiesPageSize(page, pageSize) {
-      this.getVarietiesData({
-        offset: (page - 1) * pageSize,
-        pageSize: pageSize,
-        categoryId: this.variety.categoryId
-      })
-    },
-    //页码跳转事件
-    varietiesPageChange(page, pageSize) {
-      this.getVarietiesData({
-        offset: (page - 1) * pageSize,
-        pageSize: pageSize,
-        categoryId: this.variety.categoryId
-      })
-    },
-    //搜索
-    varietiesSearch() {
-      let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.pageSize = 10
-      params.offset = 0
-      params.categoryId = this.variety.categoryId
-      this.getVarietiesData(params)
-    },
-    //重置
-    varietiesResetForm() {
-      this.current = 1
-      this.$refs.searchPanel.form.resetFields()
-      this.getVarietiesData({ categoryId: this.variety.categoryId })
-    },
+ 
+  
     //品种网格列点击事件
     clickRow(row, event, column) {
       this.varietyCode = row.varietyCode

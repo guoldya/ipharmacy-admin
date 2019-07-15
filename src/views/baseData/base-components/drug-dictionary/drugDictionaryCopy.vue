@@ -34,6 +34,7 @@
     <a-pagination
       showSizeChanger
       showQuickJumper
+      hideOnSinglePage
       :total="dictionary.total"
       class="pnstyle"
       :defaultPageSize="pageSize"
@@ -174,7 +175,6 @@
       dictionary:{
         Object
       },
-     currents:Number
     },
     data() {
       this.handleComposition = debounce(this.handleComposition, 500)
@@ -217,20 +217,17 @@
         editData:{},
         selectMainList:[],
         selectCompositionList:[],
-        current:1
+        currents:1
       }
     },
     mounted(){
       this.getDosageList();
       this.getDrugComposition();
     },
-    watch:{
-      currents: function(){
-        console.log(this.currents)
-      }
-    },
+    
     methods: {
       pageChangeSize(page, pageSize) {
+        this.currents = 1;
         this.getDictionary({
           offset: (page - 1) * pageSize,
           pageSize: pageSize,
@@ -245,6 +242,9 @@
         })
       },
       getDictionary(params = {}) {
+         if (params.offset == 0) {
+                this.current = 1
+            }
         this.$axios({
           url: this.api.dicDrugSelectPage,
           method: 'put',
