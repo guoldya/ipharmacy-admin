@@ -65,16 +65,16 @@
           <a-Col :span="8" class="td-content">{{MData.id}}</a-Col>
         </a-row>
         <a-row class="box">
-          <a-col :span="6" class="textRight">名称：</a-col>
+          <a-col :span="6" class="textRight">频次：</a-col>
           <a-col :span="8">{{NData.frequenceName}}</a-col>
           <a-Col :span="10" class="td-content"  @click="changeFormat"> 
             <div :class="{'pt':isActive}">
               <header v-if="isShow" class="headers">
                 <a-tooltip placement="topLeft" style="cursor: pointer;">
                   <template slot="title">
-                    <span>{{ this.drugName}}</span>
+                    <span>{{ this.remark}}</span>
                   </template>
-                  {{ this.drugName}}
+                  {{ this.remark}}
                 </a-tooltip>
               </header>
               <footer v-if="!isShow">
@@ -89,23 +89,20 @@
                   :filterOption="false"
                   @search="handleSearch"
                   @change="handleChange"
-                  v-decorator="[ 'drugCodes']"
+                  v-decorator="[ 'id']"
                 >
                   <a-select-option
                     v-for="(item,index) in this.drugAllList"
-                    :value="item.drugCode"
+                    :value="item.id"
                     :key="item.dosageForms"
-                    :producedBy="item.producedBy"
-                    :spec="item.spec"
-                    :spellCode="item.spellCode"
-                    :drugName="item.drugName"
-                    :dosageFormsStr="item.dosageFormsStr"
+                    :remark="item.remark"
+                    :code='item.code'
                   >
                     <a-row>
-                      <a-col>{{item.drugName}}</a-col>
+                      <a-col>{{item.remark}}</a-col>
                     </a-row>
                     <a-row>
-                      <a-col style="opacity: 0.6">{{item.producedBy}}</a-col>
+                      <a-col style="opacity: 0.6">编码：{{item.id}}</a-col>
                     </a-row>
                     <a-divider style="margin: 8px 0 0 0;" />
                   </a-select-option>
@@ -200,7 +197,7 @@ export default {
       disable: true,
       frequenceName: '',
        marpperId: '',
-      drugName: '',
+      remark: '',
       isShow: true,
       drugAllList: [],
       isActive: true
@@ -275,37 +272,31 @@ export default {
     },
     // 实例化右边相似
     handleChange(value, option) {
-      console.log(option)
       let params = option.data.attrs
       this.disable = false
       this.isShow = true
-      this.drugName = params.drugName
-      this.MData.dosageFormsStr = params.dosageFormsStr
-      this.MData.producedBy = params.producedBy
-      this.MData.spec = params.spec
-      this.MData.drugCode = value
-      this.MData.unit=params.unit
+      this.remark = params.remark
+       this.MData.id =value
+        //this.MData.code = params.code
     },
     lostFocus() {
-      this.drugName=value
-      console.log('ddd')
+      this.remark=value
       this.isShow = true
     },
     //点击第左边的table列事件
     clickLeftRow(row) {
-       this.drugName = ''
+       this.remark = ''
       this.isShow=true
        this.isActive = false
       let params = { frequenceName: row.frequenceName }
       this.frequenceName = row.frequenceName
-      console.log(row)
       this.NData = row
       this.MData = {}
       if (this.NData.isCurrent == '0') {
         this.getSimilarData(params)
       } else {
         this.MData = row.dicFrequence
-         this.drugName = this.MData.remark
+         this.remark = this.MData.remark
         this.getSimilarData(params)
       }
     },
@@ -370,19 +361,20 @@ export default {
       this.MData = row
       this.disable = false
         this.isShow=true
-         this.drugName = this.MData.remark
+         this.remark = this.MData.remark
     },
     //点击确定的处理事件
     clickSure() {
+      console.log(this.MData.id)
       let params = {
         orgId: this.NData.orgId,
         hisfrequenceId: this.NData.frequenceId,
         hisfrequenceName: this.NData.frequenceName,
-        hisfrequenceCode: this.NData.frequenceCode,
-        frequenceCode: this.MData.code,
+        // hisfrequenceCode: this.NData.code,
+        // frequenceCode: this.MData.code,
         frequenceId: this.MData.id,
-        frequenceName: this.MData.remark,
-         id:this.NData.mapperId
+        frequenceName: this.remark,
+        id:this.NData.mapperId
       }
       if (Object.keys(this.MData).length == 0) {
         $message.info('请添加知识库数据')
@@ -402,7 +394,7 @@ export default {
               this.getData()
               this.loading = false
                this.isActive=true
-                this.drugName=''
+                this.remark=''
             })
           } else {
             this.loading = false
@@ -461,7 +453,7 @@ export default {
 <style lang='less'>
 .testchk {
    .headers{
-    line-height: 46px;
+    line-height:35px;
   }
    .zhishiku {
     padding-left: 5px;

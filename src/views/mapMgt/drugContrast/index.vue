@@ -527,7 +527,7 @@ export default {
     padding-top: 12px;
   }
   .headers{
-    line-height: 46px;
+    line-height: 36px;
   }
   .ant-card-body {
     padding-left: 0;

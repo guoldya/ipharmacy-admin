@@ -7,36 +7,56 @@
     </div>
     <a-spin tip="加载中..." :spinning="spinning">
       <a-form :form="form" @submit="handleSubmit">
-         <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol" >
+        <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-input read-only placeholder="由系统自动生成,无需填写" v-decorator="['id']" />
+        </a-form-item>
+        <a-form-item label="数据源名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
-            read-only
-             placeholder="由系统自动生成,无需填写"
-            v-decorator="['id']"
+            :read-only="readOnly"
+            v-decorator="['dsName',{rules:[{message:'请输入数据源名称',required:true}]}]"
           />
         </a-form-item>
-          <a-form-item label="数据源名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['dsName',{rules:[{message:'请输入数据源名称',required:true}]}]" />
-        </a-form-item>
-         <a-form-item label="驱动名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['driverClass',{rules:[{message:'请输入驱动名称',required:true}]}]" />
+        <a-form-item label="驱动名称" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-input
+            :read-only="readOnly"
+            v-decorator="['driverClass',{rules:[{message:'请输入驱动名称',required:true}]}]"
+          />
         </a-form-item>
         <a-form-item label="数据库连接" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['url',{rules:[{message:'请输入数据库连接',required:true}]}]" />
+          <a-input
+            :read-only="readOnly"
+            v-decorator="['url',{rules:[{message:'请输入数据库连接',required:true}]}]"
+          />
         </a-form-item>
         <a-form-item label="用户名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['username',{rules:[{message:'请输入用户名称',required:true}]}]" />
+          <a-input
+            :read-only="readOnly"
+            v-decorator="['username',{rules:[{message:'请输入用户名称',required:true}]}]"
+          />
         </a-form-item>
         <a-form-item label="密码" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['password',{rules:[{message:'请输入密码',required:true}]}]" />
+          <a-input
+            :read-only="readOnly"
+            v-decorator="['password',{rules:[{message:'请输入密码',required:true}]}]"
+          />
         </a-form-item>
         <a-form-item label="初始大小" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['initialSize',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]} ]" />
+          <a-input
+            :read-only="readOnly"
+            v-decorator="['initialSize',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]} ]"
+          />
         </a-form-item>
         <a-form-item label="最大活跃" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['maxActive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]}]" />
+          <a-input
+            :read-only="readOnly"
+            v-decorator="['maxActive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]}]"
+          />
         </a-form-item>
         <a-form-item label="验证查询" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['testSql',{rules:[{message:'请输入验证查询',required:true}]}]" />
+          <a-input
+            :read-only="readOnly"
+            v-decorator="['testSql',{rules:[{message:'请输入验证查询',required:true}]}]"
+          />
         </a-form-item>
         <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-radio-group v-decorator="[ 'status']">
@@ -61,7 +81,7 @@ export default {
     return {
       api: {
         selectOne: 'sys/coreDbDatasource/selectOne',
-         updt: 'sys/coreDbDatasource/update',
+        updt: 'sys/coreDbDatasource/update'
       },
       spinning: false,
       labelCol: {
@@ -72,7 +92,7 @@ export default {
         xs: { span: 8 },
         sm: { span: 8 }
       },
-      status: [{ id: 0, text: '停用' }, { id: 1, text: '启用' }],
+      status: [{ id: 1, text: '启用' }, { id: 0, text: '停用' }],
       form: this.$form.createForm(this),
       roleCode: '',
       loadData: [],
@@ -84,7 +104,7 @@ export default {
   },
   computed: {},
   mounted() {
-    this.getselectData({id:this.$route.params.id})
+    this.getselectData({ id: this.$route.params.id })
   },
   methods: {
     // 查询数据
@@ -97,7 +117,7 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-             let reqArr = res.data
+              let reqArr = res.data
               let {
                   id,
                   dsName,
@@ -115,7 +135,7 @@ export default {
                   status
                 } = reqArr,
                 formData = {
-                    id,
+                  id,
                   dsName,
                   driverClass,
                   url,
@@ -132,18 +152,16 @@ export default {
                 }
               this.form.setFieldsValue(formData)
             } else {
-              this.loadingTable = false
               this.warn(res.msg)
             }
           })
           .catch(err => {
-            this.loadingTable = false
             this.error(err)
           })
       }
     },
     handleSubmit(e) {
-     e.preventDefault()
+      e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
           this.$axios({

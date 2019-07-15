@@ -29,7 +29,7 @@
         <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input :read-only="readOnly" v-decorator="['dsName']" />
         </a-form-item>
-        <a-form-item label="数据库文本" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-item label="sql文本" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-textarea :read-only="readOnly" v-decorator="['sqlText']" />
         </a-form-item>
         <a-form-item label="值" :label-col="labelCol" :wrapper-col="wrapperCol">

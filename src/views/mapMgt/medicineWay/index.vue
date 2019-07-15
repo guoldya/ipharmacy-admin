@@ -68,7 +68,49 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">名称：</a-col>
           <a-col :span="8">{{NData.name}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.name}}</a-Col>
+         <a-Col :span="10" class="td-content" @click="changeFormat">
+            <div :class="{'pt':isActive}">
+              <header v-if="isShow" class="headers">
+                <a-tooltip placement="topLeft" style="cursor: pointer;">
+                  <template slot="title">
+                    <span>{{ this.name}}</span>
+                  </template>
+                  {{ this.name}}
+                </a-tooltip>
+              </header>
+              <footer v-if="!isShow">
+                <a-select
+                  style="width:100%"
+                  showSearch
+                  allowClear
+                  mode="single"
+                  optionLabelProp="title"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="false"
+                  :filterOption="false"
+                  @search="handleSearch"
+                  @change="handleChange"
+                  v-decorator="[ 'id']"
+                >
+                  <a-select-option
+                    v-for="(item,index) in this.drugAllList"
+                    :value="item.id"
+                    :key="item.dosageForms"
+                    :name="item.name"
+                    :dosageFormsStr="item.dosageFormsStr"
+                  >
+                    <a-row>
+                      <a-col>{{item.name}}</a-col>
+                    </a-row>
+                    <a-row>
+                      <a-col style="opacity: 0.6">编码：{{item.id}}</a-col>
+                    </a-row>
+                    <a-divider style="margin: 8px 0 0 0;" />
+                  </a-select-option>
+                </a-select>
+              </footer>
+            </div>
+          </a-Col>
         </a-row>
         <div class="surea">
           <a-button @click="clickCancel">取消</a-button>
@@ -117,8 +159,10 @@
   </a-Row>
 </template>
 <script>
+import debounce from 'lodash/debounce'
 export default {
   data() {
+    this.handleSearch = debounce(this.handleSearch, 800)
     return {
       similarSpin: false,
       similarTotal: 0,
@@ -136,7 +180,8 @@ export default {
       api: {
         similarDrugDataUrl: '/sys/hisWay/selectSimilarDicWayPage',
         mapUrl: 'sys/dicWayMapper/insert',
-        icdAll: 'sys/hisWay/selectPage'
+        icdAll: 'sys/hisWay/selectPage',
+        dicDrugSelectList: 'sys/hisWay/selectDicWayByKeyword',
       },
       loading: false,
       columnscheckdtl: [
@@ -150,7 +195,12 @@ export default {
       M: 1,
       N: 1,
       disable: true,
-      icdnames: ''
+      icdnames: '',
+       marpperId: '',
+      name: '',
+      isShow: true,
+      drugAllList: [],
+      isActive: true
     }
   },
   computed: {
@@ -176,10 +226,69 @@ export default {
     this.getData({ pageSize: 20, offset: 0 })
   },
   methods: {
+      // 搜索
+    handleSearch(value) {
+      let params = { keyword: value, id: this.marpperId }
+      this.$axios({
+        url: this.api.dicDrugSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    //获取药品list
+    getDrugList() {
+      let params = { keyword: '', id: this.marpperId }
+      this.$axios({
+        url: this.api.dicDrugSelectList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.drugAllList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 点击名称栏
+    changeFormat() {
+      this.isShow = false
+      this.disable = true
+      this.getDrugList()
+    },
+    // 实例化右边相似
+    handleChange(value, option) {
+    
+      let params = option.data.attrs
+      this.disable = false
+      this.isShow = true
+      this.name = params.name
+      this.MData.id = value
+    },
+    lostFocus() {
+      this.name=value
+     
+      this.isShow = true
+    },
     //点击第左边的table列事件
     clickLeftRow(row) {
+       this.name = ''
+      this.isActive = false
       let params = { icdName: row.icdname }
-      console.log(row)
       this.icdnames = row.icdname
       this.isCurrent=row.isCurrent
       this.NData = row
@@ -188,6 +297,7 @@ export default {
         this.getSimilarData(params)
       } else {
         this.MData = row.dicBase
+         this.name = this.MData.name
         this.getSimilarData(params)
       }
     },
@@ -243,7 +353,7 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.disable = false
-    
+      this.name = this.MData.name
     },
     //点击确定的处理事件
     clickSure() {
@@ -271,9 +381,10 @@ export default {
                 this.NData = {}
                 this.MData = {}
                 this.similarData = []
-                console.log(this.NData.name)
+                 this.name=''
                 this.getData({pageSize:20,offset:(this.current-1)*10,name:params.hisWayName})
                 this.loading = false
+                 this.isActive=true
               })
             } else {
               this.loading = false
@@ -309,7 +420,7 @@ export default {
     pageChangeSize(page, pageSize) {
       // let params = Object.assign(this.$refs.searchPanel.form.getFieldsValue(),{ offset: (page - 1) * pageSize, pageSize: pageSize, })
       this.current = page
-      // console.log(params)
+     
       this.getData(params)
     },
     //页码跳转事件
@@ -356,6 +467,9 @@ export default {
 .testchk {
    .ant-card{
     padding-top: 12px;
+  }
+  .headers{
+    line-height: 36px;
   }
   .zhishiku {
     padding-left: 5px;

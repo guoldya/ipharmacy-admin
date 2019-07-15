@@ -130,7 +130,7 @@ export const asyncRouterMap = [
         path: '/engine',
         name: 'engine',
         component: PageView,
-        meta: { title: '规则数据', keepAlive: false, icon: 'database' },
+        meta: { title: '引擎规则', keepAlive: false, icon: 'database' },
         children: [
           {
             path: '/engine/ruleEng',

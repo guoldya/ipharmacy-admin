@@ -91,23 +91,20 @@
                   :filterOption="false"
                   @search="handleSearch"
                   @change="handleChange"
-                  v-decorator="[ 'drugCodes']"
+                  v-decorator="[ 'id']"
                 >
                   <a-select-option
                     v-for="(item,index) in this.drugAllList"
-                    :value="item.drugCode"
-                    :key="item.dosageForms"
-                    :producedBy="item.producedBy"
-                    :spec="item.spec"
-                    :spellCode="item.spellCode"
-                    :icdname="item.icdname"
-                    :dosageFormsStr="item.dosageFormsStr"
+                    :value="index"
+                    :key="item.id"
+                    :id='item.id'
+                    :icdname='item.icdname'
                   >
                     <a-row>
                       <a-col>{{item.icdname}}</a-col>
                     </a-row>
                     <a-row>
-                      <a-col style="opacity: 0.6">编码：{{item.id}}</a-col>
+                      <a-col style="opacity: 0.6">icd编码：{{item.id}}</a-col>
                     </a-row>
                     <a-divider style="margin: 8px 0 0 0;" />
                   </a-select-option>
@@ -277,16 +274,12 @@ export default {
     },
     // 数据实例化
      handleChange(value, option) {
-      console.log(option)
+      console.log()
       let params = option.data.attrs
       this.disable = false
       this.isShow = true
-      this.icdname = params.icdname
-      this.MData.dosageFormsStr = params.dosageFormsStr
-      this.MData.producedBy = params.producedBy
-      this.MData.spec = params.spec
-      this.MData.drugCode = value
-      this.MData.unit=params.unit
+      this.icdname =params.icdname
+      this.MData.id = params.id
     },
      // 点击名称栏
      changeFormat() {
@@ -372,12 +365,12 @@ export default {
     //点击确定的处理事件
     clickSure() {
       let params = {
-        orgId: this.NData.orgId,
         hisicdid: this.NData.icdid,
         hisicdname: this.NData.icdname,
         icdid: this.MData.id,
-        icdname: this.MData.icdname,
-        id: this.NData.mapperId
+        icdname: this.icdname,
+        id: this.NData.mapperId,
+         orgId: this.NData.orgId,
       }
        this.marpperId = this.NData.mapperId
       const arrl = Object.keys(this.MData)
