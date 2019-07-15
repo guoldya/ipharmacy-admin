@@ -75,6 +75,7 @@
                 <a-pagination
                     showSizeChanger
                     showQuickJumper
+                    hideOnSinglePage
                     :total="total"
                     class="pnstyle"
                     :defaultPageSize="pageSize"
@@ -82,6 +83,7 @@
                     @showSizeChange="pageChangeSize"
                     @change="pageChange"
                     size="small"
+                    v-model="current"
                 ></a-pagination>
             </a-spin>
             <a-modal
@@ -263,6 +265,7 @@ export default {
             ],
             total: 10,
             pageSize: 10,
+            current: 1,
             items: [
                 { text: '编辑', showtip: false, click: this.edit },
                 { text: '删除', color: '#E6A23C', showtip: true, tip: '确认删除吗？', click: this.delRow },
@@ -298,7 +301,8 @@ export default {
             selectDrug: [],
             coreRule: [],
             ruleName: '',
-            selectCategory: []
+            selectCategory: [],
+            pageChangeFilter: {}
         }
     },
     mounted() {
@@ -344,15 +348,17 @@ export default {
         //搜索
         search() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
-            console.log(params)
+            this.pageChangeFilter = this.$refs.searchPanel.form.getFieldsValue()
             params.pageSize = 10
             params.offset = 0
             this.getPageData(params)
         },
         //重置
         resetForm() {
+            this.current = 1
             this.$refs.searchPanel.form.resetFields()
             this.getPageData()
+            this.pageChangeFilter = {}
         },
 
         selectType(e) {
@@ -406,7 +412,6 @@ export default {
                         for (let key in res.rows) {
                             this.coreRule.push({ id: '' + res.rows[key].id, specName: res.rows[key].specName })
                         }
-                        console.log(this.coreRule)
                     } else {
                         this.warn(res.msg)
                     }
@@ -417,7 +422,6 @@ export default {
         },
         //药品选择列搜索
         handleSearch(value) {
-            console.log(value)
             coreRuleSelectKeyword({ keyword: value })
                 .then(res => {
                     if (res.code == '200') {
@@ -475,7 +479,6 @@ export default {
             this.drugForm.validateFields((err, values) => {
                 if (!err) {
                     let params = {}
-                    console.log(values)
                     if (values.name) {
                         params.name = values.name
                         params.type2 = values.type2
@@ -507,6 +510,9 @@ export default {
 
         //获取网格分页
         getPageData(params = {}) {
+            if (params.offset == 0) {
+                this.current = 1
+            }
             params.typeId = this.typeIds
             this.loadingTable = true
             coreRuleTypePage(params)
@@ -527,8 +533,8 @@ export default {
         },
         //页面数change事件
         pageChangeSize(page, pageSize) {
-            console.log(pageSize, 'pageSize')
-            let params = this.$refs.searchPanel.form.getFieldsValue()
+            this.current = 1
+            let params = this.pageChangeFilter
             params.offset = (page - 1) * pageSize
             params.pageSize = pageSize
             this.getPageData(params)
@@ -536,14 +542,13 @@ export default {
         //页面跳转事件
         pageChange(page, pageSize) {
             // this.pageSize = pageSize;
-            let params = this.$refs.searchPanel.form.getFieldsValue()
+            let params = this.pageChangeFilter
             params.offset = (page - 1) * pageSize
             params.pageSize = pageSize
             this.getPageData(params)
         },
         //编辑操作
         edit(data) {
-            console.log(data)
             let newPage = this.$router.resolve({
                 name: 'flowChartEditor',
                 params: { id: data.row.id }
@@ -559,13 +564,11 @@ export default {
             window.open(newPage.href, '_blank')
         },
         handleChange(value) {
-            console.log(value)
             this.ruleName = value
         },
 
         //操作启用停用
         updateStatus(row) {
-            console.log(row, 'row')
             let params = {}
             if (row.status == 1) {
                 params.status = 0
@@ -578,7 +581,6 @@ export default {
                     if (res.code == '200') {
                         this.success('操作成功', () => {
                             row.status = params.status
-                            console.log(row)
                         })
                     } else {
                         this.warn(res.msg)
@@ -590,7 +592,6 @@ export default {
         },
         //操作删除
         del(value) {
-            console.log(value)
             let params = {}
             params.id = value.id
             coreRuleDelete(params)

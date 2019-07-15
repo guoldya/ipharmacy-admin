@@ -171,6 +171,7 @@
                 <a-pagination
                     showSizeChanger
                     showQuickJumper
+                    hideOnSinglePage
                     :total="total"
                     class="pnstyle"
                     v-model="current"

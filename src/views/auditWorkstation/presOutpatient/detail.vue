@@ -355,8 +355,8 @@
             @cancel="versionCancel"
             width="900px"
         >
-            <versionComp :propData="routerData"></versionComp>
-            <!-- <versionCompBeta  :propData="routerData"></versionCompBeta> -->
+            <!-- <versionComp :propData="routerData"></versionComp> -->
+            <versionCompBeta  :propData="routerData"></versionCompBeta>
         </a-modal>
         <footer-tool-bar
             :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
