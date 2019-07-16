@@ -75,7 +75,7 @@
             </a-tooltip>
           </a-col>
           <a-Col :span="10" class="td-content" @click="changeFormat">
-            <div :class="{'pt':isActive}">
+            <div >
               <header v-if="isShow" class="headers">
                 <a-tooltip placement="topLeft" style="cursor: pointer;">
                   <template slot="title">
@@ -86,6 +86,7 @@
               </header>
               <footer v-if="!isShow">
                 <a-select
+                  :defaultValue="drugselval"
                   style="width:100%"
                   showSearch
                   allowClear
@@ -244,7 +245,8 @@ export default {
       drugName: '',
       isShow: true,
       drugAllList: [],
-      isActive: true
+      isActive: true,
+      drugselval:''
     }
   },
   computed: {
@@ -352,6 +354,7 @@ export default {
       } else {
         this.MData = row.dicDrugMapperVO
         this.drugName = this.MData.drugName
+        this.drugselval=this.MData.drugName
         this.getSimilarData(params)
       }
     },
@@ -418,6 +421,7 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.drugName = this.MData.drugName
+       this.drugselval=this.MData.drugName
       this.disable = false
       this.isShow=true
     },
@@ -535,6 +539,9 @@ export default {
     padding-top: 1px;
   }
   .details {
+    .ant-select-selection{
+      border: 0px;
+    }
     .ant-select {
       // margin-top: 4px;
           margin-left: -3px;

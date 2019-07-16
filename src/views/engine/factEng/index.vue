@@ -156,11 +156,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            if (paramsNum.length == 0) {
-              this.dataSource = this.getDataChildren(res.rows, undefined)
-            } else {
-              this.dataSource = this.getDataChildren(res.rows, undefined)
-            }
+           this.dataSource = this.getDataChildren(res.rows, undefined)
             this.loading = false
           } else {
             this.loadingTable = false

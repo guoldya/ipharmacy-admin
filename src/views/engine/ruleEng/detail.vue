@@ -8,11 +8,20 @@
     <a-spin tip="加载中..." :spinning="spinning">
       <a-form :form="form" @submit="handleSubmit">
         <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol" >
-          <a-input
-            read-only
-             placeholder="由系统自动生成,无需填写"
-            v-decorator="['id']"
-          />
+       
+          <a-tree-select
+          :treeData="treedata"
+          placeholder="请选择"
+          v-decorator="[
+                'id',
+                {
+                  rules: [{
+                    required: true,
+                    message: '请选择上级编码',
+                  }],
+                }
+              ]"
+        ></a-tree-select>
         </a-form-item>
          <a-form-item
         label="数据源"
@@ -23,9 +32,7 @@
           <a-select-option v-for="(op,index) in lists" :value="op.id" :key="index">{{op.dsName}}</a-select-option>
         </a-select>
       </a-form-item>
-        <!-- <a-form-item label="数据源" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['dsId']" />
-        </a-form-item> -->
+       
         <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input :read-only="readOnly" v-decorator="['dsName']" />
         </a-form-item>
@@ -63,6 +70,7 @@ export default {
         selectOne: 'sys/coreRuleDatasource/selectOne',
         updt: 'sys/coreRuleDatasource/update',
         dataFrom: 'sys/coreDbDatasource/selectList',
+        selectTitlesList: 'sys/coreFactCol/selectCoreFactColTreeList',
       },
       spinning: false,
       labelCol: {
@@ -81,15 +89,55 @@ export default {
       listData: {},
       readOnly: false,
       isNew: true,
-      lists:[]
+      lists:[],
+      treedata:[]
     }
   },
   computed: {},
   mounted() {
+      this.getTreeList()
     this.getDatas({})
     this.getselectData({ id: this.$route.params.id })
   },
   methods: {
+    // 编号的树形结构
+    getTreeList(params = {}) {
+      let paramsNum = Object.keys(params)
+      this.loading = true
+      this.$axios({
+        url: this.api.selectTitlesList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+           this.treedata = this.getDataChildren(res.rows, undefined)
+            this.loading = false
+          } else {
+            this.loadingTable = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
+    },
+     getDataChildren(bdata, pid) {
+      var items = []
+      for (var key in bdata) {
+        var item = bdata[key]
+        if (pid == item.pid) {
+          items.push({
+            title: item.colName,
+             value: item.id+'',
+            // key: item.id,
+            children: this.getDataChildren(bdata, item.id)
+          })
+        }
+      }
+      return items
+    },
     // 数据源的查询
     getDatas(params={}){
 this.$axios({

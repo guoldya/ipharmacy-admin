@@ -74,6 +74,7 @@
                             </a-form-item>
                         </a-col>
                     </a-row>
+                    <div v-if='check'>
                     <a-row style="text-align: center" v-if="this.list.length>3">
                         <a
                             class="expendBtn"
@@ -83,6 +84,7 @@
                             <a-icon :type="expand ? 'up' : 'down'" />
                         </a>
                     </a-row>
+                    </div>
                 </a-form>
             </a-col>
             <a-col :lg="4" :xl="6" :sm="6" style="text-align: right;padding-top: 3px">
@@ -125,12 +127,16 @@ export default {
         col: {
             type: Number,
             default: 8
+        },
+        choose:{
+            type:Object,
         }
     },
     data() {
         return {
             value: '',
             expand: false,
+            check:true,
             form: this.$form.createForm(this),
             formTwoLayout: {
                 labelCol: {},
@@ -148,6 +154,12 @@ export default {
                     xxl: { span: 18 }
                 }
             }
+        }
+    },
+    created(){
+        if(this.choose){
+     this.expand=this.choose.isextend
+     this.check=this.choose.isshow
         }
     },
     computed: {

@@ -1,0 +1,277 @@
+<template>
+  <a-card>
+    <div class="allContent">
+      <detail-list>
+        <detail-list-item term="任务名称">
+          <span class="opacity8 renwu">点评方案一</span>
+        </detail-list-item>
+        <detail-list-item term="方案范围">
+          <span class="opacity8">门诊</span>
+        </detail-list-item>
+        <detail-list-item term="点评方案">
+          <span class="opacity8">方案一，方案二</span>
+        </detail-list-item>
+        <detail-list-item term="抽取规则">
+          <span class="opacity8">等间抽取500份,各个科室平均抽取50份</span>
+        </detail-list-item>
+        <detail-list-item term="诊断时间">
+          <span class="opacity8">2018-4-12~2019-3-4</span>
+        </detail-list-item>
+      </detail-list>
+      <Searchpanel ref="searchPanel" :list="list" :choose="choose">
+        <div slot="control">
+          <a-button type="primary" @click="search" style="margin-right: 5px">查询</a-button>
+          <a-button class @click="resetForm" style="margin-right: 10px">重置</a-button>
+        </div>
+      </Searchpanel>
+      <a-spin tip="加载中..." :spinning="loading" class="tables">
+        <el-table
+          ref="multipleTable"
+          class="multipleEl"
+          :data="dataSource"
+          border
+          style="width: 100%"
+          highlight-current-row
+        >
+          <!--处方、处方数、患者列-->
+          <el-table-column fixed prop="date" label="日期" width="150"></el-table-column>
+          <el-table-column
+            :prop="item.prop"
+            :label="item.title"
+            :key="index"
+            v-for="(item,index) in columns"
+            :width="item.width"
+            :align="item.align"
+            :formatter="item.formatter"
+            :show-overflow-tooltip="true"
+          >
+            <!-- <template slot-scope="props">
+              <span v-if="item.prop == 'sex'">{{dealsex(props.row.sex)}}</span>
+              <span v-else-if="item.prop == 'submitTime'">{{dealtime(props.row.submitTime)}}</span>
+              <span v-else-if="item.prop == 'submitName'">
+                <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>{{props.row.submitDocPhone}}</span>
+                  </template>
+                  <a href>
+                    {{props.row[item.prop]}}&nbsp;
+                    <a-icon type="message" />
+                  </a>
+                </a-tooltip>
+              </span>
+              <span v-else>{{props.row[item.prop]}}</span>
+            </template>-->
+          </el-table-column>
+          <el-table-column prop="problem" label="问题" min-width="500">
+            <template slot-scope="props">
+              <a-row v-for="(op,index) in props.row.orderissueVOS" class="problemRow" :key="index">
+                <a-col :span="2">
+                  <a-tag :color="op.levelColor" style="cursor: default;">{{op.auditName }}</a-tag>
+                </a-col>
+                <a-col :span="22">
+                  <a-tooltip placement="top" :key="index">
+                    <template slot="title" style="width: 300px">
+                      {{op.auditClass}}：{{op.auditDescription}}
+                      <br />
+                      建议：{{op.auditSuggest}}
+                    </template>
+                    <div class="multiLineText">
+                      <span class="auditClass">{{op.auditClass}}：</span>
+                      {{op.auditDescription}}
+                      <span class="auditClass">建议：</span>
+                      {{op.auditSuggest}}
+                    </div>
+                  </a-tooltip>
+                </a-col>
+                <a-divider v-if="index<props.row.orderissueVOS.length-1" type="horizontal" />
+              </a-row>
+            </template>
+          </el-table-column>
+          <el-table-column prop="action" label="操作" width="140" align="center" fixed='right'>
+            <template slot-scope="props">
+              <a @click="looks(props.row)">查看</a>
+              <a-divider type="vertical" />
+              <a-popconfirm
+                title="确定通过?"
+                @confirm="passSingle(props.row)"
+                okText="通过"
+                cancelText="取消"
+                placement="topRight"
+              >
+                <a>通过</a>
+              </a-popconfirm>
+              <a-divider type="vertical" />
+              <a @click="rejectedSingle(props)">驳回</a>
+            </template>
+          </el-table-column>
+        </el-table>
+        <a-pagination
+          showSizeChanger
+          showQuickJumper
+          :total="total"
+          class="pnstyle"
+          v-model="current"
+          :defaultPageSize="10"
+          @showSizeChange="clientSizeChange"
+          @change="PageChange"
+          size="small"
+        ></a-pagination>
+      </a-spin>
+    </div>
+  </a-card>
+</template>
+
+<script>
+import DetailList from '@/components/tools/DetailList'
+const DetailListItem = DetailList.Item
+export default {
+  components: {
+    DetailList,
+    DetailListItem
+  },
+  name: 'index',
+  data() {
+    return {
+      columns: [
+        { title: '点评状态', prop: 'submitTime', width: 100, align: 'left' },
+        { title: '处方号', prop: 'admitNum', width: 500 },
+        { title: '处方时间', prop: 'submitName', width: 90 },
+        { title: '医生', prop: 'deptName', width: 100 },
+        { title: '科室', prop: 'pname', width: 100 },
+        { title: '门诊号', prop: 'sex', width: 80 },
+        { title: '患者', prop: 'paint', width: 55 },
+        { title: '性别', prop: 'sex', width: 55 },
+        { title: '年龄', prop: 'age', width: 55 }
+      ],
+      loading: false,
+      total: 50,
+      current: 1,
+      dataSource: [
+        {
+          submitTime: '完成',
+          admitNum: '9527',
+          submitName: '2019-3-4',
+          deptName: '杨永信',
+          pname: '门诊',
+          paint: 'xxx',
+          sex: '男',
+          age: '32'
+        },
+        {
+          submitTime: '完成',
+          admitNum: '9527',
+          submitName: '2019-3-4',
+          deptName: '杨永信',
+          pname: '门诊',
+          paint: 'xxx',
+          sex: '男',
+          age: '32'
+        },
+        {
+          submitTime: '完成',
+          admitNum: '9527',
+          submitName: '2019-3-4',
+          deptName: '杨永信',
+          pname: '门诊',
+          paint: 'xxx',
+          sex: '男',
+          age: '32'
+        }
+      ]
+    }
+  },
+  computed: {
+    choose() {
+      return { isshow: false, isextend: true }
+    },
+    list() {
+      return [
+        {
+          name: '点评状态',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '处方号',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '处方时间',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '医生',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '科室',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '患者',
+          dataField: 'icdName',
+          type: 'text'
+        }
+      ]
+    }
+  },
+  mounted() {},
+  methods: {
+    // 搜索数据
+    search() {},
+    // 重置数据
+    resetForm() {},
+    // 改变页码
+    clientSizeChange() {},
+    // 翻页处理
+    PageChange() {},
+    // 处理时间
+    dealtime() {},
+    // 处理性别
+    dealsex() {},
+    // 详情
+    looks(data){
+     this.$router.push({
+         name:'patientReviewDetail'
+     })
+    }
+  }
+}
+</script>
+
+<style  lang='less'>
+.userModel-p {
+  text-align: center;
+}
+.allContent {
+    
+  .tables {
+    margin-top: 35px;
+  }
+  .ant-col-xxl-6 {
+    display: block;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 33%;
+    height: 35px;
+  }
+  .renwu {
+    font-size: 18px;
+    font-weight: bold;
+    height: 20px;
+  }
+//   .el-table__body-wrapper::-webkit-scrollbar {
+//     width: 10px; // 横向滚动条
+//     height: 15px; // 纵向滚动条 必写
+//   }
+// .el-table__body-wrapper::-webkit-scrollbar-thumb {
+//     background-color: #cccc;
+//    border-radius: 3px;
+//   }
+}
+
+</style>

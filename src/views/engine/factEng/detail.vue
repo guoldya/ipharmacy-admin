@@ -180,7 +180,7 @@ export default {
         if (pid == item.parentId) {
           items.push({
             title: item.colName,
-            // value: item.id,
+             value: item.id,
             key: item.id,
             children: this.getDataChildren(bdata, item.id)
           })

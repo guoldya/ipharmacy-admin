@@ -10,12 +10,12 @@
           <a-input-search placeholder="请输入药品名称" @search="onSearch" enterButton="搜索" size="large" />
           <header v-if="status" class="warn">暂无数据</header>
           <div class="content" v-for="item in dataList">
-            <a
+            <!-- <a
               class="drugname"
               v-if="item.genericname"
               v-html="item.genericname"
               @click="goTo(item)"
-            ></a>
+            ></a> -->
             <a class="drugname" v-if="item.tradename" v-html="item.tradename" @click="goTo(item)"></a>
             <a
               class="drugname"
@@ -117,6 +117,9 @@ export default {
             if ((res.rows = null || res.rows.length <= 0)) {
               this.status = true
             }
+            else{
+                this.status = false
+            }
           } else {
             this.warn(res.msg)
           }
@@ -138,6 +141,8 @@ export default {
             this.total = res.total
              if ((res.rows = null || res.rows.length <= 0)) {
               this.status = true
+            }else{
+                this.status = false
             }
           } else {
             this.warn(res.msg)
