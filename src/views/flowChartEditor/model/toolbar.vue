@@ -30,7 +30,7 @@
       <span class="separator"></span>
       <i v-if="titleData.visible" class="operating icon-font action action-xinzeng"  title="新增" @click="addRuleData" ></i>
       <i  v-if="titleData.visible" class="operating icon-font action action-fuzhi1"  title="复制规则"  @click="copyRule" ></i>
-      <i  v-if="titleData.visible" class="operating icon-font action action-xiaoyan2"  title="校验"  @click="verifyFlow({status:'true'})" ></i>
+      <i  v-if="titleData.visible" class="operating icon-font action action-xiaoyan2"  title="校验"  @click="verifyFlow({status:true})" ></i>
       <span class="separator"></span>
       <i  v-if="titleData.visible" class="operating icon-font action action-baocun"  title="保存" style="color: #52c41a"  @click="saveFlow" ></i>
       <i  v-if="titleData.visible" class="operating icon-font action action-tijiao2" style="color: #2eabff"  title="提交"  @click="submitFlow" ></i>

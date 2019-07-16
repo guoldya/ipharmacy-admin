@@ -20,6 +20,7 @@
       <a-pagination
         showSizeChanger
         showQuickJumper
+        hideOnSinglePage
         :total="total"
         class="pnstyle"
         :defaultPageSize="pageSize"
@@ -58,7 +59,7 @@
         total: 10,
         curent: 1,
         pageSize: 10,
-        columns: [{ title: '工号', value: 'code', width: 80, align: 'right' },
+        columns: [{ title: '工号', value: 'personId', width: 80, align: 'right' },
           { title: '姓名', value: 'name', width: 120 },
           { title: '电话', value: 'phone', width: 130, align: 'right' },
           { title: '科室', value: 'deptName', width: 200 },

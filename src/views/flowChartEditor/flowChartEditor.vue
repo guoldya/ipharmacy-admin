@@ -562,6 +562,7 @@
                     _this.selectNode.levels = model.levels != null ? model.levels : shape.levels
                     break
                   case 'model-rect-attribute':
+                    console.log(ev.item,'111')
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
@@ -744,17 +745,23 @@
         this.submitStatus = true;
         let data = this.flow.save();
         if ($.trim(data.nodes).length == 0 && $.trim(data.edges).length == 0){
-          this.warn('未选择节点!');
+          if(status.status){
+            this.warn('未选择节点!');
+          }
           this.submitStatus = false;
           return
         }
         if (data.nodes.filter(item => item.shape == 'flow-circle-start').length == 0) {
+           if(status.status){
           this.warn('起点不存在!');
+           }
           this.submitStatus = false;
           return
         }
         if ($.trim(data.edges).length == 0){
+           if(status.status){
           this.warn('节点未连线!');
+           }
           this.submitStatus = false;
           return
         }
@@ -778,66 +785,76 @@
         let indexData = this.getNodeTreeData(list)
         let i = 0
         let nodeTree = this.recursiveNodeTree(indexData, '', i);
-        this.verifyTree(nodeTree, data.nodes, data.edges);
+        this.verifyTree(nodeTree, data.nodes, data.edges,status);
         if (this.submitStatus && status.status){
           this.success('校验成功');
         }
       },
 
       //校验数据
-      verifyTree(nodeTree, nodes, edges) {
+      verifyTree(nodeTree, nodes, edges,status) {
         for (let key in nodeTree) {
           if (nodeTree[key].type == 'edge'&& this.submitStatus == true) {
-            if(this.judgeEdge(nodeTree[key], nodes)==false)
+            if(this.judgeEdge(nodeTree[key], nodes,status)==false)
               this.submitStatus = false;
           }
           if (nodeTree[key].type == 'node' && this.submitStatus == true) {
-           if(this.judgeNode(nodeTree[key], edges)==false)
+           if(this.judgeNode(nodeTree[key], edges,status)==false)
              this.submitStatus = false;
           }
           if (nodeTree[key].childNodes) {
-            this.verifyTree(nodeTree[key].childNodes, nodes, edges)
+            this.verifyTree(nodeTree[key].childNodes, nodes, edges,status)
           }
         }
       },
       //判断线的父节点类型
-      judgeEdge(edge, nodes) {
+      judgeEdge(edge, nodes,status) {
         for (let i in nodes) {
           if (nodes[i].id == edge.pid) {
-            if (nodes[i].shape == 'flow-circle-start') {
-              if ($.trim(edge.label).length == 0) {
-                this.warn('请输入线段值');
-                this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-                this.submitStatus = false;
-                return false
-              }
-            } else if (nodes[i].shape == 'model-rect-attribute' ) {
-              if (edge.lo == 3){
+            if (nodes[i].shape == 'model-rect-attribute' ) {
+              console.log(nodes[i])
+              if (nodes[i].lo == 3){
                 if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertValList).length == 0) {
-                  this.warn('请输入线段值');
+                  if(status.status){
+                    this.warn('请输入线段值');
+                  }
                   this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
                   this.submitStatus = false;
                   return false
                 }
-              } else{
-                if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertVal).length == 0) {
+              } else if(nodes[i].lo == 2){
+                if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0 || $.trim(edge.assertVal1).length == 0) {
+                  if(status.status){
                   this.warn('请输入线段值');
+                  }
+                  this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
+                  this.submitStatus = false;
+                  return false
+                }
+              }else if(nodes[i].lo == 1){
+                 if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0|| $.trim(edge.ro).length == 0) {
+              if(status.status){
+                  this.warn('请输入线段值');
+                  }
                   this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
                   this.submitStatus = false;
                   return false
                 }
               }
-
             } else if (nodes[i].shape == 'flow-rhombus-if') {
               if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0) {
-                this.warn('请输入线段值');
+               if(status.status){
+                  this.warn('请输入线段值');
+                  }
                 this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
                 this.submitStatus = false;
                 return false
               }
             } else if (nodes[i].shape == 'model-image-branch') {
               if ($.trim(edge.label).length == 0) {
-                this.warn('请输入线段值');
+              if(status.status){
+                  this.warn('请输入线段值');
+                  }
                 this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
                 this.submitStatus = false;
                 return false
@@ -847,40 +864,51 @@
         }
       },
       //判断节点父节点
-      judgeNode(node, edges) {
+      judgeNode(node, edges,status) {
         // let pids = node.pid.split(',');
         // for (let key in edges) {
           // for (let i in pids){
             // if (edges[key].id == pids[i]) {
               if (node.shape == 'model-rect-attribute'){
                 if ($.trim(node.itemId).length == 0 || $.trim(node.childNodes).length == 0 || node.pid.length == 0){
-                  this.warn('属性节点未完善或缺少结论节点和上级节点')
+                  if(status.status){
+                  this.warn('属性节点未完善或缺少结论节点和上级节点');
+                  }
+                    // this.flow.update(node.id, { fill: 'red'})  
                   this.submitStatus = false;
                   return false
                 }
               }else if (node.shape == 'model-image-branch' ){
                 if ($.trim(node.label).length == 0 || $.trim(node.childNodes) == 0 || node.pid.length == 0){
+                   if(status.status){
                   this.warn('分支节点或缺少结论节点和上级节点');
+                   }
                   this.submitStatus = false;
                   return false
                 }
               }else if (node.shape == 'flow-rhombus-if'){
                 if (node.lo == 3){
                   if ($.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertValList).length == 0 ||$.trim(node.childNodes) == 0 || node.pid.length == 0){
+                     if(status.status){
                     this.warn('条件节点或缺少结论节点和上级节点');
+                     }
                     this.submitStatus = false;
                     return false
                   }
                 } else{
                   if ( $.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertVal).length == 0||  $.trim(node.childNodes) == 0 || node.pid.length == 0){
+                     if(status.status){
                     this.warn('条件节点或缺少结论节点和上级节点');
+                     }
                     this.submitStatus = false;
                     return false
                   }
                 }
               }else if (node.shape == 'model-card-conclusion'){
                 if ($.trim(node.inAccordanceWith).length == 0 || $.trim(node.levels).length == 0 || ($.trim(node.message).length == 0 || $.trim(node.suggest).length == 0 || $.trim(node.verdictType).length == 0 || node.pid.length == 0)){
+                   if(status.status){
                   this.warn('结论节点未完善或缺少上级节点');
+                   }
                   this.flow.update(node.id, {isSelected:false})
                   this.submitStatus = false;
                   return false
