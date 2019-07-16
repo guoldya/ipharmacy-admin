@@ -146,7 +146,7 @@ export default {
     },
     // 树形初始数据
     getTreeList(params = {}) {
-      var paramsNum = Object.keys(params)
+      // var paramsNum = Object.keys(params)
       this.loading = true
       this.$axios({
         url: this.api.selectTitlesList,
@@ -155,11 +155,11 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            if (paramsNum.length == 1) {
+            // if (paramsNum.length == 1) {
               this.dataSource = this.getDataChildren(res.rows, undefined)
-            } else {
-              this.dataSource = res.rows
-            }
+            // } else {
+            //   this.dataSource = res.rows
+            // }
             this.loading = false
           } else {
             this.loadingTable = false

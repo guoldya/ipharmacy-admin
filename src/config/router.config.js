@@ -269,13 +269,6 @@ export const asyncRouterMap = [
                 component: () => import('@/views/auditWorkstation/presOutpatient/index.vue'),
                 meta: { title: '门诊审方中心', hiddenHeaderContent: true, index: true }
               }
-              // {
-              //     path: '/auditWorkstation/presOutpatient/detail/:visId/:submitNo/:isNew/',
-              //     name: 'presOutpatientDetail',
-              //     hidden: true,
-              //     component: () => import( '@/views/auditWorkstation/presOutpatient/detail.vue'),
-              //     meta: { title: '审方中心详情(门诊)', hiddenHeaderContent: true, detail: true }
-              // }
             ]
           },
           {
@@ -305,13 +298,6 @@ export const asyncRouterMap = [
                 component: () => import('@/views/auditWorkstation/presHospitalized/index.vue'),
                 meta: { title: '住院审方中心', hiddenHeaderContent: true, index: true }
               }
-              // {
-              //     path: '/auditWorkstation/presHospitalized/detail',
-              //     name: 'presHospitalizedDetail',
-              //     hidden: true,
-              //     component: () => import( '@/views/auditWorkstation/presHospitalized/detail.vue'),
-              //     meta: { title: '审方中心详情(住院)', hiddenHeaderContent: true, detail: true }
-              // }
             ]
           },
 
@@ -345,6 +331,36 @@ export const asyncRouterMap = [
               }
             ]
           }
+        ]
+      },
+      //点评
+      {
+        path: '/prescriptionReview',
+        name: 'prescriptionReview',
+        component: PageView,
+        meta: { title: '处方点评', keepAlive: false, icon: 'laptop' },
+        children: [
+          {
+            path: '/prescriptionReview/reviewTaskMgt',
+            name: 'reviewTaskMgt',
+            component: RouteView,
+            meta: { title: '点评任务管理', multistage: true },
+            children: [
+              {
+                path: '/prescriptionReview/reviewTaskMgt/index',
+                name: 'reviewTaskMgtIndex',
+                component: () => import('@/views/prescriptionReview/reviewTaskMgt/index.vue'),
+                meta: { title: '点评任务管理', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/prescriptionReview/reviewTaskMgt/add',
+                name: 'reviewTaskMgtAdd',
+                hidden: true,
+                component: () => import('@/views/prescriptionReview/reviewTaskMgt/addTask.vue'),
+                meta: { title: '新增点评任务', detail: true, }
+              }
+            ]
+          },
         ]
       },
       {
@@ -506,51 +522,51 @@ export const asyncRouterMap = [
       },
 
       // test
-      {
-        path: '/testPage',
-        name: 'testPage',
-        component: PageView,
-        redirect: '/test/test',
-        meta: { title: '测试', icon: 'check-circle-o', permission: ['result'] },
-        children: [
-          {
-            path: '/test/test',
-            name: 'test',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/test/test'),
-            meta: { title: '测试页面', hiddenHeaderContent: true, permission: ['result'] }
-          },
-          {
-            path: '/test/gridLayOut',
-            name: 'gridLayOut',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
-            meta: { title: '拖拽测试', hiddenHeaderContent: true, permission: ['result'] }
-          },
-          {
-            path: '/test/combineTest',
-            name: 'combineTest',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTest'),
-            meta: { title: '合并测试', permission: ['result'] }
-          },
-          {
-            path: '/test/combineTwo',
-            name: 'combineTwo',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
-            meta: { title: '合并测试2', permission: ['result'] }
-          },
-          {
-            path: '/test/combineThree',
-            name: 'combineThree',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineThree'),
-            meta: { title: '合并测试3', permission: ['result'] }
-          },
-          {
-            path: '/test/picCropper',
-            name: 'picCropper',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/test/picCropper'),
-            meta: { title: '图片剪裁', permission: ['result'] }
-          }
-        ]
-      },
+      // {
+      //   path: '/testPage',
+      //   name: 'testPage',
+      //   component: PageView,
+      //   redirect: '/test/test',
+      //   meta: { title: '测试', icon: 'check-circle-o', permission: ['result'] },
+      //   children: [
+      //     {
+      //       path: '/test/test',
+      //       name: 'test',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/test'),
+      //       meta: { title: '测试页面', hiddenHeaderContent: true, permission: ['result'] }
+      //     },
+      //     {
+      //       path: '/test/gridLayOut',
+      //       name: 'gridLayOut',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
+      //       meta: { title: '拖拽测试', hiddenHeaderContent: true, permission: ['result'] }
+      //     },
+      //     {
+      //       path: '/test/combineTest',
+      //       name: 'combineTest',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTest'),
+      //       meta: { title: '合并测试', permission: ['result'] }
+      //     },
+      //     {
+      //       path: '/test/combineTwo',
+      //       name: 'combineTwo',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
+      //       meta: { title: '合并测试2', permission: ['result'] }
+      //     },
+      //     {
+      //       path: '/test/combineThree',
+      //       name: 'combineThree',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineThree'),
+      //       meta: { title: '合并测试3', permission: ['result'] }
+      //     },
+      //     {
+      //       path: '/test/picCropper',
+      //       name: 'picCropper',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/picCropper'),
+      //       meta: { title: '图片剪裁', permission: ['result'] }
+      //     }
+      //   ]
+      // },
       {
         path: '/sys',
         name: 'sys',

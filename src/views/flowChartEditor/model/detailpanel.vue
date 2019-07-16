@@ -177,9 +177,9 @@
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input :type="edgeInitialized.inValueEdge" v-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inputEdge!='time'" @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
             <div v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge!='time'">
-              <a-input-number  class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal" :max="selectEdge.assertVal1"  v-model="selectEdge.assertVal"/>
+              <a-input-number  class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal"  v-model="selectEdge.assertVal"/>
               <a-input-number  class="inputCenter" size="small" placeholder="~" disabled/>
-              <a-input-number  class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" :min="selectEdge.assertVal" v-model="selectEdge.assertVal1"/>
+              <a-input-number  class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
             </div>
             <div v-else-if="edgeInitialized.inputEdge =='select'&&edgeInitialized.inValueEdge!='time'">
               <a-select

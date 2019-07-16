@@ -21,7 +21,7 @@
             @change="relationChange($event,cd.logic,cd.ruleId)"
           >
             <a-select-option
-              v-for="item in cd.operators"
+              v-for="(item,index) in cd.operators"
               :value='item.id'
               :key="index"
             >
@@ -32,7 +32,7 @@
         <a-col v-if="cd.inputType=='input'" :span="4">
           <!--文本输入框-->
           <div >
-            <a-input style="width: 94%" @change="onChange"  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
+            <a-input  @change="onChange"  class="width-100 marLeft10" v-model="cd.assertVal"></a-input>
           </div>
         </a-col>
         <a-col  v-else-if="cd.inputType=='select'" :span="4">
@@ -45,6 +45,7 @@
             :filterOption="false"
             :key="cd.key"
             @change="onChange"
+            :maxTagCount="2"
           >
             <a-select-option
               v-for="item in cd.treeData"
@@ -65,15 +66,16 @@
             class="width-100 marLeft10"
             v-model="cd.values"
             @change="onChange"
+            :maxTagCount="2"
             :filterTreeNode="false">
           </a-tree-select>
         </a-col>
         <a-col v-else-if="cd.inputType=='dataRange'" :span="4">
           <!--范围-->
           <div  class="width-100 marLeft10">
-            <a-input-number @change="onChange"  :max="cd.assertVal2" class="rangeLeft" v-model="cd.assertVal"  />
+            <a-input-number @change="onChange"  class="rangeLeft" v-model="cd.assertVal"  />
             <a-input class="rangeCenter" placeholder="~" disabled />
-            <a-input-number @change="onChange" :min="cd.assertVal" class="rangeRight"  v-model="cd.assertVal2" />
+            <a-input-number @change="onChange"  class="rangeRight"  v-model="cd.assertVal2" />
             <a-select
               v-if="cd.columnId == 'AGE' && cd.logic == '2'"
               @change="assertValSpec($event,cd.ruleId)"
@@ -185,7 +187,6 @@
         this.conditions.push();
       },
       assertValSpec(value,ruleId){
-        console.log(value,'va')
         for (let key in this.conditions){
           if (ruleId == this.conditions[key].ruleId){
               this.conditions[key].spec = ''+value

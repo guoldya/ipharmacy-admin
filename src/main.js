@@ -21,7 +21,7 @@ import $ from 'jquery'
 
 window.$ = $
 //组件相关
-import { Table, TableColumn, Card, Tag, Collapse, CollapseItem, Scrollbar, Tooltip } from 'element-ui'
+import { Table, TableColumn, Card, Tag, Collapse, CollapseItem, Scrollbar, Tooltip,Progress } from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局
 import vcolorpicker from 'vcolorpicker'
 
@@ -58,6 +58,7 @@ Vue.use(CollapseItem)
 Vue.use(vcolorpicker)
 Vue.use(Scrollbar)
 Vue.use(Tooltip)
+Vue.use(Progress)
 Vue.use(msgHandler)//统一错误处理
 Vue.use(VueAxios, router)
 
