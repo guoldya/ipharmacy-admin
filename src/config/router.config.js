@@ -361,6 +361,27 @@ export const asyncRouterMap = [
               }
             ]
           },
+          {
+            path: '/prescriptionReview/patientReview',
+            name: 'patientReview',
+            component: RouteView,
+            meta: { title: '门诊处方点评', multistage: true },
+            children: [
+              {
+                path: '/prescriptionReview/patientReview/index',
+                name: 'patientReviewIndex',
+                component: () => import('@/views/prescriptionReview/patientReview/index.vue'),
+                meta: { title: '门诊处方点评', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/prescriptionReview/patientReview/detail',
+                name: 'patientReviewDetail',
+                hidden: true,
+                component: () => import('@/views/prescriptionReview/patientReview/detail.vue'),
+                meta: { title: '门诊处方点评详情', detail: true, description: '审门诊处方点评' }
+              }
+            ]
+          },
         ]
       },
       {
