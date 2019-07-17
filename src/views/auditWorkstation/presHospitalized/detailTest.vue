@@ -254,8 +254,11 @@ export default {
   }
 }
 </script>
-<style lang='less' scoped>
+<style lang='less' >
 .testchk {
+   .ant-badge-count {
+    z-index: 5;
+  }
   .el-table th {
     background-color: white !important;
   }
@@ -273,6 +276,7 @@ export default {
   .ant-checkbox-wrapper {
     float: right;
   }
+ 
 }
 .borders {
   width: 0;

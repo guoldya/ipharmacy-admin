@@ -97,6 +97,7 @@
                   :filterOption="false"
                   @search="handleSearch"
                   @change="handleChange"
+                  @blur='lostFocus'
                   v-decorator="[ 'drugCodes']"
                 >
                   <a-select-option
@@ -191,7 +192,6 @@
             :pageSizeOptions="['10', '20','50']"
             @showSizeChange="similarSizeChange"
             @change="similarPageChange"
-            @blur="lostFocus"
             size="small"
           ></a-pagination>
         </a-spin>
@@ -330,10 +330,9 @@ export default {
       this.MData.drugCode = value
       this.MData.unit=params.unit
     },
-    lostFocus() {
-      this.drugName=value
-      console.log('ddd')
-      this.isShow = true
+    lostFocus() {   
+      console.log('www')
+     //this.isShow = true
     },
 
     //点击第左边的table列事件

@@ -104,6 +104,7 @@ export default {
   methods: {
     onSearch(value) {
       this.value = value
+      this.current=1
       let param = { keyword: value, pageNo: 1, pageSize: 10 }
       this.$axios({
         url: this.api.selectDrug,
@@ -153,14 +154,14 @@ export default {
         })
     },
     pageChange(page, pageSize) {
-      this.curent = page
+      this.current = page
       let params = {}
       params.pageNo = page
       params.pageSize = pageSize
       this.getdata({ keyword: this.value, pageNo: page, pageSize: pageSize })
     },
     pageChangeSize(page, pageSize) {
-      this.curent = page
+      this.current = page
       let params = {}
       this.pageSize = pageSize
       params.pageNo = page

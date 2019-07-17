@@ -1,11 +1,11 @@
 <template>
-  <a-card>
-    <div class="allContent">
+  <div class="allContent">
+    <a-card>
       <detail-list>
         <detail-list-item term="任务名称">
           <span class="opacity8 renwu">点评方案一</span>
         </detail-list-item>
-        <detail-list-item term="方案范围">
+        <detail-list-item term="任务范围">
           <span class="opacity8">门诊</span>
         </detail-list-item>
         <detail-list-item term="点评方案">
@@ -14,16 +14,24 @@
         <detail-list-item term="抽取规则">
           <span class="opacity8">等间抽取500份,各个科室平均抽取50份</span>
         </detail-list-item>
-        <detail-list-item term="诊断时间">
+        <detail-list-item term="处方时间" v-if="id==1">
+          <span class="opacity8">2018-4-12~2019-3-4</span>
+        </detail-list-item>
+        <detail-list-item term="出院时间" v-else-if="id==2">
           <span class="opacity8">2018-4-12~2019-3-4</span>
         </detail-list-item>
       </detail-list>
+    </a-card>
+    <a-card class="margin-top-5">
       <Searchpanel ref="searchPanel" :list="list" :choose="choose">
         <div slot="control">
           <a-button type="primary" @click="search" style="margin-right: 5px">查询</a-button>
           <a-button class @click="resetForm" style="margin-right: 10px">重置</a-button>
         </div>
       </Searchpanel>
+    </a-card>
+    <a-card class="margin-top-5">
+      <a-button type="primary">自动点评</a-button>
       <a-spin tip="加载中..." :spinning="loading" class="tables">
         <el-table
           ref="multipleTable"
@@ -34,7 +42,7 @@
           highlight-current-row
         >
           <!--处方、处方数、患者列-->
-          <el-table-column fixed prop="date" label="日期" width="150"></el-table-column>
+          <!-- <el-table-column fixed prop="date" label="日期" width="150"></el-table-column> -->
           <el-table-column
             :prop="item.prop"
             :label="item.title"
@@ -62,34 +70,10 @@
               <span v-else>{{props.row[item.prop]}}</span>
             </template>-->
           </el-table-column>
-          <el-table-column prop="problem" label="问题" min-width="500">
+
+          <el-table-column prop="action" label="操作" width="140" align="center">
             <template slot-scope="props">
-              <a-row v-for="(op,index) in props.row.orderissueVOS" class="problemRow" :key="index">
-                <a-col :span="2">
-                  <a-tag :color="op.levelColor" style="cursor: default;">{{op.auditName }}</a-tag>
-                </a-col>
-                <a-col :span="22">
-                  <a-tooltip placement="top" :key="index">
-                    <template slot="title" style="width: 300px">
-                      {{op.auditClass}}：{{op.auditDescription}}
-                      <br />
-                      建议：{{op.auditSuggest}}
-                    </template>
-                    <div class="multiLineText">
-                      <span class="auditClass">{{op.auditClass}}：</span>
-                      {{op.auditDescription}}
-                      <span class="auditClass">建议：</span>
-                      {{op.auditSuggest}}
-                    </div>
-                  </a-tooltip>
-                </a-col>
-                <a-divider v-if="index<props.row.orderissueVOS.length-1" type="horizontal" />
-              </a-row>
-            </template>
-          </el-table-column>
-          <el-table-column prop="action" label="操作" width="140" align="center" fixed='right'>
-            <template slot-scope="props">
-              <a @click="looks(props.row)">查看</a>
+              <a @click="looks(props.row)">点评</a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="确定通过?"
@@ -98,10 +82,8 @@
                 cancelText="取消"
                 placement="topRight"
               >
-                <a>通过</a>
+                <a>查看</a>
               </a-popconfirm>
-              <a-divider type="vertical" />
-              <a @click="rejectedSingle(props)">驳回</a>
             </template>
           </el-table-column>
         </el-table>
@@ -111,14 +93,14 @@
           :total="total"
           class="pnstyle"
           v-model="current"
-          :defaultPageSize="10"
+          :defaultPageSize="20"
           @showSizeChange="clientSizeChange"
           @change="PageChange"
           size="small"
         ></a-pagination>
       </a-spin>
-    </div>
-  </a-card>
+    </a-card>
+  </div>
 </template>
 
 <script>
@@ -133,15 +115,15 @@ export default {
   data() {
     return {
       columns: [
-        { title: '点评状态', prop: 'submitTime', width: 100, align: 'left' },
-        { title: '处方号', prop: 'admitNum', width: 500 },
-        { title: '处方时间', prop: 'submitName', width: 90 },
-        { title: '医生', prop: 'deptName', width: 100 },
-        { title: '科室', prop: 'pname', width: 100 },
-        { title: '门诊号', prop: 'sex', width: 80 },
+        { title: '处方号', prop: 'admitNum', width: 100 },
+        { title: '处方日期', prop: 'submitName', width: 90 },
         { title: '患者', prop: 'paint', width: 55 },
         { title: '性别', prop: 'sex', width: 55 },
-        { title: '年龄', prop: 'age', width: 55 }
+        { title: '年龄', prop: 'age', width: 55 },
+        { title: '门诊号', prop: 'sex', width: 80 },
+        { title: '科室', prop: 'pname', width: 100 },
+        { title: '医生', prop: 'deptName', width: 100 },
+        { title: '点评结果', prop: 'submitTime', align: 'left' }
       ],
       loading: false,
       total: 50,
@@ -177,17 +159,11 @@ export default {
           sex: '男',
           age: '32'
         }
-      ]
-    }
-  },
-  computed: {
-    choose() {
-      return { isshow: false, isextend: true }
-    },
-    list() {
-      return [
+      ],
+      id: 1,
+      list: [
         {
-          name: '点评状态',
+          name: '点评结果',
           dataField: 'icdName',
           type: 'text'
         },
@@ -219,7 +195,67 @@ export default {
       ]
     }
   },
-  mounted() {},
+  computed: {
+    choose() {
+      return { isshow: false, isextend: true }
+    },
+  //   list() {
+  // return
+  //   }
+  },
+  created() {
+    if(this.$route.query.id){
+    this.id=this.$route.query.id
+    //console.log(this.$route.query.id)
+    if(this.id==2){
+      this.columns=[
+        { title: '住院号', prop: 'admitNum', width: 100 },
+        { title: '出院日期', prop: 'submitName', width: 90 },
+        { title: '患者', prop: 'paint', width: 55 },
+        { title: '性别', prop: 'sex', width: 55 },
+        { title: '年龄', prop: 'age', width: 55 },
+        { title: '住院科室', prop: 'sex', width: 80 },
+        { title: '住院医师', prop: 'deptName', width: 100 },
+        { title: '点评结果', prop: 'submitTime', align: 'left' }
+      ]
+       this.list=[
+        {
+          name: '点评结果',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '住院号',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '出院时间',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '医生',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '科室',
+          dataField: 'icdName',
+          type: 'text'
+        },
+        {
+          name: '患者',
+          dataField: 'icdName',
+          type: 'text'
+        }
+      ]
+    }
+    }
+  },
+
+  mounted() {
+  },
   methods: {
     // 搜索数据
     search() {},
@@ -234,10 +270,10 @@ export default {
     // 处理性别
     dealsex() {},
     // 详情
-    looks(data){
-     this.$router.push({
-         name:'patientReviewDetail'
-     })
+    looks(data) {
+      this.$router.push({
+        name: 'patientReviewDetail'
+      })
     }
   }
 }
@@ -248,9 +284,8 @@ export default {
   text-align: center;
 }
 .allContent {
-    
   .tables {
-    margin-top: 35px;
+    margin-top: 15px;
   }
   .ant-col-xxl-6 {
     display: block;
@@ -264,14 +299,13 @@ export default {
     font-weight: bold;
     height: 20px;
   }
-//   .el-table__body-wrapper::-webkit-scrollbar {
-//     width: 10px; // 横向滚动条
-//     height: 15px; // 纵向滚动条 必写
-//   }
-// .el-table__body-wrapper::-webkit-scrollbar-thumb {
-//     background-color: #cccc;
-//    border-radius: 3px;
-//   }
+  //   .el-table__body-wrapper::-webkit-scrollbar {
+  //     width: 10px; // 横向滚动条
+  //     height: 15px; // 纵向滚动条 必写
+  //   }
+  // .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  //     background-color: #cccc;
+  //    border-radius: 3px;
+  //   }
 }
-
 </style>
