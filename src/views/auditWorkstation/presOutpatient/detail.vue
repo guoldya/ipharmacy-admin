@@ -30,19 +30,19 @@
                     <a-divider type="horizontal" class="detailDivider" />
                     <a-row class="patientDetail">
                         <a-col span="4">
-                            体重：
+                            <span class='font-bold'>体重：</span>   
                             <span class="opacity8">{{leftData.weight}}Kg</span>
                         </a-col>
                         <a-col span="4">
-                            身高：
+                            <span class='font-bold'>身高：</span>   
                             <span class="opacity8">{{leftData.height}}Cm</span>
                         </a-col>
                         <a-col span="6">
-                            体表面积：
+                            <span class='font-bold'>体表面积：</span>   
                             <span class="opacity8">{{leftData.bSA}}㎡</span>
                         </a-col>
                         <a-col span="10">
-                            处方医生：
+                            <span class='font-bold'>处方医生：</span>   
                             <span class="opacity8">
                                 <span class="datetime">
                                     {{leftData.attendingDocName}}&nbsp;
@@ -53,11 +53,11 @@
                         </a-col>
                     </a-row>
                     <a-row class="patientDetail">
-                        临床诊断：
+                        <span class='font-bold'>临床诊断：</span>   
                         <span class="opacity8">{{leftData.diseaseName}}</span>
                     </a-row>
                     <a-row class="patientDetail">
-                        过敏史：
+                        <span class='font-bold'>过敏史：</span>   
                         <span class="opacity8">{{leftData.irritabilityNames}}</span>
                     </a-row>
                 </a-card>

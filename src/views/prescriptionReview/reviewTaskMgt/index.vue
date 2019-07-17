@@ -1,7 +1,9 @@
 <template>
     <div>
-        <a-card></a-card>
         <a-card>
+             <countReview  :countList="countText"></countReview>
+        </a-card>
+        <a-card class="margin-top-5">
             <Searchpanel ref="searchPanel" :list="list">
                 <div slot="control">
                     <a-button type="primary" @click="search">查询</a-button>
@@ -110,7 +112,11 @@
     </div>
 </template>
 <script>
+import countReview from "./count-review"
 export default {
+      components: {
+        countReview,
+    },
     data() {
         return {
             api: {
@@ -149,7 +155,12 @@ export default {
             total: 0,
             bmTotal: 1,
             current: 0,
-            bmCurrent: 1
+            bmCurrent: 1,
+            countText:[
+                {itemCount:123,item:'抽取点评',colors:'#4586ff'},
+                  {itemCount:123,item:'已点评',colors:'#2dc89f'},
+                    {itemCount:123,item:'问题点评',colors:'#ff6781'}
+            ]
         }
     },
     computed: {
@@ -239,8 +250,8 @@ export default {
         },
         //新增
         add() {
-             this.$router.push({
-                name: 'reviewTaskMgtAdd',
+            this.$router.push({
+                name: 'reviewTaskMgtAdd'
             })
         },
         //table点击事件

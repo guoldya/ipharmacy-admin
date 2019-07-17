@@ -3,7 +3,7 @@
     <a-col :span="2"></a-col>
     <div v-for="op in countList">
       <a-col class="countFor" :style="{color:op.colors}" :span="5">
-        <countTo class="countStyle" :end="op.itemCount"></countTo>
+        <p class="countStyle" >{{op.itemCount}}</p>
         <!--<div class="countStyle">{{op.itemCount}}</div>-->
         <span>{{op.item}}</span>
       </a-col>
