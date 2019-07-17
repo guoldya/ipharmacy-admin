@@ -358,6 +358,13 @@ export const asyncRouterMap = [
                 hidden: true,
                 component: () => import('@/views/prescriptionReview/reviewTaskMgt/addTask.vue'),
                 meta: { title: '新增点评任务', detail: true, }
+              },
+              {
+                path: '/prescriptionReview/reviewTaskMgt/detail',
+                name: 'reviewTaskMgtDetail',
+                hidden: true,
+                component: () => import('@/views/prescriptionReview/reviewTaskMgt/taskDetail.vue'),
+                meta: { title: '任务内容明细', detail: true, }
               }
             ]
           },
