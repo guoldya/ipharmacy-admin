@@ -42,7 +42,7 @@
                             <span class="opacity8">{{leftData.bSA}}㎡</span>
                         </a-col>
                         <a-col span="10">
-                            <span class='font-bold'>处方医生：</span>   
+                            <span class='font-bold'>就诊医生：</span>   
                             <span class="opacity8">
                                 <span class="datetime">
                                     {{leftData.attendingDocName}}&nbsp;
@@ -75,14 +75,14 @@
                                             <span class="font-bold">{{op.prescNum}}</span>
                                         </a-col>
                                         <a-col :span="6">
-                                            科室：
+                                            开单科室：
                                             <span class="font-bold">{{op.deptName}}</span>
                                         </a-col>
-                                        <a-col :span="4">
-                                            医生：
+                                        <a-col :span="6">
+                                            开单医生：
                                             <span class="font-bold">{{op.prescDocName}}</span>
                                         </a-col>
-                                        <a-col :span="8">
+                                        <a-col :span="6">
                                             时间：
                                             <span class="font-bold">{{dealtime(op.prescDate)}}</span>
                                         </a-col>
@@ -218,7 +218,7 @@
                                 <a-textarea :rows="4" v-model="templateText"></a-textarea>
                                 <div class="margin-top-10">
                                     <span class="dealP">问题描述：</span>
-                                    <span v-for="ta in tagsData " class="margin-left-5">
+                                    <span v-for="(ta,index) in tagsData " class="margin-left-5" :key=index>
                                         <a-tag
                                             v-if="ta.status == true"
                                             class="checkTag tagStyle"
@@ -526,6 +526,7 @@ export default {
         getDetailData() {
             this.visId =  JSON.parse(window.localStorage.getItem('outpatientData')).visId
             this.routerData = JSON.parse(window.localStorage.getItem('outpatientData'))
+            this.routerData.reviewResouce = 1;
             this.allLoading = false
             selectOutDetail(this.routerData)
                 .then(res => {
@@ -1158,6 +1159,9 @@ export default {
 .cardRight {
     min-height: 700px;
 }
+.cardRight .auditOpinion {
+        min-height: 54px;
+    }
 
 .cardHeight .cardColHeight {
     min-height: 450px;
@@ -1241,9 +1245,7 @@ export default {
         -ms-transform: rotate(45deg);
         transform: rotate(45deg);
     }
-    .auditOpinion {
-        height: 53px;
-    }
+    
 }
 .detilNowrap {
     max-width: 220px;

@@ -360,7 +360,7 @@ export const asyncRouterMap = [
                 meta: { title: '新增点评任务', detail: true, }
               },
               {
-                path: '/prescriptionReview/reviewTaskMgt/detail',
+                path: '/prescriptionReview/reviewTaskMgt/detail/:recordId',
                 name: 'reviewTaskMgtDetail',
                 hidden: true,
                 component: () => import('@/views/prescriptionReview/reviewTaskMgt/taskDetail.vue'),

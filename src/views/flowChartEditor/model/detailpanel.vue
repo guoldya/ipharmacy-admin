@@ -28,7 +28,7 @@
           </a-form-item>
 
           <a-form-item label="级别" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectNode.levels" @change="levelChange">
+            <a-select size="small"  @change="levelChange">
               <a-select-option v-for="(op,index) in levelData" :value=op.auditLevel :key="index"
                                :title="op.levelColor">{{op.levelName}}
               </a-select-option>
@@ -275,6 +275,7 @@
       },
       levelChange(value, option) {
         this.selectNode.levelColor = option.componentOptions.propsData.title;
+         this.selectNode.levels = ''+option.componentOptions.propsData.value;
       },
       getSelectClassList() {
         dicBaseSelectClassList({ 'codeClass': '7' }).then(res => {

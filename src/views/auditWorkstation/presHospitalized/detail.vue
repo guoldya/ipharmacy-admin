@@ -359,6 +359,7 @@ export default {
 
     // 获取患者个人信息
     getRecordDelData(params = {}) {
+      params.reviewResouce = 2;
       this.$axios({
         url: this.api.selectRecordDel,
         method: 'put',

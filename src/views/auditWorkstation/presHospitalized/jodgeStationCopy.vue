@@ -218,7 +218,7 @@ console.log(value)
     //右边预判情况基础数据
     getDetailData() {
       console.log('dddddd')
-      let params = { visid: this.visData.visId, submitNo: this.visData.submitNo, clinicPrescNum: '' }
+      let params = { visid: this.visData.visId, submitNo: this.visData.submitNo, clinicPrescNum: '',reviewResouce:2 }
       this.$axios({
         url: this.api.DetailData,
         method: 'put',
