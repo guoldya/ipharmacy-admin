@@ -25,13 +25,13 @@
     <a-card class="margin-top-5">
       <Searchpanel ref="searchPanel" :list="list" :choose="choose">
         <div slot="control">
-          <a-button type="primary" @click="search" style="margin-right: 5px">查询</a-button>
+        <a-button type="primary" @click="search" style="margin-right: 5px">查询</a-button>
           <a-button class @click="resetForm" style="margin-right: 10px">重置</a-button>
         </div>
       </Searchpanel>
     </a-card>
     <a-card class="margin-top-5">
-      <a-button type="primary">自动点评</a-button>
+    <a-button type="primary">自动点评</a-button>
       <a-spin tip="加载中..." :spinning="loading" class="tables">
         <el-table
           ref="multipleTable"
@@ -133,8 +133,8 @@ export default {
           submitTime: '完成',
           admitNum: '9527',
           submitName: '2019-3-4',
-          deptName: '杨永信',
           pname: '门诊',
+          deptName: '杨永信',
           paint: 'xxx',
           sex: '男',
           age: '32'
@@ -198,64 +198,63 @@ export default {
   computed: {
     choose() {
       return { isshow: false, isextend: true }
-    },
-  //   list() {
-  // return
-  //   }
+    }
+    //   list() {
+    // return
+    //   }
   },
   created() {
-    if(this.$route.query.id){
-    this.id=this.$route.query.id
-    //console.log(this.$route.query.id)
-    if(this.id==2){
-      this.columns=[
-        { title: '住院号', prop: 'admitNum', width: 100 },
-        { title: '出院日期', prop: 'submitName', width: 90 },
-        { title: '患者', prop: 'paint', width: 55 },
-        { title: '性别', prop: 'sex', width: 55 },
-        { title: '年龄', prop: 'age', width: 55 },
-        { title: '住院科室', prop: 'sex', width: 80 },
-        { title: '住院医师', prop: 'deptName', width: 100 },
-        { title: '点评结果', prop: 'submitTime', align: 'left' }
-      ]
-       this.list=[
-        {
-          name: '点评结果',
-          dataField: 'icdName',
-          type: 'text'
-        },
-        {
-          name: '住院号',
-          dataField: 'icdName',
-          type: 'text'
-        },
-        {
-          name: '出院时间',
-          dataField: 'icdName',
-          type: 'text'
-        },
-        {
-          name: '医生',
-          dataField: 'icdName',
-          type: 'text'
-        },
-        {
-          name: '科室',
-          dataField: 'icdName',
-          type: 'text'
-        },
-        {
-          name: '患者',
-          dataField: 'icdName',
-          type: 'text'
-        }
-      ]
-    }
+    if (this.$route.query.id) {
+      this.id = this.$route.query.id
+      if (this.id == 2) {
+        this.columns = [
+          { title: '住院号', prop: 'admitNum', width: 100 },
+          { title: '出院日期', prop: 'submitName', width: 90 },
+
+          { title: '患者', prop: 'paint', width: 55 },
+          { title: '性别', prop: 'sex', width: 55 },
+          { title: '年龄', prop: 'age', width: 55 },
+          { title: '住院科室', prop: 'sex', width: 80 },
+          { title: '住院医师', prop: 'deptName', width: 100 },
+          { title: '点评结果', prop: 'submitTime', align: 'left' }
+        ]
+        this.list = [
+          {
+            name: '点评结果',
+            dataField: 'icdName',
+            type: 'text'
+          },
+          {
+            name: '住院号',
+            dataField: 'icdName',
+            type: 'text'
+          },
+          {
+            name: '出院时间',
+            dataField: 'icdName',
+            type: 'text'
+          },
+          {
+            name: '医生',
+            dataField: 'icdName',
+            type: 'text'
+          },
+          {
+            name: '科室',
+            dataField: 'icdName',
+            type: 'text'
+          },
+          {
+            name: '患者',
+            dataField: 'icdName',
+            type: 'text'
+          }
+        ]
+      }
     }
   },
 
-  mounted() {
-  },
+  mounted() {},
   methods: {
     // 搜索数据
     search() {},
@@ -270,9 +269,17 @@ export default {
     // 处理性别
     dealsex() {},
     // 详情
+    //  looks(data) {
+    //   console.log(data)
+    //   this.$router.push({
+    //     name: 'presHospitalizedDetail',
+    //     params: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId,isNew:1, }
+    //   })
+    // },
     looks(data) {
       this.$router.push({
-        name: 'patientReviewDetail'
+        name: 'patientReviewDetail',
+        params: { visId:95488, maxSubmitNo:1,reviewId:555,isNew:1, }
       })
     }
   }

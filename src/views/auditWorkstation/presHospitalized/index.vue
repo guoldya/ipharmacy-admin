@@ -214,8 +214,8 @@ export default {
       columns: [
         { title: '提交时间', prop: 'submitTime', width: 140, align: 'left' },
         { title: '住院号', prop: 'admitNum', width: 120 },
-        { title: '医生', prop: 'submitName', width: 90 },
-        { title: '科室', prop: 'deptName', width: 100 },
+        { title: '开嘱医生', prop: 'submitName', width: 90 },
+        { title: '开嘱科室', prop: 'deptName', width: 100 },
         { title: '患者', prop: 'pname', width: 100 },
         { title: '性别', prop: 'sex', width: 80 },
         { title: '年龄', prop: 'age', width: 50 }
@@ -251,14 +251,14 @@ export default {
         { name: '住院号', dataField: 'admitNum', type: 'text' },
         { name: '患者', dataField: 'patientName', type: 'text' },
         {
-          name: '科室',
+          name: '开嘱科室',
           dataField: 'admitDept',
           type: 'tree-select',
           keyExpr: 'keyword',
           treeData: this.treeDatas
         },
         {
-          name: '医生',
+          name: '开嘱医生',
           dataField: 'personId',
           type: 'select',
           keyExpr: 'personId',

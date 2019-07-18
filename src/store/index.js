@@ -10,7 +10,15 @@ import preference from './modules/preference'
 import ua from './modules/ua'
 import getters from './getters'
 Vue.use(Vuex)
-const routerData = {}
+const state = {routerData:{},drugList:[],drugId:''}
+getters = {   
+  isShow(state) {  
+     return state.showFooter
+  },
+  getChangedNum(){ 
+     return state.changebleNum
+  }
+}
 export default new Vuex.Store({
   modules: {
     db,
@@ -23,9 +31,7 @@ export default new Vuex.Store({
     log,
 
   },
-  state: {
-    routerData
-  },
+  state,
   mutations: {
 
   },

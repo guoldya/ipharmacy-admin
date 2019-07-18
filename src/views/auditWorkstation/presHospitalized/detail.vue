@@ -42,7 +42,7 @@
           <detail-list-item term="过敏史">
             <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
           </detail-list-item>
-          <detail-list-item term="处方医生">
+          <detail-list-item term="就诊医生">
             <span class="opacity8">
               <span class="datetime">
                 {{RecordDelData.attendingDocName}}&nbsp;
@@ -198,8 +198,8 @@ export default {
         { title: '用法用量', prop: 'way', width: 80, align: 'center' },
         { title: '', prop: 'single', width: 60 },
         { title: '', prop: 'freq', width: 80, align: 'center' },
-        { title: '科室', prop: 'deptName', width: 80, align: 'left' },
-        { title: '医生', prop: 'doctorName', width: 80 },
+        { title: '开嘱科室', prop: 'deptName', width: 80, align: 'left' },
+        { title: '开嘱医生', prop: 'doctorName', width: 80 },
         { title: '开嘱时间', prop: 'time', width: 130, align: 'left' }
       ],
       columnsa: [

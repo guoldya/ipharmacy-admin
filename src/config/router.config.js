@@ -372,20 +372,20 @@ export const asyncRouterMap = [
             path: '/prescriptionReview/patientReview',
             name: 'patientReview',
             component: RouteView,
-            meta: { title: '门诊处方点评', multistage: true },
+            meta: { title: '点评任务', multistage: true },
             children: [
               {
                 path: '/prescriptionReview/patientReview/index',
                 name: 'patientReviewIndex',
                 component: () => import('@/views/prescriptionReview/patientReview/index.vue'),
-                meta: { title: '门诊处方点评', hiddenHeaderContent: true, index: true }
+                meta: { title: '点评任务', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/prescriptionReview/patientReview/detail',
+                path: '/prescriptionReview/patientReview/detail/:visId/:maxSubmitNo/:reviewId/:isNew/',
                 name: 'patientReviewDetail',
                 hidden: true,
                 component: () => import('@/views/prescriptionReview/patientReview/detail.vue'),
-                meta: { title: '门诊处方点评详情', detail: true, description: '审门诊处方点评' }
+                meta: { title: '点评任务详情', detail: true, description: '点评任务' }
               }
             ]
           },
@@ -543,6 +543,27 @@ export const asyncRouterMap = [
                 hidden: true,
                 component: () => import('@/views/baseData/dictionary/detailBaseClass.vue'),
                 meta: { title: '分类详情', hiddenHeaderContent: true, detail: true }
+              }
+            ]
+          },
+          {
+            path: '/baseData/grade',
+            name: 'grade',
+            component: RouteView,
+            meta: { title: '结论表', multistage: true },
+            children: [
+              {
+                path: '/baseData/grade/index',
+                name: 'gradeIndex',
+                component: () => import('@/views/baseData/grade/index.vue'),
+                meta: { title: '结论表', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/baseData/grade/detail/:code/',
+                name: 'gradedetail',
+                hidden: true,
+                component: () => import('@/views/baseData/grade/detail.vue'),
+                meta: { title: '结论表', hiddenHeaderContent: true, detail: true }
               }
             ]
           },
