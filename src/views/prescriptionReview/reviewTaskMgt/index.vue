@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-card>
-             <countReview  :countList="countText"></countReview>
+            <countReview :countList="countText"></countReview>
         </a-card>
         <a-card class="margin-top-5">
             <Searchpanel ref="searchPanel" :list="list">
@@ -13,6 +13,7 @@
             <a-button class="margin-top-10" type="primary" @click="add">新增</a-button>
             <a-spin tip="加载中..." :spinning="spinning">
                 <el-table
+                    highlight-current-row
                     class="margin-top-10"
                     :data="dataSource"
                     border
@@ -22,17 +23,26 @@
                     <el-table-column
                         fixed="right"
                         label="操作"
-                        :width="100"
+                        :width="180"
                         align="center"
                         v-if="true"
                     >
                         <template slot-scope="scope">
-                            <opcol
-                                :items="items"
-                                :more="false"
-                                :data="scope.row"
-                                :filterItem="['status']"
-                            ></opcol>
+                            <a v-if="scope.row.status == 1" @click="looks(scope.row)">开始筛选</a>
+                            <a v-else-if="scope.row.status == 3" @click="looks(scope.row)">开始分配</a>
+                            <a v-else-if="scope.row.status == 4" @click="looks(scope.row)">开始点评</a>
+                            <!-- <a v-else-if="scope.row.status == 6" @click="looks(scope.row)">点评完成</a> -->
+                            <a-divider type="vertical" />
+                            <a @click="looks(scope.row)">查看</a>
+                            <a-divider type="vertical" />
+                            <a-popconfirm
+                                title="确定删除?"
+                                @confirm="del(scope.row)"
+                                okText="删除"
+                                cancelText="取消"
+                            >
+                                <a href="javascript:;">删除</a>
+                            </a-popconfirm>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -46,9 +56,31 @@
                     >
                         <template slot-scope="scope">
                             <span v-if="item.value == 'status'">
+                                <a-badge v-if="scope.row.status == '1'" status="default" text="创建" />
                                 <a-badge
-                                    :status="scope.row.status == 0? 'default':'processing'"
-                                    :text="scope.row.status==0?'停用':'启用'"
+                                    v-else-if="scope.row.status == '2'"
+                                    status="warning"
+                                    text="筛选中"
+                                />
+                                <a-badge
+                                    v-else-if="scope.row.status == '3'"
+                                    status="Processing"
+                                    text="筛选完成"
+                                />
+                                <a-badge
+                                    v-else-if="scope.row.status == '4'"
+                                    status="Processing"
+                                    text="分配完成"
+                                />
+                                <a-badge
+                                    v-else-if="scope.row.status == '5'"
+                                    status="warning"
+                                    text="点评中"
+                                />
+                                <a-badge
+                                    v-else-if="scope.row.status == '6'"
+                                    status="Success"
+                                    text="点评完成"
                                 />
                             </span>
                             <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
@@ -79,7 +111,7 @@
         </a-card>
         <a-card class="margin-top-5">
             <a-spin tip="加载中..." :spinning="bmSpinning">
-                <el-table class="margin-top-10" :data=" bmDataSource" border style="width: 100%">
+                <el-table highlight-current-row class="margin-top-10" :data=" bmDataSource" border style="width: 100%">
                     <el-table-column
                         v-for="item in bmColumns"
                         :show-overflow-tooltip="true"
@@ -112,54 +144,53 @@
     </div>
 </template>
 <script>
-import countReview from "./count-review"
+import countReview from './count-review'
 export default {
-      components: {
-        countReview,
+    components: {
+        countReview
     },
     data() {
         return {
             api: {
-                logUrl: '/sys/sysUser/selectPage'
+                logUrl: '/sys/reviewInfo/selectPage',
+                RecordUrl:'sys/reviewInfo/selectPersonListInReviewRecord'
             },
             spinning: false,
             bmSpinning: false,
             dataSource: [],
             bmDataSource: [],
             columns: [
-                { title: '创建时间', value: 'creatTime', width: 100 },
-                { title: '完成时间', value: 'successTime', width: 100 },
-                { title: '开始时间', value: 'callMethod', width: 100 },
-                { title: '方案范围', value: 'planScope', width: 80, format: this.taskScope },
-                { title: '任务名称', value: 'logHost' },
-                { title: '抽取数量', value: 'termial', width: 150 },
-                { title: '点评进度', value: 'progress', width: 200 },
-                { title: '合格率', value: 'controller', width: 100 },
-                { title: '状态', value: 'status', width: 150 }
+                { title: '创建时间', value: 'updateTime', width: 130 },
+                { title: '开始时间', value: 'filterStartTime', width: 130 },
+                { title: '完成时间', value: 'filterEndTime', width: 130 },
+                { title: '范围', value: 'planScope', width: 60, format: this.taskScope, align: 'center' },
+                { title: '任务名称', value: 'name' },
+                { title: '抽取数量', value: 'extractionsNumber', width: 100, align: 'right' },
+                { title: '点评进度', value: 'progress', width: 180 },
+                { title: '合格率', value: 'controller', width: 100, align: 'right' },
+                //状态 1创建 2筛选中 3筛选完成 4分配完成 5点评中 6点评完成
+                { title: '状态', value: 'status', width: 100, align: 'center' }
+                // { title: '修改时间', value: 'updateTime', width: 130 },
+                // { title: '修改人', value: 'updateUser', width: 100 }
             ],
             bmColumns: [
-                { title: '工号', value: 'creatTime' },
-                { title: '点评药师', value: 'successTime' },
-                { title: '电话', value: 'callMethod', width: 130 },
+                { title: '工号', value: 'personId' },
+                { title: '点评药师', value: 'name' },
+                { title: '电话', value: 'phone', width: 130 },
                 { title: '分配数量', value: 'planScope', width: 80 },
                 { title: '已点评数量', value: 'logHost' },
                 { title: '合理处方', value: 'termial', width: 150 },
                 { title: '不合理处方', value: 'progress', width: 200 },
                 { title: '完成率', value: 'controller', width: 100 }
             ],
-            items: [
-                { text: '编辑', showtip: false, click: this.edits },
-                { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
-                { text: '停用', color: '#ff9900', showtip: true, tip: '确认停用吗？', click: this.user, status: '0' }
-            ],
             total: 0,
             bmTotal: 1,
             current: 0,
             bmCurrent: 1,
-            countText:[
-                {itemCount:123,item:'抽取点评',colors:'#4586ff'},
-                  {itemCount:123,item:'已点评',colors:'#2dc89f'},
-                    {itemCount:123,item:'问题点评',colors:'#ff6781'}
+            countText: [
+                { itemCount: 123, item: '抽取点评', colors: '#4586ff' },
+                { itemCount: 123, item: '已点评', colors: '#2dc89f' },
+                { itemCount: 123, item: '问题点评', colors: '#ff6781' }
             ]
         }
     },
@@ -236,7 +267,8 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.dataSource = this.$dateFormat(res.rows, ['logDate'])
+                        this.dataSource = this.$dateFormat(res.rows, ['updateTime', 'filterEndTime', 'filterStartTime']);
+                         this.total = res.total;
                         this.spinning = false
                     } else {
                         this.spinning = false
@@ -254,21 +286,30 @@ export default {
                 name: 'reviewTaskMgtAdd'
             })
         },
+        //查看
+        looks(data) {
+            this.$router.push({
+                name: 'reviewTaskMgtDetail',
+                params: { recordId: data.recordId }
+            })
+        },
+        //删除
+        del(data) {},
         //table点击事件
         rowClick(row) {
-            console.log(1)
-            this.getbmData()
+            this.getbmData({recordId:row.recordId})
         },
         getbmData(obj = {}) {
             this.bmSpinning = true
             this.$axios({
-                url: this.api.logUrl,
+                url: this.api.RecordUrl,
                 method: 'put',
                 data: obj
             })
                 .then(res => {
                     if (res.code == '200') {
                         this.bmDataSource = this.$dateFormat(res.rows, ['logDate'])
+                        this.bmTotal = res.total;
                         this.bmSpinning = false
                     } else {
                         this.bmSpinning = false

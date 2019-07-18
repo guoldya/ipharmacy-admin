@@ -1,20 +1,25 @@
 <template>
     <div>
         <a-card>
+            <div class="backButton">
+                <a href="#" @click.prevent="backTo">
+                    <a-icon type="left"></a-icon>返回
+                </a>
+            </div>
             <h2 class="font-bold">筛选条件</h2>
             <a-row class="taskDetail">
                 <a-col span="4">
                     <span class="font-bold">任务名称：</span>
-                    <span class="opacity8">点评方案2333</span>
+                    <span class="opacity8">{{headData.name}}</span>
                 </a-col>
                 <a-col span="4">
                     <span class="font-bold">方案范围：</span>
-                    <span class="opacity8" v-html="filterPlanScope(planDetail.planScope)"></span>
+                    <span class="opacity8" v-html="filterPlanScope(headData.planScope)"></span>
                 </a-col>
                 <a-col span="6">
-                    <span class="font-bold" v-if="planDetail.planScope == 1">处方时间：</span>
-                    <span class="font-bold" v-else-if="planDetail.planScope == 2">出院时间：</span>
-                    <span class="opacity8">2019:08:07-2019:12:17</span>
+                    <span class="font-bold" v-if="headData.planScope == 1">处方时间：</span>
+                    <span class="font-bold" v-else-if="headData.planScope == 2">出院时间：</span>
+                    <span class="opacity8">{{headData.filterStartTime}}~{{headData.filterEndTime}}</span>
                 </a-col>
                 <a-col span="10">
                     <span class="font-bold">抽取规则:</span>
@@ -24,7 +29,7 @@
             <a-row class="taskDetail">
                 <a-col>
                     <span class="font-bold">点评方案：</span>
-                    <span class="opacity8">点评方案2333、点评方案2333、点评方案2333、点评方案2333</span>
+                    <span class="opacity8">{{headData.planNames}}</span>
                 </a-col>
             </a-row>
         </a-card>
@@ -56,7 +61,7 @@
                     <el-table-column
                         fixed="right"
                         label="操作"
-                        :width="100"
+                        :width="80"
                         align="center"
                         v-if="true"
                     >
@@ -83,6 +88,7 @@
 </template>
 <script>
 import countReview from './count-review'
+import { setTimeout } from 'timers'
 export default {
     components: {
         countReview
@@ -90,27 +96,27 @@ export default {
     data() {
         return {
             api: {
-                logUrl: '/sys/sysUser/selectPage'
+                detailUrl: '/sys/reviewInfo/selectReviewRecordDetail'
             },
             spinning: false,
             dataSource: [],
             columns: [],
             columns1: [
                 { title: '处方日期', value: 'successTime', width: 100 },
-                 { title: '处方号', value: 'creatTime', width: 100, align: 'right' },
+                { title: '处方号', value: 'prescNUM', width: 100, align: 'right' },
                 { title: '患者', value: 'termial', width: 100 },
                 { title: '性别', value: 'progress', width: 80, align: 'center' },
                 { title: '年龄', value: 'controller', width: 80 },
-                { title: '门诊号', value: 'logHost', width: 100, align: 'right'  },
-                { title: '医生', value: 'callMethod', width: 100 },
-                { title: '科室', value: 'planScope', width: 150, format: this.taskScope },
+                { title: '门诊号', value: 'logHost', width: 100, align: 'right' },
+                { title: '门诊医生', value: 'callMethod', width: 100 },
+                { title: '门诊科室', value: 'planScope', width: 150, format: this.taskScope },
                 { title: '临床诊断', value: 'sadasd', width: 300 },
                 { title: '药品品种数', value: 'status1', width: 100 },
                 { title: '抗菌药', value: 'adasd', width: 100 },
                 { title: '特殊抗菌药', value: 'status2', width: 100 },
                 { title: '注射剂', value: 'status3', width: 100 },
                 { title: '基本药物', value: 'status4', width: 100 },
-                { title: '药品金额', value: 'statsadus4', width: 100, align: 'right'  },
+                { title: '药品金额', value: 'statsadus4', width: 100, align: 'right' },
                 { title: '点评人', value: 'status5', width: 150 },
                 { title: '点评结果', value: 'status6', width: 150 },
                 { title: '点评状态', fixed: 'right', value: 'statdad', align: 'center', width: 100 }
@@ -137,7 +143,8 @@ export default {
             items: [{ text: '删除', showtip: false, click: this.delete }],
             total: 0,
             current: 0,
-            planDetail: {}
+            planDetail: {},
+            headData: {},
         }
     },
     computed: {
@@ -174,45 +181,58 @@ export default {
         }
     },
     mounted() {
+        this.getTitleData()
         this.getData()
-        console.log(this.$route.query, '111')
-        this.planDetail = this.$route.query
-        if (this.planDetail.planScope == 1) {
-            this.columns = this.columns1
-        } else {
-            this.columns = this.columns2
-        }
+        setTimeout(() => {
+            if (this.headData.planScope == 1) {
+                this.columns = this.columns1
+            } else {
+                this.columns = this.columns2
+            }
+        }, 100)
     },
     methods: {
-        getFormData() {
-            let params = this.$refs.searchPanel.form.getFieldsValue()
-            if (params.logDate) {
-                params.logDate = [params.logDate[0].format('YYYY-MM-DD'), params.logDate[1].format('YYYY-MM-DD')]
+        getTitleData() {
+            let params = {}
+            params = this.$route.params
+            this.$axios({
+                url: this.api.detailUrl,
+                method: 'put',
+                data: params
+            })
+                .then(res => {
+                    if (res.code == '200') {
+                        this.headData = res.data;
+                        this.headData.filterStartTime = this.changeTime(res.data.filterStartTime)
+                        this.headData.filterEndTime = this.changeTime(res.data.filterEndTime)
+                    } else {
+                        this.warn(res.msg)
+                    }
+                })
+                .catch(err => {
+                    this.error(err)
+                })
+        },
+        changeTime(time) {
+            if (time) {
+                return time.replace(/(:\d{2})$/, '')
             }
-            return params
-        },
-        search() {
-            let params = this.getFormData()
-            this.getData(params)
-        },
-        //重置
-        resetForm() {
-            this.$refs.searchPanel.form.resetFields()
-            this.getData()
         },
         pageChange(page, size) {
-            let params = this.getFormData()
+            let params = {}
             params.offset = (page - 1) * size
             this.getData(params)
         },
         sizeChange(current, size) {
             this.current = 1
-            let params = this.getFormData()
+            let params = {}
             params.pageSize = size
             this.getData(params)
         },
         getData(obj = {}) {
             this.spinning = true
+            obj.recordId = this.$route.params.recordId
+            obj.planScope =   this.headData.planScope
             this.$axios({
                 url: this.api.logUrl,
                 method: 'put',
@@ -238,7 +258,12 @@ export default {
                 name: 'reviewTaskMgtAdd'
             })
         },
-
+        //返回
+        backTo() {
+            this.$router.push({
+                name: 'reviewTaskMgtIndex'
+            })
+        },
         //过滤
         taskScope(data) {
             let scopeText
@@ -270,5 +295,8 @@ export default {
 .taskDetail {
     font-size: 14px;
     line-height: 30px;
+}
+.backButton {
+    float: right;
 }
 </style>

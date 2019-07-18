@@ -355,8 +355,8 @@ export default {
             columns: [
                 { title: '处方号', prop: 'orderNo', width: 100, align: 'center' },
                 { title: '处方时间', prop: 'submitTime', width: 140 },
-                { title: '医生', prop: 'submitName', width: 90 },
-                { title: '科室', prop: 'deptName', width: 110 },
+                { title: '开单医生', prop: 'submitName', width: 90 },
+                { title: '开单科室', prop: 'deptName', width: 110 },
                 { title: '门诊号', prop: 'admitNum', width: 120 },
                 { title: '患者', prop: 'pname', width: 80 },
                 { title: '性别', prop: 'sex', width: 50, align: 'center' },
@@ -402,9 +402,9 @@ export default {
                     dataField: 'pname',
                     type: 'text'
                 },
-                { name: '医生', dataField: 'submitName', type: 'text' },
+                { name: '开单医生', dataField: 'submitName', type: 'text' },
                 {
-                    name: '科室',
+                    name: '开单科室',
                     dataField: 'admitDept',
                     type: 'tree-select',
                     keyExpr: 'keyword',
@@ -801,6 +801,7 @@ export default {
             params.visId = data.row.visId
             params.submitNo = data.row.maxSubmitNo
             params.clinicPrescNum = data.row.orderNo
+            params.reviewResouce =1;
             this.$axios({
                 url: this.api.selectOrderDetail,
                 method: 'put',
@@ -1031,7 +1032,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .divInfo span {
     margin-left: 10px;
 }
@@ -1107,6 +1108,9 @@ export default {
     line-height: 24px;
     font-size: 14px;
     width: 100%;
+}
+.countCol{
+    margin-top: 10px;
 }
 .countCol .countStyle {
     margin-top: 0px !important;

@@ -167,8 +167,8 @@
         gridCheck: false,
         titleData: { status: null, type2: null, type: null, name: null, updateTime: null, visible: null },
         //属性框初始化
-        boxInitialized: { inputSelectData: [], inputType: '', inValueType: '', itemId: null },
-        edgeInitialized: { inputEdgeSelect: [], inputEdge: '', inValueEdge: '', itemId: null },
+        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', itemId: null },
+        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', itemId: null },
         pieChartData: {},
         getEdgesData: [],
         //modal属性
@@ -562,7 +562,6 @@
                     _this.selectNode.levels = model.levels != null ? model.levels : shape.levels
                     break
                   case 'model-rect-attribute':
-                    console.log(ev.item,'111')
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
@@ -624,7 +623,6 @@
                   } else if (sourceP.lo == 3) {
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId
-                    console.log(ev.item.model);
                     coreRuleNodeSelectColId({ id: sourceP.itemId, valueList:ev.item.model.assertValList }).then(res => {
                       if (res.code == '200') {
                         this.edgeInitialized.inputEdgeSelect = res.rows
@@ -687,12 +685,12 @@
         })
         this.page.on('dragedge:beforeshowanchor', ev => {
           // 只允许目标锚点是输入，源锚点是输出，才能连接
-          // if (!(ev.targetAnchor.type === 'input' && ev.sourceAnchor.type === 'output')) {
-          //   ev.cancel = true
-          // }
-            if (!(ev.targetAnchor.type === 'input')) {
+          if (!(ev.targetAnchor.type === 'input' && ev.sourceAnchor.type === 'output')) {
             ev.cancel = true
           }
+          //   if (!(ev.targetAnchor.type === 'input')) {
+          //   ev.cancel = true
+          // }
           // 如果拖动的是目标方向，则取消显示目标节点中已被连过的锚点
           if (ev.dragEndPointType === 'target') {
             //已经连接过的点禁用
@@ -705,9 +703,11 @@
             }
             //分支节点可以有多个接入节点，但输出节点只有一个
             if(ev.target.model.shape =='model-image-branch'){
-              if(ev.target.getEdges().length>0){
-               ev.cancel = true
+              for(let key in ev.target.getEdges()){
+                  if(ev.target.getEdges()[key].target.model.shape =='model-image-branch'){
+                  ev.cancel = true
                }
+              }
             }
             //目标和源都是同一个模块 禁用
             if (ev.target.model.id == ev.source.model.id) {
@@ -812,7 +812,6 @@
         for (let i in nodes) {
           if (nodes[i].id == edge.pid) {
             if (nodes[i].shape == 'model-rect-attribute' ) {
-              console.log(nodes[i])
               if (nodes[i].lo == 3){
                 if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertValList).length == 0) {
                   if(status.status){

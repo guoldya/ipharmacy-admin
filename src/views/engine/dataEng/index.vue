@@ -209,7 +209,6 @@ export default {
     //枚举
     changeTime(time) {
       if(time){
-         // return time.replace(/^(\d{4}-)|(:\d{2})$/, '')
             return time.replace(/(:\d{2})$/, '')
       }
     },
