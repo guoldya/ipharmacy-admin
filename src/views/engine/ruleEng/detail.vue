@@ -7,12 +7,11 @@
     </div>
     <a-spin tip="加载中..." :spinning="spinning">
       <a-form :form="form" @submit="handleSubmit">
-        <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol" >
-       
+        <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-tree-select
-          :treeData="treedata"
-          placeholder="请选择"
-          v-decorator="[
+            :treeData="treedata"
+            placeholder="请选择"
+            v-decorator="[
                 'id',
                 {
                   rules: [{
@@ -21,18 +20,14 @@
                   }],
                 }
               ]"
-        ></a-tree-select>
+          ></a-tree-select>
         </a-form-item>
-         <a-form-item
-        label="数据源"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-      >
-        <a-select v-decorator="[ 'dsId']">
-          <a-select-option v-for="(op,index) in lists" :value="op.id" :key="index">{{op.dsName}}</a-select-option>
-        </a-select>
-      </a-form-item>
-       
+        <a-form-item label="数据源" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-select v-decorator="[ 'dsId']">
+            <a-select-option v-for="(op,index) in lists" :value="op.id" :key="index">{{op.dsName}}</a-select-option>
+          </a-select>
+        </a-form-item>
+
         <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input :read-only="readOnly" v-decorator="['dsName']" />
         </a-form-item>
@@ -70,7 +65,7 @@ export default {
         selectOne: 'sys/coreRuleDatasource/selectOne',
         updt: 'sys/coreRuleDatasource/update',
         dataFrom: 'sys/coreDbDatasource/selectList',
-        selectTitlesList: 'sys/coreFactCol/selectCoreFactColTreeList',
+        selectTitlesList: 'sys/coreFactCol/selectCoreFactColTreeList'
       },
       spinning: false,
       labelCol: {
@@ -89,13 +84,13 @@ export default {
       listData: {},
       readOnly: false,
       isNew: true,
-      lists:[],
-      treedata:[]
+      lists: [],
+      treedata: []
     }
   },
   computed: {},
   mounted() {
-      this.getTreeList()
+    this.getTreeList()
     this.getDatas({})
     this.getselectData({ id: this.$route.params.id })
   },
@@ -111,7 +106,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-           this.treedata = this.getDataChildren(res.rows, undefined)
+            this.treedata = this.getDataChildren(res.rows, undefined)
             this.loading = false
           } else {
             this.loadingTable = false
@@ -123,14 +118,14 @@ export default {
           this.error(err)
         })
     },
-     getDataChildren(bdata, pid) {
+    getDataChildren(bdata, pid) {
       var items = []
       for (var key in bdata) {
         var item = bdata[key]
         if (pid == item.pid) {
           items.push({
             title: item.colName,
-             value: item.id+'',
+            value: item.id + '',
             // key: item.id,
             children: this.getDataChildren(bdata, item.id)
           })
@@ -139,23 +134,24 @@ export default {
       return items
     },
     // 数据源的查询
-    getDatas(params={}){
-this.$axios({
-          url: this.api.dataFrom,
-          method: 'put',
-          data: params
-        }).then(res => {
-            if (res.code == '200') {
-             this.lists=res.rows
-            } else {
-              this.loadingTable = false
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
+    getDatas(params = {}) {
+      this.$axios({
+        url: this.api.dataFrom,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.lists = res.rows
+          } else {
             this.loadingTable = false
-            this.error(err)
-          })
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
     },
     // 查询数据
     getselectData(params = {}) {
@@ -168,15 +164,7 @@ this.$axios({
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
-              let {
-                  id,
-                  dsId,
-                  dsName,
-                  sqlText,
-                  val,
-                  display,
-                  status
-                } = reqArr,
+              let { id, dsId, dsName, sqlText, val, display, status } = reqArr,
                 formData = {
                   id,
                   dsId,
@@ -198,7 +186,7 @@ this.$axios({
           })
       }
     },
-  
+
     handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {

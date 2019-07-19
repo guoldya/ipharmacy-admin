@@ -21,7 +21,6 @@ export default new Vuex.Store({
     permission,
     releases,
     log,
-
   },
   state,
   mutations: {

@@ -30,8 +30,14 @@
           :align="item.align"
         >
           <template slot-scope="scope">
-            <span v-if="item.value == 'reviewCompletionRegularVOList'">
-             <div class="tags"> <a-tag color="orange" v-for='(op,index) in scope.row.reviewCompletionRegularVOList' :key=index >{{op.regularContent}}</a-tag></div>
+            <span v-if="item.value == 'status'">
+              <a-badge
+                :status="scope.row.status == 0? 'default':'processing'"
+                :text="scope.row.status==0?'停用':'启用'"
+              />
+            </span>
+            <span v-else-if="item.value == 'reviewCompletionRegularVOList'">
+             <div class="tags"> <a-tag color="orange" v-for='(op,index) in scope.row.reviewCompletionRegularVOList' :key='index'>{{op.regularContent}}</a-tag></div>
             </span>
               <span v-else-if="item.value =='updateTime'">
               {{changeTime(scope.row.updateTime)}}
@@ -65,7 +71,7 @@ export default {
     return {
       api: {
         selectPage: 'sys/reviewCompletion/selectPage',
-        Update: 'sys/coreRuleDatasource/updateStatus'
+        Update: 'sys/reviewCompletion/updateStatus'
       },
       loading: false,
       total: null,
@@ -168,7 +174,12 @@ export default {
     },
     //启用停用
     user(data) {
-      let params = { id: data.id, status: data.status }
+       if (data.status == '1') {
+        data.status = 0
+      } else {
+        data.status = 1
+      }
+      let params = { cId: data.cId, status: data.status }
       this.$axios({
         url: this.api.Update,
         method: 'post',
@@ -189,14 +200,14 @@ export default {
     },
     edits(data) {
       this.$router.push({
-        name: 'ruleEngDetail',
-        params: { id: data.id }
+        name: 'gradedetail',
+        params: { id: data.cId }
       })
     },
 
     add() {
       this.$router.push({
-        name: 'ruleEngDetail',
+        name: 'gradedetail',
         params: { id: 'new' }
       })
     },
