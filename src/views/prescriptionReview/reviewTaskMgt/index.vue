@@ -28,7 +28,7 @@
                         v-if="true"
                     >
                         <template slot-scope="scope">
-                            <a v-if="scope.row.status == 1" @click="looks(scope.row)">开始筛选</a>
+                            <a v-if="scope.row.status == 1" @click="startScreen(scope.row)">开始筛选</a>
                             <a v-else-if="scope.row.status == 3" @click="looks(scope.row)">开始分配</a>
                             <a v-else-if="scope.row.status == 4" @click="looks(scope.row)">开始点评</a>
                             <!-- <a v-else-if="scope.row.status == 6" @click="looks(scope.row)">点评完成</a> -->
@@ -63,13 +63,13 @@
                                     text="筛选中"
                                 />
                                 <a-badge
-                                    v-else-if="scope.row.status == '3'"
-                                    status="Processing"
+                                    v-else-if="scope.row.status== '3'"
+                                    status="processing"
                                     text="筛选完成"
                                 />
                                 <a-badge
                                     v-else-if="scope.row.status == '4'"
-                                    status="Processing"
+                                    status="processing"
                                     text="分配完成"
                                 />
                                 <a-badge
@@ -79,7 +79,7 @@
                                 />
                                 <a-badge
                                     v-else-if="scope.row.status == '6'"
-                                    status="Success"
+                                    status="success"
                                     text="点评完成"
                                 />
                             </span>
@@ -111,7 +111,13 @@
         </a-card>
         <a-card class="margin-top-5">
             <a-spin tip="加载中..." :spinning="bmSpinning">
-                <el-table highlight-current-row class="margin-top-10" :data=" bmDataSource" border style="width: 100%">
+                <el-table
+                    highlight-current-row
+                    class="margin-top-10"
+                    :data=" bmDataSource"
+                    border
+                    style="width: 100%"
+                >
                     <el-table-column
                         v-for="item in bmColumns"
                         :show-overflow-tooltip="true"
@@ -153,7 +159,9 @@ export default {
         return {
             api: {
                 logUrl: '/sys/reviewInfo/selectPage',
-                RecordUrl:'sys/reviewInfo/selectPersonListInReviewRecord'
+                RecordUrl: 'sys/reviewInfo/selectPersonListInReviewRecord',
+                delUrl: 'sys/reviewInfo/delete',
+                startScreenUrl: 'sys/reviewFilter/startScreen'
             },
             spinning: false,
             bmSpinning: false,
@@ -176,7 +184,7 @@ export default {
             bmColumns: [
                 { title: '工号', value: 'personId' },
                 { title: '点评药师', value: 'name' },
-                { title: '电话', value: 'phone', width: 130 },
+                { title: '电话', value: 'phone', width: 130, align: 'right' },
                 { title: '分配数量', value: 'planScope', width: 80 },
                 { title: '已点评数量', value: 'logHost' },
                 { title: '合理处方', value: 'termial', width: 150 },
@@ -210,20 +218,20 @@ export default {
                     dataField: 'name',
                     type: 'text'
                 },
-                {
-                    name: '点评药师',
-                    dataField: 'spellCode',
-                    type: 'text'
-                },
+                // {
+                //     name: '点评药师',
+                //     dataField: 'spellCode',
+                //     type: 'text'
+                // },
                 {
                     name: '状态',
                     dataField: 'status',
                     type: 'select',
-                    dataSource: this.enum.statu,
+                    dataSource: this.planStatus(),
                     keyExpr: 'id',
                     valueExpr: 'text'
                 },
-                { name: '时间', dataField: 'logDate', type: 'range-picker' }
+                { name: '创建时间', dataField: 'updateTime', type: 'range-picker' }
             ]
         }
     },
@@ -233,8 +241,11 @@ export default {
     methods: {
         getFormData() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
-            if (params.logDate) {
-                params.logDate = [params.logDate[0].format('YYYY-MM-DD'), params.logDate[1].format('YYYY-MM-DD')]
+            if (params.updateTime) {
+                params.updateTime = [
+                    params.updateTime[0].format('YYYY-MM-DD'),
+                    params.updateTime[1].format('YYYY-MM-DD')
+                ]
             }
             return params
         },
@@ -267,8 +278,8 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.dataSource = this.$dateFormat(res.rows, ['updateTime', 'filterEndTime', 'filterStartTime']);
-                         this.total = res.total;
+                        this.dataSource = this.$dateFormat(res.rows, ['updateTime', 'filterEndTime', 'filterStartTime'])
+                        this.total = res.total
                         this.spinning = false
                     } else {
                         this.spinning = false
@@ -293,11 +304,47 @@ export default {
                 params: { recordId: data.recordId }
             })
         },
+        //开始筛选
+        startScreen(data) {
+            this.$axios({
+                url: this.api.startScreenUrl,
+                method: 'post',
+                data: { recordId: data.recordId,planScope:data.planScope }
+            })
+                .then(res => {
+                    if (res.code == '200') {
+                        this.getData()
+                        this.success(res.msg)
+                    } else {
+                        this.warn(res.msg)
+                    }
+                })
+                .catch(err => {
+                    this.error(err)
+                })
+        },
         //删除
-        del(data) {},
+        del(data) {
+            this.$axios({
+                url: this.api.delUrl,
+                method: 'delete',
+                data: { recordId: data.recordId }
+            })
+                .then(res => {
+                    if (res.code == '200') {
+                        this.getData()
+                        this.success('删除成功')
+                    } else {
+                        this.warn(res.msg)
+                    }
+                })
+                .catch(err => {
+                    this.error(err)
+                })
+        },
         //table点击事件
         rowClick(row) {
-            this.getbmData({recordId:row.recordId})
+            this.getbmData({ recordId: row.recordId })
         },
         getbmData(obj = {}) {
             this.bmSpinning = true
@@ -309,7 +356,7 @@ export default {
                 .then(res => {
                     if (res.code == '200') {
                         this.bmDataSource = this.$dateFormat(res.rows, ['logDate'])
-                        this.bmTotal = res.total;
+                        this.bmTotal = res.total
                         this.bmSpinning = false
                     } else {
                         this.bmSpinning = false
@@ -344,8 +391,20 @@ export default {
             })
             return scopeText
         },
+
         percents(percent) {
             return '哈哈哈'
+        },
+        planStatus() {
+            let status = [
+                { id: '1', text: '创建' },
+                { id: '2', text: '筛选中' },
+                { id: '3', text: '筛选完成' },
+                { id: '4', text: '分配完成' },
+                { id: '5', text: '点评中' },
+                { id: '6', text: '点评完成' }
+            ]
+            return status
         }
     }
 }

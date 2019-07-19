@@ -70,7 +70,7 @@
             </a-tree-select>
           </a-form-item>
           <a-form-item v-if="boxInitialized.inputType !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select v-if="boxInitialized.inputType !='select'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
+            <a-select v-if="boxInitialized.inputType !='select' && boxInitialized.inValueType =='number'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
               <a-select-option :value=3 title="<">小于</a-select-option>
@@ -79,6 +79,10 @@
               <a-select-option :value=6 title="≥">大于等于</a-select-option>
               <a-select-option :value=7 title="包含">包含</a-select-option>
               <a-select-option :value=8 title="不包含">不包含</a-select-option>
+            </a-select>
+             <a-select v-else-if="boxInitialized.inputType !='select' && boxInitialized.inValueType =='text'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
+              <a-select-option :value=1 title="=">等于</a-select-option>
+              <a-select-option :value=7 title="包含">包含</a-select-option>
             </a-select>
             <a-select v-else size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=7 title="包含">包含</a-select-option>
@@ -158,7 +162,7 @@
       <div class="block-container" v-if="selectEdge.sourceType=='model-rect-attribute'">
         <a-form>
           <a-form-item v-if="edgeInitialized.inputEdge !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select v-if="edgeInitialized.inputEdge !='select'" size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
+            <a-select v-if="edgeInitialized.inputEdge !='select' " size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
               <a-select-option :value=3 title="<">小于</a-select-option>
@@ -167,6 +171,10 @@
               <a-select-option :value=6 title="≥">大于等于</a-select-option>
               <a-select-option :value=7 title="包含">包含</a-select-option>
               <a-select-option :value=8 title="不包含">不包含</a-select-option>
+            </a-select>
+            <a-select v-else-if="edgeInitialized.inputEdge !='select' && edgeInitialized.inValueEdge =='text'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
+              <a-select-option :value=1 title="=">等于</a-select-option>
+              <a-select-option :value=7 title="包含">包含</a-select-option>
             </a-select>
             <a-select v-else size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
               <a-select-option :value=7 title="包含">包含</a-select-option>
@@ -316,6 +324,9 @@
         this.dicBaseTreeData = treeData;
       },
       coreFactTreeChange(value, node, extra){
+        console.log(value,'value');
+         console.log(node,'node');
+         console.log(extra,'extra')
         let params = extra.selectedNodes[0].data.props;
         let _this = this;
         _this.selectNode.itemId = params.id;
@@ -345,6 +356,7 @@
           this.boxInitialized.inValueType = 'text'
         }
         _this.selectNode.lo = params.lo;
+        _this.selectNode.ro = null;
         _this.selectNode.colDbType = params.colDbType;
         this.modelValue = params.title;
         _this.selectNode.label = this.modelValue;

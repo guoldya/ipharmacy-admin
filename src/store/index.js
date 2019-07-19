@@ -11,14 +11,6 @@ import ua from './modules/ua'
 import getters from './getters'
 Vue.use(Vuex)
 const state = {routerData:{},drugList:[],drugId:''}
-getters = {   
-  isShow(state) {  
-     return state.showFooter
-  },
-  getChangedNum(){ 
-     return state.changebleNum
-  }
-}
 export default new Vuex.Store({
   modules: {
     db,

@@ -31,7 +31,7 @@
         >
           <template slot-scope="scope">
             <span v-if="item.value == 'reviewCompletionRegularVOList'">
-             <div class="tags"> <a-tag color="orange" v-for='(op,index) in scope.row.reviewCompletionRegularVOList' >{{op.regularContent}}</a-tag></div>
+             <div class="tags"> <a-tag color="orange" v-for='(op,index) in scope.row.reviewCompletionRegularVOList' :key=index >{{op.regularContent}}</a-tag></div>
             </span>
               <span v-else-if="item.value =='updateTime'">
               {{changeTime(scope.row.updateTime)}}

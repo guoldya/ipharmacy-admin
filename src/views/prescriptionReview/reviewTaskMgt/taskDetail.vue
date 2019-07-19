@@ -96,21 +96,22 @@ export default {
     data() {
         return {
             api: {
-                detailUrl: '/sys/reviewInfo/selectReviewRecordDetail'
+                detailUrl: '/sys/reviewInfo/selectReviewRecordDetail',
+                recordIdUrl: 'sys/reviewFilter/selectReviewFilterPageByRecordId'
             },
             spinning: false,
             dataSource: [],
             columns: [],
             columns1: [
-                { title: '处方日期', value: 'successTime', width: 100 },
-                { title: '处方号', value: 'prescNUM', width: 100, align: 'right' },
-                { title: '患者', value: 'termial', width: 100 },
-                { title: '性别', value: 'progress', width: 80, align: 'center' },
-                { title: '年龄', value: 'controller', width: 80 },
-                { title: '门诊号', value: 'logHost', width: 100, align: 'right' },
-                { title: '门诊医生', value: 'callMethod', width: 100 },
-                { title: '门诊科室', value: 'planScope', width: 150, format: this.taskScope },
-                { title: '临床诊断', value: 'sadasd', width: 300 },
+                { title: '处方日期', value: 'prescDate', width: 130 },
+                { title: '处方号', value: 'prescNum', width: 100, align: 'right' },
+                { title: '患者', value: 'patientName', width: 150 },
+                { title: '性别', value: 'patientSex', width: 60, align: 'center', format: this.patientSex },
+                { title: '年龄', value: 'patientAge', width: 80, align: 'right'  },
+                { title: '门诊号', value: 'admitNum', width: 100, align: 'right' },
+                { title: '门诊医生', value: 'attendingDoctorName', width: 100 },
+                { title: '门诊科室', value: 'admitDeptName', width: 150, },
+                { title: '临床诊断', value: 'diseaseNames', width: 300 },
                 { title: '药品品种数', value: 'status1', width: 100 },
                 { title: '抗菌药', value: 'adasd', width: 100 },
                 { title: '特殊抗菌药', value: 'status2', width: 100 },
@@ -122,14 +123,14 @@ export default {
                 { title: '点评状态', fixed: 'right', value: 'statdad', align: 'center', width: 100 }
             ],
             columns2: [
-                { title: '出院日期', value: 'successTime', width: 100 },
-                { title: '患者', value: 'termial', width: 150 },
-                { title: '性别', value: 'progress', width: 80, align: 'center' },
-                { title: '年龄', value: 'controller', width: 80 },
-                { title: '住院号', value: 'creatTime', width: 100, align: 'right' },
-                { title: '住院科室', value: 'planScope', width: 150, format: this.taskScope },
-                { title: '住院医师', value: 'callMethod', width: 100 },
-                { title: '出院诊断', value: 'sadasd', width: 300 },
+                { title: '出院日期', value: 'prescDate', width: 130 },
+                { title: '患者', value: 'patientName', width: 150 },
+               { title: '性别', value: 'patientSex', width: 60, align: 'center', format: this.patientSex },
+                { title: '年龄', value: 'patientAge', width: 80, align: 'right'  },
+                { title: '住院号', value: 'admitNum', width: 100, align: 'right' },
+                { title: '住院科室', value: 'admitDeptName', width: 150 },
+                { title: '住院医师', value: 'attendingDoctorName', width: 100 },
+                { title: '出院诊断', value: 'diseaseNames', width: 300 },
                 { title: '药品品种数', value: 'status1', width: 100 },
                 { title: '抗菌药', value: 'adasd', width: 100 },
                 { title: '特殊抗菌药', value: 'status2', width: 100 },
@@ -144,7 +145,7 @@ export default {
             total: 0,
             current: 0,
             planDetail: {},
-            headData: {},
+            headData: {}
         }
     },
     computed: {
@@ -182,14 +183,15 @@ export default {
     },
     mounted() {
         this.getTitleData()
-        this.getData()
+
         setTimeout(() => {
+            this.getData()
             if (this.headData.planScope == 1) {
                 this.columns = this.columns1
             } else {
                 this.columns = this.columns2
             }
-        }, 100)
+        }, 500)
     },
     methods: {
         getTitleData() {
@@ -202,7 +204,7 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.headData = res.data;
+                        this.headData = res.data
                         this.headData.filterStartTime = this.changeTime(res.data.filterStartTime)
                         this.headData.filterEndTime = this.changeTime(res.data.filterEndTime)
                     } else {
@@ -232,15 +234,15 @@ export default {
         getData(obj = {}) {
             this.spinning = true
             obj.recordId = this.$route.params.recordId
-            obj.planScope =   this.headData.planScope
+            obj.planScope = this.headData.planScope
             this.$axios({
-                url: this.api.logUrl,
+                url: this.api.recordIdUrl,
                 method: 'put',
                 data: obj
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.dataSource = this.$dateFormat(res.rows, ['logDate'])
+                        this.dataSource = this.$dateFormat(res.rows, ['prescDate'])
                         this.spinning = false
                     } else {
                         this.spinning = false
@@ -284,6 +286,16 @@ export default {
                 }
             })
             return scopeText
+        },
+        patientSex(data) {
+            let sexText
+            this.enum.sex.forEach(item => {
+                if (data.patientSex== item.id) {
+                    sexText = item.text
+                    return
+                }
+            })
+            return sexText
         },
         percents(percent) {
             return '哈哈哈'

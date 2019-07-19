@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-for="(cd,index) in conditions" class="condition margin-top-10">
+        <div v-for="(cd,index) in conditions" class="condition margin-top-10" :key="index">
             <a-row>
                 <a-col :span="7"></a-col>
                 <a-col :span="4">
@@ -179,9 +179,16 @@ export default {
     mounted() {},
     methods: {
         relationChange(value, logic, ruleId) {
+            console.log(value, 'value')
+            console.log(logic, 'logic')
+
             for (let key in this.conditions) {
+                console.log(this.conditions[key], 'ruleId')
                 if (ruleId == this.conditions[key].ruleId) {
-                    if (logic < '3') {
+                    if (
+                        logic < '3' &&
+                        (this.conditions[key].columnId == 'AGE' || this.conditions[key].columnId == 'LENGTHOFSTAY')
+                    ) {
                         this.conditions[key].assertVal2 = null
                         this.conditions[key].assertVal = null
                         if (value != '9') {
