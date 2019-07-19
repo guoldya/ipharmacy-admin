@@ -244,7 +244,7 @@ export default {
                                     }
                                 }
                                 this.treeList = this.deletePresOut(this.treeList, res.data.planScope)
-                                let loadData = this.getItemTreeData(this.planruleList[key].columnId, this.treeList)
+                                let loadData = this.getItemTreeData(this.planruleList[key].columnId, this.treeList);
                                 for (let j in this.classData) {
                                     for (let k in loadData.operators) {
                                         if (this.classData[j].id == loadData.operators[k]) {

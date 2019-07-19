@@ -74,6 +74,7 @@
                                 <a-form-item v-bind="formmin" label="选择抽样规则">
                                     <a-radio-group
                                         v-decorator="['rule',{initialValue: '1'},{rules: [{ required: true, message: '请选择抽样规则' }]}]"
+                                        @change="ruleChange"
                                     >
                                         <a-radio value="1">随机抽取</a-radio>
                                         <a-radio value="2">比例抽取</a-radio>
@@ -81,11 +82,30 @@
                                 </a-form-item>
                             </a-col>
                             <a-col :span="12">
-                                <a-form-item v-bind="formmin" label="抽样数">
+                                <a-form-item v-if="ruleNum ==1 " v-bind="formmin" label="抽样数">
                                     <a-input
                                         style="width: 190px"
                                         v-decorator="['extractionsNumber',{rules: [{ required: true, message: '请输入抽样数量' }]}]"
                                     ></a-input>
+                                </a-form-item>
+
+                                <a-form-item v-else-if="ruleNum ==2 " v-bind="formmin" label="抽样比例">
+                                    <!-- <a-input
+                                        style="width: 190px"
+                                        v-decorator="['extractionsNumber',{rules: [{ required: true, message: '请输入抽样数量' }]}]"
+                                    ></a-input>-->
+                                    <a-col :span="10">
+                                        <a-slider v-decorator="['slider']" :min="1" :max="100" :tipFormatter="value => `${value}%`" />
+                                    </a-col>
+                                    <a-col :span="4">
+                                        <a-input-number
+                                        v-decorator="['slider']"
+                                            :min="1"
+                                            :max="100"
+                                            style="marginLeft: 5px;width:65px"
+                                             :formatter="value => `${value}%`"
+                                        />
+                                    </a-col>
                                 </a-form-item>
                             </a-col>
                         </a-row>
@@ -172,7 +192,8 @@ export default {
             //药师列表
             doctorList: [],
             //门诊或住院
-            scope: '1'
+            scope: '1',
+            ruleNum: 1
         }
     },
     mounted() {
@@ -238,6 +259,10 @@ export default {
                     this.error(err)
                 })
         },
+        ruleChange(data) {
+            console.log(data.target.value, 'value')
+            this.ruleNum = data.target.value
+        },
         cancle() {
             this.$router.push({
                 name: 'reviewTaskMgtIndex'
@@ -247,8 +272,6 @@ export default {
             e.preventDefault()
             // this.loading = true
             this.form.validateFields((err, values) => {
-                console.log(values, 'value')
-
                 if (!err) {
                     if (values.rangePicker) {
                         values.filterStartTime = values.rangePicker[0].format('YYYY-MM-DD HH:mm')
@@ -264,7 +287,7 @@ export default {
                                 this.success('保存成功')
                                 this.$router.push({
                                     name: 'reviewTaskMgtDetail',
-                                    query: { recordId: res.data.recordId }
+                                    params: { recordId: res.data }
                                 })
                             } else {
                                 this.warn(res.msg)
@@ -275,7 +298,8 @@ export default {
                         })
                 }
             })
-        }
+        },
+        
     }
 }
 </script>
