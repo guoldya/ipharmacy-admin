@@ -550,20 +550,20 @@ export const asyncRouterMap = [
             path: '/baseData/grade',
             name: 'grade',
             component: RouteView,
-            meta: { title: '结论表', multistage: true },
+            meta: { title: '点评结论字典', multistage: true },
             children: [
               {
                 path: '/baseData/grade/index',
                 name: 'gradeIndex',
                 component: () => import('@/views/baseData/grade/index.vue'),
-                meta: { title: '结论表', hiddenHeaderContent: true, index: true }
+                meta: { title: '点评结论字典', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/baseData/grade/detail/:code/',
+                path: '/baseData/grade/detail/:id/',
                 name: 'gradedetail',
                 hidden: true,
                 component: () => import('@/views/baseData/grade/detail.vue'),
-                meta: { title: '结论表', hiddenHeaderContent: true, detail: true }
+                meta: { title: '点评结论字典', hiddenHeaderContent: true, detail: true }
               }
             ]
           },
