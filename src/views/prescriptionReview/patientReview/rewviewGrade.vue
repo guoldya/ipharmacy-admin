@@ -49,22 +49,22 @@
       width="600px"
     >
       <a-form :form="form">
-        <a-form-item label="分类" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+        <a-form-item label="药品" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-select
             v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
             placeholder="请选择分类"
           >
             <a-select-option
-              :value="op.tabooId"
-              v-for="(op,index) in drugList"
+              :value="op.drugId"
+              v-for="(op,index) in $store.state.drugList"
               :key="index"
-            >{{op.tabooTitle}}</a-select-option>
+            >{{op.drugName}}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="类型" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+        <a-form-item label="点评结论" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-select
-            v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择类型'  }]}  ]"
-            placeholder="请选择类型"
+            v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择点评结论'  }]}  ]"
+            placeholder="请选择点评结论"
           >
             <a-select-option
               :value="op.id"
@@ -73,10 +73,10 @@
             >{{op.text}}</a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="标题" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+        <a-form-item label="违反规则" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
         </a-form-item>
-        <a-form-item label="内容" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+        <a-form-item label="点评描述" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-textarea
             v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"
           ></a-textarea>
@@ -93,8 +93,11 @@ export default {
     return {
          visibles: false,
          drugList:[],
-           form: this.$form.createForm(this),
+          form: this.$form.createForm(this),
     }
+  },
+  created(){
+   //this.drugList=this.$store.state.drugList
   },
   computed: {},
   mounted() {},

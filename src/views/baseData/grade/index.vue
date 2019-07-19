@@ -47,7 +47,6 @@
           </template>
         </el-table-column>
       </el-table>
-
       <a-pagination
         showSizeChanger
         showQuickJumper
@@ -79,8 +78,8 @@ export default {
       pageSize: 10,
       columns: [
         { title: '编码', value: 'cId', width: 90, align: 'right' },
-        { title: '结论类型', value: 'cTypeContent', align: 'left',},
-        { title: '结论', value: 'completion', align: 'left' },
+        { title: '结论类型', value: 'cTypeContent',  width: 200,align: 'left',},
+        { title: '结论', value: 'completion',  width: 200,align: 'left' },
         { title: '违反规则', value: 'reviewCompletionRegularVOList', align: 'left', },
         { title: '修改时间', value: 'updateTime', width: 140 },
         { title: '修改人', value: 'updateUser', width: 100, },
@@ -208,7 +207,7 @@ export default {
     add() {
       this.$router.push({
         name: 'gradedetail',
-        params: { id: 'new' }
+        params: { id:'new', }
       })
     },
 

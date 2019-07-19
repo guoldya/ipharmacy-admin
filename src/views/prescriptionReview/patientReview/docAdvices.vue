@@ -8,7 +8,7 @@
       <el-table-column type="expand"  width="1px">
         <template slot-scope="props">
           <div class="shenhe" v-if="props.row.reviewVerdict==1">
-            <p>审核意见：{{ props.row.reviewOpinion}}</p>
+            <!-- <p>审核意见：{{ props.row.reviewOpinion}}</p> -->
           </div>
           <a-divider/>
         </template>

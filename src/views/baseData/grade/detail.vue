@@ -10,8 +10,13 @@
         <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input read-only placeholder="由系统自动生成,无需填写" v-decorator="['cId']" />
         </a-form-item>
-        <a-form-item label="结论类型" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <!-- <a-form-item label="结论类型" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input :read-only="readOnly" v-decorator="['cTypeContent']" />
+        </a-form-item> -->
+         <a-form-item label="结论类型" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-select v-decorator="[ 'cType']" @change="handleChange" >
+            <a-select-option v-for="(op,index) in typeList" :value="op.id" :key="index">{{op.name}}</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="结论" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-textarea :read-only="readOnly" v-decorator="['completion']" />
@@ -20,12 +25,6 @@
           <a-select v-decorator="[ 'id']" @change="handleChange" mode="tags">
             <a-select-option v-for="(op,index) in ruleList" :value="op.id" :key="index">{{op.name}}</a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item label="修改时间" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['updateTime']" />
-        </a-form-item>
-        <a-form-item label="修改人" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['updateUser']" />
         </a-form-item>
         <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-select v-decorator="[ 'status']">
@@ -53,7 +52,8 @@ export default {
       api: {
         selectOne: 'sys/reviewCompletion/selectOne',
         updt: 'sys/reviewCompletion/update',
-        breakRule: 'sys/dicBase/selectTitlesList'
+        breakRule: 'sys/dicBase/selectTitlesList',
+        rewtype: 'sys/dicBase/selectTitlesList'
       },
       spinning: false,
       labelCol: {
@@ -72,18 +72,19 @@ export default {
       listData: {},
       readOnly: false,
       isNew: true,
-      ruleList: []
+      ruleList: [],
+      typeList:[]
     }
   },
   computed: {},
   mounted() {
     this.getselectData({ cId: this.$route.params.id })
     this.getruleData({ codeClass: 7 })
+    this.gettypeData({ codeClass: 44})
   },
   methods: {
     // 违反规则点击
     handleChange(value) {
-      console.log(`selected ${value}`)
     },
     // 获取违反字典表
     getruleData(params = {}) {
@@ -95,6 +96,26 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.ruleList = res.rows
+          } else {
+            this.loadingTable = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
+    },
+    // 结构类型
+     gettypeData(params = {}) {
+      this.$axios({
+        url: this.api.rewtype,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.typeList = res.rows
           } else {
             this.loadingTable = false
             this.warn(res.msg)
@@ -119,18 +140,15 @@ export default {
               let id=[]
               if (res.data) {
                 res.data.reviewCompletionRegularVOList.forEach(item => {
-                    //console.log(item.regularContent)
-                           id.push(item.regularContent)
+                           id.push(item.regularId)
                 })
               }
-              let { cId, completion, status, updateTime, updateUser, cTypeContent } = reqArr,
+              let { cId, completion, status, cType, cTypeContent } = reqArr,
                 formData = {
                   cId,
                   completion,
                   status,
-                  updateTime,
-                  updateUser,
-                  cTypeContent,
+                  cType,
                   id
                 }
               setTimeout(() => {
@@ -151,15 +169,23 @@ export default {
     handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
+          console.log(values)
           let reviewCompletionRegularVOList=[]
           values.id.forEach(item=>{
-             reviewCompletionRegularVOList.push({
+              if(this.$route.params.id=='new'){
+                   reviewCompletionRegularVOList.push({
+                 cId:'',
+                 regularId:item
+             })
+              }else{
+                   reviewCompletionRegularVOList.push({
                  cId:this.$route.params.id,
                  regularId:item
              })
+              }
           })
           values.reviewCompletionRegularVOList=reviewCompletionRegularVOList
-          delete values.id
+          //delete values.id
         if (!err) {
           this.$axios({
             url: this.api.updt,

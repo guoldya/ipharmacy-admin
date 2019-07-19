@@ -77,7 +77,7 @@
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
     >
-      <template slot="back">
+      <!-- <template slot="back">
         <a-button v-if="carePatient" @click="attention" class="margin-left-5" :loading="loading">
           <a-icon type="star" theme="filled" />取消关注
         </a-button>
@@ -98,7 +98,7 @@
           class="margin-left-5"
           :loading="loading"
         >下一患者</a-button>
-      </template>
+      </template> -->
       <template slot="center">
         <div class="paintFoot">
           <div
@@ -241,9 +241,9 @@ export default {
   mounted() {
     this.routerData = this.$route.params
     this.getRecordDelData({ visid: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo })
-    if (this.routerData.isNew == 1) {
-      this.turnpage({ visId: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
-    }
+    // if (this.routerData.isNew == 1) {
+    //   this.turnpage({ visId: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
+    // }
   },
   methods: {
     ...mapActions('page', ['closeTag']),
@@ -312,28 +312,28 @@ export default {
     },
 
     // 跟换患者
-    turnpage(params = {}) {
-      this.$axios({
-        url: this.api.turnpage,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            if (res.data.leadVisId) {
-              this.previousData.visId = res.data.leadVisId
-              this.previousData.submitNo = res.data.leadsubmitno
-              this.nextPerson.visId = res.data.lagVisId
-              this.nextPerson.submitNo = res.data.lagsubmitno
-            }
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
+    // turnpage(params = {}) {
+    //   this.$axios({
+    //     url: this.api.turnpage,
+    //     method: 'put',
+    //     data: params
+    //   })
+    //     .then(res => {
+    //       if (res.code == '200') {
+    //         if (res.data.leadVisId) {
+    //           this.previousData.visId = res.data.leadVisId
+    //           this.previousData.submitNo = res.data.leadsubmitno
+    //           this.nextPerson.visId = res.data.lagVisId
+    //           this.nextPerson.submitNo = res.data.lagsubmitno
+    //         }
+    //       } else {
+    //         this.warn(res.msg)
+    //       }
+    //     })
+    //     .catch(err => {
+    //       this.error(err)
+    //     })
+    // },
     // 更换患者
     slePatients(data) {
       this.$router.push({
@@ -361,7 +361,8 @@ export default {
           if (res.code == '200') {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
-            
+            this.$store.state.drugList=this.docDatas
+            console.log(this.$store.state.drugList,'vuexxxxxx')
             this.docDatasCopy = this.docDatas
             this.visId = this.$route.params.visId
             this.patientId = res.data.patientId
