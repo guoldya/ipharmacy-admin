@@ -26,7 +26,7 @@
                             v-decorator="['planScope',{initialValue: '1'}]"
                         >
                             <a-radio value="1">门诊</a-radio>
-                            <a-radio value="0">住院</a-radio>
+                            <a-radio value="2">住院</a-radio>
                         </a-radio-group>
                     </a-form-item>
                     <a-form-item v-bind="formItemLayout" label="状态" :required="true">

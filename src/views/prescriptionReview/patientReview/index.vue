@@ -282,8 +282,9 @@ export default {
     // 过滤性别
     sexCheck(data){
       console.log(data.patientSex)
-      // return this.enum.completeStatus[data.patientSex+1]
-      return 'nan'
+      let num=1+Number(data.patientSex)
+       return this.enum.completeStatus[num]
+      // return 'nan'
     }
   }
 }
