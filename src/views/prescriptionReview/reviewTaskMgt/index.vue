@@ -161,7 +161,8 @@ export default {
                 logUrl: '/sys/reviewInfo/selectPage',
                 RecordUrl: 'sys/reviewInfo/selectPersonListInReviewRecord',
                 delUrl: 'sys/reviewInfo/delete',
-                startScreenUrl: 'sys/reviewFilter/startScreen'
+                startScreenUrl: 'sys/reviewFilter/startScreen',
+                recordNumUrl:'sys/reviewInfo/selectCurrentOpenReviewRecordNum',
             },
             spinning: false,
             bmSpinning: false,
@@ -196,9 +197,9 @@ export default {
             current: 0,
             bmCurrent: 1,
             countText: [
-                { itemCount: 123, item: '抽取点评', colors: '#4586ff' },
-                { itemCount: 123, item: '已点评', colors: '#2dc89f' },
-                { itemCount: 123, item: '问题点评', colors: '#ff6781' }
+                { itemCount: 0, item: '抽取点评', itemColors: '#4586ff' },
+                { itemCount: 0, item: '已点评', itemColors: '#2dc89f' },
+                { itemCount: 0, item: '问题点评', itemColors: '#ff6781' }
             ]
         }
     },
@@ -236,9 +237,27 @@ export default {
         }
     },
     mounted() {
-        this.getData()
+        this.getData();
+        this.getRecordData();
     },
     methods: {
+      getRecordData(){
+        this.$axios({
+          url: this.api.recordNumUrl,
+          method: 'put',
+          data:{}
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.countText = res.rows;
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
         getFormData() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
             if (params.updateTime) {

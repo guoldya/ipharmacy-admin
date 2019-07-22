@@ -6,7 +6,7 @@
                 <div class="countText">
                     <p
                         class="countStyle"
-                        :style="{color:countList[0].colors}"
+                        :style="{color:countList[0].itemColors}"
                     >{{countList[0].itemCount}}</p>
                     <span class="countItem opacity6">{{countList[0].item}}</span>
                 </div>
@@ -21,7 +21,7 @@
                 <div class="countText">
                     <p
                         class="countStyle"
-                        :style="{color:countList[1].colors}"
+                        :style="{color:countList[1].itemColors}"
                     >{{countList[1].itemCount}}</p>
                     <span class="countItem opacity6">{{countList[1].item}}</span>
                 </div>
@@ -36,7 +36,7 @@
                 <div class="countText">
                     <p
                         class="countStyle"
-                        :style="{color:countList[2].colors}"
+                        :style="{color:countList[2].itemColors}"
                     >{{countList[2].itemCount}}</p>
                     <span class="countItem opacity6">{{countList[2].item}}</span>
                 </div>

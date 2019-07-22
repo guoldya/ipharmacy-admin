@@ -228,6 +228,31 @@ export const asyncRouterMap = [
           }
         ]
       },
+      //监控预警
+      {
+        path: '/monitoring',
+        name: 'monitoring',
+        component: PageView,
+        meta: { title: '监控预警', keepAlive: false, icon: 'laptop' },
+        children: [
+          {
+            path: '/monitoring/warningQuery',
+            name: 'warningQuery',
+            component: RouteView,
+            meta: { title: '预警查询', multistage: true },
+            children: [
+              {
+                path: '/monitoring/warningQuery/index',
+                name: 'warningQueryIndex',
+                component: () => import('@/views/monitoring/warningQuery/index.vue'),
+                meta: { title: '预警查询',  index: true }
+              },
+            ]
+          },
+        ]
+      },
+
+
       // 审方
       {
         path: '/auditWorkstation',
@@ -571,51 +596,51 @@ export const asyncRouterMap = [
       },
 
       // test
-      // {
-      //   path: '/testPage',
-      //   name: 'testPage',
-      //   component: PageView,
-      //   redirect: '/test/test',
-      //   meta: { title: '测试', icon: 'check-circle-o', permission: ['result'] },
-      //   children: [
-      //     {
-      //       path: '/test/test',
-      //       name: 'test',
-      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/test'),
-      //       meta: { title: '测试页面', hiddenHeaderContent: true, permission: ['result'] }
-      //     },
-      //     {
-      //       path: '/test/gridLayOut',
-      //       name: 'gridLayOut',
-      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
-      //       meta: { title: '拖拽测试', hiddenHeaderContent: true, permission: ['result'] }
-      //     },
-      //     {
-      //       path: '/test/combineTest',
-      //       name: 'combineTest',
-      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTest'),
-      //       meta: { title: '合并测试', permission: ['result'] }
-      //     },
-      //     {
-      //       path: '/test/combineTwo',
-      //       name: 'combineTwo',
-      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
-      //       meta: { title: '合并测试2', permission: ['result'] }
-      //     },
-      //     {
-      //       path: '/test/combineThree',
-      //       name: 'combineThree',
-      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineThree'),
-      //       meta: { title: '合并测试3', permission: ['result'] }
-      //     },
-      //     {
-      //       path: '/test/picCropper',
-      //       name: 'picCropper',
-      //       component: () => import(/* webpackChunkName: "result" */ '@/views/test/picCropper'),
-      //       meta: { title: '图片剪裁', permission: ['result'] }
-      //     }
-      //   ]
-      // },
+      {
+        path: '/testPage',
+        name: 'testPage',
+        component: PageView,
+        redirect: '/test/test',
+        meta: { title: '测试', icon: 'check-circle-o', permission: ['result'] },
+        children: [
+          {
+            path: '/test/test',
+            name: 'test',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/test'),
+            meta: { title: '测试页面', hiddenHeaderContent: true, permission: ['result'] }
+          },
+          {
+            path: '/test/gridLayOut',
+            name: 'gridLayOut',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
+            meta: { title: '拖拽测试', hiddenHeaderContent: true, permission: ['result'] }
+          },
+          {
+            path: '/test/combineTest',
+            name: 'combineTest',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTest'),
+            meta: { title: '合并测试', permission: ['result'] }
+          },
+          {
+            path: '/test/combineTwo',
+            name: 'combineTwo',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
+            meta: { title: '合并测试2', permission: ['result'] }
+          },
+          {
+            path: '/test/combineThree',
+            name: 'combineThree',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineThree'),
+            meta: { title: '合并测试3', permission: ['result'] }
+          },
+          {
+            path: '/test/picCropper',
+            name: 'picCropper',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/picCropper'),
+            meta: { title: '图片剪裁', permission: ['result'] }
+          }
+        ]
+      },
       {
         path: '/sys',
         name: 'sys',
