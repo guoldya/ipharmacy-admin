@@ -271,7 +271,10 @@ const Enum = {
         { id: 1, text: '常量判断' },
         { id:2, text: '数值区间判断' },
         { id:3, text: '外部数据判断' },
-    ]
-
+    ],
+    completeStatus:[
+        '新建','合理','不合理'
+    ],
+    sexLIST:['未知','男','女']
 }
 export default Enum

@@ -3,59 +3,57 @@
     <div class="dealRight">
       <a-tabs defaultActiveKey="1" size="small" class="width-100">
         <a-tab-pane tab="点评结果" key="1">
-          <a-card>
-            <div class="content">
-              <header>是否为合理处方:</header>
-              <div class="check">
-                <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />
-                <a-radio-group name="radioGroup" :defaultValue="1">
-                  <a-radio :value="1">合理</a-radio>
-                  <a-radio :value="2">不合理</a-radio>
-                </a-radio-group>
-              </div>
+          <div class="content">
+            <header>是否为合理处方:</header>
+            <div class="check">
+              <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />
+              <a-radio-group name="radioGroup" :defaultValue="1">
+                <a-radio :value="1">合理</a-radio>
+                <a-radio :value="2">不合理</a-radio>
+              </a-radio-group>
             </div>
-            <footer class="addquestion">
+          </div>
+
+          <a-card title="问题" style="margin-top:20px;">
+            <a href="#" slot="extra" class="addquestion">
               <a-icon type="plus" style="color:#1890ff" />
               <span class="add" @click="addqus('visibles',true)">新增问题</span>
               <a-icon type="sync" style="color:#1890ff" />
               <span class="updrw">重新点评</span>
-            </footer>
-          </a-card>
-          <aside v-if="true">
-            <div class="wenti">问题</div>
-            <a-card>
-              <p>此次用药不符合,国家安全标准。六味地黄丸，治肾亏不含糖此次用药不符合,国家安全标准。六味地黄丸，治肾亏不含糖</p>
-              <h4>说明：{{this.$store.state.druglist}}</h4>
-              <p>阿莫西林/卡西莫多</p>
+            </a>
+            <aside v-for="item in proList" v-if="proList&&proList.length">
+              <p>&emsp;&emsp;药品：{{item.name}}</p>
+              <p>点评结论：{{item.completion}}</p>
+              <p>
+                违反规则：
+                <a-tag color="orange" v-for="op in item.cId">{{op}}</a-tag>
+              </p>
+              <p>点评描述：{{item.reviewTemplate}}</p>
               <footer>
                 <p class="foot">
-                  <a>删除</a>
+                  <a-popconfirm title="确定删除?" placement="topLeft" @confirm="deletes(item)">
+                    <a>删除</a>
+                  </a-popconfirm>
                   <a-divider type="vertical" />
-                  <a>修改</a>
+                  <a @click="editing(item)">修改</a>
                 </p>
               </footer>
-            </a-card>
-             
-          </aside>
+              <a-divider />
+            </aside>
+          </a-card>
         </a-tab-pane>
         <a-tab-pane tab="问题描述" key="2"></a-tab-pane>
       </a-tabs>
     </div>
-    <a-modal
-      title="另存为模板"
-      :visible="visibles"
-      @ok="handleOk"
-      @cancel="handleCancel"
-      width="600px"
-    >
+    <a-modal title="另存为模板" :visible="visibles" @ok="handleOk" @cancel="handleCancel" width="600px">
       <a-form :form="form">
         <a-form-item label="药品" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-select
-            v-decorator="[ 'tabooClass',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
+            v-decorator="[ 'name',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
             placeholder="请选择分类"
           >
             <a-select-option
-              :value="op.drugId"
+              :value="op.drugName"
               v-for="(op,index) in $store.state.drugList"
               :key="index"
             >{{op.drugName}}</a-select-option>
@@ -63,18 +61,36 @@
         </a-form-item>
         <a-form-item label="点评结论" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-select
-            v-decorator="[ 'templetType',  {rules: [{ required: true,message: '请选择点评结论'  }]}  ]"
-            placeholder="请选择点评结论"
+            style="width:100%"
+            showSearch
+            allowClear
+            mode="single"
+            optionLabelProp="completion"
+            :defaultActiveFirstOption="false"
+            :showArrow="false"
+            :filterOption="false"
+            @search="handleSearch"
+            @change="handleChange"
+            v-decorator="[ 'completion']"
+            placeholder="请选择点评结果"
           >
             <a-select-option
-              :value="op.id"
-              v-for="(op,index) in this.enum.templateType"
-              :key="index"
-            >{{op.text}}</a-select-option>
+              v-for="(item,index) in this.rewList"
+              :value="item.completion"
+              :key="item.cId"
+              :completion="item.completion"
+              :reviewCompletionRegularVOList="item.reviewCompletionRegularVOList"
+            >{{item.completion}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="违反规则" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
-          <a-input v-decorator="[ 'titles',  {rules: [{ required: true,message: '请输入标题'  }]}  ]"></a-input>
+          <a-select v-decorator="[ 'cId']" @change="handleChanges" mode="tags">
+            <a-select-option
+              v-for="(op,index) in ruleList"
+              :value="op.cId"
+              :key="op.cId"
+            >{{op.regularContent}}</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="点评描述" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-textarea
@@ -87,30 +103,124 @@
 </template>
 
 <script>
+import debounce from 'lodash/debounce'
 export default {
   name: 'index',
   data() {
+    this.handleSearch = debounce(this.handleSearch, 800)
     return {
-         visibles: false,
-         drugList:[],
-          form: this.$form.createForm(this),
+      // labelCol: {
+      //   xs: { span: 8 },
+      //   sm: { span: 8 }
+      // },
+      // wrapperCol: {
+      //   xs: { span: 8 },
+      //   sm: { span: 8 }
+      // },
+      visibles: false,
+      drugList: [],
+      form: this.$form.createForm(this),
+      api: {
+        rewviewList: 'sys/reviewCompletion/selectListByKeyword'
+      },
+      drugselval: '',
+      rewList: [],
+      form: this.$form.createForm(this),
+      ruleList: [],
+      proList: [],
+      num: 1
     }
   },
-  created(){
-   //this.drugList=this.$store.state.drugList
+  created() {
+    //this.drugList=this.$store.state.drugList
   },
   computed: {},
-  mounted() {},
+  mounted() {
+    this.getDrugList()
+  },
   methods: {
-    addqus(val,bool) {
-        this[val]=bool
+    // 删除问题框
+    deletes(data) {
+      let arr = this.proList.filter(item => {
+        return item.index !== data.index
+      })
+      this.proList = arr
     },
-     handleOk(){
-
-     },
-     handleCancel(){
-         this.visibles = false 
-     }
+    // 修改那边问题的东西
+    editing(data) {
+      //console.log(data)
+      this.visibles = true
+      let formData = data
+      this.form.setFieldsValue(formData)
+    },
+    //获取结论list
+    getDrugList() {
+      let params = { keyword: '' }
+      this.$axios({
+        url: this.api.rewviewList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.rewList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 结论搜索框
+    handleSearch(value) {
+      let params = { keyword: value }
+      this.$axios({
+        url: this.api.rewviewList,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.rewList = res.rows
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 获取结论值
+    handleChange(value, option) {
+      let cId = []
+      // console.log(option.data.attrs.reviewCompletionRegularVOList)
+      option.data.attrs.reviewCompletionRegularVOList.forEach(item => {
+        cId.push(item.regularContent)
+      })
+      let formData = {
+        cId
+      }
+      this.form.setFieldsValue(formData)
+    },
+    handleChanges() {},
+    // 控制modal框
+    addqus(val, bool) {
+      this[val] = bool
+    },
+    handleOk(e) {
+      this.visibles = false
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        values.index = this.num
+        this.proList.push(values)
+        this.num++
+      })
+      this.form.resetFields()
+    },
+    handleCancel() {
+      this.visibles = false
+    }
   }
 }
 </script>
