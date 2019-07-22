@@ -146,8 +146,8 @@
 import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/FooterToolbar'
 import DetailOperate from './detailOperate.vue'
-import DetailTest from './detailTest.vue'
-import detailCheck from './detailCheck.vue'
+import DetailTest from '../../auditWorkstation/presHospitalized/detailTest.vue'
+import detailCheck from '../../auditWorkstation/presHospitalized/detailCheck'
 import docAdvices from './docAdvices.vue'
 import rewviewGrade from './rewviewGrade.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
@@ -362,7 +362,7 @@ export default {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
             this.$store.state.drugList=this.docDatas
-            console.log(this.$store.state.drugList,'vuexxxxxx')
+            // console.log(this.$store.state.drugList,'vuexxxxxx')
             this.docDatasCopy = this.docDatas
             this.visId = this.$route.params.visId
             this.patientId = res.data.patientId
@@ -506,7 +506,6 @@ export default {
 </script>
 
 <style  lang="less">
-
 .detailPres {
   .guanzhu {
     background-color: #0c60ee;
