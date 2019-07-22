@@ -471,7 +471,7 @@ export default {
         this.buttonType = 'danger'
         this.disable = false
         status = '1'
-        let params = { status: status, planScope: 1, planType: 1 }
+        let params = { status: status, planScope: 2, planType: 1 }
         this.$axios({
           url: this.api.reviewUpdateStatus,
           method: 'post',
@@ -489,7 +489,7 @@ export default {
           })
       } else {
         status = '0'
-        let params = { status: status, planScope: 1, planType: 1 }
+        let params = { status: status, planScope: 2, planType: 1 }
         this.$axios({
           url: this.api.reviewUpdateStatus,
           method: 'post',
@@ -509,7 +509,7 @@ export default {
                   onOk() {
                     let passParams = {}
                     passParams.reviewVerdict = 1
-                    passParams.planScope = 1
+                    passParams.planScope = 2
                     _this
                       .$axios({
                         url: _this.api.updateReviewList,
@@ -532,7 +532,7 @@ export default {
                   onCancel() {
                     let passParams = {}
                     passParams.reviewVerdict = 2
-                    passParams.planScope = 1
+                    passParams.planScope = 2
                     _this
                       .$axios({
                         url: _this.api.updateReviewList,
