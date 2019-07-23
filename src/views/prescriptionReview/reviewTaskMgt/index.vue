@@ -29,8 +29,8 @@
                     >
                         <template slot-scope="scope">
                             <a v-if="scope.row.status == 1" @click="startScreen(scope.row)">开始筛选</a>
-                            <a v-else-if="scope.row.status == 3" @click="looks(scope.row)">开始分配</a>
-                            <a v-else-if="scope.row.status == 4" @click="looks(scope.row)">开始点评</a>
+                            <a v-else-if="scope.row.status == 3" @click="assigned(scope.row)">开始分配</a>
+                            <a v-else-if="scope.row.status == 4" @click="startView(scope.row)">开始点评</a>
                             <!-- <a v-else-if="scope.row.status == 6" @click="looks(scope.row)">点评完成</a> -->
                             <a-divider type="vertical" />
                             <a @click="looks(scope.row)">查看</a>
@@ -159,9 +159,12 @@ export default {
         return {
             api: {
                 logUrl: '/sys/reviewInfo/selectPage',
-                RecordUrl: 'sys/reviewInfo/selectPersonListInReviewRecord',
+                RecordUrl: 'sys/reviewInfo/selectPersonPageInReviewRecord',
                 delUrl: 'sys/reviewInfo/delete',
-                startScreenUrl: 'sys/reviewFilter/startScreen'
+                startScreenUrl: 'sys/reviewFilter/startScreen',
+                recordNumUrl:'sys/reviewInfo/selectCurrentOpenReviewRecordNum',
+                startDistributionUrl:'sys/reviewFilter/startDistribution',
+                startViewUrl:'sys/reviewFilter/startView',
             },
             spinning: false,
             bmSpinning: false,
@@ -183,22 +186,22 @@ export default {
             ],
             bmColumns: [
                 { title: '工号', value: 'personId' },
-                { title: '点评药师', value: 'name' },
+                { title: '点评药师', value: 'name', width: 130 },
                 { title: '电话', value: 'phone', width: 130, align: 'right' },
-                { title: '分配数量', value: 'planScope', width: 80 },
-                { title: '已点评数量', value: 'logHost' },
-                { title: '合理处方', value: 'termial', width: 150 },
-                { title: '不合理处方', value: 'progress', width: 200 },
-                { title: '完成率', value: 'controller', width: 100 }
+                { title: '分配数量', value: 'reviewTotal', width: 80, align: 'right'  },
+                { title: '已点评数量', value: 'reviewedCount' , width: 100, align: 'right' },
+                { title: '合理处方', value: 'reasonableCount' },
+                { title: '不合理处方', value: 'unReasonableCount'},
+                { title: '完成率', value: 'percentage', width: 100 }
             ],
             total: 0,
             bmTotal: 1,
             current: 0,
             bmCurrent: 1,
             countText: [
-                { itemCount: 123, item: '抽取点评', colors: '#4586ff' },
-                { itemCount: 123, item: '已点评', colors: '#2dc89f' },
-                { itemCount: 123, item: '问题点评', colors: '#ff6781' }
+                { itemCount: 0, item: '抽取点评', itemColors: '#4586ff' },
+                { itemCount: 0, item: '已点评', itemColors: '#2dc89f' },
+                { itemCount: 0, item: '问题点评', itemColors: '#ff6781' }
             ]
         }
     },
@@ -236,9 +239,27 @@ export default {
         }
     },
     mounted() {
-        this.getData()
+        this.getData();
+        this.getRecordData();
     },
     methods: {
+      getRecordData(){
+        this.$axios({
+          url: this.api.recordNumUrl,
+          method: 'put',
+          data:{}
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.countText = res.rows;
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
         getFormData() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
             if (params.updateTime) {
@@ -323,6 +344,44 @@ export default {
                     this.error(err)
                 })
         },
+      //开始分配
+      assigned(data){
+        this.$axios({
+          url: this.api.startDistributionUrl,
+          method: 'post',
+          data: { recordId: data.recordId}
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.getData()
+              this.success(res.msg)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      //开始评价
+      startView(data){
+        this.$axios({
+          url: this.api.startViewUrl,
+          method: 'post',
+          data: { recordId: data.recordId}
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.getData()
+              this.success(res.msg)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
         //删除
         del(data) {
             this.$axios({

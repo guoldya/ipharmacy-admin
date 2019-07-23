@@ -16,7 +16,6 @@
         :items="items"
         :opColWidth="110"
         :moreOp="false"
-        height="430"
         :currentChange="currentChange"
       ></a-treeTable>
     </a-spin>

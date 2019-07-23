@@ -70,6 +70,7 @@
                                 <a-range-picker
                                     v-decorator="[item.dataField]"
                                     format="YYYY-MM-DD HH:mm"
+                                    :ranges="{ '昨天': [moment().subtract(1, 'days'), moment()], '一周': [moment().subtract(1,'weeks'), moment()], '一个月':[moment().subtract(1,'months'),moment()] }"
                                 />
                             </a-form-item>
                         </a-col>
