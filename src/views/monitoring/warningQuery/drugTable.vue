@@ -20,7 +20,6 @@
             :items="items"
             :more="false"
             :data="scope.row"
-            :filterItem="['status']"
           ></opcol>
         </template>
       </el-table-column>
@@ -34,13 +33,7 @@
         :align="item.align"
       >
         <template slot-scope="scope">
-                        <span v-if="item.value == 'status'">
-                            <a-badge
-                              :status="scope.row.status == 0? 'default':'processing'"
-                              :text="scope.row.status==0?'停用':'启用'"
-                            />
-                        </span>
-          <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
+          <span v-if="item.format !=null" v-html="item.format(scope.row)"></span>
           <span v-else>{{scope.row[item.value]}}</span>
         </template>
       </el-table-column>
@@ -66,22 +59,34 @@
 <script>
   export default {
     name: 'drugTable',
+    props: {
+      moreThanNum: {
+        type: Number,
+      },
+      startDate: {
+        type: String,
+        required: true
+      },
+      endDate: {
+        type: String,
+        required: true
+      },
+    },
     data() {
       return {
         api: {
-          selectPage: 'sys/reviewAuditlevel/selectPage',
-          reviewAuditlevelUpdate: 'sys/reviewAuditlevel/update'
+          selectPage: 'sys/early/selectRuleWarningDrug',
         },
         loading: false,
         total: null,
         curent: 1,
         pageSize: 10,
         columns: [
-          { title: '药品名称', value: 'auditLevel',},
-          { title: '规格', value: 'levelType',  width: 130, format: this.levelFormatter },
-          { title: '剂型', value: 'levelName', align: 'center', width: 100 },
-          { title: '生产厂商', value: 'handleType',   format: this.handleFormatter },
-          { title: '次数', value: 'levelDescription' , align: 'right',width: 100, },
+          { title: '药品名称', value: 'drugName',},
+          { title: '规格', value: 'spec',  width: 200,  },
+          { title: '剂型', value: 'dosageForms', align: 'center', width: 200 },
+          { title: '生产厂商', value: 'producedBy',  },
+          { title: '次数', value: 'total' , align: 'right',width: 100, },
         ],
         items: [
           { text: '详情', showtip: false, click: this.edits },
@@ -97,12 +102,12 @@
         return [
           {
             name: '药品名称',
-            dataField: 'levelType',
+            dataField: 'drugName',
             type: 'text',
           },
           {
             name: '生产厂商',
-            dataField: 'handleType',
+            dataField: 'producedBy',
             type: 'text',
           },
         ]
@@ -126,11 +131,14 @@
         this.$refs.searchPanel.form.resetFields()
         this.getData({ pageSize: 10, offset: 0 })
       },
-      getData(params = { pageSize: 10, offset: 0 }) {
+      getData(params = {}) {
         this.loading = true
         if (params.offset == 0) {
           this.current = 1
         }
+        params.endDate = this.endDate;
+        params.startDate = this.startDate;
+        params.total = ''+this.moreThanNum;
         this.$axios({
           url: this.api.selectPage,
           method: 'put',
@@ -225,6 +233,33 @@
           }
         })
         return levelText
+      }
+    },
+    watch:{
+//观察option的变化
+      moreThanNum: {
+        handler(newVal, oldVal) {
+         if (oldVal != newVal){
+           this.getData()
+         }
+        },
+        deep: true //对象内部属性的监听，关键。
+      },
+      startDate: {
+        handler(newVal, oldVal) {
+          if (oldVal != newVal){
+            this.getData()
+          }
+        },
+        deep: true //对象内部属性的监听，关键。
+      },
+      endDate: {
+        handler(newVal, oldVal) {
+          if (oldVal != newVal){
+            this.getData()
+          }
+        },
+        deep: true //对象内部属性的监听，关键。
       }
     }
   }

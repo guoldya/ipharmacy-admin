@@ -64,67 +64,73 @@
       return {
         api: {
           selectPage: 'sys/reviewAuditlevel/selectPage',
-          reviewAuditlevelUpdate: 'sys/reviewAuditlevel/update'
+          reviewAuditlevelUpdate: 'sys/reviewAuditlevel/update',
         },
         loading: false,
         total: null,
         curent: 1,
         pageSize: 10,
         columns: [
-          { title: '规则分类', value: 'auditLevel',},
           { title: '规则名称', value: 'levelType',  },
-          { title: '规则类型', value: 'levelName', align: 'center', width: 100 },
-          { title: '问题等级', value: 'handleType', align: 'center', width: 100,},
+          { title: '规则类型', value: 'levelName', align: 'center', width: 130 },
           { title: '更新时间', value: 'levelDescription' },
-          { title: '次数', value: '123', width: 80, align: 'center' }
+          { title: '次数', value: '123', width: 100, align: 'right' }
         ],
         items: [
           { text: '详情', showtip: false, click: this.edits },
           { text: '规则', showtip: false, click: this.edits },
         ],
-        // items:[
-        //   {text:'编辑',showtip:false,click:this.edits},
-        //   {text:'启用',showtip:true,tip:'确认启用吗？',click:this.user,status:'1'},
-        //   {text:'停用',showtip:true,tip:'确认停用吗？',click:this.user,status:'0'},
-        // ],
         levelColor: '#ffffff',
         dataSource: [],
         current: 1,
-        searchData: {}
+        searchData: {},
+        levelAduits:[],
+        treeList:[],
       }
     },
     computed: {
       list() {
         return [
+          // {
+          //   name: '禁忌分类',
+          //   dataField: 'levelType',
+          //   type: 'tree-select',
+          //   treeData: this.treeList
+          // },
           {
-            name: '规则分类',
+            name: '规则名称',
             dataField: 'levelType',
-            type: 'select',
-            keyExpr: 'id',
-            valueExpr: 'text',
-            dataSource: this.enum.levelType
+            type: 'text',
           },
           {
             name: '规则类型',
-            dataField: 'handleType',
+            dataField: 'levelType',
             type: 'select',
+            dataSource: this.enum.ruleClassification,
             keyExpr: 'id',
-            valueExpr: 'text',
-            dataSource: this.enum.handleType
+            valueExpr: 'text'
           },
-          {
-            name: '问题等级',
-            dataField: 'status',
-            type: 'select',
-            keyExpr: 'id',
-            valueExpr: 'text',
-            dataSource: this.enum.status
-          },
+          // {
+          //   name: '处理类型',
+          //   dataField: 'handleType',
+          //   type: 'select',
+          //   keyExpr: 'id',
+          //   valueExpr: 'text',
+          //   dataSource: this.enum.handleType
+          // },
+          // {
+          //   name: '问题等级',
+          //   dataField: 'status',
+          //   type: 'select',
+          //   keyExpr: 'AUDITVALUE',
+          //   valueExpr: 'LEVELNAME',
+          //   dataSource: this.levelAduits
+          // },
         ]
       }
     },
     mounted() {
-      this.getData()
+      this.getData();
     },
     methods: {
       //搜索
@@ -178,54 +184,13 @@
         params.pageSize = pageSize
         this.getData(params)
       },
-      //启用停用
-      user(data) {
-        if (data.status == 1) {
-          data.status = '0'
-        } else {
-          data.status = '1'
-        }
-        this.$axios({
-          url: this.api.reviewAuditlevelUpdate,
-          method: 'post',
-          data: data
-        })
-          .then(res => {
-            if (res.code == '200') {
-              this.success(res.msg)
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
-      },
-      edits(data) {
-        this.$router.push({
-          name: 'problemLevelDetail',
-          params: { auditLevel: data.auditLevel }
-        })
-      },
-      cellStyle(row) {
-        if (row.column.label === '显示颜色') {
-          return 'backgroundColor:' + row.row.levelColor
-        }
-      },
-
-      add() {
-        this.$router.push({
-          name: 'problemLevelDetail',
-          params: { auditLevel: 'new' }
-        })
-      },
 
       //枚举
       levelFormatter(data) {
         let levelText
-        this.enum.levelType.forEach(item => {
-          if (Number(data.levelType) == item.id) {
-            levelText = item.text
+        this.levelAduits.forEach(item => {
+          if (Number(data.levelType) == item.AUDITVALUE) {
+            levelText = item.LEVELNAME
             return
           }
         })

@@ -49,9 +49,16 @@
                     >
                         <template slot-scope="scope">
                             <span v-if="item.value == 'status'">
+                                 <a-badge v-if="scope.row.status == '1'" status="default" text="新建" />
                                 <a-badge
-                                    :status="scope.row.status == 0? 'default':'processing'"
-                                    :text="scope.row.status==0?'停用':'启用'"
+                                  v-else-if="scope.row.status == '2'"
+                                  status="processing"
+                                  text="合理"
+                                />
+                                <a-badge
+                                  v-else-if="scope.row.status== '3'"
+                                  status="warning"
+                                  text="不合理"
                                 />
                             </span>
                             <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
@@ -118,9 +125,9 @@ export default {
                 { title: '注射剂', value: 'status3', width: 100 },
                 { title: '基本药物', value: 'status4', width: 100 },
                 { title: '药品金额', value: 'statsadus4', width: 100, align: 'right' },
-                { title: '点评人', value: 'status5', width: 150 },
-                { title: '点评结果', value: 'status6', width: 150 },
-                { title: '点评状态', fixed: 'right', value: 'statdad', align: 'center', width: 100 }
+                { title: '点评人', value: 'reviewDocName', width: 150 },
+                // { title: '点评结果', value: 'status', width: 150 },
+                { title: '点评状态', fixed: 'right', value: 'status', align: 'center', width: 100 }
             ],
             columns2: [
                 { title: '出院日期', value: 'prescDate', width: 130 },
@@ -128,8 +135,8 @@ export default {
                { title: '性别', value: 'patientSex', width: 60, align: 'center', format: this.patientSex },
                 { title: '年龄', value: 'patientAge', width: 80, align: 'right'  },
                 { title: '住院号', value: 'admitNum', width: 100, align: 'right' },
-                { title: '住院科室', value: 'admitDeptName', width: 150 },
-                { title: '住院医师', value: 'attendingDoctorName', width: 100 },
+                { title: '住院科室', value: 'prescDeptName', width: 150 },
+                { title: '住院医师', value: 'prescDocName', width: 100 },
                 { title: '出院诊断', value: 'diseaseNames', width: 300 },
                 { title: '药品品种数', value: 'status1', width: 100 },
                 { title: '抗菌药', value: 'adasd', width: 100 },
@@ -137,9 +144,9 @@ export default {
                 { title: '注射剂', value: 'status3', width: 100 },
                 { title: '基本药物', value: 'status4', width: 100 },
                 { title: '药品金额', value: 'statsadus4', width: 100, align: 'right' },
-                { title: '点评人', value: 'status5', width: 100 },
-                { title: '点评结果', value: 'status6', width: 150 },
-                { title: '点评状态', fixed: 'right', value: 'statdad', align: 'center', width: 100 }
+                { title: '点评人', value: 'reviewDocName', width: 100 },
+                // { title: '点评结果', value: 'status', width: 150 },
+                { title: '点评状态', fixed: 'right', value: 'status', align: 'center', width: 100 }
             ],
             items: [{ text: '删除', showtip: false, click: this.delete }],
             total: 0,

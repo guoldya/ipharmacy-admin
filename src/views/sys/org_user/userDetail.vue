@@ -425,13 +425,16 @@
                 //     return;
                 // }
                 this.form.validateFields((err, values) => {
+
                     if (!err){
                         let params = values;
                         if(!this.isNew){
                             params.personId = this.$route.params.id;
                         }
                         params.birthday = values.birthday.format('YYYY-MM-DD');
+                      if(this.$refs.upload.imgArr.length > 0){
                         params.signPic = this.$refs.upload.imgArr[0].fileName;
+                      }
                         this.$axios({
                             url: this.api.updateUrl,
                             method: 'post',

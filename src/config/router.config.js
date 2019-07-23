@@ -249,6 +249,20 @@ export const asyncRouterMap = [
               },
             ]
           },
+          {
+            path: '/monitoring/detailProblem',
+            name: 'detailProblem',
+            component: RouteView,
+            meta: { title: '问题详情', multistage: true },
+            children: [
+              {
+                path: '/monitoring/detailProblem/index',
+                name: 'detailProblemIndex',
+                component: () => import('@/views/monitoring/detailProblem/index.vue'),
+                meta: { title: '问题详情',  index: true }
+              },
+            ]
+          },
         ]
       },
 
