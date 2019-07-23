@@ -17,7 +17,7 @@
               <a-spin tip="加载中..." :spinning="loading">
                 <a-tree
                   dropdownMatchSelectWidth
-                  :dropdownStyle="{ width: '100px', color:'red'}"
+                  :dropdownStyle="{ width:'100px',color:'red'}"
                   class="draggable-tree"
                   :treeData="gData"
                   :loadData="onLoadData"
@@ -85,6 +85,7 @@
                     </a-popconfirm>
                     <a-divider type="vertical" v-if="props.row.type == 2"/>
                   </span>
+                   <span v-else-if="item.prop == 'updateTime'" >{{changTime(props.row.updateTime)}}</span>
                   <span v-else>{{props.row[item.prop]}}</span>
                 </template>
               </el-table-column>
@@ -123,13 +124,12 @@ export default {
       },
       columns: [
         { title: '编码', prop: 'id', width: 80, align: 'right' },
-        { title: 'ICD编码', prop: 'icdcode', width: 80, align: 'left' },
-     
+        { title: 'ICD编码', prop: 'icdcode', width: 80, align: 'left' }, 
         { title: '诊断名称', prop: 'icdname', align: 'left', width: 300 },
         { title: '备注', prop: 'remark', align: 'left' },
         { title: '类型', prop: 'icdtype', width: 90, align: 'center' },
         { title: '状态', prop: 'status', width: 80, align: 'center' },
-        { title: '更新时间', prop: 'UPDATE_TIME', width: 140, align: 'center' },
+        { title: '更新时间', prop: 'updateTime', width: 140, align: 'center' },
         { title: '操作', prop: 'action', width: 160, align: 'center' }
       ],
       //树形结构分类
@@ -151,7 +151,6 @@ export default {
   },
   mounted() {
     this.getTreeData({})
-    // this.getPageData()
   },
   computed: {
     list() {
@@ -419,6 +418,12 @@ export default {
         return 'icd9'
       }
     },
+    changTime(time){
+      if(time){
+return time.replace(/:\d{2}$/,'')
+      }
+      
+    }
   }
 }
 </script>

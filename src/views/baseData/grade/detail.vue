@@ -22,7 +22,7 @@
           <a-textarea :read-only="readOnly" v-decorator="['completion']" />
         </a-form-item>
         <a-form-item label="违反规则" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-select v-decorator="[ 'id']" @change="handleChange" mode="tags">
+          <a-select v-decorator="[ 'id']" @change="handleChange" mode="multiple" :filterOption='false'>
             <a-select-option v-for="(op,index) in ruleList" :value="op.id" :key="index">{{op.name}}</a-select-option>
           </a-select>
         </a-form-item>

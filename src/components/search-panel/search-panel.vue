@@ -182,7 +182,9 @@ export default {
     /*border: 1px solid #d9d9d9;*/
     /*border-radius: 6px;*/
 }
-
+.ant-card-bordered {
+    border: 1px solid #e8e8e8;
+}
 .search-form .ant-card-body {
     padding: 15px 15px 15px 15px;
 }

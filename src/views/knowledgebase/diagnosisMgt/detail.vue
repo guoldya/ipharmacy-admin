@@ -40,9 +40,9 @@
         </a-select>
       </a-form-item>
       <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-select v-decorator="[ 'statu']">
+        <a-select v-decorator="[ 'status']">
           <a-select-option
-            v-for="(op,index) in this.enum.statu"
+            v-for="(op,index) in this.enum.status"
             :value="op.id"
             :key="index"
           >{{op.text}}</a-select-option>
@@ -65,7 +65,7 @@ export default {
     return {
       api: {
         diagnosisMgtupdate: '/sys/dicIcd/update',
-        diagnosisMgtselectPage: '/sys/dicIcd/selectPage'
+        diagnosisMgtselectPage: '/sys/dicIcd/selectOne'
       },
       labelCol: {
         xs: { span: 8 },
@@ -87,7 +87,7 @@ export default {
   },
   computed: {},
   mounted() {
-    this.getselectData({ patientid: this.$route.params.patientid, id: this.$route.params.id })
+    this.getselectData({  id: this.$route.params.id })
     let _this = this
     if (this.$route.query) {
       if (this.$route.query.msg !== 'new') {
@@ -160,14 +160,8 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            let arr = res.rows
-            let reqArr = []
-            arr.map(item => {
-              if (item.id == this.$route.params.id) {
-                reqArr = item
-              }
-            })
-            let { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status } = reqArr,
+            let arr = res.data          
+            let { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status } = arr,
               formData = { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status }
             this.form.setFieldsValue(formData)
           } else {

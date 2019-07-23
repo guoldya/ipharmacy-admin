@@ -26,32 +26,38 @@
         </a-row>
 
         <a-divider type="horizontal" class="detailDivider" />
-        <detail-list>
-          <detail-list-item term="身高">
-            <span class="opacity8">{{RecordDelData.height}}</span>
-          </detail-list-item>
-          <detail-list-item term="体重">
-            <span class="opacity8">{{RecordDelData.weight}}</span>
-          </detail-list-item>
-          <detail-list-item term="体表面积">
-            <span class="opacity8">{{RecordDelData.bSA}}㎡</span>
-          </detail-list-item>
-          <detail-list-item term="临床诊断">
-            <span class="opacity8">{{RecordDelData.diseaseName}}</span>
-          </detail-list-item>
-          <detail-list-item term="过敏史">
-            <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
-          </detail-list-item>
-          <detail-list-item term="就诊医生">
-            <span class="opacity8">
-              <span class="datetime">
-                {{RecordDelData.attendingDocName}}&nbsp;
-                <a-icon type="message" />
-                &nbsp;{{RecordDelData.attendingDocPhone}}
-              </span>
-            </span>
-          </detail-list-item>
-        </detail-list>
+        <a-row class="patientDetail">
+                        <a-col span="4">
+                            <span class='font-bold'>体重：</span>   
+                            <span class="opacity8">{{RecordDelData.weight}}Kg</span>
+                        </a-col>
+                        <a-col span="4">
+                            <span class='font-bold'>身高：</span>   
+                            <span class="opacity8">{{RecordDelData.height}}Cm</span>
+                        </a-col>
+                        <a-col span="6">
+                            <span class='font-bold'>体表面积：</span>   
+                            <span class="opacity8">{{RecordDelData.bSA}}㎡</span>
+                        </a-col>
+                        <a-col span="10">
+                            <span class='font-bold'>就诊医生：</span>   
+                            <span class="opacity8">
+                                <span class="datetime">
+                                    {{RecordDelData.attendingDocName}}&nbsp;
+                                    <a-icon type="message" />
+                                    &nbsp;{{RecordDelData.attendingDocPhone}}
+                                </span>
+                            </span>
+                        </a-col>
+                    </a-row>
+                    <a-row class="patientDetail">
+                        <span class='font-bold'>临床诊断：</span>   
+                        <span class="opacity8">{{RecordDelData.diseaseName}}</span>
+                    </a-row>
+                    <a-row class="patientDetail">
+                        <span class='font-bold'>过敏史：</span>   
+                        <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
+                    </a-row>
       </a-card>
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
@@ -113,6 +119,7 @@
             class="jianxie"
             @click="checkableChange(item)"
             :key="item.id"
+            v-if='shows'
           >
             <div :class="{active : onactive == item.id}">
               <a-tag :color="item.color" class="tags">{{item.texts}}</a-tag>
@@ -243,6 +250,7 @@ export default {
       onactive: '',
       routerData: {},
       arrs: [],
+      shows:true
     }
   },
   mounted() {
@@ -351,7 +359,7 @@ export default {
 
       this.submitNos = data.submitNo
       //this.visDatas = { visId: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo }
-      this.getRecordDelData({ visid: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
+      this.getRecordDelData({ visid: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo })
       if (this.routerData.isNew == 1) {
         this.turnpage({ visId: data.visId, maxSubmitNo: data.submitNo, isNew: 1 })
       }
@@ -464,6 +472,7 @@ export default {
     changeKey(key) {
       let params = { examId: this.num }
       let param = { testId: this.testid }
+      this.shows=key==1?true:false
       if (key == 2) {
         this.$axios({
           url: this.api.selectExamId,
@@ -480,8 +489,7 @@ export default {
           .catch(err => {
             this.error(err)
           })
-      } else if (key == 3) {
-      }
+      } 
     },
 
     // 枚举
@@ -512,6 +520,10 @@ this.auditStatus=data
 </script>
 
 <style  lang="less">
+.patientDetail {
+    font-size: 14px;
+    line-height: 30px;
+}
 .detailPres {
   .guanzhu {
     background-color: #0c60ee;

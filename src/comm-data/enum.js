@@ -275,6 +275,9 @@ const Enum = {
     completeStatus:[
         '新建','合理','不合理'
     ],
-    sexLIST:['未知','男','女']
+    sexLIST:['未知','男','女'],
+    Statuslist:[ { id: 1, text: '新建' },
+    { id:2, text: '合理' },
+    { id:3, text: '不合理' },],
 }
 export default Enum

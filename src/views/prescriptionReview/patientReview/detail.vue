@@ -3,7 +3,7 @@
     <a-col :span="14">
       <a-card>
         <div class="cardHead">
-          <div class="guanzhu" :loading="loading" v-if="carePatient===true">
+          <div class="guanzhu" :loading="ling" v-if="carePatient===true">
             <a-icon theme="filled" type="star" class="xingxing" />已关注
           </div>
         </div>
@@ -145,7 +145,7 @@
 <script>
 import DetailList from '@/components/tools/DetailList'
 import FooterToolBar from '@/components/FooterToolbar'
-import DetailOperate from './detailOperate.vue'
+import DetailOperate from '../../auditWorkstation/presHospitalized/detailOperate.vue'
 import DetailTest from '../../auditWorkstation/presHospitalized/detailTest.vue'
 import detailCheck from '../../auditWorkstation/presHospitalized/detailCheck'
 import docAdvices from './docAdvices.vue'
@@ -448,10 +448,8 @@ export default {
         })
     },
     cancle() {
-      this.closeTag({
-        tagName: 'presHospitalizedDetail',
-        aimName: 'presHospitalizedIndex',
-        vm: this
+       this.$router.push({
+        name: 'patientReviewIndex',
       })
     },
 
