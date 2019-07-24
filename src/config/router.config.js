@@ -279,20 +279,20 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/PrescriptionsSetting',
             name: 'PrescriptionsSetting',
             component: RouteView,
-            meta: { title: '审方方案设置', multistage: true },
+            meta: { title: '方案维护', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/PrescriptionsSetting/index',
                 name: 'PrescriptionsSettingIndex',
                 component: () => import('@/views/auditWorkstation/PrescriptionsSetting/index.vue'),
-                meta: { title: '审方方案设置', hiddenHeaderContent: true, index: true }
+                meta: { title: '方案维护', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/auditWorkstation/PrescriptionsSetting/detail/:planId',
                 name: 'PrescriptionsDetail',
                 hidden: true,
                 component: () => import('@/views/auditWorkstation/PrescriptionsSetting/detail.vue'),
-                meta: { title: '审方方案设置详情', detail: true, description: '审方设置方案描述' }
+                meta: { title: '方案维护详情', detail: true, description: '方案维护描述' }
               }
             ]
           },
@@ -300,13 +300,13 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/presOutpatient',
             name: 'presOutpatient',
             component: RouteView,
-            meta: { title: '门诊审方中心', multistage: true },
+            meta: { title: '门诊审方', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presOutpatient/index',
                 name: 'presOutpatientIndex',
                 component: () => import('@/views/auditWorkstation/presOutpatient/index.vue'),
-                meta: { title: '门诊审方中心', hiddenHeaderContent: true, index: true }
+                meta: { title: '门诊审方', hiddenHeaderContent: true, index: true }
               }
             ]
           },
@@ -315,13 +315,13 @@ export const asyncRouterMap = [
             name: 'presOutpatientDetail',
             component: RouteView,
             hidden: true,
-            meta: { title: '门诊审方中心详情', multistage: true },
+            meta: { title: '门诊审方详情', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presOutpatient/detail',
                 name: 'presOutpatientDetail',
                 component: () => import('@/views/auditWorkstation/presOutpatient/detail.vue'),
-                meta: { title: '门诊审方中心详情', hiddenHeaderContent: true, index: true }
+                meta: { title: '门诊审方详情', hiddenHeaderContent: true, index: true }
               }
             ]
           },
@@ -329,13 +329,13 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/presHospitalized',
             name: 'presHospitalized',
             component: RouteView,
-            meta: { title: '住院审方中心', multistage: true },
+            meta: { title: '住院审方', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presHospitalized/index',
                 name: 'presHospitalizedIndex',
                 component: () => import('@/views/auditWorkstation/presHospitalized/index.vue'),
-                meta: { title: '住院审方中心', hiddenHeaderContent: true, index: true }
+                meta: { title: '住院审方', hiddenHeaderContent: true, index: true }
               }
             ]
           },
@@ -345,13 +345,13 @@ export const asyncRouterMap = [
             name: 'presHospitalDetail',
             component: RouteView,
             hidden: true,
-            meta: { title: '住院审方中心详情', multistage: true },
+            meta: { title: '住院审方详情', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presHospitalized/detail/:visId/:maxSubmitNo/:reviewId/:isNew/',
                 name: 'presHospitalizedDetail',
                 component: () => import('@/views/auditWorkstation/presHospitalized/detail.vue'),
-                meta: { title: '住院审方中心详情', hiddenHeaderContent: true, index: true }
+                meta: { title: '住院审方详情', hiddenHeaderContent: true, index: true }
               }
             ]
           },
@@ -360,13 +360,13 @@ export const asyncRouterMap = [
             path: '/auditWorkstation/presHistory',
             name: 'presHistory',
             component: RouteView,
-            meta: { title: '审方记录', multistage: true },
+            meta: { title: '审核记录', multistage: true },
             children: [
               {
                 path: '/auditWorkstation/presHistory/index',
                 name: 'presHistoryIndex',
                 component: () => import('@/views/auditWorkstation/presHistory/index.vue'),
-                meta: { title: '审方记录', hiddenHeaderContent: true, index: true }
+                meta: { title: '审核记录', hiddenHeaderContent: true, index: true }
               }
             ]
           }
@@ -440,13 +440,13 @@ export const asyncRouterMap = [
             path: '/knowledgeMgt/problemLevel',
             name: 'problemLevel',
             component: RouteView,
-            meta: { title: '问题等级设置', multistage: true },
+            meta: { title: '问题等级维护', multistage: true },
             children: [
               {
                 path: '/knowledgeMgt/problemLevel/index',
                 name: 'problemLevelIndex',
                 component: () => import('@/views/knowledgeMgt/problemLevel/index.vue'),
-                meta: { title: '问题等级设置', hiddenHeaderContent: true, index: true }
+                meta: { title: '问题等级维护', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/knowledgeMgt/problemLevel/detail/:auditLevel',
@@ -454,6 +454,28 @@ export const asyncRouterMap = [
                 hidden: true,
                 component: () => import('@/views/knowledgeMgt/problemLevel/detail.vue'),
                 meta: { title: '问题等级详情', hiddenHeaderContent: true, detail: true }
+              }
+            ]
+          },
+         
+          {
+            path: '/knowledgeMgt/questionMgt',
+            name: 'questionMgt',
+            component: RouteView,
+            meta: { title: '结论分类维护', multistage: true },
+            children: [
+              {
+                path: '/knowledgeMgt/questionMgt/index',
+                name: 'questionIndex',
+                component: () => import('@/views/knowledgeMgt/questionMgt/index.vue'),
+                meta: { title: '结论分类维护', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/knowledgeMgt/questionMgt/detail/:id',
+                name: 'questionMgtDetail',
+                hidden: true,
+                component: () => import('@/views/knowledgeMgt/questionMgt/detail.vue'),
+                meta: { title: '结论分类维护详情', detail: true, description: '结论分类维护自定义设置' }
               }
             ]
           },
@@ -471,27 +493,6 @@ export const asyncRouterMap = [
               }
             ]
           },
-          {
-            path: '/knowledgeMgt/questionMgt',
-            name: 'questionMgt',
-            component: RouteView,
-            meta: { title: '问题分类管理', multistage: true },
-            children: [
-              {
-                path: '/knowledgeMgt/questionMgt/index',
-                name: 'questionIndex',
-                component: () => import('@/views/knowledgeMgt/questionMgt/index.vue'),
-                meta: { title: '问题分类管理', hiddenHeaderContent: true, index: true }
-              },
-              {
-                path: '/knowledgeMgt/questionMgt/detail/:id',
-                name: 'questionMgtDetail',
-                hidden: true,
-                component: () => import('@/views/knowledgeMgt/questionMgt/detail.vue'),
-                meta: { title: '问题分类详情', detail: true, description: '问题分类自定义设置' }
-              }
-            ]
-          }
         ]
       },
       {
