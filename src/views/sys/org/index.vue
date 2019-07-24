@@ -33,7 +33,7 @@ export default {
         return {
             api: {
                 selectClassListWithMoreParam: '/sys/dicBase/selectClassListWithMoreParam',
-                selectOrgUpdate: 'sys/sysOrgs/update'
+                selectOrgUpdate: 'sys/sysOrgs/updateStatus'
             },
             loading: false,
             total: 10,

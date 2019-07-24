@@ -101,7 +101,7 @@ export default {
         return {
             api: {
                 userUrl: '/sys/sysPersons/selectPage',
-                updateUrl: '/sys/sysPersons/update',
+                updateUrl: '/sys/sysPersons/updateStatus',
                 delUrl: '/sys/sysPersons/delete'
             },
             spinning: false,

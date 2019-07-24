@@ -28,20 +28,12 @@
           </a-form-item>
 
           <a-form-item label="级别" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small"  @change="levelChange">
+            <a-select size="small" v-model="selectNode.levels"  @change="levelChange">
               <a-select-option v-for="(op,index) in levelData" :value=op.auditLevel :key="index"
                                :title="op.levelColor">{{op.levelName}}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="消息" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-textarea size="small"  v-model="selectNode.message" :rows="3"/>
-          </a-form-item>
-
-          <a-form-item label="建议" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-textarea size="small" v-model="selectNode.suggest" :rows="3"/>
-          </a-form-item>
-
           <a-form-item label="结论类型" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-tree-select
               :dropdownStyle="{ maxHeight: '250px', overflow: 'auto' }"
@@ -49,6 +41,12 @@
               v-model="selectNode.verdictType"
               treeDefaultExpandAll>
             </a-tree-select>
+          </a-form-item>
+          <a-form-item label="消息" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-textarea size="small"  v-model="selectNode.message" :rows="3"/>
+          </a-form-item>
+          <a-form-item label="建议" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-textarea size="small" v-model="selectNode.suggest" :rows="3"/>
           </a-form-item>
         </a-form>
       </div>

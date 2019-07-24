@@ -34,12 +34,13 @@
                             <!-- <a v-else-if="scope.row.status == 6" @click="looks(scope.row)">点评完成</a> -->
                             <a-divider type="vertical" />
                             <a @click="looks(scope.row)">查看</a>
-                            <a-divider type="vertical" />
+                            <a-divider type="vertical" v-if="scope.row.status == 1"/>
                             <a-popconfirm
                                 title="确定删除?"
                                 @confirm="del(scope.row)"
                                 okText="删除"
                                 cancelText="取消"
+                                v-if="scope.row.status == 1"
                             >
                                 <a href="javascript:;">删除</a>
                             </a-popconfirm>
@@ -84,13 +85,16 @@
                                 />
                             </span>
                             <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
-                            <span v-else-if="item.value == 'progress'">
+                            <span v-else-if="item.value == 'percentageComplete'">
                                 <el-progress
                                     :text-inside="true"
                                     :stroke-width="15"
-                                    :percentage="70"
+                                    :percentage="scope.row.percentageComplete"
                                 />
                             </span>
+                          <span v-else-if="item.value == 'rationalPercentage' && scope.row.percentageComplete" >
+                            {{scope.row.percentageComplete}}%
+                          </span>
                             <span v-else>{{scope.row[item.value]}}</span>
                         </template>
                     </el-table-column>
@@ -129,6 +133,9 @@
                     >
                         <template slot-scope="scope">
                             <span v-if="item.format !=null" v-html="item.format(scope.row)"></span>
+                          <span v-else-if="item.value =='percentage' && scope.row.percentage">
+                            {{scope.row.percentage}}%
+                          </span>
                             <span v-else>{{scope.row[item.value]}}</span>
                         </template>
                     </el-table-column>
@@ -177,8 +184,8 @@ export default {
                 { title: '范围', value: 'planScope', width: 60, format: this.taskScope, align: 'center' },
                 { title: '任务名称', value: 'name' },
                 { title: '抽取数量', value: 'extractionsNumber', width: 100, align: 'right' },
-                { title: '点评进度', value: 'progress', width: 180 },
-                { title: '合格率', value: 'controller', width: 100, align: 'right' },
+                { title: '点评进度', value: 'percentageComplete', width: 180 },
+                { title: '合格率', value: 'rationalPercentage', width: 100, align: 'right' },
                 //状态 1创建 2筛选中 3筛选完成 4分配完成 5点评中 6点评完成
                 { title: '状态', value: 'status', width: 100, align: 'center' }
                 // { title: '修改时间', value: 'updateTime', width: 130 },
@@ -186,13 +193,13 @@ export default {
             ],
             bmColumns: [
                 { title: '工号', value: 'personId' },
-                { title: '点评药师', value: 'name', width: 130 },
-                { title: '电话', value: 'phone', width: 130, align: 'right' },
-                { title: '分配数量', value: 'reviewTotal', width: 80, align: 'right'  },
-                { title: '已点评数量', value: 'reviewedCount' , width: 100, align: 'right' },
-                { title: '合理处方', value: 'reasonableCount' },
-                { title: '不合理处方', value: 'unReasonableCount'},
-                { title: '完成率', value: 'percentage', width: 100 }
+                { title: '点评药师', value: 'name' },
+                { title: '电话', value: 'phone', align: 'right' },
+                { title: '分配数量', value: 'reviewTotal', align: 'right'  },
+                { title: '已点评数量', value: 'reviewedCount' , align: 'right' },
+                { title: '合理处方', value: 'reasonableCount' , align: 'right'},
+                { title: '不合理处方', value: 'unReasonableCount', align: 'right'},
+                { title: '完成率', value: 'percentage' , align: 'right'}
             ],
             total: 0,
             bmTotal: 1,
@@ -346,22 +353,10 @@ export default {
         },
       //开始分配
       assigned(data){
-        this.$axios({
-          url: this.api.startDistributionUrl,
-          method: 'post',
-          data: { recordId: data.recordId}
+        this.$router.push({
+          name: 'reviewTaskMgtDetail',
+          params: { recordId: data.recordId }
         })
-          .then(res => {
-            if (res.code == '200') {
-              this.getData()
-              this.success(res.msg)
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
       },
       //开始评价
       startView(data){

@@ -52,10 +52,7 @@
                             <a-badge :status="scope.row.status == 0? 'default':'processing'"
                                      :text="scope.row.status ==0?'停用':'启用'"/>
                         </span>
-                            <span v-else-if="item.prop == 'sex'">
-                            <a-badge :status="scope.row.sex == 1? 'default':'processing'"
-                                     :text="scope.row.sex ==1?'男':'女'"/>
-                        </span>
+                          <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
                             <span v-else>
                             {{scope.row[item.prop]}}
                         </span>
@@ -124,7 +121,7 @@
                 userColumns: [
                     { title: '人员编号', prop: 'code', width: 100 },
                     { title: '姓名', prop: 'name' },
-                    { title: '性别', prop: 'sex', align: 'center', width: 100 },
+                    { title: '性别', prop: 'sex', align: 'center', width: 100,format:this.sexType },
                     { title: '职称', prop: 'titlesName', width: 100 },
                     { title: '电话', prop: 'phone', width: 120 },
                     { title: '出生日期', prop: 'birthday', width: 150 },
@@ -338,7 +335,17 @@
                         this.userLoading = false
                         this.error(err)
                     })
-            }
+            },
+          sexType(data){
+            let levelText
+            this.enum.sex.forEach(item => {
+              if (data.sex == item.id) {
+                levelText = item.text
+                return
+              }
+            })
+            return levelText
+          }
         }
     }
 </script>

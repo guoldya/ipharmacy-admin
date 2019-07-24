@@ -34,7 +34,7 @@
             </a-row>
         </a-card>
         <a-card class="margin-top-5">
-            <a-button class="margin-top-10" type="primary" @click="add">分配任务</a-button>
+            <a-button class="margin-top-10" type="primary" @click="distribution">分配任务</a-button>
             <a-spin tip="加载中..." :spinning="spinning">
                 <el-table class="margin-top-10" :data="dataSource" border style="width: 100%">
                     <el-table-column
@@ -104,7 +104,8 @@ export default {
         return {
             api: {
                 detailUrl: '/sys/reviewInfo/selectReviewRecordDetail',
-                recordIdUrl: 'sys/reviewFilter/selectReviewFilterPageByRecordId'
+                recordIdUrl: 'sys/reviewFilter/selectReviewFilterPageByRecordId',
+              startDistributionUrl:'sys/reviewFilter/startDistribution',
             },
             spinning: false,
             dataSource: [],
@@ -115,7 +116,7 @@ export default {
                 { title: '患者', value: 'patientName', width: 150 },
                 { title: '性别', value: 'patientSex', width: 60, align: 'center', format: this.patientSex },
                 { title: '年龄', value: 'patientAge', width: 80, align: 'right'  },
-                { title: '门诊号', value: 'admitNum', width: 100, align: 'right' },
+                { title: '门诊号', value: 'admitNum', width: 130, align: 'right' },
                 { title: '门诊医生', value: 'prescDocName', width: 100 },
                 { title: '门诊科室', value: 'prescDeptName', width: 150, },
                 { title: '临床诊断', value: 'diseaseNames', width: 300 },
@@ -134,7 +135,7 @@ export default {
                 { title: '患者', value: 'patientName', width: 150 },
                { title: '性别', value: 'patientSex', width: 60, align: 'center', format: this.patientSex },
                 { title: '年龄', value: 'patientAge', width: 80, align: 'right'  },
-                { title: '住院号', value: 'admitNum', width: 100, align: 'right' },
+                { title: '住院号', value: 'admitNum', width: 130, align: 'right' },
                 { title: '住院科室', value: 'prescDeptName', width: 150 },
                 { title: '住院医师', value: 'prescDocName', width: 100 },
                 { title: '出院诊断', value: 'diseaseNames', width: 300 },
@@ -224,7 +225,7 @@ export default {
         },
         changeTime(time) {
             if (time) {
-                return time.replace(/(:\d{2})$/, '')
+                return time.replace(/(\d{2}:\d{2}:\d{2})$/, '')
             }
         },
         pageChange(page, size) {
@@ -261,12 +262,25 @@ export default {
                     this.error(err)
                 })
         },
-        //新增
-        add() {
-            this.$router.push({
-                name: 'reviewTaskMgtAdd'
-            })
-        },
+        //分配任务
+      distribution() {
+        this.$axios({
+        url: this.api.startDistributionUrl,
+        method: 'post',
+        data: { recordId: this.$route.params.recordId}
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.getData()
+            this.success(res.msg)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
         //返回
         backTo() {
             this.$router.push({

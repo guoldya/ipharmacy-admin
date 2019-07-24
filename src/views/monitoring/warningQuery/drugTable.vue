@@ -138,7 +138,8 @@
         }
         params.endDate = this.endDate;
         params.startDate = this.startDate;
-        params.total = ''+this.moreThanNum;
+        if ($.trim(this.moreThanNum).length>0){
+          params.total = ''+this.moreThanNum;
         this.$axios({
           url: this.api.selectPage,
           method: 'put',
@@ -158,6 +159,10 @@
             this.loading = false
             this.error(err)
           })
+        }else{
+          this.loading = false
+        }
+
       },
       pageChange(page, pageSize) {
         let params = this.searchData
@@ -171,48 +176,12 @@
         params.pageSize = pageSize
         this.getData(params)
       },
-      //启用停用
-      user(data) {
-        if (data.status == 1) {
-          data.status = '0'
-        } else {
-          data.status = '1'
-        }
-        this.$axios({
-          url: this.api.reviewAuditlevelUpdate,
-          method: 'post',
-          data: data
-        })
-          .then(res => {
-            if (res.code == '200') {
-              this.success(res.msg)
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
-      },
-      edits(data) {
+      edits(data){
         this.$router.push({
-          name: 'problemLevelDetail',
-          params: { auditLevel: data.auditLevel }
+          name: 'detailProblemIndex',
+          params: { drugCode: data.drugCode,startDate:this.startDate,endDate:this.endDate }
         })
       },
-      cellStyle(row) {
-        if (row.column.label === '显示颜色') {
-          return 'backgroundColor:' + row.row.levelColor
-        }
-      },
-
-      add() {
-        this.$router.push({
-          name: 'problemLevelDetail',
-          params: { auditLevel: 'new' }
-        })
-      },
-
       //枚举
       levelFormatter(data) {
         let levelText

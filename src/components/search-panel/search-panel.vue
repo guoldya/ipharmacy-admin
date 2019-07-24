@@ -34,7 +34,8 @@
                                 v-if="item.type=='range-picker'"
                                 v-bind="formItemLayout"
                             >
-                                <a-range-picker v-decorator="[item.dataField]" />
+                                <a-range-picker v-decorator="[item.dataField]"
+                                                :ranges="{'一天': [moment(), moment()], '二天': [moment().subtract(1, 'days'), moment()], '三天': [moment().subtract(2, 'days'), moment()], '一周': [moment().subtract(1,'weeks'), moment()], '一个月':[moment().subtract(1,'months'),moment()] }"/>
                             </a-form-item>
                             <a-form-item
                                 :label="item.name"
@@ -170,6 +171,7 @@ export default {
     },
     mounted() {},
     methods: {
+      moment,
         toggle() {
             this.expand = !this.expand
         }

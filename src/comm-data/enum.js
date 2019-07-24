@@ -5,7 +5,7 @@ const Enum = {
     ],
     sex: [
         { id: '1', text: '男' },
-        { id:2, text: '女' },
+        { id: '2', text: '女' },
         { id: '0', text: '未知' }
     ],
     status: [
