@@ -176,51 +176,7 @@ export default {
     if (this.$route.query.id) {
       this.id = this.$route.query.id
       if (this.id == 2) {
-        // this.columns = [
-        //   { title: '住院号', prop: 'admitNum', width: 100 },
-        //   { title: '出院日期', prop: 'prescDate', width: 160, format: this.changeTime },
-        //   { title: '患者', prop: 'patientName', width: 120 },
-        //   { title: '性别', prop: 'patientSex', width: 55, format: this.sexCheck },
-        //   { title: '年龄', prop: 'patientAge', width: 55 },
-        //   { title: '开嘱科室', prop: 'prescDeptName', width: 120 },
-        //   { title: '开嘱医师', prop: 'prescDocName', width: 100 },
-        //   { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade }
-        // ]
-        // this.list = [
-        //   {
-        //     name: '点评结果',
-        //     dataField: 'status',
-        //     type: 'select',
-        //     dataSource: this.enum.Statuslist,
-        //     keyExpr: 'id',
-        //     valueExpr: 'text'
-        //   },
-        //   {
-        //     name: '住院号',
-        //     dataField: 'icdName',
-        //     type: 'text'
-        //   },
-        //   {
-        //     name: '出院时间',
-        //     dataField: 'icdName',
-        //     type: 'text'
-        //   },
-        //   {
-        //     name: '医生',
-        //     dataField: 'icdName',
-        //     type: 'text'
-        //   },
-        //   {
-        //     name: '科室',
-        //     dataField: 'icdName',
-        //     type: 'text'
-        //   },
-        //   {
-        //     name: '患者',
-        //     dataField: 'icdName',
-        //     type: 'text'
-        //   }
-        // ]
+       
       }
     }
   },

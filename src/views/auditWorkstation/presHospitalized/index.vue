@@ -309,7 +309,7 @@ export default {
     // 刷新数据
     fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
       this.loading = true
-      params.orderId = 1
+      //params.orderId = 1
       this.$axios({
         url: this.api.selectPage,
         method: 'put',
@@ -406,8 +406,8 @@ export default {
     //重置
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
-      this.fetchYJSMapData(params)
-      // this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+      //this.fetchYJSMapData(params)
+       this.fetchYJSMapData({ pageSize: 10, offset: 0 })
     },
     //翻页事件
     customerPageChange(page, pageSize) {
