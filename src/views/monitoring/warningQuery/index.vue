@@ -54,10 +54,10 @@
     <a-card class="margin-top-5">
       <a-tabs defaultActiveKey="1" size="small" class="width-100 ">
         <a-tab-pane tab="预警规则" key="1">
-          <ruleTable :moreThanNum="moreThanNum" :startDate="startDate" :endDate="endDate" ></ruleTable>
+          <ruleTable :moreThanNum="moreThanNum" :startDate="startDate" :endDate="endDate"></ruleTable>
         </a-tab-pane>
         <a-tab-pane tab="预警药品" key="2">
-          <drugTable  :moreThanNum="moreThanNum" :startDate="startDate" :endDate="endDate" ></drugTable>
+          <drugTable :moreThanNum="moreThanNum" :startDate="startDate" :endDate="endDate"></drugTable>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -126,7 +126,7 @@
               data: []
             }
           ],
-          color: ['#2ec7c9', '#b6a2de', '#5ab1ef', '#ffb980', '#d87a80', '#8d98b3', '#e5cf0d','#97b552','#95706d','#dc69aa']
+          color: ['#2ec7c9', '#b6a2de', '#5ab1ef', '#ffb980', '#d87a80', '#8d98b3', '#e5cf0d', '#97b552', '#95706d', '#dc69aa']
         }
       }
     },
@@ -260,7 +260,7 @@
         this.chart.setOption(this.option, true)
       },
       percentMatter(name) {
-        if(this.dataPercent.length>0){
+        if (this.dataPercent.length > 0) {
           for (let key in this.dataPercent) {
             if (this.dataPercent[key].name == name) {
               return this.dataPercent[key].name + '  次数：' + this.dataPercent[key].value + '    ' + this.dataPercent[key].percent
@@ -282,7 +282,7 @@
         const dataRange = []
 
         if (data == 'oneMonth') {
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
         } else if (data == 'oneWeek') {
           start.setTime(start.getTime() - 3600 * 1000 * 24 * 6)
         } else if (data == 'threeDay') {
@@ -292,8 +292,24 @@
         } else if (data == 'oneDay') {
           start.setTime(start.getTime())
         }
-        dataRange[0] = start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()
-        dataRange[1] = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate()
+        let startMonth = start.getMonth() + 1
+        if (startMonth < 10) {
+          startMonth = '0' + startMonth
+        }
+        let endMonth = end.getMonth() + 1
+        if (endMonth < 10) {
+          endMonth = '0' + endMonth
+        }
+        let startDay = start.getDate()
+        if (startDay < 10) {
+          startDay = '0' + startDay
+        }
+        let endDay = end.getDate()
+        if (endDay < 10) {
+          endDay = '0' + endDay
+        }
+        dataRange[0] = start.getFullYear() + '-' + startMonth + '-' + startDay
+        dataRange[1] = end.getFullYear() + '-' + endMonth + '-' + endDay
         return dataRange
       },
       onChange(date) {
@@ -304,7 +320,7 @@
         this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
       },
       changeNum(value) {
-        if ($.trim(value).length>0){
+        if ($.trim(value).length > 0) {
           this.getBase({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
           this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
         }
