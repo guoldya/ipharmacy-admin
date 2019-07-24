@@ -232,7 +232,6 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        console.log(res.rows)
                         this.form.setFieldsValue({ reviewPersonIds: res.rows })
                     } else {
                         this.warn(res.msg)
@@ -286,8 +285,8 @@ export default {
                             if (res.code == '200') {
                                 this.success('保存成功')
                                 this.$router.push({
-                                    name: 'reviewTaskMgtDetail',
-                                    params: { recordId: res.data }
+                                    name: 'reviewTaskMgtIndex',
+                                    // params: { recordId: res.data }
                                 })
                             } else {
                                 this.warn(res.msg)

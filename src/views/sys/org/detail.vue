@@ -12,7 +12,7 @@
                 </a-form-item>
                 <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
                     <a-input
-                        v-decorator="['title', {rules: [{ required: true, message: '请输入名称' }]}]"
+                        v-decorator="['title', {rules: [{ required: true, message: '请输入名称' },{max: 100,message:'输入名称过长'}]}]"
                     />
                 </a-form-item>
                 <a-form-item label="上级机构" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -26,7 +26,7 @@
                 </a-form-item>
                 <a-form-item label="机构代码" :label-col="labelCol" :wrapper-col="wrapperCol">
                     <a-input
-                        v-decorator="['orgCode', {rules: [{ required: true, message: '请输入机构代码' }]}]"
+                        v-decorator="['orgCode', {rules: [{ required: true, message: '请输入机构代码' },{max: 20,message:'输入机构代码过长'}]}]"
                     />
                 </a-form-item>
                 <a-form-item label="机构类型" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -63,6 +63,11 @@
                         >{{op.name}}</a-select-option>
                     </a-select>
                 </a-form-item>
+              <a-form-item label="法人" :label-col="labelCol" :wrapper-col="wrapperCol">
+                <a-input
+                  v-decorator="['legalPsn',]"
+                ></a-input>
+              </a-form-item>
                 <a-form-item label="联系电话" :label-col="labelCol" :wrapper-col="wrapperCol">
                     <a-input
                         v-decorator="['phone',{rules: [{ required: true,message: '请输入手机号' },{ message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ },]}]"
@@ -70,10 +75,10 @@
                     ></a-input>
                 </a-form-item>
                 <a-form-item label="地址" :label-col="labelCol" :wrapper-col="wrapperCol">
-                    <a-input v-decorator="[ 'adress']"></a-input>
+                    <a-input v-decorator="[ 'adress',{rule:[{max: 100,message:'输入地址过长'}]}]"></a-input>
                 </a-form-item>
                 <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
-                    <a-input v-decorator="[ 'remarks']"></a-input>
+                    <a-input v-decorator="[ 'remarks',{rule:[{max: 500,message:'输入备注过长'}]}]"></a-input>
                 </a-form-item>
                 <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
                     <a-radio-group v-decorator="['status',{initialValue: '1'}]">
@@ -125,9 +130,9 @@ export default {
     computed: {},
     mounted() {
         if (this.$route.params.orgId != 0) {
-            this.getOrgLists()
             this.getOrgData()
         }
+      this.getOrgLists()
          this.getEnumList()
     },
     methods: {

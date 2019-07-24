@@ -3,7 +3,7 @@
     <a-card>
       <div style="float: right">
         最少次数：
-        <a-input-number v-model="moreThanNum" @change="changeNum"></a-input-number>
+        <a-input-number :min="0" v-model="moreThanNum" @change="changeNum"></a-input-number>
       </div>
       <ul class="ulList">
         <li class="dataPicker">
@@ -54,7 +54,7 @@
     <a-card class="margin-top-5">
       <a-tabs defaultActiveKey="1" size="small" class="width-100 ">
         <a-tab-pane tab="预警规则" key="1">
-          <ruleTable></ruleTable>
+          <ruleTable :moreThanNum="moreThanNum" :startDate="startDate" :endDate="endDate" ></ruleTable>
         </a-tab-pane>
         <a-tab-pane tab="预警药品" key="2">
           <drugTable  :moreThanNum="moreThanNum" :startDate="startDate" :endDate="endDate" ></drugTable>
@@ -88,19 +88,6 @@
         eSpinning: false,
         rankSpinning: false,
         listData: [],
-        columns: [
-          {
-            title: '规则预警排名',
-            prop: 'carCode',
-            width: 130
-          },
-          {
-            prop: 'carType'
-          }, {
-            prop: 'num',
-            width: 130
-          }
-        ],
         dataPercent: [],
         moreThanNum: null,
         startDate: '',
@@ -316,10 +303,11 @@
         this.getBase({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
         this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
       },
-      changeNum() {
-        let _this = this
-        this.getBase({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
-        this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
+      changeNum(value) {
+        if ($.trim(value).length>0){
+          this.getBase({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
+          this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
+        }
       }
     },
 

@@ -1,27 +1,13 @@
 <template>
   <div>
   <a-card>
-    <ul class="ulList">
-      <li>
-        最少次数：
-        <a-input-number></a-input-number>
-      </li>
-      <li class="dataPicker">
-        <a-range-picker @change="onChange"/>
-      </li>
-      <li v-for="(item,index) in dateList" :class="item.code" tabindex="0" v-on:click="item.id(item.code)" :key="index">
-        {{item.text}}
-      </li>
-    </ul>
-  </a-card>
-  <a-card>
-    <Searchpanel ref="searchPanel" :list="list">
+    <Searchpanel ref="searchPanel" :list="list" :choose="choose">
       <div slot="control">
         <a-button type="primary" @click="search">查询</a-button>
         <a-button class="margin-left-5" @click="resetForm">重置</a-button>
       </div>
     </Searchpanel>
-    <a-button class="margin-top-10" type="primary" @click="add">新增</a-button>
+<!--    <a-button class="margin-top-10" type="primary" @click="add">新增</a-button>-->
     <a-spin :spinning="loading" tip="加载中...">
       <el-table
         class="margin-top-10"
@@ -36,7 +22,6 @@
               :items="items"
               :more="false"
               :data="scope.row"
-              :filterItem="['status']"
             ></opcol>
           </template>
         </el-table-column>
@@ -87,95 +72,127 @@
 </template>
 
 <script>
+  import moment from 'moment'
   export default {
     name: 'index',
+    components: {
+      moment
+    },
     data() {
       return {
         api: {
-          selectPage: 'sys/reviewAuditlevel/selectPage',
-          reviewAuditlevelUpdate: 'sys/reviewAuditlevel/update'
+          selectPage: 'sys/early/selectProblemInfo',
+          selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
+
         },
         loading: false,
         total: null,
         curent: 1,
         pageSize: 10,
         columns: [
-          { title: '来源', value: 'auditLevel', width: 60, align: 'right' },
-          { title: '发生时间', value: 'levelType', align: 'center', width: 100, format: this.levelFormatter },
-          { title: '科室', value: 'auddfdfitLevel', align: 'center', width: 100 },
-          { title: '医生', value: 'handleType', align: 'center', width: 110, format: this.handleFormatter },
-          { title: '患者', value: 'levelDescription' },
-          { title: '住院号/门诊号', value: 'sdsd', width: 150, align: 'center' },
-          { title: '药品', value: 'sdasad' },
+          { title: '来源', value: 'problemResouce', width: 60, align: 'center',format: this.reviewResouce  },
+          { title: '发生时间', value: 'updatetime',  width: 130,},
+          { title: '科室', value: 'deptName', align: 'center', width: 150 },
+          { title: '医生', value: 'personName', width: 110, },
+          { title: '患者', value: 'pname', width: 110 },
+          { title: '住院号/门诊号', value: 'admitNum', width: 150, align: 'right' },
+          { title: '药品', value: 'drugName' },
           { title: '问题等级', value: 'levelName', width: 100, align: 'center' },
         ],
         items: [
           { text: '处方', showtip: false, click: this.edits },
           { text: '规则', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.user},
         ],
-        dateList: [
-          { id: this.getDatePicker, code: 'oneMonth', text: '一月内' },
-          { id: this.getDatePicker, code: 'oneWeek', text: '一周内' },
-          { id: this.getDatePicker, code: 'threeDay', text: '三天内' },
-          { id: this.getDatePicker, code: 'twoDay', text: '二天内' },
-          { id: this.getDatePicker, code: 'oneDay', text: '一天内' }
-        ],
         levelColor: '#ffffff',
         dataSource: [],
         current: 1,
-        searchData: {}
+        searchData: {},
+        treeDatas:[],
+        paramsData:{},
       }
     },
     computed: {
       list() {
         return [
           {
-            name: '等级类型',
-            dataField: 'levelType',
-            type: 'select',
-            keyExpr: 'id',
-            valueExpr: 'text',
-            dataSource: this.enum.levelType
+            name: '时间',
+            dataField: 'time',
+            type: 'range-picker',
           },
           {
-            name: '处理类型',
-            dataField: 'handleType',
+            name: '来源',
+            dataField: 'problemResouce',
             type: 'select',
             keyExpr: 'id',
             valueExpr: 'text',
-            dataSource: this.enum.handleType
+            dataSource: this.enum.reviewResouce
           },
           {
-            name: '状态',
-            dataField: 'status',
-            type: 'select',
-            keyExpr: 'id',
-            valueExpr: 'text',
-            dataSource: this.enum.status
+            name: '科室',
+            dataField: 'deptId',
+            type: 'tree-select',
+            keyExpr: 'keyword',
+            treeData: this.treeDatas
           },
+          {
+            name: '医生',
+            dataField: 'personName',
+            type: 'text',
+          },
+
         ]
-      }
+      },
+      choose(){
+        return { isshow: false, isextend: true }
+      },
     },
     mounted() {
-      this.getData()
+      if (this.$route.params.id || this.$route.params.drugCode){
+        this.paramsData = this.$route.params;
+        let dateRange = [];
+        dateRange[0] = moment(this.$route.params.startDate,'YYYY-MM-DD')
+        dateRange[1] = moment(this.$route.params.endDate,'YYYY-MM-DD');
+        this.$refs.searchPanel.form.setFieldsValue({ time: dateRange })
+      }
+      this.getData();
+      this.getTreeData()
     },
     methods: {
+      getFormData() {
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        if (params.time) {
+          params.startDate =  params.time[0].format('YYYY-MM-DD')
+          params.endDate =  params.time[1].format('YYYY-MM-DD')
+        }
+        delete params.time;
+        return params
+      },
       //搜索
       search() {
-        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        let params = this.getFormData()
+        this.searchData =  this.getFormData()
         params.pageSize = 10
         params.offset = 0
         this.getData(params)
       },
       //重置
       resetForm() {
-        this.searchData = {}
+        this.searchData = {};
+        this.paramsData = {};
         this.$refs.searchPanel.form.resetFields()
         this.getData({ pageSize: 10, offset: 0 })
       },
       getData(params = { pageSize: 10, offset: 0 }) {
-        this.loading = true
+        this.loading = true;
+        if (this.paramsData.id){
+          params.id =  this.paramsData.id;
+        }else if (this.paramsData.drugCode) {
+          params.drugCode =  this.paramsData.drugCode;
+        }
+        if (!params.startDate){
+          params.startDate =  this.paramsData.startDate;
+          params.endDate =  this.paramsData.endDate;
+        }
         if (params.offset == 0) {
           this.current = 1
         }
@@ -186,7 +203,7 @@
         })
           .then(res => {
             if (res.code == '200') {
-              this.dataSource = res.rows
+              this.dataSource = this.$dateFormat(res.rows, ['updatetime'])
               this.total = res.total
               this.loading = false
             } else {
@@ -211,21 +228,22 @@
         params.pageSize = pageSize
         this.getData(params)
       },
-      //启用停用
-      user(data) {
-        if (data.status == 1) {
-          data.status = '0'
-        } else {
-          data.status = '1'
-        }
+      edits(data) {
+        this.$router.push({
+          name: 'detailProblemIndex',
+          params: { auditLevel: data.auditLevel }
+        })
+      },
+
+      getTreeData(){
         this.$axios({
-          url: this.api.reviewAuditlevelUpdate,
-          method: 'post',
-          data: data
+          url: this.api.selectTreeData,
+          method: 'put',
+          data: {}
         })
           .then(res => {
             if (res.code == '200') {
-              this.success(res.msg)
+              this.treeDatas = this.getDataChildren(res.rows, undefined)
             } else {
               this.warn(res.msg)
             }
@@ -234,72 +252,34 @@
             this.error(err)
           })
       },
-      edits(data) {
-        this.$router.push({
-          name: 'problemLevelDetail',
-          params: { auditLevel: data.auditLevel }
-        })
-      },
-      cellStyle(row) {
-        if (row.column.label === '显示颜色') {
-          return 'backgroundColor:' + row.row.levelColor
+      // 递归处理数据
+      getDataChildren(bdata, pid) {
+        var items = []
+        for (var key in bdata) {
+          var item = bdata[key]
+          if (pid == item.parentId) {
+            items.push({
+              title: item.title,
+              value: item.deptId,
+              key: item.deptId,
+              children: this.getDataChildren(bdata, item.deptId)
+            })
+          }
         }
+        return items
       },
 
-      add() {
-        this.$router.push({
-          name: 'problemLevelDetail',
-          params: { auditLevel: 'new' }
-        })
-      },
-
-
-      getDatePicker(data){
-        const end = new Date()
-        const start = new Date()
-        const dataRange = []
-        if (data == 'oneMonth '){
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-        }else if(data == "oneWeek"){
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-        }else if(data == "threeDay"){
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 3)
-        }else if(data == "twoDay"){
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 2)
-        }else if(data == "oneDay"){
-          start.setTime(start.getTime() - 3600 * 1000 * 24 )
-        }
-        dataRange[0] = start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate()
-        dataRange[1] = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate()
-        console.log(dataRange)
-      },
-      onChange(date) {
-        let dataRange = []
-        dataRange[0] = date[0].format('YYYY-MM-DD')
-        dataRange[1] = date[1].format('YYYY-MM-DD')
-      },
-
-      //枚举
-      levelFormatter(data) {
+      //处方来源枚举
+      reviewResouce(data) {
         let levelText
-        this.enum.levelType.forEach(item => {
-          if (Number(data.levelType) == item.id) {
+        this.enum.reviewResouce.forEach(item => {
+          if (data.problemResouce == item.id) {
             levelText = item.text
             return
           }
         })
         return levelText
       },
-      handleFormatter(data) {
-        let levelText
-        this.enum.handleType.forEach(item => {
-          if (Number(data.handleType) == item.id) {
-            levelText = item.text
-            return
-          }
-        })
-        return levelText
-      }
     }
   }
 </script>
