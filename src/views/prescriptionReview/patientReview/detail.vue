@@ -27,37 +27,37 @@
 
         <a-divider type="horizontal" class="detailDivider" />
         <a-row class="patientDetail">
-                        <a-col span="4">
-                            <span class='font-bold'>体重：</span>   
-                            <span class="opacity8">{{RecordDelData.weight}}Kg</span>
-                        </a-col>
-                        <a-col span="4">
-                            <span class='font-bold'>身高：</span>   
-                            <span class="opacity8">{{RecordDelData.height}}Cm</span>
-                        </a-col>
-                        <a-col span="6">
-                            <span class='font-bold'>体表面积：</span>   
-                            <span class="opacity8">{{RecordDelData.bSA}}㎡</span>
-                        </a-col>
-                        <a-col span="10">
-                            <span class='font-bold'>就诊医生：</span>   
-                            <span class="opacity8">
-                                <span class="datetime">
-                                    {{RecordDelData.attendingDocName}}&nbsp;
-                                    <a-icon type="message" />
-                                    &nbsp;{{RecordDelData.attendingDocPhone}}
-                                </span>
-                            </span>
-                        </a-col>
-                    </a-row>
-                    <a-row class="patientDetail">
-                        <span class='font-bold'>临床诊断：</span>   
-                        <span class="opacity8">{{RecordDelData.diseaseName}}</span>
-                    </a-row>
-                    <a-row class="patientDetail">
-                        <span class='font-bold'>过敏史：</span>   
-                        <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
-                    </a-row>
+          <a-col span="4">
+            <span class="font-bold">体重：</span>
+            <span class="opacity8">{{RecordDelData.weight}}Kg</span>
+          </a-col>
+          <a-col span="4">
+            <span class="font-bold">身高：</span>
+            <span class="opacity8">{{RecordDelData.height}}Cm</span>
+          </a-col>
+          <a-col span="6">
+            <span class="font-bold">体表面积：</span>
+            <span class="opacity8">{{RecordDelData.bSA}}㎡</span>
+          </a-col>
+          <a-col span="10">
+            <span class="font-bold">就诊医生：</span>
+            <span class="opacity8">
+              <span class="datetime">
+                {{RecordDelData.attendingDocName}}&nbsp;
+                <a-icon type="message" />
+                &nbsp;{{RecordDelData.attendingDocPhone}}
+              </span>
+            </span>
+          </a-col>
+        </a-row>
+        <a-row class="patientDetail">
+          <span class="font-bold">临床诊断：</span>
+          <span class="opacity8">{{RecordDelData.diseaseName}}</span>
+        </a-row>
+        <a-row class="patientDetail">
+          <span class="font-bold">过敏史：</span>
+          <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
+        </a-row>
       </a-card>
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
@@ -128,14 +128,13 @@
           @click="cancle"
           class="margin-left-5"
           :loading="loading"
-          v-if="routerData.isNew == 1"
         >返回</a-button>
-        <!-- <a-button
+        <a-button
           type="primary"
           @click="saves"
           class="save"
-          style="float: right; margin-top: 12px;margin-left: 19px;"
-        >保存</a-button> -->
+          style="float: right;margin-top: 12px;margin-left: 29px;"
+        >保存</a-button>
         <a-button
           @click="refuse"
           style="margin-left: 5px"
@@ -192,8 +191,8 @@ export default {
         concernedRecord: 'sys/concernedPatient/selectCurrentRecord',
         concernedPatientUpdate: 'sys/concernedPatient/update',
         turnpage: 'sys/reviewOrderissue/selectHospitalLeadVisIdAndLagVisId',
-        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus'
-        //reviewOrderissue/selectHospitalLeadVisIdAndLagVisId
+        updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
+        rewviewupdate: 'sys/reviewProblem/update'
       },
       loading: false,
       inspectionData: [],
@@ -260,8 +259,41 @@ export default {
   methods: {
     ...mapActions('page', ['closeTag']),
     //保存问题框
-    saves(){
-
+    saves() {
+      let params = { filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId, status:  this.$store.state.status + '' }
+      let reviewProblemVOList = []
+      //let isclub = JSON.parse(sessionStorage.getItem('patinRew')).planScope
+      this.$store.state.proslist.forEach(item => {
+        //let data = typeof item.completion == 'string' ? JSON.parse(item.completion) : item.completion
+        //console.log(data)
+        //item.cId = data.cId
+        // if (isclub == 1) {
+        //   item.prescId = item.name
+        // }
+        // if (isclub == 2) {
+        //   item.prescId = item.name
+        // }
+        this.checkDel(item, 'index',)
+        reviewProblemVOList.push(item)
+      })
+      Object.assign(params, { reviewProblemVOList: reviewProblemVOList })
+      console.log(params)
+      this.$axios({
+        url: this.api.rewviewupdate,
+        method: 'post',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.$message.info('保存成功!')
+            this.back()
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
     },
     // 点击状态标签
     checkableChange(item) {
@@ -502,7 +534,12 @@ export default {
       })
       return levelText
     },
-
+     //返回
+     back(){
+         this.$router.push({
+           name:'patientReviewIndex'
+         })
+     },
     // 时间格式处理
     timeFormat(data) {
       let times = data.slice(5, 20)
@@ -514,7 +551,13 @@ export default {
     },
     saveStatu(data) {
       this.auditStatus = data
-    }
+    },
+    checkDel(obj, ...args) {
+      args.forEach(v => {
+        delete obj[v]
+      })
+      return obj
+    },
   }
 }
 </script>
@@ -710,7 +753,7 @@ export default {
     border-radius: 2px;
     border-radius: 7px;
   }
-  .ant-btn ant-btn-primary{
+  .ant-btn ant-btn-primary {
     float: right;
     margin-top: 12px;
     margin-left: 19px;

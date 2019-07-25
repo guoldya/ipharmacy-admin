@@ -10,7 +10,7 @@ import preference from './modules/preference'
 import ua from './modules/ua'
 import getters from './getters'
 Vue.use(Vuex)
-const state = {routerData:{},drugList:[],drugId:''}
+const state = {routerData:{},drugList:[],drugId:'',proslist:[],status:'2'}
 export default new Vuex.Store({
   modules: {
     db,

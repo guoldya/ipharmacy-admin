@@ -97,17 +97,17 @@
         <a-button v-else @click="attention" class="margin-left-5" :loading="loading">
           <a-icon type="star" />关注患者
         </a-button>
-        <a-button
-          @click="slePatients(previousData)"
+         <a-button
+          @click="slePatients(nextPerson)"
           v-if="routerData.isNew == 1? true:false"
-          :disabled="previousData.visId==0? true:false"
+          :disabled="nextPerson.visId==0? true:false"
           class="margin-left-5"
           :loading="loading"
         >上一患者</a-button>
         <a-button
-          @click="slePatients(nextPerson)"
+          @click="slePatients(previousData)"
           v-if="routerData.isNew == 1? true:false"
-          :disabled="nextPerson.visId==0? true:false"
+          :disabled="previousData.visId==0? true:false"
           class="margin-left-5"
           :loading="loading"
         >下一患者</a-button>

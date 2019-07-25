@@ -54,14 +54,21 @@
             <template slot-scope="scope">
               <span v-if="item.prop == 'admitNum'">{{scope.row.admitNum}}</span>
               <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
+              <!-- <span v-else-if="item.prop == 'action'">
+                <a @click="looks(props.row)">点评</a>
+                <a-divider type="vertical" />
+                <a>查看</a>
+              </span>-->
               <span v-else>{{scope.row[item.prop]}}</span>
             </template>
           </el-table-column>
           <el-table-column prop="action" label="操作" width="140" align="center">
             <template slot-scope="props">
-              <a @click="looks(props.row)">点评</a>
-              <a-divider type="vertical" />
-               <a>查看</a>
+              <div>
+                <a @click="looks(props.row)" v-if="props.row.status==1">点评</a>
+                <a-divider type="vertical" v-if="props.row.status==1" />
+                <a @click="looks(props.row)">查看</a>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -95,14 +102,10 @@ export default {
       api: {
         getbase: 'sys/reviewInfo/selectReviewRecordDetail',
         selectform: 'sys/reviewFilter/selectReviewFilterPageByPersonId',
-          selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
-            selectEason: 'sys/sysPersons/selectSysPersonsByOrgId'
+        selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
+        selectEason: 'sys/sysPersons/selectSysPersonsByOrgId'
       },
-      items: [
-        { text: '编辑', showtip: false, click: this.edits },
-        { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
-        { text: '停用', color: '#ff9900', showtip: true, tip: '确认停用吗？', click: this.user, status: '0' }
-      ],
+      items: [{ text: '编辑', showtip: false, click: this.edits }],
       columns: [
         { title: '门诊号', prop: 'admitNum', width: 100 },
         { title: '处方日期', prop: 'prescDate', width: 160, format: this.changeTime },
@@ -112,33 +115,18 @@ export default {
         { title: '处方号', prop: 'prescNum', width: 80 },
         { title: '科室', prop: 'prescDeptName', width: 120 },
         { title: '医生', prop: 'prescDocName', width: 100 },
-        { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade }
+        { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade },
+        { title: '操作', prop: 'action', align: 'left' }
       ],
-      loading: false,
-      total: 2,
-      current: 1,
-      dataSource: [],
-      id: 1,
-      database: {},
-      isid:1,
-      treeDatas:[],
-      EasonData:[]
-    }
-  },
-  computed: {
-    choose() {
-      return { isshow: false, isextend: true }
-    },
-     list() {
-      return[
+      list: [
         {
-            name: '点评结果',
-            dataField: 'status',
-            type: 'select',
-            dataSource: this.enum.Statuslist,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
+          name: '点评结果',
+          dataField: 'status',
+          type: 'select',
+          dataSource: this.enum.Statuslist,
+          keyExpr: 'id',
+          valueExpr: 'text'
+        },
         {
           name: '门诊号',
           dataField: 'admitNum',
@@ -151,14 +139,14 @@ export default {
         },
         {
           name: '医生',
-        dataField: 'prescDocId',
+          dataField: 'prescDocId',
           type: 'select',
           keyExpr: 'personId',
           valueExpr: 'name',
           dataSource: this.EasonData
         },
         {
-        name: '开嘱科室',
+          name: '开嘱科室',
           dataField: 'prescDeptId',
           type: 'tree-select',
           keyExpr: 'keyword',
@@ -169,22 +157,37 @@ export default {
           dataField: 'patientName',
           type: 'text'
         }
-      ]
+      ],
+      loading: false,
+      total: 2,
+      current: 1,
+      dataSource: [],
+      id: 1,
+      database: {},
+      isid: 1,
+      treeDatas: [],
+      EasonData: []
     }
   },
+  computed: {
+    choose() {
+      return { isshow: false, isextend: true }
+    },
+   
+  },
+
   created() {
     if (this.$route.query.id) {
       this.id = this.$route.query.id
       if (this.id == 2) {
-       
       }
     }
   },
 
   mounted() {
     this.getformData()
-       this.getTreeseldata()
-        this.selectEasonData()
+    this.getTreeseldata()
+    this.selectEasonData()
   },
   methods: {
     // 表单数据
@@ -195,84 +198,77 @@ export default {
         data: params
       })
         .then(res => {
-          if (res.code == '200') {  
+          if (res.code == '200') {
             this.dataSource = res.rows
-            if(this.dataSource&&this.dataSource.length){
-             this.total = res.total
-            this.isid=this.dataSource[0].planScope
-            if (this.dataSource[0].planScope == 2) {
-              this.columns = [
-                { title: '住院号', prop: 'admitNum', width: 100 },
-                { title: '出院日期', prop: 'prescDate', width: 160, format: this.changeTime },
-                { title: '患者', prop: 'patientName', width: 120 },
-                { title: '性别', prop: 'patientSex', width: 55, format: this.sexCheck },
-                { title: '年龄', prop: 'patientAge', width: 55 },
-                { title: '开嘱科室', prop: 'prescDeptName', width: 80 },
-                { title: '开嘱医师', prop: 'prescDocName', width: 100 },
-                { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade }
-              ]
-              this.list = [
-                {
-                  name: '点评结果',
-                  dataField: 'status',
-                  type: 'select',
-                  dataSource: this.enum.Statuslist,
-                  keyExpr: 'id',
-                  valueExpr: 'text'
-                },
-                {
-                  name: '结论',
-                  dataField: 'reviewVerdict',
-                  type: 'select',
-                  dataSource: this.enum.reviewVerdict,
-                  keyExpr: 'id',
-                  valueExpr: 'text'
-                },
-                {
-                  name: '住院号',
-                  dataField: 'icdName',
-                  type: 'text'
-                },
-                {
-                  name: '出院时间',
-                  dataField: 'icdName',
-                  type: 'text'
-                },
-                {
-                  name: '医生',
-                  dataField: 'icdName',
-                  type: 'text'
-                },
-                {
-                  name: '科室',
-                  dataField: 'icdName',
-                  type: 'text'
-                },
-                {
-                  name: '患者',
-                  dataField: 'icdName',
-                  type: 'text'
-                }
-              ]
-            }
             if (this.dataSource && this.dataSource.length) {
-              let params = { recordId: this.dataSource[0].recordId }
-              this.$axios({
-                url: this.api.getbase,
-                method: 'put',
-                data: params
-              })
-                .then(res => {
-                  if (res.code == '200') {
-                    this.database = res.data
-                  } else {
-                    this.warn(res.msg)
+              this.total = res.total
+              this.isid = this.dataSource[0].planScope
+              if (this.dataSource[0].planScope == 2) {
+                this.columns = [
+                  { title: '住院号', prop: 'admitNum', width: 100 },
+                  { title: '出院日期', prop: 'prescDate', width: 160, format: this.changeTime },
+                  { title: '患者', prop: 'patientName', width: 120 },
+                  { title: '性别', prop: 'patientSex', width: 55, format: this.sexCheck },
+                  { title: '年龄', prop: 'patientAge', width: 55 },
+                  { title: '开嘱科室', prop: 'prescDeptName', width: 80 },
+                  { title: '开嘱医师', prop: 'prescDocName', width: 100 },
+                  { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade }
+                ]
+                this.list = [
+                  {
+                    name: '点评结果',
+                    dataField: 'status',
+                    type: 'select',
+                    dataSource: this.enum.Statuslist,
+                    keyExpr: 'id',
+                    valueExpr: 'text'
+                  },
+                  {
+                    name: '住院号',
+                    dataField: 'icdName',
+                    type: 'text'
+                  },
+                  {
+                    name: '出院时间',
+                    dataField: 'icdName',
+                    type: 'text'
+                  },
+                  {
+                    name: '医生',
+                    dataField: 'icdName',
+                    type: 'text'
+                  },
+                  {
+                    name: '科室',
+                    dataField: 'icdName',
+                    type: 'text'
+                  },
+                  {
+                    name: '患者',
+                    dataField: 'icdName',
+                    type: 'text'
                   }
+                ]
+              }
+
+              if (this.dataSource && this.dataSource.length) {
+                let params = { recordId: this.dataSource[0].recordId }
+                this.$axios({
+                  url: this.api.getbase,
+                  method: 'put',
+                  data: params
                 })
-                .catch(err => {
-                  this.error(err)
-                })
-            }
+                  .then(res => {
+                    if (res.code == '200') {
+                      this.database = res.data
+                    } else {
+                      this.warn(res.msg)
+                    }
+                  })
+                  .catch(err => {
+                    this.error(err)
+                  })
+              }
             }
           } else {
             this.warn(res.msg)
@@ -281,7 +277,6 @@ export default {
         .catch(err => {
           this.error(err)
         })
-
     },
     // 搜索数据
     search() {
@@ -292,19 +287,19 @@ export default {
     },
     // 重置数据
     resetForm() {
-       this.$refs.searchPanel.form.resetFields()
+      this.$refs.searchPanel.form.resetFields()
       this.getformData({ pageSize: 10, offset: 0 })
     },
     // 改变页码
     pageChange(page, pageSize) {
-      this.curent=page
+      this.curent = page
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getformData(params)
     },
     pageChangeSize(page, pageSize) {
-      this.pageSize=pageSize
+      this.pageSize = pageSize
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
@@ -316,12 +311,12 @@ export default {
     dealsex() {},
     //详情
     looks(data) {
-       console.log(data)
-          let objData = { filterId: data.filterId, submitNo: data.submitNo, visId: data.visId,planScope:data.planScope }
-         sessionStorage.setItem('patinRew', JSON.stringify(objData))
+      console.log(data)
+      let objData = { filterId: data.filterId, submitNo: data.submitNo, visId: data.visId, planScope: data.planScope }
+      sessionStorage.setItem('patinRew', JSON.stringify(objData))
       this.$router.push({
         name: 'patientReviewDetail',
-        params: { visId: 95488, maxSubmitNo: 1, reviewId: 555, isNew: 1 }
+        params: { visId: data.visId, maxSubmitNo: data.submitNo }
       })
     },
     // 获取医生
@@ -334,7 +329,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.EasonData = res.rows
-           
           } else {
             this.loading = false
             this.warn(res.msg)
@@ -345,7 +339,7 @@ export default {
           this.error(err)
         })
     },
-     // 科室树形结构
+    // 科室树形结构
     getTreeseldata(params = {}) {
       this.$axios({
         url: this.api.selectTreeData,
