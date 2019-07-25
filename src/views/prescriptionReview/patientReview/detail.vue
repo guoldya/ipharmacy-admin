@@ -26,32 +26,38 @@
         </a-row>
 
         <a-divider type="horizontal" class="detailDivider" />
-        <detail-list>
-          <detail-list-item term="身高">
-            <span class="opacity8">{{RecordDelData.height}}</span>
-          </detail-list-item>
-          <detail-list-item term="体重">
-            <span class="opacity8">{{RecordDelData.weight}}</span>
-          </detail-list-item>
-          <detail-list-item term="体表面积">
-            <span class="opacity8">{{RecordDelData.bSA}}㎡</span>
-          </detail-list-item>
-          <detail-list-item term="临床诊断">
-            <span class="opacity8">{{RecordDelData.diseaseName}}</span>
-          </detail-list-item>
-          <detail-list-item term="过敏史">
-            <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
-          </detail-list-item>
-          <detail-list-item term="就诊医生">
-            <span class="opacity8">
-              <span class="datetime">
-                {{RecordDelData.attendingDocName}}&nbsp;
-                <a-icon type="message" />
-                &nbsp;{{RecordDelData.attendingDocPhone}}
-              </span>
-            </span>
-          </detail-list-item>
-        </detail-list>
+        <a-row class="patientDetail">
+                        <a-col span="4">
+                            <span class='font-bold'>体重：</span>   
+                            <span class="opacity8">{{RecordDelData.weight}}Kg</span>
+                        </a-col>
+                        <a-col span="4">
+                            <span class='font-bold'>身高：</span>   
+                            <span class="opacity8">{{RecordDelData.height}}Cm</span>
+                        </a-col>
+                        <a-col span="6">
+                            <span class='font-bold'>体表面积：</span>   
+                            <span class="opacity8">{{RecordDelData.bSA}}㎡</span>
+                        </a-col>
+                        <a-col span="10">
+                            <span class='font-bold'>就诊医生：</span>   
+                            <span class="opacity8">
+                                <span class="datetime">
+                                    {{RecordDelData.attendingDocName}}&nbsp;
+                                    <a-icon type="message" />
+                                    &nbsp;{{RecordDelData.attendingDocPhone}}
+                                </span>
+                            </span>
+                        </a-col>
+                    </a-row>
+                    <a-row class="patientDetail">
+                        <span class='font-bold'>临床诊断：</span>   
+                        <span class="opacity8">{{RecordDelData.diseaseName}}</span>
+                    </a-row>
+                    <a-row class="patientDetail">
+                        <span class='font-bold'>过敏史：</span>   
+                        <span class="opacity8">{{RecordDelData.irritabilityNames}}</span>
+                    </a-row>
       </a-card>
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
@@ -72,7 +78,7 @@
       </a-card>
     </a-col>
     <a-col :span="10" class="padding-left-5">
-     <rewviewGrade></rewviewGrade>
+      <rewviewGrade></rewviewGrade>
     </a-col>
     <footer-tool-bar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
@@ -98,7 +104,7 @@
           class="margin-left-5"
           :loading="loading"
         >下一患者</a-button>
-      </template> -->
+      </template>-->
       <template slot="center">
         <div class="paintFoot">
           <div
@@ -124,6 +130,12 @@
           :loading="loading"
           v-if="routerData.isNew == 1"
         >返回</a-button>
+        <!-- <a-button
+          type="primary"
+          @click="saves"
+          class="save"
+          style="float: right; margin-top: 12px;margin-left: 19px;"
+        >保存</a-button> -->
         <a-button
           @click="refuse"
           style="margin-left: 5px"
@@ -247,6 +259,10 @@ export default {
   },
   methods: {
     ...mapActions('page', ['closeTag']),
+    //保存问题框
+    saves(){
+
+    },
     // 点击状态标签
     checkableChange(item) {
       if (item.Color == undefined) {
@@ -361,7 +377,7 @@ export default {
           if (res.code == '200') {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
-            this.$store.state.drugList=this.docDatas
+            this.$store.state.drugList = this.docDatas
             // console.log(this.$store.state.drugList,'vuexxxxxx')
             this.docDatasCopy = this.docDatas
             this.visId = this.$route.params.visId
@@ -448,8 +464,8 @@ export default {
         })
     },
     cancle() {
-       this.$router.push({
-        name: 'patientReviewIndex',
+      this.$router.push({
+        name: 'patientReviewIndex'
       })
     },
 
@@ -694,6 +710,10 @@ export default {
     border-radius: 2px;
     border-radius: 7px;
   }
+  .ant-btn ant-btn-primary{
+    float: right;
+    margin-top: 12px;
+    margin-left: 19px;
+  }
 }
-
 </style>
