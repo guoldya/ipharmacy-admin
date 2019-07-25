@@ -4,9 +4,11 @@
       <a-tabs defaultActiveKey="1" size="small" class="width-100">
         <a-tab-pane tab="点评结果" key="1">
           <a-row class="content">
-            <a-col :span='6'> <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:</a-col>
-            <a-col class="check" :span='14'> 
-              <a-radio-group name="radioGroup" :defaultValue="2"  @change="onChange">
+            <a-col :span="6">
+              <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
+            </a-col>
+            <a-col class="check" :span="14">
+              <a-radio-group name="radioGroup"  @change="onChange" v-model="value">
                 <a-radio :value="2">合理</a-radio>
                 <a-radio :value="3">不合理</a-radio>
               </a-radio-group>
@@ -21,13 +23,13 @@
               <span class="updrw" @click="rush">重新点评</span>
             </a>
             <aside v-for="item in proList" v-if="proList&&proList.length">
-              <p>&emsp;&emsp;药品：{{fliterdrug(item.name)}}</p>
-              <p>点评结论：{{JSON.parse(item.completion).completion}}</p>
+              <p>&emsp;&emsp;药品：{{fliterdrug(item.prescId)}}</p>
+              <p>点评结论：{{fliterreview(item.cId)}}</p>
               <p>
                 违反规则：
-                <a-tag color="orange" v-for="op in item.regularIdList" :key='op'>{{fliterRule(op)}}</a-tag>
+                <a-tag color="orange" v-for="op in item.regularIdList" :key="op">{{fliterRule(op)}}</a-tag>
               </p>
-              <p>点评描述：{{item.reviewTemplate}}</p>
+              <p>点评描述：{{item.problemOpinion}}</p>
               <footer>
                 <p class="foot">
                   <a-popconfirm title="确定删除?" placement="topLeft" @confirm="deletes(item)">
@@ -39,12 +41,6 @@
               </footer>
               <a-divider />
             </aside>
-             <a-button
-          type="primary"
-          @click="saves"
-          class="save"
-          style="float: right;"
-        >保存</a-button>
           </a-card>
         </a-tab-pane>
         <a-tab-pane tab="问题描述" key="2"></a-tab-pane>
@@ -54,7 +50,7 @@
       <a-form :form="form">
         <a-form-item label="药品" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
           <a-select
-            v-decorator="[ 'name',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
+            v-decorator="[ 'prescId',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
             placeholder="请选择分类"
           >
             <a-select-option
@@ -76,12 +72,12 @@
             :filterOption="false"
             @search="handleSearch"
             @change="handleChange"
-            v-decorator="[ 'completion',  {rules: [{ required: true,message: '请输入内容'  }]}]"
+            v-decorator="[ 'cId',  {rules: [{ required: true,message: '请输入内容'  }]}]"
             placeholder="请选择点评结果"
           >
             <a-select-option
               v-for="(item,index) in this.rewList"
-              :value="JSON.stringify(item)"
+              :value="item.cId"
               :key="item.cId"
               :completion="item.completion"
               :reviewCompletionRegularVOList="item.reviewCompletionRegularVOList"
@@ -89,14 +85,16 @@
           </a-select>
         </a-form-item>
         <a-form-item label="违反规则" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
-          <a-select v-decorator="[ 'regularIdList' ,  {rules: [{ required: true,message: '请输入内容'  }]}]"  mode="multiple" :filterOption='false'>
+          <a-select
+            v-decorator="[ 'regularIdList' ,  {rules: [{ required: true,message: '请输入内容'  }]}]"
+            mode="multiple"
+            :filterOption="false"
+          >
             <a-select-option v-for="(op,index) in ruleList" :value="op.id" :key="index">{{op.name}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="点评描述" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
-          <a-textarea
-            v-decorator="[ 'reviewTemplate',  {rules: [{ required: true,message: '请输入内容'  }]}  ]"
-          ></a-textarea>
+          <a-textarea v-decorator="[ 'problemOpinion', {rules:[{message:'请输入点评',required:true}]} ]"></a-textarea>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -110,21 +108,14 @@ export default {
   data() {
     this.handleSearch = debounce(this.handleSearch, 800)
     return {
-      // labelCol: {
-      //   xs: { span: 8 },
-      //   sm: { span: 8 }
-      // },
-      // wrapperCol: {
-      //   xs: { span: 8 },
-      //   sm: { span: 8 }
-      // },
       visibles: false,
       drugList: [],
       form: this.$form.createForm(this),
       api: {
         rewviewList: 'sys/reviewCompletion/selectListByKeyword',
         rewviewupdate: 'sys/reviewProblem/update',
-         breakRule: 'sys/dicBase/selectTitlesList',
+        breakRule: 'sys/dicBase/selectTitlesList',
+        getqueList: 'sys/reviewProblem/selectProblemDetailByFilterId'
       },
       drugselval: '',
       rewList: [],
@@ -132,22 +123,41 @@ export default {
       ruleList: [],
       proList: [],
       num: 1,
-      values:1,
-      status:false,
-      index:'',
-      checkDellist:[]
+      values: 1,
+      status: false,
+      index: '',
+      checkDellist: [],
+      value:''
     }
   },
   created() {
     this.getruleData({ codeClass: 7 })
     this.getDrugList()
+    this.getprobleList({filterId:JSON.parse(sessionStorage.getItem('patinRew')).filterId})
   },
   computed: {},
-  mounted() {
-  },
+  mounted() {},
   methods: {
+    //问题列表复现
+    getprobleList(params = {}) {
+      this.$axios({
+        url: this.api.getqueList,
+        method: 'put',
+        data: params
+      })
+        .then(res=>{
+          if (res.code == '200') {
+            this.proList=res.data.reviewProblemVOList
+            this.value=res.data.status+''
+            console.log(this.value)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
     // 违反规则表
-     getruleData(params = {}) {
+    getruleData(params = {}) {
       this.$axios({
         url: this.api.breakRule,
         method: 'put',
@@ -166,36 +176,38 @@ export default {
           this.error(err)
         })
     },
-    onChange(e){      
-      this.values=e.target.value
+    onChange(e) {
+      this.values = e.target.value
+      this.$store.state.status = this.values
     },
-    saves(){
-     let params={filterId:JSON.parse(sessionStorage.getItem('patinRew')).filterId,status:this.values+''}
-     let reviewProblemVOList=[];
-     //let isclub=JSON.parse(sessionStorage.getItem('patinRew')).planScope
-     let isclub=2
-     this.proList.forEach(item=>{
-       item.cId=JSON.parse(item.completion).cId
-       item.problemOpinion=item.reviewTemplate
-       if(isclub==1){
-             item.prescId=JSON.parse(item.name).clinicPrescId
-       }
-       if(isclub==2){
-             item.prescId=JSON.parse(item.name).medicalId
-       }
-       this.checkDel(item,'index','completion','name','reviewTemplate')
-       reviewProblemVOList.push(item)
-     })
-     Object.assign(params,{reviewProblemVOList:reviewProblemVOList})
-      //console.log(params)
-     this.$axios({
-       url:this.api.rewviewupdate,
-       method:'post',
-       data:params
-     }).then(res => {
+    saves() {
+      let params = { filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId, status: this.values + '' }
+      let reviewProblemVOList = []
+      let isclub = JSON.parse(sessionStorage.getItem('patinRew')).planScope
+      this.proList.forEach(item => {
+        let data = typeof item.completion == 'string' ? JSON.parse(item.completion) : item.completion
+        console.log(data)
+        item.cId = data.cId
+        item.problemOpinion = item.reviewTemplate
+        if (isclub == 1) {
+          item.prescId = item.name
+        }
+        if (isclub == 2) {
+          item.prescId = item.name
+        }
+        this.checkDel(item, 'index', 'completion', 'name', 'reviewTemplate')
+        reviewProblemVOList.push(item)
+      })
+      Object.assign(params, { reviewProblemVOList: reviewProblemVOList })
+      this.$axios({
+        url: this.api.rewviewupdate,
+        method: 'post',
+        data: params
+      })
+        .then(res => {
           if (res.code == '200') {
-           this.$message.info('保存成功!')
-           this.back()
+            this.$message.info('保存成功!')
+            this.back()
           } else {
             this.warn(res.msg)
           }
@@ -210,12 +222,13 @@ export default {
         return item.index !== data.index
       })
       this.proList = arr
+      this.$store.state.proslist = this.proList
     },
     // 修改那边问题的东西
     editing(data) {
-      this.status=true
-      this.index=data.index
-     // console.log(this.index)
+      this.status = true
+      this.index = data.index
+      // console.log(this.index)
       this.visibles = true
       let formData = data
       this.form.setFieldsValue(formData)
@@ -260,10 +273,10 @@ export default {
     },
     // 获取结论值
     handleChange(value, option) {
-     let regularIdList = []
-     //console.log(option.data.attrs.reviewCompletionRegularVOList)
+      let regularIdList = []
+      //console.log(option.data.attrs.reviewCompletionRegularVOList)
       option.data.attrs.reviewCompletionRegularVOList.forEach(item => {
-      regularIdList.push(item.regularId)
+        regularIdList.push(item.regularId)
       })
       let formData = {
         regularIdList
@@ -275,79 +288,99 @@ export default {
     addqus(val, bool) {
       //
       this[val] = bool
-      this.status=false
+      this.status = false
     },
     handleOk(e) {
       e.preventDefault()
-      if(this.status==true){
-  this.form.validateFields((err, values) => {
-        values.index = this.index
-     let arr=this.proList.map(item=>{
-          if(item.index==this.index){
-                  item=values
+      if (this.status == true) {
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            values.index = this.index
+            let arr = this.proList.map(item => {
+              if (item.index == this.index) {
+                item = values
+              }
+              return item
+            })
+            this.proList = arr
+            this.$store.state.proslist = this.proList
+            this.visibles = false
+            this.form.resetFields()
+            this.status == false
           }
-          return item
         })
-      //  console.log(arr)
-      this.proList=arr
-      })
       }
-       if(this.status==false){
-      this.form.validateFields((err, values) => {
-        // console.log(this.proList,'dd')
-       //  console.log(values,'ee')
-        values.index = this.num
-        this.proList.push(values)
-        this.num++
-      })}
-      this.form.resetFields()
-      this.visibles = false
-      this.status==false
-      //console.log(this.proList)
+      if (this.status == false) {
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            // console.log(this.proList,'dd')
+            //console.log(values,'ee')
+            values.index = this.num
+            this.proList.push(values)
+            this.$store.state.proslist = this.proList
+            this.num++
+            this.visibles = false
+            this.form.resetFields()
+            this.status == false
+          }
+        })
+      }
     },
     handleCancel() {
       this.visibles = false
       this.form.resetFields()
     },
-    rush(){
-      this.proList=[]
+    rush() {
+      this.proList = []
+      this.$store.state.proslist = this.proList
     },
-    checkDel(obj,...args){
-        args.forEach(v => {
+    checkDel(obj, ...args) {
+      args.forEach(v => {
         delete obj[v]
-    })
-    return obj
+      })
+      return obj
     },
-    back(){
-     this.$router.push({
-       name:'patientReviewIndex'
-     })
-    },
-     // 过滤规则
-    fliterRule(item){
-       if(this.ruleList&&this.ruleList.length){
-           let text;
-          this.ruleList.forEach(items=>{
-                     if(item==items.id){
-                       text=items.name
-                     }
-          })
-          return text
-       }
+
+    // 过滤规则
+    fliterRule(item) {
+      if (this.ruleList && this.ruleList.length) {
+        let text
+        this.ruleList.forEach(items => {
+          if (item == items.id) {
+            text = items.name
+          }
+        })
+        return text
+      }
     },
     // 过滤药品
-    fliterdrug(item){
-       if(this.$store.state.drugList&&this.$store.state.drugList.length){
-           let text;
-          this.$store.state.drugList.forEach(items=>{
-            console.log(item)
-                     if(item==items.medicalId){
-                       text=items.drugName    
-                     }
-          })
-          return text
-       }
+    fliterdrug(item) {
+      if (this.$store.state.drugList && this.$store.state.drugList.length) {
+        let text
+        this.$store.state.drugList.forEach(items => {
+          if (item == items.medicalId&&JSON.parse(sessionStorage.getItem('patinRew')).planScope==2) {
+            text = items.drugName
+          }
+          if (item == items.clinid&&JSON.parse(sessionStorage.getItem('patinRew')).planScope==1) {
+            text = items.drugName
+          }
+        })
+        return text
+      }
     },
+    // 过滤结论
+    fliterreview(item){
+           //this.rewList
+            if (this.rewList && this.rewList.length) {
+        let text
+        this.rewList.forEach(items => {
+          if (item == items.cId) {
+            text = items.cTypeContent
+          }
+        })
+        return text
+      }
+    }
   }
 }
 </script>

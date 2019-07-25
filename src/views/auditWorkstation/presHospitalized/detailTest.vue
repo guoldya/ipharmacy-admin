@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="alls">
     <div v-if="testDatas.length>0">
       <a-Row class="testchk">
         <a-Col :span="6">
@@ -255,6 +255,7 @@ export default {
 }
 </script>
 <style lang='less' >
+.all{
 .testchk {
    .ant-badge-count {
     z-index: 5;
@@ -339,6 +340,7 @@ export default {
   margin-top: 25px;
   font-size: 14px;
   color: #909399;
+}
 }
 </style>
 

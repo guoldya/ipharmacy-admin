@@ -420,7 +420,7 @@ export const asyncRouterMap = [
                 meta: { title: '点评任务', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/prescriptionReview/patientReview/detail/:visId/:maxSubmitNo/:reviewId/:isNew/',
+                path: '/prescriptionReview/patientReview/detail/:visId/:maxSubmitNo/',
                 name: 'patientReviewDetail',
                 hidden: true,
                 component: () => import('@/views/prescriptionReview/patientReview/detail.vue'),
