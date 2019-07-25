@@ -261,7 +261,7 @@ export default {
                                     })
                                 }, 500)
                             } else {
-                                this.warn('保存失败')
+                                this.warn(res.msg)
                             }
                         })
                         .catch(err => {

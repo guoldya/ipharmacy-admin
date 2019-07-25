@@ -77,6 +77,7 @@
                                     label="人员编码"
                             >
                                 <a-input
+                                        :disabled="formData.code? true:false"
                                         placeholder="请输入..."
                                         v-decorator="[
                                 'code',
@@ -374,6 +375,7 @@
                             let that = this;
                             this.getDeptData(res.data.orgId);
                             this.formData = JSON.parse(JSON.stringify(res.data));
+                            console.log(this.formData,'form')
                             this.formData.birthday = moment(res.data.birthday,'YYYY-MM-DD');
                             let obj = {
                                     url: this.$config.img_base_url + res.data.signPic,

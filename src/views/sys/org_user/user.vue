@@ -51,9 +51,11 @@
                                     term="住院抗菌药物权限"
                                 >{{ setAnt(props.row.hospAntibacterial) }}</detail-list-item>
                             </detail-list>
-                            <detail-list :col="1">
-                                <detail-list-item term="个人简介">{{ props.row.personalProfile }}</detail-list-item>
-                            </detail-list>
+<!--                            <detail-list  :col="24">-->
+<!--                                <detail-list-item term="个人简介">{{ props.row.personalProfile }}</detail-list-item>-->
+<!--                            </detail-list>-->
+                          <div class="items">个人简介</div>
+                          <div class="content">{{ props.row.personalProfile }}</div>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -239,11 +241,10 @@ export default {
             params.pageSize = size
             this.getData(params)
         },
-        getData(obj = {}) {
+        getData(params = {}) {
             this.spinning = true
-            let params = {}
-            params.pageSize = obj.pageSize || 10
-            params.offset = obj.offset || 0
+            params.pageSize = params.pageSize || 10
+            params.offset = params.offset || 0
             this.$axios({
                 url: this.api.userUrl,
                 method: 'put',
@@ -270,3 +271,27 @@ export default {
     }
 }
 </script>
+<style lang="less" scoped>
+  .items {
+    color: rgba(0,0,0,.85);
+    display: table-cell;
+    line-height: 20px;
+    margin-right: 8px;
+    /*padding-bottom: 16px;*/
+    white-space: nowrap;
+    &:after {
+      content: ":";
+      margin: 0 8px 0 2px;
+      position: relative;
+      top: -.5px;
+    }
+  }
+
+  .content {
+    color: rgba(0,0,0,.65);
+    display: table-cell;
+    line-height: 22px;
+    padding-bottom: 16px;
+    width: 100%;
+  }
+</style>

@@ -174,7 +174,7 @@
         computed: {
             list() {
                 return [
-                    { name: '参数', dataField: 'paramName', type: 'text' },
+                    { name: '参数名称', dataField: 'paramName', type: 'text' },
                     { name: '机构', dataField: 'orgTitle', type: 'text' }
                 ]
             },
