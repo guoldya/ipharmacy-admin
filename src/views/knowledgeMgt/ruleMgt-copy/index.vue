@@ -365,10 +365,17 @@
       },
     },
     methods: {
+      getFormData(){
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        if(params.updateTime){
+          params.updateTime = [params.updateTime[0].format('YYYY-MM-DD'),params.updateTime[1].format('YYYY-MM-DD')]
+        }
+        return params
+      },
       //搜索
       search() {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
-        this.pageChangeFilter = this.$refs.searchPanel.form.getFieldsValue()
+        let params =this.getFormData();
+        this.pageChangeFilter =this.getFormData();
         params.pageSize = 10
         params.offset = 0
         this.getPageData(params)

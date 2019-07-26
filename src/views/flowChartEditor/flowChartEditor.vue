@@ -147,7 +147,7 @@
           roSymbol: null,
         },
         conheight: {
-          height: '700px'
+          height: '806px'
         },
         color: '#194d33',
         ///////////////分割线一下是备用待删除参数////////////
@@ -578,7 +578,11 @@
                     } else if (params.lo == 3) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
-                      coreRuleNodeSelectColId({ id: params.itemId, valueList:params.assertValList }).then(res => {
+                      let paramsNodeData = {id: params.itemId};
+                      if (ev.item.model.assertValList.length>0){
+                        paramsNodeData.valueList = params.assertValList
+                      }
+                      coreRuleNodeSelectColId(paramsNodeData).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = res.rows
                         } else {
@@ -622,8 +626,12 @@
                     this.edgeInitialized.inputEdge = 'scopeInput'
                   } else if (sourceP.lo == 3) {
                     this.edgeInitialized.inputEdge = 'select'
-                    this.edgeInitialized.itemId = sourceP.itemId
-                    coreRuleNodeSelectColId({ id: sourceP.itemId, valueList:ev.item.model.assertValList }).then(res => {
+                    this.edgeInitialized.itemId = sourceP.itemId;
+                    let paramsData = {id: sourceP.itemId};
+                    if (ev.item.model.assertValList.length>0){
+                      paramsData.valueList = ev.item.model.assertValList;
+                    }
+                    coreRuleNodeSelectColId(paramsData).then(res => {
                       if (res.code == '200') {
                         this.edgeInitialized.inputEdgeSelect = res.rows
                       } else {
@@ -1067,9 +1075,9 @@
             this.titleData.name = res.data.name
             this.titleData.status = res.data.status ? '启用' : '停用'
             this.titleData.type = res.data.type ==1 ? '系统':null
-            this.titleData.visible = this.titleData.type == 1 ? false : true
+            this.titleData.visible = res.data.type == 1 ? false : true
             this.titleData.updateTime = res.data.updateTime
-            this.titleData.type2 = res.data.type2
+            this.titleData.type2 = res.data.type2;
           }else {
             this.warn(res.msg)
           }
@@ -1253,16 +1261,17 @@
       getDealPieChart() {
         let newNodeData = []
         let yHeight = 1
+        console.log(this.pieChartData,'12')
         for (let key in this.pieChartData) {
-          let data = this.pieChartData[key]
-          let yLength = data.length / 2
+          let data = this.pieChartData[key];
+          let yLength = data.length / 2;
           for (let i in data) {
             if (data[i].x && data[i].y) {
               data[i].x = data[i].x
               data[i].y = data[i].y
             } else {
               if (key == 999) {
-                if (i > data.length / 2) {
+                if (i >= data.length / 2) {
                   data[i].y = (i - yLength) * 130
                   data[i].yaxis = (i - yLength) * 130
                 } else {
@@ -1270,18 +1279,18 @@
                   data[i].yaxis = -(yLength - i) * 130
                 }
                 let pieDataLength = Object.getOwnPropertyNames(this.pieChartData).length
-                data[i].x = pieDataLength * 250
+                data[i].x = pieDataLength * 300
               } else if (key == 1) {
                 data[i].x = 0
               } else {
-                if (i > data.length / 2) {
-                  data[i].y = (i - yLength) * 500 + yHeight * 500
-                  data[i].yaxis = (i - yLength) * 500 + yHeight * 500
+                if (i >= data.length / 2) {
+                  data[i].y = (i - yLength) * 250
+                  data[i].yaxis = (i - yLength) * 250
                 } else {
-                  data[i].y = -(yLength - i) * 500 + yHeight * 500
-                  data[i].yaxis = -(yLength - i) * 500 + yHeight * 500
+                  data[i].y = -(yLength - i) * 250
+                  data[i].yaxis = -(yLength - i) * 250
                 }
-                data[i].x = (key - 1) * 100
+                data[i].x = key  * 180
               }
             }
           }

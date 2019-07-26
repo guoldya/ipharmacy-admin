@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-row :gutter="24">
+        <a-row :gutter="5">
             <a-col :span="16">
                 <a-card title="角色">
                     <a-spin tip="加载中..." :spinning="spinning">

@@ -15,8 +15,6 @@ Flow.registerNode('model-card', {
     const str3 = model.suggest != null ? model.suggest : shapeObj.suggest
     // const verdictType = model.verdictType != null ? model.verdictType : shapeObj.verdictType
     const levelColor = model.levelColor != null ? model.levelColor : shapeObj.levelColor
-    console.log(model.levels,'111');
-    console.log(shapeObj,'222');
     const levels = model.levels != null ? model.levels : shapeObj.levels
     const width = 290
     const height = textOrheight(str1, str2, str3)

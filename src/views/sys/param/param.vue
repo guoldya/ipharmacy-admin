@@ -127,7 +127,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'ramark',{rules: [{ max:255 }],initialValue: formData.ramark}]"/>
+                                v-decorator="[ 'ramark',{rules: [{ max:255 ,message:'最多255个字' }],initialValue: formData.ramark}]"/>
                     </a-form-item>
                 </a-form>
             </div>
@@ -174,8 +174,9 @@
         computed: {
             list() {
                 return [
-                    { name: '参数', dataField: 'paramName', type: 'text' },
-                    { name: '机构', dataField: 'orgTitle', type: 'text' }
+                    { name: '参数名称', dataField: 'paramName', type: 'text' },
+                    // { name: '机构', dataField: 'orgTitle', type: 'text' },
+                  { name: '机构', dataField: 'orgId', type: 'tree-select', keyExpr: 'keyword', treeData: this.orgData },
                 ]
             },
             typeData(){
@@ -285,11 +286,10 @@
                 params.pageSize = size;
                 this.getData(params)
             },
-            getData( obj = {}){
+            getData( params = {}){
                 this.spinning = true;
-                let params = {};
-                params.pageSize = obj.pageSize || 10;
-                params.offset = obj.offset || 0;
+                params.pageSize = params.pageSize || 10;
+                params.offset = params.offset || 0;
                 this.$axios({
                     url: this.api.paramUrl,
                     method: 'put',
@@ -318,14 +318,27 @@
                     data: {}
                 }).then(res => {
                     if (res.code == '200') {
-                        this.orgData = res.rows;
+                      this.orgData = this.getOrgTreeData(res.rows, undefined)
                     } else {
                         this.warn(res.msg);
                     }
                 }).catch(err => {
                     this.error(err);
                 })
-            }
+            },
+          getOrgTreeData(data, pid) {
+            let tree = []
+            data.forEach(item => {
+              let row = item
+              row.key = item.orgId
+              row.value = item.orgId
+              if (pid == item.parentId) {
+                row.children = this.getOrgTreeData(data, item.orgId)
+                tree.push(row)
+              }
+            })
+            return tree
+          },
         }
     }
 </script>

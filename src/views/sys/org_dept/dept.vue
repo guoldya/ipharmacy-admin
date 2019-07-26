@@ -207,7 +207,7 @@
                                 })
                             } else {
                                 this.loading = false;
-                                this.warn(res.msg);
+                                this.warn('保存失败，部门编码或部门名称已存在');
                             }
                         }).catch(err => {
                             this.loading = false;

@@ -18,11 +18,10 @@
       >
         <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
           <template slot-scope="scope">
-            <opcol
-              :items="items"
-              :more="false"
-              :data="scope.row"
-            ></opcol>
+            <a v-if="scope.row.problemResouce == 1" @click="details(scope.row)">处方</a>
+            <a v-else-if="scope.row.problemResouce == 2" @click="details(scope.row)">医嘱</a>
+            <a-divider type="vertical" />
+            <a  @click="ruleSelect(scope.row)">规则</a>
           </template>
         </el-table-column>
         <el-table-column
@@ -228,10 +227,25 @@
         params.pageSize = pageSize
         this.getData(params)
       },
-      edits(data) {
+      details(data) {
+        if (data.problemResouce == '2') {
+          this.$router.push({
+            name: 'presHospitalizedDetail',
+            params: { visId: data.visId, maxSubmitNo: data.submitNo, reviewId: data.reviewId, isNew: 0 }
+          })
+        } else if(data.problemResouce == '1'){
+          let objData = {}
+          objData = { visId: data.visId, submitNo: data.submitNo, isNew: 0 }
+          window.localStorage.setItem('outpatientData', JSON.stringify(objData))
+          this.$router.push({
+            name: 'presOutpatientDetail',
+          })
+        }
+      },
+      ruleSelect(data){
         this.$router.push({
-          name: 'detailProblemIndex',
-          params: { auditLevel: data.auditLevel }
+          name: 'ruleMgtCopyIndex',
+          params: { id: data.id,startDate:this.startDate,endDate:this.endDate }
         })
       },
 

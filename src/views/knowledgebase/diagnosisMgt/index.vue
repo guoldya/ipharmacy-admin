@@ -70,7 +70,7 @@
                     <a-popconfirm
                       title="确认启用吗？"
                       placement="topLeft"
-                      @confirm="updateStatus(props.row,1)"
+                      @confirm="updateStatus(props.row,'1')"
                       v-if="props.row.status == '0'"
                     >
                       <a>启用</a>
@@ -78,7 +78,7 @@
                     <a-popconfirm
                       title="确认停用吗？"
                       placement="topLeft"
-                      @confirm="updateStatus(props.row,0)"
+                      @confirm="updateStatus(props.row,'0')"
                       v-else
                     >
                       <a>停用</a>
@@ -156,7 +156,7 @@ export default {
     list() {
       return [
         {
-          name: '诊断码',
+          name: '编码',
           dataField: 'id',
           type: 'text'
         },
@@ -179,10 +179,10 @@ export default {
           valueExpr: 'text'
         },
         {
-          name: '类型',
+          name: '状态',
           dataField: 'status',
           type: 'select',
-          dataSource: this.enum.statu,
+          dataSource: this.enum.status,
           keyExpr: 'id',
           valueExpr: 'text'
         }
@@ -236,19 +236,23 @@ export default {
 
     //搜索
     search() {
-      let params = this.$refs.searchPanel.form.getFieldsValue()
-      // this.current=2
-      params.pageSize = 10
-      params.offset = 1
-      params.patientid = this.id
-      this.getPageData(params)
+      if($.trim(this.id).length>0) {
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        // this.current=2
+        params.pageSize = 10
+        params.offset = 1
+        params.patientid = this.id
+        this.getPageData(params)
+      }
     },
     //重置
     resetForm() {
-      this.$refs.searchPanel.form.resetFields()
-      let params = { patientid: this.id }
-      this.getPageData(params)
-      this.current=1
+      if($.trim(this.id).length>0){
+        this.$refs.searchPanel.form.resetFields()
+        let params = { patientid: this.id }
+        this.getPageData(params)
+        this.current=1
+      }
     },
     //查询按下回车的回调
     pressEnterChange(e) {
@@ -282,7 +286,7 @@ export default {
     addMdc() {
       this.$router.push({
         name: 'diagnosisMgtDetail',
-        query: { msg: 'new', patientid: this.id }
+        params: {id:-1 ,patientid:-1 }
       })
     },
     // 编辑事件
@@ -297,7 +301,6 @@ export default {
     onSelect(selectedKeys, e) {
       this.id = e.node.dataRef.key
       let params={patientid:this.id}
-
       this.getPageData(params)
     },
     //异步加载数据
