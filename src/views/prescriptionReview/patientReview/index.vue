@@ -118,7 +118,27 @@ export default {
         { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade },
         { title: '操作', prop: 'action', align: 'left' }
       ],
-      list: [
+      loading: false,
+      total: 2,
+      current: 1,
+      dataSource: [],
+      id: 1,
+      database: {},
+      isid: 1,
+      treeDatas: [],
+      EasonData: [],
+      paintlist: {
+        admit: '门诊号',
+        time: '处方时间'
+      }
+    }
+  },
+  computed: {
+    choose() {
+      return { isshow: false, isextend: true }
+    },
+    list() {
+      return [
         {
           name: '点评结果',
           dataField: 'status',
@@ -128,18 +148,18 @@ export default {
           valueExpr: 'text'
         },
         {
-          name: '门诊号',
+          name: this.paintlist.admit,
           dataField: 'admitNum',
           type: 'text'
         },
         {
-          name: '处方时间',
+          name: this.paintlist.time,
           dataField: 'prescDate',
-          type: 'text'
+          type: 'range-picker'
         },
         {
           name: '医生',
-          dataField: 'prescDocId',
+          dataField: 'personId',
           type: 'select',
           keyExpr: 'personId',
           valueExpr: 'name',
@@ -147,7 +167,7 @@ export default {
         },
         {
           name: '开嘱科室',
-          dataField: 'prescDeptId',
+          dataField: 'admitDept',
           type: 'tree-select',
           keyExpr: 'keyword',
           treeData: this.treeDatas
@@ -157,23 +177,8 @@ export default {
           dataField: 'patientName',
           type: 'text'
         }
-      ],
-      loading: false,
-      total: 2,
-      current: 1,
-      dataSource: [],
-      id: 1,
-      database: {},
-      isid: 1,
-      treeDatas: [],
-      EasonData: []
+      ]
     }
-  },
-  computed: {
-    choose() {
-      return { isshow: false, isextend: true }
-    },
-   
   },
 
   created() {
@@ -214,41 +219,8 @@ export default {
                   { title: '开嘱医师', prop: 'prescDocName', width: 100 },
                   { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade }
                 ]
-                this.list = [
-                  {
-                    name: '点评结果',
-                    dataField: 'status',
-                    type: 'select',
-                    dataSource: this.enum.Statuslist,
-                    keyExpr: 'id',
-                    valueExpr: 'text'
-                  },
-                  {
-                    name: '住院号',
-                    dataField: 'icdName',
-                    type: 'text'
-                  },
-                  {
-                    name: '出院时间',
-                    dataField: 'icdName',
-                    type: 'text'
-                  },
-                  {
-                    name: '医生',
-                    dataField: 'icdName',
-                    type: 'text'
-                  },
-                  {
-                    name: '科室',
-                    dataField: 'icdName',
-                    type: 'text'
-                  },
-                  {
-                    name: '患者',
-                    dataField: 'icdName',
-                    type: 'text'
-                  }
-                ]
+                this.paintlist.admit = '住院号'
+                this.paintlist.time = '出院日期'
               }
 
               if (this.dataSource && this.dataSource.length) {
@@ -279,8 +251,21 @@ export default {
         })
     },
     // 搜索数据
-    search() {
+    // search() {
+    //   let params = this.$refs.searchPanel.form.getFieldsValue()
+    //   params.pageSize = 10
+    //   params.offset = 0
+    //   this.getformData(params)
+    // },
+    getFormData() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
+      if (params.prescDate) {
+        params.prescDate = [params.prescDate[0].format('YYYY-MM-DD'), params.prescDate[1].format('YYYY-MM-DD')]
+      }
+      return params
+    },
+    search() {
+      let params = this.getFormData()
       params.pageSize = 10
       params.offset = 0
       this.getformData(params)
@@ -312,7 +297,13 @@ export default {
     //详情
     looks(data) {
       console.log(data)
-      let objData = { filterId: data.filterId, submitNo: data.submitNo, visId: data.visId, planScope: data.planScope }
+      let objData = {
+        filterId: data.filterId,
+        submitNo: data.submitNo,
+        visId: data.visId,
+        planScope: data.planScope,
+        status: data.status
+      }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
       this.$router.push({
         name: 'patientReviewDetail',
@@ -349,6 +340,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.treeDatas = this.getDataChildren(res.rows, undefined)
+            console.log(this.treeDatas)
           } else {
             this.warn(res.msg)
           }

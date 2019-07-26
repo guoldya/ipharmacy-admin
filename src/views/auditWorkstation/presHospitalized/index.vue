@@ -344,7 +344,6 @@ export default {
       this.timeInitialize = setInterval(() => {
         this.fetchYJSMapData()
         this.getCountText()
-        console.log('dddddd')
       }, data)
     },
     // 状态数据

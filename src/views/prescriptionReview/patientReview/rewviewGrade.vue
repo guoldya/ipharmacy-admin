@@ -9,8 +9,8 @@
             </a-col>
             <a-col class="check" :span="14">
               <a-radio-group name="radioGroup"  @change="onChange" v-model="value">
-                <a-radio :value="2">合理</a-radio>
-                <a-radio :value="3">不合理</a-radio>
+                <a-radio :value="1">合理</a-radio>
+                <a-radio :value="2">不合理</a-radio>
               </a-radio-group>
             </a-col>
           </a-row>
@@ -31,7 +31,7 @@
               </p>
               <p>点评描述：{{item.problemOpinion}}</p>
               <footer>
-                <p class="foot">
+                <p class="foot" v-if='statu==1'>
                   <a-popconfirm title="确定删除?" placement="topLeft" @confirm="deletes(item)">
                     <a>删除</a>
                   </a-popconfirm>
@@ -127,10 +127,12 @@ export default {
       status: false,
       index: '',
       checkDellist: [],
-      value:''
+      value:1,
+      statu:'',
     }
   },
   created() {
+     this.statu=JSON.parse(sessionStorage.getItem('patinRew')).status
     this.getruleData({ codeClass: 7 })
     this.getDrugList()
     this.getprobleList({filterId:JSON.parse(sessionStorage.getItem('patinRew')).filterId})
@@ -148,8 +150,7 @@ export default {
         .then(res=>{
           if (res.code == '200') {
             this.proList=res.data.reviewProblemVOList
-            this.value=res.data.status+''
-            console.log(this.value)
+            this.value=res.data.status-1      
           }
         })
         .catch(err => {

@@ -106,7 +106,7 @@
         >下一患者</a-button>
       </template>-->
       <template slot="center">
-        <div class="paintFoot">
+        <div class="paintFoot" v-if='shows'>
           <div
             v-for="(item,index) in this.enum.paintState"
             class="jianxie"
@@ -246,7 +246,8 @@ export default {
       docDatasCopy: [],
       onactive: '',
       routerData: {},
-      arrs: []
+      arrs: [],
+       shows:true
     }
   },
   mounted() {
@@ -504,6 +505,7 @@ export default {
     changeKey(key) {
       let params = { examId: this.num }
       let param = { testId: this.testid }
+        this.shows=key==1?true:false
       if (key == 2) {
         this.$axios({
           url: this.api.selectExamId,

@@ -41,23 +41,22 @@
               v-html="resultTypeFormatter(props.row.resultType)"
             ></span>
             <span v-else-if="item.dataIndex == 'isCalc'" v-html="isCalcFormatter(props.row.isCalc)"></span>
-
             <span v-else>{{props.row[item.dataIndex]}}</span>
           </template>
         </el-table-column>
       </el-table>
-
       <a-pagination
         showSizeChanger
         showQuickJumper
         :total="total"
         class="pnstyle"
-        :defaultPageSize="pageSize"
+        :defaultPageSize="10"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
         size="small"
         v-model='current'
+        :pageSize="pageSize"
       ></a-pagination>
     </a-spin>
   </a-card>
@@ -140,14 +139,14 @@ export default {
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.pageSize = 10
+      params.pageSize = this.pageSize
       params.offset = 0
       this.getData(params)
     },
     //重置
     resetForm({}) {
       this.$refs.searchPanel.form.resetFields()
-      this.getData({ pageSize: 10, offset: 0 })
+      this.getData({ pageSize: this.pageSize, offset: 0 })
     },
     // 获取初始数据
     getData(params = { pageSize: 10, offset: 0 }) {
@@ -176,12 +175,26 @@ export default {
         })
     },
     // 页码
-    pageChange(page, pageSize) {
-      this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
-    },
-    pageChangeSize(page, pageSize) {zz
-      this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
-    },
+    // pageChange(page, pageSize) {
+    //   this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
+    //    this.current=page
+    // },
+    // pageChangeSize(page, pageSize) {
+    //   this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+    // },
+     pageChange(page, pageSize) {
+        let params =  this.$refs.searchPanel.form.getFieldsValue()
+        params.offset = (page - 1) * pageSize
+        params.pageSize = pageSize
+        this.getData(params)
+      },
+      pageChangeSize(page, pageSize) {
+        let params =  this.$refs.searchPanel.form.getFieldsValue()
+        params.offset = (page - 1) * pageSize
+        params.pageSize = pageSize
+        this.getData(params)
+        this.pageSize=pageSize
+      },
     edits(data) {
       //console.log(data)
       data.msg = 'old'

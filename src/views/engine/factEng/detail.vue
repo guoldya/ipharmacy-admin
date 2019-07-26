@@ -172,7 +172,7 @@ export default {
           this.error(err)
         })
     },
-    // 递归形成树状结构
+    // 递归形成树状结构 /^\s+$/g
      getDataChildren(bdata, pid) {
       var items = []
       for (var key in bdata) {
