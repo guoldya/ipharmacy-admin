@@ -43,7 +43,6 @@ Flow.registerNode("model-image", {
   getlabelY: function (label, arrayText) {
     let arrayTextlength = arrayText.length > 2 ? 2 : arrayText.length;
     let yy = -(((arrayTextlength - 1) * 20)) / 2 - 5;
-    console.log(yy);
     return yy;
   },
   addShapeP: function (group, xx, yy, text) {
