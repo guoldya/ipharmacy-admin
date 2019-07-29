@@ -34,7 +34,7 @@
             </a-row>
         </a-card>
         <a-card class="margin-top-5">
-            <a-button class="margin-top-10" type="primary" @click="distribution">分配任务</a-button>
+            <a-button class="margin-top-10" type="primary" @click="distribution" v-if="headData.status ==3? true:false">分配任务</a-button>
             <a-spin tip="加载中..." :spinning="spinning">
                 <el-table class="margin-top-10" :data="dataSource" border style="width: 100%">
                     <el-table-column
@@ -271,7 +271,8 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.getData()
+            this.getData();
+            this.getTitleData()
             this.success(res.msg)
           } else {
             this.warn(res.msg)

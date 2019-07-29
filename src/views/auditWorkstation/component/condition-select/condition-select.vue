@@ -50,7 +50,7 @@
                     >
                         <a-select-option
                             v-for="item in cd.treeData"
-                            :value="item.ID"
+                            :value="''+item.ID"
                             :key="item.ID"
                         >{{item.TITLE}}</a-select-option>
                     </a-select>

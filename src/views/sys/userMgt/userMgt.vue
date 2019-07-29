@@ -157,14 +157,14 @@
               placeholder="请输入..."
               v-decorator="[
                                 'account',
-                                {rules: [{ required: true, message: '请输入账号' },{ max:20,message:'最多20个字' }],initialValue: formData.account}
+                                {rules: [{ required: true, message: '请输入账号' },{ max:20,message:'最多20个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.account}
                                 ]"
             />
           </a-form-item>
           <a-form-item label="密码" v-bind="formItemLayout">
             <a-input
               placeholder="若不填，后台将生成默认密码"
-              v-decorator="['password',{rules:[{ max:30,message:'最多30个字' }],initialValue: formData.password}]"
+              v-decorator="['password',{rules:[{ max:30,message:'最多30个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.password}]"
             />
           </a-form-item>
           <a-form-item label="状态" :required="true" v-bind="formItemLayout">
@@ -268,9 +268,12 @@ export default {
     submit() {
       this.loading = true
       this.form.validateFields((err, values) => {
+        console.log(err,"11223")
         if (!err) {
           values.account = values.account.replace(/(^\s*)|(\s*$)/g, '')
-          values.password = values.password.replace(/(^\s*)|(\s*$)/g, '')
+          if (values.password){
+            values.password = values.password.replace(/(^\s*)|(\s*$)/g, '')
+          }
           let params = values,
             len = this.personData.length
           console.log(params)

@@ -321,6 +321,7 @@ export default {
                     let params = {}
                     params = values
                     let listData = this.planruleList
+                  console.log(this.planruleList,'234')
                     let specText = ''
                     for (let key in listData) {
                         if (listData[key].columnId == 'AGE') {
@@ -539,7 +540,7 @@ export default {
             let children = indexData[PID]
             if (children != null && children != undefined) {
                 for (let ckey in children) {
-                    let cnode = children[ckey]
+                    let cnode = children[ckey];
                     children[ckey].children = this.recursiveNodeTree(indexData, cnode.value)
                 }
             }

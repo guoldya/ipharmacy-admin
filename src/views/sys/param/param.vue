@@ -90,7 +90,7 @@
                                 placeholder="请输入..."
                                 v-decorator="[
                                 'paramName',
-                                {rules: [{ required: true, message: '请输入参数' },{ max:20,message:'最多20个字' }],initialValue: formData.paramName}
+                                {rules: [{ required: true, message: '请输入参数' },{ max:10,message:'最多10个字' }],initialValue: formData.paramName}
                                 ]"
                         />
                     </a-form-item>
@@ -118,7 +118,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'paramValue',{rules: [{ required: true, message: '请输入参数值' },{ max:100,message:'最多100个字' }],initialValue: formData.paramValue}]"/>
+                                v-decorator="[ 'paramValue',{rules: [{ required: true, message: '请输入参数值' },{ max:50,message:'最多100个字' }],initialValue: formData.paramValue}]"/>
                     </a-form-item>
                     <a-form-item
                             label="备注"
@@ -127,7 +127,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'ramark',{rules: [{ max:255 ,message:'最多255个字' }],initialValue: formData.ramark}]"/>
+                                v-decorator="[ 'ramark',{rules: [{ max:125 ,message:'最多250个字' }],initialValue: formData.ramark}]"/>
                     </a-form-item>
                 </a-form>
             </div>
@@ -251,6 +251,7 @@
                         if(!this.isNew){
                             params.paramId = this.formData.paramId
                         }
+                        params.paramName = params.paramName.replace(/^(\s*)|(\s*)$/g, '');
                         this.$axios({
                             url: this.api.updateUrl,
                             method: 'post',

@@ -32,7 +32,7 @@
                             <a v-else-if="scope.row.status == 3" @click="assigned(scope.row)">开始分配</a>
                             <a v-else-if="scope.row.status == 4" @click="startView(scope.row)">开始点评</a>
                             <!-- <a v-else-if="scope.row.status == 6" @click="looks(scope.row)">点评完成</a> -->
-                            <a-divider type="vertical" />
+                            <a-divider type="vertical" v-if="scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " />
                             <a @click="looks(scope.row)">查看</a>
                             <a-divider type="vertical" v-if="scope.row.status == 1"/>
                             <a-popconfirm
@@ -112,8 +112,9 @@
                     size="small"
                 ></a-pagination>
             </a-spin>
-        </a-card>
-        <a-card class="margin-top-5">
+<!--        </a-card>-->
+<!--        <a-card class="margin-top-5">-->
+          <a-divider>点评分配</a-divider>
             <a-spin tip="加载中..." :spinning="bmSpinning">
                 <el-table
                     highlight-current-row
@@ -178,15 +179,17 @@ export default {
             dataSource: [],
             bmDataSource: [],
             columns: [
-                { title: '创建时间', value: 'updateTime', width: 130 },
-                { title: '开始时间', value: 'filterStartTime', width: 130 },
-                { title: '完成时间', value: 'filterEndTime', width: 130 },
+
+
                 { title: '范围', value: 'planScope', width: 60, format: this.taskScope, align: 'center' },
                 { title: '任务名称', value: 'name' },
                 { title: '抽取数量', value: 'extractionsNumber', width: 100, align: 'right' },
                 { title: '点评进度', value: 'percentageComplete', width: 180 },
                 { title: '合格率', value: 'rationalPercentage', width: 100, align: 'right' },
                 //状态 1创建 2筛选中 3筛选完成 4分配完成 5点评中 6点评完成
+              { title: '开始时间', value: 'filterStartTime', width: 130 },
+              { title: '完成时间', value: 'filterEndTime', width: 130 },
+              { title: '创建时间', value: 'updateTime', width: 130 },
                 { title: '状态', value: 'status', width: 100, align: 'center' }
                 // { title: '修改时间', value: 'updateTime', width: 130 },
                 // { title: '修改人', value: 'updateUser', width: 100 }
