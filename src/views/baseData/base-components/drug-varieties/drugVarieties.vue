@@ -111,7 +111,7 @@
                             :label-col="{ span: 6 }"
                             :wrapper-col="{ span: 15 }"
                         >
-                            <a-select v-decorator="[ 'drugIndicator' ]">
+                            <a-select v-decorator="[ 'drugIndicator',{rules: [{ required: true, message: '请选择药品类型' }]}]">
                                 <a-select-option
                                     :value="op.ID"
                                     v-for="(op,index) in this.enum.drugType"
@@ -265,16 +265,16 @@ export default {
         //页码数change事件
         varietiesPageSize(page, pageSize) {
             this.current = 1
+          this.pageSize = pageSize;
             let params = this.pageChangeFilter
-            params.offset = (page - 1) * pageSize
+            params.offset = (this.current - 1) * pageSize
             params.pageSize = pageSize
             params.categoryId = this.variety.categoryId
             this.getVarietiesData(params)
         },
         //页码跳转事件
         varietiesPageChange(page, pageSize) {
-            let params = this.pageChangeFilter
-            ;(params.offset = (page - 1) * pageSize), (params.pageSize = pageSize)
+            let params = this.pageChangeFilter;(params.offset = (page - 1) * pageSize), (params.pageSize = pageSize)
             params.categoryId = this.variety.categoryId
             this.getVarietiesData(params)
         },
@@ -393,7 +393,10 @@ export default {
                     })
                         .then(res => {
                             if (res.code == '200') {
-                                this.getVarietiesData()
+                              let params = {};
+                              params.offset = (this.current - 1) * this.pageSize
+                              params.pageSize = this.pageSize
+                                this.getVarietiesData(params)
                                 this.success(res.msg)
                                   this.Modal.visible = false
                             } else {

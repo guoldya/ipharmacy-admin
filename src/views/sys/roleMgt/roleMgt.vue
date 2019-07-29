@@ -156,7 +156,7 @@
                                 placeholder="请输入角色名称"
                                 v-decorator="[
                                 'title',
-                                {rules: [{ required: true, message: '请输入角色名称' },{ max:80,message:'最多80个字' }],initialValue: formData.title}
+                                {rules: [{ required: true, message: '请输入角色名称' },{ max:80,message:'最多80个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/},],initialValue: formData.title}
                                 ]"
                         />
                     </a-form-item>

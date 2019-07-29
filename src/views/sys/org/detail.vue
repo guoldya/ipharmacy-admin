@@ -26,7 +26,7 @@
                 </a-form-item>
                 <a-form-item label="机构代码" :label-col="labelCol" :wrapper-col="wrapperCol">
                     <a-input
-                        v-decorator="['orgCode', {rules: [{ required: true, message: '请输入机构代码' },{max: 20,message:'输入机构代码过长'}]}]"
+                        v-decorator="['orgCode', {rules: [{ required: true, message: '请输入机构代码' },{ message: '请勿输入空格', pattern: /^[^\s]*$/},{max: 20,message:'输入机构代码过长'}]}]"
                     />
                 </a-form-item>
                 <a-form-item label="机构类型" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -247,6 +247,7 @@ export default {
             e.preventDefault()
             this.form.validateFields((err, values) => {
                 if (!err) {
+                  values.title = this.delSpace(values.title)
                     this.$axios({
                         url: this.api.selectOrgUpdate,
                         method: 'post',
@@ -275,7 +276,11 @@ export default {
             this.$router.push({
                 name: 'sys_org'
             })
-        }
+        },
+      delSpace(str) {
+        let strs = str.replace(/^(\s*)|(\s*)$/g, '')
+        return strs
+      },
     },
     beforeDestroy() {
         window.localStorage.removeItem('routerData')

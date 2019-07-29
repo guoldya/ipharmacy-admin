@@ -253,6 +253,7 @@ export const asyncRouterMap = [
             path: '/monitoring/detailProblem',
             name: 'detailProblem',
             component: RouteView,
+            hidden: true,
             meta: { title: '问题详情', multistage: true },
             children: [
               {
@@ -383,13 +384,13 @@ export const asyncRouterMap = [
             path: '/prescriptionReview/reviewTaskMgt',
             name: 'reviewTaskMgt',
             component: RouteView,
-            meta: { title: '点评任务管理', multistage: true },
+            meta: { title: '点评管理', multistage: true },
             children: [
               {
                 path: '/prescriptionReview/reviewTaskMgt/index',
                 name: 'reviewTaskMgtIndex',
                 component: () => import('@/views/prescriptionReview/reviewTaskMgt/index.vue'),
-                meta: { title: '点评任务管理', hiddenHeaderContent: true, index: true }
+                meta: { title: '点评管理', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/prescriptionReview/reviewTaskMgt/add',
