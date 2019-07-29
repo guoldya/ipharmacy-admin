@@ -3,20 +3,41 @@
     <div class="dealRight">
       <a-tabs defaultActiveKey="1" size="small" class="width-100">
         <a-tab-pane tab="点评结果" key="1">
-          <a-row class="content">
+          <div class="content" v-if="statu==2">
+            <a-row>
+            <a-col :span="6">
+              <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
+            </a-col>
+            <a-col class="check" :span="14"> 
+              <a-radio defaultChecked :disabled="disabled">合理</a-radio>
+              <a-radio :defaultChecked='false' :disabled="disabled">不合理</a-radio>
+            </a-col>
+            </a-row>
+            <p>点评人：<span></span></p>
+          </div>
+          <a-row class="content" v-if="statu==3">
+           <a-col :span="6">
+              <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
+            </a-col>
+            <a-col class="check" :span="14"> 
+              <a-radio :defaultChecked='false' :disabled="disabled">合理</a-radio>
+              <a-radio defaultChecked :disabled="disabled">不合理</a-radio>
+            </a-col>
+          </a-row>
+          <a-row class="content" v-if="statu==1">
             <a-col :span="6">
               <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
             </a-col>
             <a-col class="check" :span="14">
-              <a-radio-group name="radioGroup"  @change="onChange" v-model="value">
-                <a-radio :value="1">合理</a-radio>
-                <a-radio :value="2">不合理</a-radio>
+              <a-radio-group name="radioGroup" @change="onChange" v-model="value">
+                <a-radio :value="2">合理</a-radio>
+                <a-radio :value="3">不合理</a-radio>
               </a-radio-group>
             </a-col>
           </a-row>
 
-          <a-card title="问题" style="margin-top:20px;">
-            <a slot="extra" class="addquestion">
+          <a-card title="问题" style="margin-top:20px;" v-if="value==3">
+            <a slot="extra" class="addquestion" v-if="statu==1">
               <a-icon type="plus" style="color:#1890ff" />
               <span class="add" @click="addqus('visibles',true)">新增问题</span>
               <a-icon type="sync" style="color:#1890ff" />
@@ -31,7 +52,7 @@
               </p>
               <p>点评描述：{{item.problemOpinion}}</p>
               <footer>
-                <p class="foot" v-if='statu==1'>
+                <p class="foot" v-if="statu==1">
                   <a-popconfirm title="确定删除?" placement="topLeft" @confirm="deletes(item)">
                     <a>删除</a>
                   </a-popconfirm>
@@ -48,13 +69,35 @@
     </div>
     <a-modal title="另存为模板" :visible="visibles" @ok="handleOk" @cancel="handleCancel" width="600px">
       <a-form :form="form">
-        <a-form-item label="药品" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">
+        <a-form-item
+          label="药品"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 17 }"
+          v-if="planScope==2"
+        >
           <a-select
             v-decorator="[ 'prescId',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
             placeholder="请选择分类"
           >
             <a-select-option
               :value="op.medicalId"
+              v-for="(op,index) in $store.state.drugList"
+              :key="index"
+            >{{op.drugName}}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="药品"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 17 }"
+          v-if="planScope!=2"
+        >
+          <a-select
+            v-decorator="[ 'prescId',  {rules: [{ required: true,message: '请选择分类'  }]}  ]"
+            placeholder="请选择分类"
+          >
+            <a-select-option
+              :value="op.clinicPrescId"
               v-for="(op,index) in $store.state.drugList"
               :key="index"
             >{{op.drugName}}</a-select-option>
@@ -127,15 +170,20 @@ export default {
       status: false,
       index: '',
       checkDellist: [],
-      value:1,
-      statu:'',
+      value: 2,
+      statu: '',
+      planScope: '',
+      disabled:true,
     }
   },
   created() {
-     this.statu=JSON.parse(sessionStorage.getItem('patinRew')).status
+    this.planScope = JSON.parse(sessionStorage.getItem('patinRew')).planScope
+    this.statu = JSON.parse(sessionStorage.getItem('patinRew')).status
+    this.value = JSON.parse(sessionStorage.getItem('patinRew')).status
+    console.log(this.value,'eeeee')
     this.getruleData({ codeClass: 7 })
     this.getDrugList()
-    this.getprobleList({filterId:JSON.parse(sessionStorage.getItem('patinRew')).filterId})
+    this.getprobleList({ filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId })
   },
   computed: {},
   mounted() {},
@@ -147,10 +195,12 @@ export default {
         method: 'put',
         data: params
       })
-        .then(res=>{
+        .then(res => {
           if (res.code == '200') {
-            this.proList=res.data.reviewProblemVOList
-            this.value=res.data.status-1      
+            if (res.data) {
+              this.proList = res.data.reviewProblemVOList
+              //this.value = res.data.status - 1
+            }
           }
         })
         .catch(err => {
@@ -179,6 +229,10 @@ export default {
     },
     onChange(e) {
       this.values = e.target.value
+      if (this.values == 2) {
+        this.proList = []
+        this.$store.state.proslist = this.proList
+      }
       this.$store.state.status = this.values
     },
     saves() {
@@ -229,7 +283,6 @@ export default {
     editing(data) {
       this.status = true
       this.index = data.index
-      // console.log(this.index)
       this.visibles = true
       let formData = data
       this.form.setFieldsValue(formData)
@@ -275,7 +328,6 @@ export default {
     // 获取结论值
     handleChange(value, option) {
       let regularIdList = []
-      //console.log(option.data.attrs.reviewCompletionRegularVOList)
       option.data.attrs.reviewCompletionRegularVOList.forEach(item => {
         regularIdList.push(item.regularId)
       })
@@ -314,8 +366,6 @@ export default {
       if (this.status == false) {
         this.form.validateFields((err, values) => {
           if (!err) {
-            // console.log(this.proList,'dd')
-            //console.log(values,'ee')
             values.index = this.num
             this.proList.push(values)
             this.$store.state.proslist = this.proList
@@ -359,10 +409,10 @@ export default {
       if (this.$store.state.drugList && this.$store.state.drugList.length) {
         let text
         this.$store.state.drugList.forEach(items => {
-          if (item == items.medicalId&&JSON.parse(sessionStorage.getItem('patinRew')).planScope==2) {
+          if (item == items.medicalId && JSON.parse(sessionStorage.getItem('patinRew')).planScope == 2) {
             text = items.drugName
           }
-          if (item == items.clinid&&JSON.parse(sessionStorage.getItem('patinRew')).planScope==1) {
+          if (item == items.clinicPrescId && JSON.parse(sessionStorage.getItem('patinRew')).planScope == 1) {
             text = items.drugName
           }
         })
@@ -370,9 +420,9 @@ export default {
       }
     },
     // 过滤结论
-    fliterreview(item){
-           //this.rewList
-            if (this.rewList && this.rewList.length) {
+    fliterreview(item) {
+      //this.rewList
+      if (this.rewList && this.rewList.length) {
         let text
         this.rewList.forEach(items => {
           if (item == items.cId) {
@@ -398,6 +448,10 @@ export default {
     margin-left: 10px;
   }
   .content {
+    .ant-radio-disabled + span {
+    color: black;
+    cursor: not-allowed;
+}
     padding-bottom: 10px;
     background: #fffbf1;
     padding-left: 15px;

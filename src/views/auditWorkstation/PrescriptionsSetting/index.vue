@@ -106,7 +106,7 @@
           { title: '方案类型', dataIndex: 'planType', align: 'center', width: 80,format:this.planType },
           { title: '方案范围', dataIndex: 'planScope', align: 'center', width: 80,format:this.planScope },
           { title: '方案描述', dataIndex: 'describe' },
-          { title: '创建人', dataIndex: 'creator', width: 130 },
+          { title: '创建人', dataIndex: 'creatorName', width: 130 },
           { title: '创建时间', dataIndex: 'createDate', width: 150 },
           { title: '状态', dataIndex: 'status', width: 80, align: 'center' },
         ],

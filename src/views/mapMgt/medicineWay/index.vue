@@ -223,7 +223,7 @@ export default {
     }
   },
   mounted() {
-    this.getData({ pageSize: 20, offset: 0 })
+    this.getData({ pageSize: this.pageSize, offset: 0 })
   },
   methods: {
       // 搜索
@@ -382,7 +382,7 @@ export default {
                 this.MData = {}
                 this.similarData = []
                  this.name=''
-                this.getData({pageSize:20,offset:(this.current-1)*10,name:params.hisWayName})
+                this.getData({pageSize:this.pageSize,offset:(this.current-1)*10})
                 this.loading = false
                  this.isActive=true
               })
@@ -425,6 +425,7 @@ export default {
     },
     //页码跳转事件
     pageChange(page, pageSize) {
+        this.pageSize=pageSize
         let params = Object.assign(this.$refs.searchPanel.form.getFieldsValue(),{ offset: (page - 1) * pageSize, pageSize: pageSize, })
       this.getData(params)
     },

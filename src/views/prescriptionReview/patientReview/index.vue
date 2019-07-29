@@ -15,10 +15,14 @@
           <span class>{{selcetRule(database.rule)}}</span>
         </detail-list-item>
         <detail-list-item term="处方时间" v-if="isid==1">
-          <span class>{{database.filterStartTime}}~{{database.filterEndTime}}</span>
+          <span
+            class
+          >{{changeTimes(database.filterStartTime)}}~{{changeTimes(database.filterEndTime)}}</span>
         </detail-list-item>
         <detail-list-item term="出院时间" v-else-if="isid==2">
-          <span class>{{database.filterStartTime}}~{{database.filterEndTime}}</span>
+          <span
+            class
+          >{{changeTimes(database.filterStartTime)}}~{{changeTimes(database.filterEndTime)}}</span>
         </detail-list-item>
       </detail-list>
     </a-card>
@@ -73,6 +77,7 @@
           </el-table-column>
         </el-table>
         <a-pagination
+          hideOnSinglePage
           showSizeChanger
           showQuickJumper
           :total="total"
@@ -115,8 +120,8 @@ export default {
         { title: '处方号', prop: 'prescNum', width: 80 },
         { title: '科室', prop: 'prescDeptName', width: 120 },
         { title: '医生', prop: 'prescDocName', width: 100 },
-        { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade },
-        { title: '操作', prop: 'action', align: 'left' }
+        { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade }
+        // { title: '操作', prop: 'action', align: 'left' }
       ],
       loading: false,
       total: 2,
@@ -166,7 +171,7 @@ export default {
           dataSource: this.EasonData
         },
         {
-          name: '开嘱科室',
+          name: '科室',
           dataField: 'admitDept',
           type: 'tree-select',
           keyExpr: 'keyword',
@@ -296,7 +301,6 @@ export default {
     dealsex() {},
     //详情
     looks(data) {
-      console.log(data)
       let objData = {
         filterId: data.filterId,
         submitNo: data.submitNo,
@@ -340,7 +344,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.treeDatas = this.getDataChildren(res.rows, undefined)
-            console.log(this.treeDatas)
           } else {
             this.warn(res.msg)
           }
@@ -378,8 +381,14 @@ export default {
     },
     // 过滤状态
     statusGrade(data) {
-      let num = Number(data.status) - 1
+      let num = Number(data.status)-1
       return this.enum.completeStatus[num]
+    },
+    // 过滤时间
+    changeTimes(time) {
+      if (time) {
+        return time.replace(/(\d{2}:\d{2}:\d{2})$/, '')
+      }
     },
     getPlan(data) {
       if (data && data.length) {
@@ -402,6 +411,9 @@ export default {
 .allContent {
   .ant-card-bordered {
     border: 0px;
+  }
+  .ant-card-body {
+    padding: 8px 32px;
   }
   .tables {
     margin-top: 15px;

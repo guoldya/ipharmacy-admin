@@ -88,7 +88,7 @@ export default {
         { title: '用法用量', prop: 'dosageUnit', align: 'left' },
         { title: '科室', prop: 'creatDeptName', width: 130 },
         { title: '医生', prop: 'creatDocName', width: 100, align: 'left' },
-        { title: '状态', prop: 'reviewVerdict', align: 'center', width: 120 }
+        // { title: '状态', prop: 'reviewVerdict', align: 'center', width: 120 }
       ],
       xxx: 'ddd'
     }

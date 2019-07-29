@@ -65,7 +65,7 @@
           <a-Col :span="8" class="td-content">{{MData.id}}</a-Col>
         </a-row>
         <a-row class="box">
-          <a-col :span="6" class="textRight">频次：</a-col>
+          <a-col :span="6" class="textRight">名称：</a-col>
           <a-col :span="8">{{NData.frequenceName}}</a-col>
           <a-Col :span="10" class="td-content"  @click="changeFormat"> 
             <div :class="{'pt':isActive}">

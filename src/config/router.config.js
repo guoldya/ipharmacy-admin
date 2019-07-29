@@ -233,7 +233,7 @@ export const asyncRouterMap = [
         path: '/monitoring',
         name: 'monitoring',
         component: PageView,
-        meta: { title: '监控预警', keepAlive: false, icon: 'laptop' },
+        meta: { title: '监控预警', keepAlive: false, icon: 'exception' },
         children: [
           {
             path: '/monitoring/warningQuery',
@@ -377,7 +377,7 @@ export const asyncRouterMap = [
         path: '/prescriptionReview',
         name: 'prescriptionReview',
         component: PageView,
-        meta: { title: '处方点评', keepAlive: false, icon: 'laptop' },
+        meta: { title: '处方点评', keepAlive: false, icon: 'pushpin' },
         children: [
           {
             path: '/prescriptionReview/reviewTaskMgt',

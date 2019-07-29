@@ -62,7 +62,60 @@
       <a-card class="cardHeight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
           <a-tab-pane tab="医嘱信息" key="1">
-            <docAdvices :docDatas="docDatas" :prescOrderIds="prescOrderId"></docAdvices>
+            <docAdvices :docDatas="docDatas" :prescOrderIds="prescOrderId" v-if="this.planScope==2"></docAdvices>
+            <div v-if="this.planScope==1">
+              <div v-for=" (op,index) in leftData.clinicPrescVOList">
+                <a-card class="margin-top-10">
+                  <div v-if="op.auditingStatus == '1'" class="iconTobe"></div>
+                  <div v-if="op.auditingStatus == '2'" class="iconRefused"></div>
+                  <!--<img src="" alt="">-->
+                  <a-row>
+                    <a-col :span="6">
+                      处方号：
+                      <span class="font-bold">{{op.prescNum}}</span>
+                    </a-col>
+                    <a-col :span="6">
+                      开单科室：
+                      <span class="font-bold">{{op.deptName}}</span>
+                    </a-col>
+                    <a-col :span="6">
+                      开单医生：
+                      <span class="font-bold">{{op.prescDocName}}</span>
+                    </a-col>
+                    <a-col :span="6">
+                      时间：
+                      <span class="font-bold">{{dealtime(op.prescDate)}}</span>
+                    </a-col>
+                  </a-row>
+                  <a-row class="dealRow">
+                    <el-table class="margin-top-10 width-100" :data="op.prescVOList" ref="table">
+                      <el-table-column
+                        :prop="item.prop"
+                        :label="item.title"
+                        :key="index"
+                        v-for="(item,index) in columns"
+                        :width="item.width"
+                        :align="item.align"
+                        :formatter="item.formatter"
+                        :show-overflow-tooltip="true"
+                      >
+                        <template slot-scope="props">
+                          <span
+                            v-if="item.prop == 'name'"
+                          >{{props.row.name}}&nbsp;&nbsp;{{props.row.spec}}</span>
+                          <a
+                            v-else-if="item.prop == 'drugName'"
+                            @click="drugNameDetail(props.row)"
+                            v-html="props.row.drugName"
+                          ></a>
+                          <span v-else>{{props.row[item.prop]}}</span>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </a-row>
+                </a-card>
+              </div>
+            </div>
           </a-tab-pane>
           <a-tab-pane tab="检查报告" key="2">
             <detailCheck :visidId="visidIdnum"></detailCheck>
@@ -70,10 +123,10 @@
           <a-tab-pane tab="检验报告" key="3">
             <DetailTest :visidId="visidIdnum"></DetailTest>
           </a-tab-pane>
-          <a-tab-pane tab="手术信息" key="4">
+          <a-tab-pane tab="手术信息" key="4" v-if="this.planScope==2">
             <DetailOperate :visidId="visidIdnum"></DetailOperate>
           </a-tab-pane>
-          <a-tab-pane tab="电子病历" key="5"></a-tab-pane>
+          <a-tab-pane tab="电子病历" key="5" v-if="this.planScope==2"></a-tab-pane>
         </a-tabs>
       </a-card>
     </a-col>
@@ -106,7 +159,7 @@
         >下一患者</a-button>
       </template>-->
       <template slot="center">
-        <div class="paintFoot" v-if='shows'>
+        <div class="paintFoot" v-if="shows">
           <div
             v-for="(item,index) in this.enum.paintState"
             class="jianxie"
@@ -124,18 +177,15 @@
         </div>
       </template>
       <div>
-        <a-button
-          @click="cancle"
-          class="margin-left-5"
-          :loading="loading"
-        >返回</a-button>
+        <a-button @click="cancle" class="margin-left-5" :loading="loading">返回</a-button>
         <a-button
           type="primary"
           @click="saves"
           class="save"
           style="float: right;margin-top: 12px;margin-left: 29px;"
+          v-if="statu==1"
         >保存</a-button>
-        <a-button
+        <!-- <a-button
           @click="refuse"
           style="margin-left: 5px"
           :loading="loading"
@@ -147,7 +197,7 @@
           @click="submit"
           :loading="loading"
           v-if="this.auditStatus"
-        >通过</a-button>
+        >通过</a-button>-->
       </div>
     </footer-tool-bar>
   </div>
@@ -196,15 +246,25 @@ export default {
       },
       loading: false,
       inspectionData: [],
+      // columns: [
+      //   { title: '序号', prop: 'num', width: 50, align: 'right' },
+      //   { title: '药品', prop: 'name' },
+      //   { title: '用法用量', prop: 'way', width: 80, align: 'center' },
+      //   { title: '', prop: 'single', width: 60 },
+      //   { title: '', prop: 'freq', width: 80, align: 'center' },
+      //   { title: '开嘱科室', prop: 'deptName', width: 80, align: 'left' },
+      //   { title: '开嘱医生', prop: 'doctorName', width: 80 },
+      //   { title: '开嘱时间', prop: 'time', width: 130, align: 'left' }
+      // ],
       columns: [
-        { title: '序号', prop: 'num', width: 50, align: 'right' },
-        { title: '药品', prop: 'name' },
-        { title: '用法用量', prop: 'way', width: 80, align: 'center' },
-        { title: '', prop: 'single', width: 60 },
-        { title: '', prop: 'freq', width: 80, align: 'center' },
-        { title: '开嘱科室', prop: 'deptName', width: 80, align: 'left' },
-        { title: '开嘱医生', prop: 'doctorName', width: 80 },
-        { title: '开嘱时间', prop: 'time', width: 130, align: 'left' }
+        { title: '序号', prop: 'seqNum', width: 50, align: 'right' },
+        { title: '', prop: 'mark', width: 20, align: 'left' },
+        { title: '药品', prop: 'drugName' },
+        { title: '规格', prop: 'spec', width: 100 },
+        { title: '单量', prop: 'dosageStr', width: 80 },
+        { title: '总量', prop: 'amountStr', width: 60 },
+        { title: '频次', prop: 'frequency', align: 'center', width: 90 },
+        { title: '用法', prop: 'useType', width: 100 }
       ],
       columnsa: [
         { title: '报告时间', prop: 'reportDateStr', width: 95, align: 'left' },
@@ -247,34 +307,55 @@ export default {
       onactive: '',
       routerData: {},
       arrs: [],
-       shows:true
+      shows: true,
+      statu: 1,
+      planScope: '',
+      leftData: {}
     }
+  },
+  created() {
+    this.statu = JSON.parse(sessionStorage.getItem('patinRew')).status
+    this.planScope = JSON.parse(sessionStorage.getItem('patinRew')).planScope
   },
   mounted() {
     this.routerData = this.$route.params
-    this.getRecordDelData({ visid: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo })
-    // if (this.routerData.isNew == 1) {
-    //   this.turnpage({ visId: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
-    // }
+    if (this.planScope == 2) {
+      this.getRecordDelData({ visid: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo })
+    }
+    if (this.planScope == 1) {
+      let data = JSON.parse(sessionStorage.getItem('patinRew'))
+      let params = { visId: data.visId, submitNo: data.submitNo, reviewResouce: Number(data.planScope) }
+      selectOutDetail(params)
+        .then(res => {
+          if (res.code == '200') {
+            this.RecordDelData = res.data
+            console.log(this.RecordDelData,'dddd')
+            this.leftData = res.data
+            this.$store.state.drugList = this.leftData.clinicPrescVOList[0].prescVOList
+          
+          } else {
+            this.allLoading = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.allLoading = false
+          this.error(err)
+        })
+    }
   },
   methods: {
     ...mapActions('page', ['closeTag']),
     //保存问题框
     saves() {
-      let params = { filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId, status:  this.$store.state.status + '' }
+      let params = {
+        filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId,
+        status: this.$store.state.status + ''
+      }
       let reviewProblemVOList = []
-      //let isclub = JSON.parse(sessionStorage.getItem('patinRew')).planScope
       this.$store.state.proslist.forEach(item => {
-        //let data = typeof item.completion == 'string' ? JSON.parse(item.completion) : item.completion
-        //console.log(data)
-        //item.cId = data.cId
-        // if (isclub == 1) {
-        //   item.prescId = item.name
-        // }
-        // if (isclub == 2) {
-        //   item.prescId = item.name
-        // }
-        this.checkDel(item, 'index',)
+       
+        this.checkDel(item, 'index')
         reviewProblemVOList.push(item)
       })
       Object.assign(params, { reviewProblemVOList: reviewProblemVOList })
@@ -411,7 +492,7 @@ export default {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
             this.$store.state.drugList = this.docDatas
-            // console.log(this.$store.state.drugList,'vuexxxxxx')
+      
             this.docDatasCopy = this.docDatas
             this.visId = this.$route.params.visId
             this.patientId = res.data.patientId
@@ -505,7 +586,7 @@ export default {
     changeKey(key) {
       let params = { examId: this.num }
       let param = { testId: this.testid }
-        this.shows=key==1?true:false
+      this.shows = key == 1 ? true : false
       if (key == 2) {
         this.$axios({
           url: this.api.selectExamId,
@@ -536,16 +617,22 @@ export default {
       })
       return levelText
     },
-     //返回
-     back(){
-         this.$router.push({
-           name:'patientReviewIndex'
-         })
-     },
+    //返回
+    back() {
+      this.$router.push({
+        name: 'patientReviewIndex'
+      })
+    },
     // 时间格式处理
     timeFormat(data) {
       let times = data.slice(5, 20)
       return times
+    },
+    // 时间格式处理
+    dealtime(time) {
+      if (time) {
+        return time.slice(0, time.lastIndexOf(':'))
+      }
     },
     // 左右互动
     listStatul(data) {
@@ -559,13 +646,16 @@ export default {
         delete obj[v]
       })
       return obj
-    },
+    }
   }
 }
 </script>
 
 <style  lang="less">
 .detailPres {
+  .patientDetail {
+    margin: 5px;
+  }
   .guanzhu {
     background-color: #0c60ee;
     height: 26px;
