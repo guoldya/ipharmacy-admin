@@ -10,22 +10,15 @@
         <a-tree-select
           :treeData="treedata"
           placeholder="请选择"
-          v-decorator="[
-                'id',
-                {
-                  rules: [{
-                    required: true,
-                    message: '请选择上级目录',
-                  }],
-                }
-              ]"
+          allowClear
+          v-decorator="[ 'parentId', ]"
         ></a-tree-select>
       </a-form-item>
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
-          :disabled="disables"
+          :read-only="disable"
           v-decorator="[
-                'code',
+                'id',
                 {
                   rules: [{
                     required: true,
@@ -57,13 +50,9 @@
         <a-textarea v-decorator="['remark']" placeholder="可以添加更多丰富的信息"/>
       </a-form-item>
       <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-select v-decorator="[ 'status']">
-          <a-select-option
-            v-for="(op,index) in this.enum.status"
-            :value="op.id"
-            :key="index"
-          >{{op.text}}</a-select-option>
-        </a-select>
+        <a-radio-group v-decorator="[ 'status',{initialValue:'1'}]">
+          <a-radio v-for="(op,index) in this.enum.status" :value="op.id" :key="index">{{op.text}}</a-radio>
+        </a-radio-group>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 24, offset: 10 }">
         <a-button type="primary" @click="handleSubmit">保存</a-button>
@@ -81,6 +70,7 @@ export default {
   data() {
     return {
       api: {
+        dicBaseSelectOne:'sys/dicBase/selectOne',
         selectTitlesList: 'sys/dicBase/selectTitlesList',
         insert: 'sys/dicBase/insert',
         update: 'sys/dicBase/update'
@@ -94,50 +84,62 @@ export default {
         sm: { span: 8 }
       },
       form: this.$form.createForm(this),
-      roleCode: '',
-      loadData: [],
-      levelColor: '#000',
       listData: {},
       disable: false,
-      patientid: '',
-      datas: [],
-      treedata: []
-    }
-  },
-  computed: {
-    disables: function() {
-      if (this.$route.query.msg !== 'new') {
-        return !!!this.disable
-      }
+      treedata: [],
+      isNew: false,
+      getIdData:{},
     }
   },
   mounted() {
-    // if(this.$route.query.msg !== 'new'){
-    //     this.disable=true
-    // }
-    this.getTreeList({ codeclass: 7, id: this.$route.params.id })
+    if (this.$route.params.id == '-1') {
+      this.isNew = true;
+      this.disable = false
+    }else{
+      this.disable = true
+      this.isNew = false;
+    }
     this.getTreeLists({ codeclass: 7 })
-    let _this = this
-    if (this.$route.query) {
-      if (this.$route.query.msg !== 'new') {
-        this.readOnly = this.$route.query.levelType == 1 ? true : false
-        if (this.$route.query.levelColor) {
-          _this.levelColor = this.$route.query.levelColor
-        }
-      } else {
-        this.readOnly = false
-        _this.form.setFieldsValue({ levelName: this.$route.query.length + '级' })
-      }
+    if (!this.isNew){
+      this.getDetail();
     }
   },
   methods: {
+    getDetail(){
+      this.$axios({
+        url: this.api.dicBaseSelectOne,
+        method: 'put',
+        data: {codeclass: 7,id:this.$route.params.id}
+      })
+        .then(res => {
+          if (res.code == '200') {
+            let params = {};
+            this.getIdData = res.data;
+            params.parentId = res.data.parentId;
+            params.id = res.data.id;
+            params.name = res.data.name;
+            params.spellCode = res.data.spellCode;
+            params.remark = res.data.remark;
+            params.status = res.data.status;
+            setTimeout(()=>{
+              this.form.setFieldsValue(params)
+            },100)
+          }else{
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
+    },
     handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          if (this.$route.query.msg == 'new') {
+          if (this.$route.params.id == '-1') {
             let params = values
-            params.codeclass = 7
+            params.codeclass = 7;
             this.$axios({
               url: this.api.insert,
               method: 'post',
@@ -146,7 +148,9 @@ export default {
               .then(res => {
                 if (res.code == '200') {
                   this.$message.info('保存成功!')
-                  setTimeout(this.backTo, 1000)
+                  setTimeout(this.backTo, 500)
+                }else{
+                  this.warn(res.msg)
                 }
               })
               .catch(err => {
@@ -154,8 +158,9 @@ export default {
                 this.error(err)
               })
           }
-          if (this.$route.query.msg !== 'new') {
+          if (this.$route.params.id != '-1') {
             let params = values
+            params.id =this.getIdData.id;
             this.$axios({
               url: this.api.update,
               method: 'post',
@@ -164,7 +169,7 @@ export default {
               .then(res => {
                 if (res.code == '200') {
                   this.$message.info('保存成功!')
-                  setTimeout(this.backTo, 1000)
+                  setTimeout(this.backTo, 500)
                 }
               })
               .catch(err => {
@@ -212,33 +217,6 @@ export default {
           this.error(err)
         })
     },
-    // 树形初始数据
-    // getTreeList(params = {}) {
-    //   var paramsNum = Object.keys(params)
-    //   this.loading = true
-    //   this.$axios({
-    //     url: this.api.selectTitlesList,
-    //     method: 'put',
-    //     data: params
-    //   })
-    //     .then(res => {
-    //       if (res.code == '200') {
-    //         if (paramsNum.length == 1) {
-    //           this.dataSource = this.getDataChildren(res.rows, undefined)
-    //         } else {
-    //           this.dataSource = res.rows
-    //         }
-    //         this.loading = false
-    //       } else {
-    //         this.loadingTable = false
-    //         this.warn(res.msg)
-    //       }
-    //     })
-    //     .catch(err => {
-    //       this.loadingTable = false
-    //       this.error(err)
-    //     })
-    // },
     // 父级初始结构
     getTreeLists(params = {}) {
       var paramsNum = Object.keys(params)
@@ -298,20 +276,5 @@ export default {
 }
 </script>
 <style>
-.btn {
-  margin: 0 5px;
-}
 
-.spanBtn {
-  color: #1694fb;
-}
-.m-colorPicker .colorBtn[data-v-11842410] {
-  width: 38px;
-  height: 38px;
-  border-radius: 10%;
-}
-.colorPick {
-  margin-left: 15px;
-  z-index: 3;
-}
 </style>
