@@ -44,7 +44,6 @@
           </template>
         </el-table-column>
       </el-table>
-
       <a-pagination
         showSizeChanger
         showQuickJumper
@@ -68,7 +67,7 @@ export default {
     return {
       api: {
         selectPage: 'sys/coreDbDatasource/selectPage',
-        //Update: 'sys/coreRuleDatasource/updateStatus'
+        Update: 'sys/coreDbDatasource/updateStatus'
       },
       loading: false,
       total: null,
@@ -80,7 +79,7 @@ export default {
         { title: '数据源名称', value: 'dsName', align: 'left', width: 100 },
         { title: '驱动名称', value: 'driverClass', align: 'left', width: 100 },
         { title: '数据库连接', value: 'url', align: 'left' },
-        { title: '密码', value: 'password', width: 120 },
+        // { title: '密码', value: 'password', width: 120 },
         { title: '更新时间', value: 'updateTime', width: 140 },
         { title: '状态', value: 'status', width: 80, align: 'center' }
       ],
@@ -174,7 +173,8 @@ export default {
     },
     //启用停用
     user(data) {
-      let params = { id: data.id, status: data.status }
+       let status=data.status==1?0:1
+      let params = { id: data.id, status:status }
       this.$axios({
         url: this.api.Update,
         method: 'post',

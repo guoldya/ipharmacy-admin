@@ -159,7 +159,7 @@
         >下一患者</a-button>
       </template>-->
       <template slot="center">
-        <div class="paintFoot" v-if="shows">
+        <div class="paintFoot" v-if="shows&&planScope==2">
           <div
             v-for="(item,index) in this.enum.paintState"
             class="jianxie"
@@ -246,16 +246,6 @@ export default {
       },
       loading: false,
       inspectionData: [],
-      // columns: [
-      //   { title: '序号', prop: 'num', width: 50, align: 'right' },
-      //   { title: '药品', prop: 'name' },
-      //   { title: '用法用量', prop: 'way', width: 80, align: 'center' },
-      //   { title: '', prop: 'single', width: 60 },
-      //   { title: '', prop: 'freq', width: 80, align: 'center' },
-      //   { title: '开嘱科室', prop: 'deptName', width: 80, align: 'left' },
-      //   { title: '开嘱医生', prop: 'doctorName', width: 80 },
-      //   { title: '开嘱时间', prop: 'time', width: 130, align: 'left' }
-      // ],
       columns: [
         { title: '序号', prop: 'seqNum', width: 50, align: 'right' },
         { title: '', prop: 'mark', width: 20, align: 'left' },
@@ -329,7 +319,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.RecordDelData = res.data
-            console.log(this.RecordDelData,'dddd')
             this.leftData = res.data
             this.$store.state.drugList = this.leftData.clinicPrescVOList[0].prescVOList
           
@@ -634,6 +623,7 @@ export default {
         return time.slice(0, time.lastIndexOf(':'))
       }
     },
+    //时间格式处理
     // 左右互动
     listStatul(data) {
       this.prescOrderId = data

@@ -46,7 +46,7 @@ export default {
         { text: '名称', value: 'colName', width: 300, align: 'left' },
         { text: '属性对应类型', value: 'colDbType', width: 120, align: 'left' ,format:this.colDtypeFormat},
         { text: '显示顺序', value: 'colNo', align: 'left' },
-        { text: '更新人', value: 'updateBy', align: 'left' },
+        { text: '更新人', value: 'updatorName', align: 'left' },
         { text: '更新时间', value: 'updateTime', align: 'left', format: this.timeFormat },
         { text: '状态', value: 'status', align: 'center', width: 80 }
       ],
@@ -116,10 +116,10 @@ export default {
       this.getTreeList()
     },
     // 添加数据
-    adds(data) {
+    adds() {
       this.$router.push({
-        name: 'factEngDetail',
-        query: { msg: 'new' }
+       name: 'factEngDetail',
+        params: { id:2 }
       })
     },
     // 编辑修改数据

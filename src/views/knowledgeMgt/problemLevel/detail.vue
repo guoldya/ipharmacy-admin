@@ -16,7 +16,7 @@
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-input :read-only="readOnly" v-decorator="['auditLevel',
+          <a-input :read-only="readOnlys" v-decorator="['auditLevel',
         {rules: [{ required: true, message: '请输入编号' },{pattern:/^([1-9][0-9]{0,1}|100)$/,message:'请输入两位数字'}]}]"/>
         </a-form-item>
         <a-form-item
@@ -105,8 +105,14 @@
         levelColor: '#000',
         listData: {},
         readOnly: false,
-        isNew: true
+        isNew: true,
+        readOnlys:true
       }
+    },
+    created(){
+    if(this.$route.params.auditLevel == 'new'){
+       this.readOnlys=false
+    }
     },
     computed: {},
     mounted() {

@@ -80,7 +80,7 @@ export default {
         { title: '名称', value: 'dsName', align: 'left', width: 100 },
         { title: '显示名称', value: 'display', align: 'left', width: 100 },
         { title: '数据库文本', value: 'sqlText', align: 'left' },
-        { title: '更新人', value: 'updateBy', width: 120 },
+        { title: '更新人', value: 'updatorName', width: 120 },
         { title: '更新时间', value: 'updateTime', width: 140, },
         { title: '状态', value: 'status', width: 80, align: 'center' }
       ],
@@ -172,7 +172,8 @@ export default {
     },
     //启用停用
     user(data) {
-      let params = { id: data.id, status: data.status }
+     let status=data.status==1?0:1
+      let params = { id: data.id, status:status }
       this.$axios({
         url: this.api.Update,
         method: 'post',

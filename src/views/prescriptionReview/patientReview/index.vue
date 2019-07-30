@@ -306,7 +306,9 @@ export default {
         submitNo: data.submitNo,
         visId: data.visId,
         planScope: data.planScope,
-        status: data.status
+        status: data.status,
+        prescDate:data.prescDate,
+        prescDocName:data.prescDocName
       }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
       this.$router.push({

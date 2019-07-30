@@ -300,7 +300,7 @@ export default {
         { title: '规则', prop: 'type', width: 90, align: 'center' },
         { title: '类型', prop: 'type2', width: 90, align: 'center' },
         { title: '规则名称', prop: 'name' },
-        { title: '更新人', prop: 'updateBy', width: 150 },
+        { title: '更新人', prop: 'updatorby', width: 150 },
         { title: '更新时间', prop: 'updateTime', width: 150 },
         { title: '状态', prop: 'status', width: 80, align: 'center' },
         { title: '操作', prop: 'action', width: 160, align: 'center' }
