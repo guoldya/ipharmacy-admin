@@ -216,9 +216,9 @@ export default {
             let params = {}
             params.orgId = data.orgId
             if (data.status == '1') {
-                params.status = 0
+                params.status = '0'
             } else {
-                params.status = 1
+                params.status = '1'
             }
             this.$axios({
                 url: this.api.selectOrgUpdate,
