@@ -424,13 +424,20 @@ export default {
       this.current = 1
       this.getData(params)
     },
-    //页码数change事件
+    //页码size change事件
     pageChangeSize(page, pageSize) {
-      this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+       this.pageSize = pageSize
+       this.current=1
+      let params = { offset:0, pageSize: pageSize }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
-      this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      this.current = page
+      let params = { offset: (page - 1)*pageSize, pageSize: pageSize }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      this.getData(params)
     },
     //页码跳转
     similarPageChange(page, size) {

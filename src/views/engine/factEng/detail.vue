@@ -88,7 +88,6 @@
           <a-select
             v-decorator="[ 'lo',{
                   rules: [{
-                      
                     required: true,
                     message: '请选择逻辑运算',
                   }],
@@ -144,7 +143,7 @@ export default {
       listData: {},
       readOnly: false,
       isNew: true,
-      treedata:[]
+      treedata: []
     }
   },
   computed: {},
@@ -161,7 +160,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-           this.treedata = this.getDataChildren(res.rows, undefined)
+            this.treedata = this.getDataChildren(res.rows, undefined)
           } else {
             this.loadingTable = false
             this.warn(res.msg)
@@ -173,14 +172,14 @@ export default {
         })
     },
     // 递归形成树状结构 /^\s+$/g
-     getDataChildren(bdata, pid) {
+    getDataChildren(bdata, pid) {
       var items = []
       for (var key in bdata) {
         var item = bdata[key]
         if (pid == item.parentId) {
           items.push({
             title: item.colName,
-             value: item.id,
+            value: item.id,
             key: item.id,
             children: this.getDataChildren(bdata, item.id)
           })
@@ -190,7 +189,7 @@ export default {
     },
     // 查询数据
     getselectData(params = {}) {
-      if (this.$route.params.id !== 'new') {
+      if (this.$route.query.msg !== 'new') {
         this.$axios({
           url: this.api.selectOne,
           method: 'put',
@@ -199,13 +198,12 @@ export default {
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
-              console.log('dddd')
-              let { id, pie, colType, conName, colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
+              let { id, pie, colType, colName, colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
                 formData = {
                   id,
                   pie,
                   colType,
-                  conName,
+                  colName,
                   colCode,
                   colDbType,
                   colNo,

@@ -3,27 +3,34 @@
     <div class="dealRight">
       <a-tabs defaultActiveKey="1" size="small" class="width-100">
         <a-tab-pane tab="点评结果" key="1">
-          <div class="content" v-if="statu==2">
+          <div class="content" v-if="statu==2||statu==3">
             <a-row>
             <a-col :span="6">
               <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
             </a-col>
             <a-col class="check" :span="14"> 
-              <a-radio defaultChecked :disabled="disabled">合理</a-radio>
-              <a-radio :defaultChecked='false' :disabled="disabled">不合理</a-radio>
+              <a-radio :defaultChecked='statu==2' :disabled="disabled">合理</a-radio>
+              <a-radio :defaultChecked='statu==3' :disabled="disabled">不合理</a-radio>
             </a-col>
             </a-row>
-            <p>点评人：<span></span></p>
-          </div>
-          <a-row class="content" v-if="statu==3">
-           <a-col :span="6">
-              <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
+             <a-row class="rewPerson">
+            <a-col :span="6">
+              点评人：
             </a-col>
             <a-col class="check" :span="14"> 
-              <a-radio :defaultChecked='false' :disabled="disabled">合理</a-radio>
-              <a-radio defaultChecked :disabled="disabled">不合理</a-radio>
+              {{objData.prescDocName}}
             </a-col>
-          </a-row>
+            </a-row>
+       <a-row class="rewPerson">
+            <a-col :span="6">
+              点评时间：
+            </a-col>
+            <a-col class="check" :span="14"> 
+              {{changeTimes(objData.prescDate)}}
+            </a-col>
+            </a-row>
+          </div>
+         
           <a-row class="content" v-if="statu==1">
             <a-col :span="6">
               <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
@@ -64,7 +71,12 @@
             </aside>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane tab="问题描述" key="2"></a-tab-pane>
+        <a-tab-pane tab="问题描述" key="2">
+            <qusTalk
+        :visidId="objData.visId"
+        :submitNos="objData.submitNo"
+      ></qusTalk>
+        </a-tab-pane>
       </a-tabs>
     </div>
     <a-modal title="另存为模板" :visible="visibles" @ok="handleOk" @cancel="handleCancel" width="600px">
@@ -146,7 +158,11 @@
 
 <script>
 import debounce from 'lodash/debounce'
+import qusTalk from './qusTalk.vue'
 export default {
+   components: {
+   qusTalk
+  },
   name: 'index',
   data() {
     this.handleSearch = debounce(this.handleSearch, 800)
@@ -174,16 +190,18 @@ export default {
       statu: '',
       planScope: '',
       disabled:true,
+      objData:{},
     }
   },
   created() {
     this.planScope = JSON.parse(sessionStorage.getItem('patinRew')).planScope
     this.statu = JSON.parse(sessionStorage.getItem('patinRew')).status
     this.value = JSON.parse(sessionStorage.getItem('patinRew')).status
-    console.log(this.value,'eeeee')
+    this.objData=JSON.parse(sessionStorage.getItem('patinRew'))
     this.getruleData({ codeClass: 7 })
     this.getDrugList()
     this.getprobleList({ filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId })
+    console.log(this.value)
   },
   computed: {},
   mounted() {},
@@ -241,7 +259,6 @@ export default {
       let isclub = JSON.parse(sessionStorage.getItem('patinRew')).planScope
       this.proList.forEach(item => {
         let data = typeof item.completion == 'string' ? JSON.parse(item.completion) : item.completion
-        console.log(data)
         item.cId = data.cId
         item.problemOpinion = item.reviewTemplate
         if (isclub == 1) {
@@ -426,18 +443,28 @@ export default {
         let text
         this.rewList.forEach(items => {
           if (item == items.cId) {
-            text = items.cTypeContent
+            text = items.completion
           }
         })
         return text
       }
-    }
+    },
+    // 修改时间格式
+     changeTimes(time) {
+      if (time) {
+         return time.replace(/(\d{2}:\d{2}:\d{2})$/, '')
+        // return time.replace(/^(\d{4}-)|(:\d{2})$/g, '')
+      }
+    },
   }
 }
 </script>
 
 <style  lang='less'>
 .dealRight {
+  .rewPerson{
+    margin-top: 10px;
+  }
   .ant-card-body {
     padding: 24px 24px 16px 24px;
   }
@@ -451,6 +478,7 @@ export default {
     .ant-radio-disabled + span {
     color: black;
     cursor: not-allowed;
+    opacity: 0.8;
 }
     padding-bottom: 10px;
     background: #fffbf1;

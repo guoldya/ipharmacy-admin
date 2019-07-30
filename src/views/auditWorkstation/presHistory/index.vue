@@ -84,14 +84,14 @@ export default {
             pageSize: 20,
             columns: [
                 { title: '来源', value: 'reviewResouce', align: 'center', width: 90, format: this.reviewResouce },
-                { title: '科室', value: 'adminDeptTitle' },
+                { title: '科室', value: 'adminDeptTitle',width:150 },
                 { title: '住院/门诊号', value: 'adminNum', align: 'right', width: 130 },
                 { title: '患者', value: 'patientName', width: 90 },
                 { title: '性别', value: 'patientSex', align: 'center', width: 100, format: this.patientSexFormatter },
                 { title: '年龄', value: 'patientAge', width: 90 },
                 { title: '医生', value: 'subDocName', width: 90 },
                 { title: '提交时间', value: 'subTime', width: 150 },
-                { title: '问题等级', value: 'auditLevel', width: 150 },
+                { title: '问题等级', value: 'auditLevel'},
                 {
                     title: '结论',
                     value: 'reviewVerdict',
@@ -211,7 +211,8 @@ export default {
         },
         //重置
         resetForm() {
-            this.$refs.searchPanel.form.resetFields(['reviewResouce', 'passType', 'auditLevel', 'reviewVerdict', []])
+            // this.$refs.searchPanel.form.resetFields(['reviewResouce', 'passType', 'auditLevel', 'reviewVerdict', []])
+            this.$refs.searchPanel.form.resetFields()
             this.pageChangeFilter = { searchDate: this.dateList }
             let params = this.getFormData()
             params.pageSize = '20'

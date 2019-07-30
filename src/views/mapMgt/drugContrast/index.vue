@@ -75,7 +75,7 @@
             </a-tooltip>
           </a-col>
           <a-Col :span="10" class="td-content" @click="changeFormat">
-            <div >
+            <div>
               <header v-if="isShow" class="headers">
                 <a-tooltip placement="topLeft" style="cursor: pointer;">
                   <template slot="title">
@@ -97,7 +97,7 @@
                   :filterOption="false"
                   @search="handleSearch"
                   @change="handleChange"
-                  @blur='lostFocus'
+                  @blur="lostFocus"
                   v-decorator="[ 'drugCodes']"
                 >
                   <a-select-option
@@ -246,7 +246,7 @@ export default {
       isShow: true,
       drugAllList: [],
       isActive: true,
-      drugselval:''
+      drugselval: ''
     }
   },
   computed: {
@@ -328,18 +328,18 @@ export default {
       this.MData.producedBy = params.producedBy
       this.MData.spec = params.spec
       this.MData.drugCode = value
-      this.MData.unit=params.unit
+      this.MData.unit = params.unit
     },
-    lostFocus() {   
+    lostFocus() {
       console.log('www')
-     //this.isShow = true
+      //this.isShow = true
     },
 
     //点击第左边的table列事件
     clickLeftRow(row) {
       this.isActive = false
       this.drugName = ''
-      this.isShow=true
+      this.isShow = true
       console.log(row)
       this.NData = row
       this.MData = {}
@@ -353,7 +353,7 @@ export default {
       } else {
         this.MData = row.dicDrugMapperVO
         this.drugName = this.MData.drugName
-        this.drugselval=this.MData.drugName
+        this.drugselval = this.MData.drugName
         this.getSimilarData(params)
       }
     },
@@ -394,7 +394,6 @@ export default {
     },
     //左边部分的数据获取
     getData(params = { pageSize: 20, offset: 0 }) {
-      
       this.spinning = true
       this.$axios({
         url: this.api.hisDrugDataUrl,
@@ -420,9 +419,9 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.drugName = this.MData.drugName
-       this.drugselval=this.MData.drugName
+      this.drugselval = this.MData.drugName
       this.disable = false
-      this.isShow=true
+      this.isShow = true
     },
     //点击确定的处理事件
     clickSure() {
@@ -459,11 +458,11 @@ export default {
                 this.NData = {}
                 this.MData = {}
                 this.similarData = []
-                this.drugName=''
-                this.getData({pageSize:this.pageSize,offset:(this.current-1)*10})
-                
+                this.drugName = ''
+                this.getData({ pageSize: this.pageSize, offset: (this.current - 1) * 10 })
+
                 this.loading = false
-                this.isActive=true
+                this.isActive = true
               })
             } else {
               this.loading = false
@@ -494,15 +493,20 @@ export default {
       this.getData({ pageSize: 20, offset: 0 })
       // this.getData(params)
     },
-    //页码数change事件
+   //页码size change事件
     pageChangeSize(page, pageSize) {
-      this.pageSize=pageSize
-      this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+       this.pageSize = pageSize
+       this.current=1
+      let params = { offset:0, pageSize: pageSize }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
-      this.current=page
-      this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+      this.current = page
+      let params = { offset: (page - 1)*pageSize, pageSize: pageSize }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      this.getData(params)
     },
     //页码跳转
     similarPageChange(page, size) {
@@ -526,10 +530,10 @@ export default {
 </script>
 <style lang='less'>
 .testchk {
-  .ant-card{
+  .ant-card {
     padding-top: 12px;
   }
-  .headers{
+  .headers {
     line-height: 36px;
   }
   .ant-card-body {
@@ -538,12 +542,12 @@ export default {
     padding-top: 1px;
   }
   .details {
-    .ant-select-selection{
+    .ant-select-selection {
       border: 0px;
     }
     .ant-select {
       // margin-top: 4px;
-          margin-left: -3px;
+      margin-left: -3px;
     }
     .ant-input-number {
       margin-top: 3px;

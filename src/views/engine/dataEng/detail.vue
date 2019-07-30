@@ -7,7 +7,7 @@
     </div>
     <a-spin tip="加载中..." :spinning="spinning">
       <a-form :form="form" @submit="handleSubmit">
-        <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-item label="原型列名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input read-only placeholder="由系统自动生成,无需填写" v-decorator="['id']" />
         </a-form-item>
         <a-form-item label="数据源名称" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -36,6 +36,7 @@
         </a-form-item>
         <a-form-item label="密码" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
+            type='password'
             :read-only="readOnly"
             v-decorator="['password',{rules:[{message:'请输入密码',required:true}]}]"
           />
@@ -43,13 +44,13 @@
         <a-form-item label="初始大小" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['initialSize',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]} ]"
+            v-decorator="['initialsize',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]} ]"
           />
         </a-form-item>
         <a-form-item label="最大活跃" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['maxActive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]}]"
+            v-decorator="['maxactive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]}]"
           />
         </a-form-item>
         <a-form-item label="验证查询" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -103,8 +104,15 @@ export default {
     }
   },
   computed: {},
+  created(){
+ setTimeout(() => {
+            this.form.setFieldsValue({ status: 0 })
+          })
+  },
   mounted() {
-    this.getselectData({ id: this.$route.params.id })
+    if (this.$route.params.id !== 'new'){
+ this.getselectData({ id: this.$route.params.id })
+    }
   },
   methods: {
     // 查询数据
@@ -117,7 +125,6 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-              
               let reqArr = res.data
               let {
                   id,
@@ -126,8 +133,8 @@ export default {
                   url,
                   username,
                   password,
-                  initialSize,
-                  maxActive,
+                  initialsize,
+                  maxactive,
                   testSql,
                   createBy,
                   createTime,
@@ -142,8 +149,8 @@ export default {
                   url,
                   username,
                   password,
-                  initialSize,
-                  maxActive,
+                  initialsize,
+                  maxactive,
                   testSql,
                   createBy,
                   createTime,
