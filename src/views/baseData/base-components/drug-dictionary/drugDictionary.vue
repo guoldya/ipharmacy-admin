@@ -395,7 +395,11 @@
                 if (res.code == '200') {
                   this.Modal.visible = false
                   setTimeout(() => {
-                    this.getDictionary({ varietyCode: this.dictionary.varietyCode })
+                    let params = {};
+                    params.offset = (this.current - 1) * this.pageSize
+                    params.pageSize = this.pageSize
+                    params.varietyCode =this.dictionary.varietyCode
+                    this.getDictionary(params)
                   }, 100)
                 } else {
                   this.warn(res.msg)

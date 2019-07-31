@@ -261,7 +261,9 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-              this.countText = res.rows;
+              if (res.rows){
+                this.countText = res.rows;
+              }
             } else {
               this.warn(res.msg)
             }

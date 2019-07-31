@@ -243,7 +243,7 @@
       },
       getDictionary(params = {}) {
          if (params.offset == 0) {
-                this.current = 1
+                this.currents = 1
             }
         this.$axios({
           url: this.api.dicDrugSelectPage,
@@ -386,6 +386,10 @@
                 if (res.code == '200') {
                   this.Modal.visible = false;
                   setTimeout(()=>{
+                    let params = {};
+                    params.offset = (this.currents - 1) * this.pageSize
+                    params.pageSize = this.pageSize
+                    params.varietyCode =this.dictionary.varietyCode
                     this.getDictionary({varietyCode: this.dictionary.varietyCode});
                   },100)
                 } else {

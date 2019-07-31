@@ -23,7 +23,7 @@
                   rules: [{
                     required: true,
                     message: '请输入问题编码',
-                  }],
+                  },{max:3,message:'两位有效编码'}],
                 }
               ]"
           placeholder="一般由数字和字母组成"
@@ -160,6 +160,7 @@ export default {
           }
           if (this.$route.params.id != '-1') {
             let params = values
+            params.codeclass = 7;
             params.id =this.getIdData.id;
             this.$axios({
               url: this.api.update,

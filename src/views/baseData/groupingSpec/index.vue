@@ -18,7 +18,7 @@
         >"
           <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
             <template slot-scope="scope">
-              <opcol :items="items" :more="false" :data="scope.row"></opcol>
+              <opcol :items="items" :more="false" :data="scope.row" :filterItem="['status']"></opcol>
             </template>
           </el-table-column>
           <el-table-column
@@ -68,95 +68,34 @@
       :maskClosable="false"
     >
       <a-form :form="form">
-        <a-row>
-          <a-col :span="12">
             <a-form-item
               style="padding-top: 20px"
-              label="品种名称"
+              label="名称"
               :label-col="{ span: 6 }"
               :wrapper-col="{ span: 15 }"
             >
               <a-input
-                v-decorator="[ 'varietyName',{rules: [{ required: true, message: '请输入分类名称' },{max: 255,message:'输入品种名称过长'}]} ]"
+                v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入分组名称' },{max: 16,message:'输入名称过长'}]} ]"
               />
             </a-form-item>
-          </a-col>
-          <a-col :span="12">
             <a-form-item
-              style="padding-top: 20px"
-              label="英文名称"
+              label="备注"
               :label-col="{ span: 6 }"
               :wrapper-col="{ span: 15 }"
             >
               <a-input
-                v-decorator="[ 'engName',{rules: [{ required: true, message: '请输入英文名称' },{max: 255,message:'输入英文名称过长'}]} ]"
+                v-decorator="[ 'remark',{rules: [{max: 125,message:'输入备注过长'}]} ]"
               />
             </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="12">
             <a-form-item
-              label="拼音码"
+              label="状态"
               :label-col="{ span: 6 }"
               :wrapper-col="{ span: 15 }"
             >
-              <a-input
-                v-decorator="[ 'spellCode',{rules: [{max: 150,message:'输入拼音码过长'}]} ]"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item
-              label="药品类型"
-              :label-col="{ span: 6 }"
-              :wrapper-col="{ span: 15 }"
-            >
-              <a-select v-decorator="[ 'drugIndicator',{rules: [{ required: true, message: '请选择药品类型' }]}]">
-                <a-select-option
-                  :value="op.ID"
-                  v-for="(op,index) in this.enum.drugType"
-                  :key="index"
-                >{{op.TITLE}}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="12">
-            <a-form-item
-              label="毒理分类"
-              :label-col="{ span: 6 }"
-              :wrapper-col="{ span: 15 }"
-            >
-              <a-select v-decorator="[ 'toxicology' ]">
-                <a-select-option
-                  :value="op.id"
-                  v-for="(op,index) in toxicologyData"
-                  :key="index"
-                >{{op.name}}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item
-              label="合成药"
-              :label-col="{ span: 6 }"
-              :wrapper-col="{ span: 15 }"
-            >
-              <a-radio-group v-decorator="[ 'iscompound',{initialValue: '0'} ]">
-                <a-radio
-                  :value="op.id"
-                  v-for="(op,index) in this.enum.yesNo"
-                  :key="index"
-                >{{op.text}}
-                </a-radio>
+              <a-radio-group v-decorator="[ 'status',{initialValue: '1'}]">
+                <a-radio v-for="(op,index) in this.enum.status" :value="op.id" :key="index">{{op.text}}</a-radio>
               </a-radio-group>
             </a-form-item>
-          </a-col>
-        </a-row>
       </a-form>
     </a-modal>
   </div>
@@ -168,14 +107,17 @@
     data() {
       return {
         api: {
-          selectPage: 'sys/coreGroupingSpec/selectPage/coreGroupingSpec/selectPage',
-          dicBaseSelectList: 'sys/dicBase/selectClassList',
-          drugVarietyIdUpdate: 'sys/dicDrugvariety/update'
+          selectPage: 'sys/coreGroupingSpec/selectPage',
+          updateStatusUrl: 'sys/coreGroupingSpec/updateStatus',
+          updateUrl: 'sys/coreGroupingSpec/update'
         },
         loading: false,
         pageSize: 10,
         current: 1,
-        items: [{ text: '编辑', showtip: false, click: this.edits }],
+        items: [
+          { text: '编辑', showtip: false, click: this.edits },
+          { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status:'1' },
+          { text: '停用', showtip: true, color: '#ff9900', tip: '确认停用吗？', click: this.changeStatus, status:'0' }],
         drugVarietyData: [],
         total: 1,
         columns: [
@@ -183,21 +125,22 @@
           { title: '名称', value: 'specName', width: 150  },
           { title: '备注', value: 'remark' },
           { title: '更新人', value: 'updateMan',width:100 },
-          { title: '更新时间', value: 'updateTime',width:100 },
+          { title: '更新时间', value: 'updateTime',width:130 },
+          { title: '状态', value: 'status', width: 80, align: 'center' }
         ],
         toxicologyData: [],
         editData: {},
         Modal: {
           title: '',
           visible: false,
-          confirmLoading: false
+          confirmLoading: false,
+          isNew:true,
         },
         form: this.$form.createForm(this),
         pageChangeFilter: {}
       }
     },
     mounted() {
-      this.getDicBase()
       this.getVarietiesData()
     },
     computed: {
@@ -205,24 +148,16 @@
         return [
           {
             name: '品种名称',
-            dataField: 'drugvarietyCode',
+            dataField: 'specName',
             type: 'text'
           },
           {
-            name: '合成药',
-            dataField: 'iscompound',
+            name: '状态',
+            dataField: 'status',
             type: 'select',
-            dataSource: this.enum.yesNo,
+            dataSource: this.enum.status,
             keyExpr: 'id',
             valueExpr: 'text'
-          },
-          {
-            name: '毒理分类',
-            dataField: 'toxicology',
-            type: 'select',
-            dataSource: this.toxicologyData,
-            keyExpr: 'id',
-            valueExpr: 'name'
           }
         ]
       }
@@ -271,7 +206,7 @@
           .then(res => {
             if (res.code == '200') {
               this.loading = false
-              this.drugVarietyData = res.rows
+              this.drugVarietyData = this.$dateFormat(res.rows,['updateTime']);
               this.total = res.total
             } else {
               this.loading = false
@@ -286,36 +221,39 @@
       //添加品种
       addVarieties() {
         this.Modal.visible = true
-        this.Modal.title = '新增品种'
+        this.Modal.title = '新增分组'
+        this.Modal.isNew = true
         this.form.resetFields()
       },
-      //编辑品种
+      //编辑分组
       edits(data) {
         this.editData = data
         setTimeout(() => {
           this.form.setFieldsValue({
-            varietyName: data.varietyName,
-            spellCode: data.spellCode,
-            iscompound: data.iscompound,
-            engName: data.engName,
-            drugIndicator: data.drugIndicator,
-            toxicology: data.toxicology
+            specName: data.specName,
+            remark: data.remark,
+            status: ''+data.status,
           })
         }, 0)
         this.Modal.visible = true
-        this.Modal.title = '编辑品种'
+        this.Modal.isNew = false
+        this.Modal.title = '编辑分组'
       },
-      getDicBase() {
-        let params = {}
-        params.codeClass = 39
+
+      changeStatus(data){
+        if (data.status == '1') {
+          data.status = '0'
+        } else {
+          data.status = '1'
+        }
         this.$axios({
-          url: this.api.dicBaseSelectList,
-          method: 'put',
-          data: params
+          url: this.api.updateStatusUrl,
+          method: 'post',
+          data: {id:data.id,status:data.status}
         })
           .then(res => {
             if (res.code == '200') {
-              this.toxicologyData = res.rows
+              this.success(res.msg)
             } else {
               this.warn(res.msg)
             }
@@ -325,47 +263,16 @@
           })
       },
 
-      drugIndicatorFormat(data) {
-        let codeText
-        this.enum.drugType.forEach(item => {
-          if (data.drugIndicator == item.ID) {
-            codeText = item.TITLE
-            return
-          }
-        })
-        return codeText
-      },
-      iscompoundFormat(data) {
-        let dataText
-        if (data.iscompound == '1') {
-          dataText = '是'
-        } else if (data.iscompound == '0') {
-          dataText = '否'
-        } else {
-          dataText = '未知'
-        }
-        return dataText
-      },
-      toxicologyFormat(data) {
-        let codeText
-        this.toxicologyData.forEach(item => {
-          if (data.toxicology == item.id) {
-            codeText = item.name
-            return
-          }
-        })
-        return codeText
-      },
       //提交添加品种
       handleOk(e) {
         e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
-            if (this.Modal.title == '编辑品种') {
-              values.varietyCode = this.editData.varietyCode
+            if (!this.Modal.isNew){
+              values.id = this.editData.id;
             }
             this.$axios({
-              url: this.api.drugVarietyIdUpdate,
+              url: this.api.updateUrl,
               method: 'post',
               data: values
             })
