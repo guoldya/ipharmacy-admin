@@ -469,6 +469,9 @@ export default {
                     })
                         .then(res => {
                             if (res.code == '200') {
+                              let params = {};
+                              params.offset = (this.currents - 1) * this.pageSize
+                              params.pageSize = this.pageSize
                                 this.getVarietiesData()
                                 this.success(res.msg)
                                 this.Modal.visible = false

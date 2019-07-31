@@ -11,14 +11,14 @@
         :form="form"
         @submit="handleSubmit"
       >
-        <a-form-item
-          label="等级编号"
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-        >
-          <a-input :read-only="readOnlys" v-decorator="['auditLevel',
-        {rules: [{ required: true, message: '请输入编号' },{pattern:/^([1-9][0-9]{0,1}|100)$/,message:'请输入两位数字'}]}]"/>
-        </a-form-item>
+<!--        <a-form-item-->
+<!--          label="等级编号"-->
+<!--          :label-col="labelCol"-->
+<!--          :wrapper-col="wrapperCol"-->
+<!--        >-->
+<!--          <a-input class="readOnlyInput" :read-only="readOnlys" v-decorator="['auditLevel',-->
+<!--        {rules: [{ required: true, message: '请输入编号' },{pattern:/^([1-9][0-9]{0,1}|100)$/,message:'请输入两位数字'}]}]"/>-->
+<!--        </a-form-item>-->
         <a-form-item
           label="等级名称"
           :label-col="labelCol"
@@ -136,7 +136,7 @@
             if (res.code == '200') {
               this.listData = res.data
               this.form.setFieldsValue({
-                auditLevel: res.data.auditLevel,
+                // auditLevel: res.data.auditLevel,
                 levelName: this.listData.levelName,
                 handleType: this.listData.handleType,
                 levelDescription: this.listData.levelDescription,
@@ -166,7 +166,9 @@
           if (!err) {
             values.levelColor = this.levelColor
             values.levelType = this.$route.params.levelType
-            values.auditLevel = Number(values.auditLevel)
+            if (!this.isNew){
+              values.auditLevel = Number(this.$route.params.auditLevel)
+            }
             if (this.isNew) {
               this.$axios({
                 url: this.api.levelInsert,
@@ -233,4 +235,14 @@
     margin-left: 15px;
     z-index: 3;
   }
+  .readOnlyInput{
+    border: 1px dashed #ddd;
+  }
+  .readOnlyInput:hover{
+    border: 1px dashed #ddd;
+  }
+  .readOnlyInput:active{
+    border: 1px dashed #ddd;
+  }
+
 </style>

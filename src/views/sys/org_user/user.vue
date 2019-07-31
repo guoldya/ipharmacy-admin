@@ -201,12 +201,13 @@ export default {
                 })
         },
         changeStatus(row, flag) {
-            let params = {}
+          let params = {}
             if (flag) {
-                params.status = 1
+              row.status = '1'
             } else {
-                params.status = 0
+              row.status = '0'
             }
+            params.status = row.status
             params.personId = row.personId
             this.$axios({
                 url: this.api.updateUrl,
@@ -215,9 +216,7 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.success('操作成功!', () => {
-                            this.getData()
-                        })
+                      this.success(res.msg)
                     } else {
                         this.warn(res.msg)
                     }

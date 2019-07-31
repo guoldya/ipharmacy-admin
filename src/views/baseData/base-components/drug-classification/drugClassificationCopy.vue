@@ -141,7 +141,8 @@ export default {
       api: {
         drugCategoryList: 'sys/dicDrugcategory/selectList',
         dicDrugSelectList: 'sys/dicBase/selectClassList',
-        drugCategoryUpdate: 'sys/dicDrugcategory/update'
+        drugCategoryUpdate: 'sys/dicDrugcategory/update',
+        updateStatus: 'sys/dicDrugcategory/updateStatus',
       },
       columns: [],
       baseData: [],
@@ -322,12 +323,8 @@ export default {
         params.status = '1'
       }
       params.categoryId = this.nodeData.key
-      params.categoryName = this.nodeData.title
-      params.categoryCode = this.nodeData.categoryCode
-      params.spellCode = this.nodeData.spellCode
-      params.categoryType=this.nodeData.categoryType
       this.$axios({
-        url: this.api.drugCategoryUpdate,
+        url: this.api.updateStatus,
         method: 'post',
         data: params
       })
@@ -357,6 +354,7 @@ export default {
           } else {
             values.pid = this.fatherId
           }
+          values.categoryType = 2
           this.$axios({
             url: this.api.drugCategoryUpdate,
             method: 'post',
@@ -407,6 +405,7 @@ export default {
       obj.title = params.categoryName
       obj.pid = params.pid
       obj.spellCode = params.spellCode
+      obj.categoryType = params.categoryType
       obj.status = params.status
       obj.isLeaf = true
       for (let i in gdata) {
@@ -425,6 +424,7 @@ export default {
       obj.key = params.categoryId
       obj.title = params.categoryName
       obj.spellCode = params.spellCode
+      obj.categoryType = params.categoryType
       obj.status = params.status
       obj.isLeaf = true
       console.log(obj, 'obj')

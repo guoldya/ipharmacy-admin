@@ -36,7 +36,7 @@ export default {
       api: {
         selectTitlesList: 'sys/dicBase/selectTitlesList',
         insert: 'sys/dicBase/insert',
-        update: 'sys/dicBase/update'
+        update: 'sys/dicBase/updateStatus'
       },
       loading: false,
 
@@ -117,7 +117,7 @@ export default {
     adds(data) {
       this.$router.push({
         name: 'questionMgtDetail',
-        query: { msg: 'new' }
+        params: { id: '-1' }
       })
     },
     // 编辑修改数据
@@ -175,9 +175,9 @@ export default {
       let params = {}
       params.id = data.id
       if (data.status == '1') {
-        params.status = 0
+        params.status = '0'
       } else {
-        params.status = 1
+        params.status = '1'
       }
       this.$axios({
         url: this.api.update,

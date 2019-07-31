@@ -608,6 +608,27 @@ export const asyncRouterMap = [
               }
             ]
           },
+          {
+            path: '/baseData/groupingSpec',
+            name: 'groupingSpec',
+            component: RouteView,
+            meta: { title: '药品分组维护', multistage: true },
+            children: [
+              {
+                path: '/baseData/groupingSpec/index',
+                name: 'groupingSpecIndex',
+                component: () => import('@/views/baseData/groupingSpec/index.vue'),
+                meta: { title: '药品分组维护', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/baseData/groupingSpec/detail/:id/',
+                name: 'groupingSpecDetail',
+                hidden: true,
+                component: () => import('@/views/baseData/groupingSpec/detail.vue'),
+                meta: { title: '点评结论字典', hiddenHeaderContent: true, detail: true }
+              }
+            ]
+          },
         ]
       },
 
