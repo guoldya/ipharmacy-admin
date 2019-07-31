@@ -41,31 +41,31 @@
         <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['colName',{rules:[{message:'请输入名称',required:true}]}]"
+            v-decorator="['colName',{rules:[{message:'请输入名称',required:true},{ max:32,message:'最多32个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="列编码" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['colCode',{rules:[{message:'请输入列编码',required:true}]}]"
+            v-decorator="['colCode',{rules:[{message:'请输入列编码',required:true},{ max:32,message:'最多32个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="显示顺序" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['colNo',{rules:[{pattern:/^\d{1,100}$/,message:'请输入显示顺序',required:true}]}]"
+            v-decorator="['colNo',{rules:[{pattern:/^\d{1,4}$/,message:'请输入输入4位以内数字',required:true}]}]"
           />
         </a-form-item>
         <a-form-item label="数据库" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['sql',{rules:[{message:'请输入数据库',required:true}]}]"
+            v-decorator="['sql',{rules:[{message:'请输入数据库',required:true},{ max:2500,message:'最多2500个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="扩展字段" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['dbId',{rules:[{pattern:/^\d{1,100}$/,message:'请输入数字',required:true}]}]"
+            v-decorator="['dbId',{rules:[{pattern:/^\d{1,4}$/,message:'请输入数字',required:true}]}]"
           />
         </a-form-item>
         <a-form-item label="属性类型" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -146,10 +146,19 @@ export default {
       treedata: []
     }
   },
+  created(){
+ setTimeout(() => {
+            this.form.setFieldsValue({ status: 1 })
+          })
+  },
   computed: {},
   mounted() {
     this.getselectData({ id: this.$route.params.id })
-    this.getTree({ id: this.$route.params.id })
+    if (this.$route.params.id == 'new') {
+      this.getTree({id:''})
+    } else {
+      this.getTree({ id: this.$route.params.id })
+    }
   },
   methods: {
     getTree(params = {}) {
@@ -189,7 +198,7 @@ export default {
     },
     // 查询数据
     getselectData(params = {}) {
-      if (this.$route.query.msg !== 'new') {
+      if (this.$route.params.id !== 'new') {
         this.$axios({
           url: this.api.selectOne,
           method: 'put',

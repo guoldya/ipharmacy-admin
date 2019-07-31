@@ -13,32 +13,32 @@
         <a-form-item label="数据源名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['dsName',{rules:[{message:'请输入数据源名称',required:true}]}]"
+            v-decorator="['dsName',{rules:[{message:'请输入数据源名称',required:true},{ max:50,message:'最多50个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="驱动名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['driverClass',{rules:[{message:'请输入驱动名称',required:true}]}]"
+            v-decorator="['driverClass',{rules:[{message:'请输入驱动名称',required:true},{ max:50,message:'最多50个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="数据库连接" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['url',{rules:[{message:'请输入数据库连接',required:true}]}]"
+            v-decorator="['url',{rules:[{message:'请输入数据库连接',required:true},{ max:128,message:'最多128个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="用户名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['username',{rules:[{message:'请输入用户名称',required:true}]}]"
+            v-decorator="['username',{rules:[{message:'请输入用户名称',required:true},{ max:50,message:'最多50个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="密码" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             type='password'
             :read-only="readOnly"
-            v-decorator="['password',{rules:[{message:'请输入密码',required:true}]}]"
+            v-decorator="['password',{rules:[{message:'请输入密码',required:true},{ max:16,message:'最多16个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="初始大小" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -50,13 +50,13 @@
         <a-form-item label="最大活跃" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['maxactive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]}]"
+            v-decorator="['maxactive',{rules: [{pattern:/^[\u4e00-\u9fa5_a-zA-Z0-9_]{20}$/,message:'请输入4-10位以内的字符',required:true}]}]"
           />
         </a-form-item>
         <a-form-item label="验证查询" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['testSql',{rules:[{message:'请输入验证查询',required:true}]}]"
+            v-decorator="['testSql',{rules:[{message:'请输入验证查询',required:true},{ max:2500,message:'最多2500个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -106,7 +106,7 @@ export default {
   computed: {},
   created(){
  setTimeout(() => {
-            this.form.setFieldsValue({ status: 0 })
+            this.form.setFieldsValue({ status: 1 })
           })
   },
   mounted() {

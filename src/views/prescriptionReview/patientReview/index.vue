@@ -117,10 +117,10 @@ export default {
         { title: '患者', prop: 'patientName', width: 120 },
         { title: '性别', prop: 'patientSex', width: 55, format: this.sexCheck },
         { title: '年龄', prop: 'patientAge', width: 55 },
-        { title: '处方号', prop: 'prescNum', width: 80 },
-        { title: '科室', prop: 'prescDeptName', width: 120 },
+        { title: '处方号', prop: 'prescNum', width: 100 },
+        { title: '科室', prop: 'prescDeptName'},
         { title: '医生', prop: 'prescDocName', width: 100 },
-        { title: '点评结果', prop: 'status', align: 'left', format: this.statusGrade }
+        { title: '点评结果', prop: 'status', align: 'center', format: this.statusGrade,width:120 }
         // { title: '操作', prop: 'action', align: 'left' }
       ],
       loading: false,
@@ -270,6 +270,7 @@ export default {
       return params
     },
     search() {
+      this.current=1
       let params = this.getFormData()
       params.pageSize = 10
       params.offset = 0

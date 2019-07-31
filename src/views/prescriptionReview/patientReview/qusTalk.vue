@@ -1,48 +1,47 @@
 <template>
   <div>
-     <span class="dealP">问题描述</span>
-            <span v-for="ta in tagsData ">
-              <a-tag
-                v-if="ta.status == true"
-                class="checkTag tagStyle"
-                :style="{'background':ta.levelColor, 'color':'#fff'}"
-                @click="checkableChange(ta)"
-              >{{ta.auditName }}</a-tag>
-              <a-tag
-                v-else-if="ta.status == false"
-                class="checkTag tagStyle"
-                :style="{'background':'#fff', 'color':ta.levelColor}"
-                @click="checkableChange(ta)"
-              >{{ta.auditName }}</a-tag>
-            </span>
-            <span >
-              <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" @click="handleChange">全部</a-tag>
-              <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
-            </span>
-            <a-card
-              class="margin-top-10 antCard"
-              v-for="(op,index) in rightData "
-              v-if="op.status"
-              :style="{'borderColor':op.borderColor}"
-              
-              :key="index"
-            >
-              <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
-              <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
-              <span class="marLeft10">
-                <i class="iconfont action action-yaopin1" style="color: #2eabff"/>
-                {{op.drugName}}
-              </span>
-              <div :rows="3" :maxRows="4" read-only class="textArea">
-                <a-tag>问题</a-tag>
-                <span class="opacity8">{{op.auditDescription}}</span>
-              </div>
-              <div :rows="3" :maxRows="4" read-only>
-                <a-tag>描述</a-tag>
-                {{op.audSuggest}}
-              </div>
-               <div class="subscript" v-if="op.reviewStatus == 1">已审核</div>
-            </a-card>
+    <span class="dealP">问题描述</span>
+    <span v-for="ta in tagsData ">
+      <a-tag
+        v-if="ta.status == true"
+        class="checkTag tagStyle"
+        :style="{'background':ta.levelColor, 'color':'#fff'}"
+        @click="checkableChange(ta)"
+      >{{ta.auditName }}</a-tag>
+      <a-tag
+        v-else-if="ta.status == false"
+        class="checkTag tagStyle"
+        :style="{'background':'#fff', 'color':ta.levelColor}"
+        @click="checkableChange(ta)"
+      >{{ta.auditName }}</a-tag>
+    </span>
+    <span>
+      <a-tag class="checkTag tagStyle aTag1" v-if="checkedAll" @click="handleChange">全部</a-tag>
+      <a-tag class="checkTag tagStyle aTag2" v-else @click="handleChange">全部</a-tag>
+    </span>
+    <a-card
+      class="margin-top-10 antCard"
+      v-for="(op,index) in rightData "
+      v-if="op.status"
+      :style="{'borderColor':op.borderColor}"
+      :key="index"
+    >
+      <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
+      <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
+      <span class="marLeft10">
+        <i class="iconfont action action-yaopin1" style="color: #2eabff" />
+        {{op.drugName}}
+      </span>
+      <div :rows="3" :maxRows="4" read-only class="textArea">
+        <a-tag>问题</a-tag>
+        <span class="opacity8">{{op.auditDescription}}</span>
+      </div>
+      <div :rows="3" :maxRows="4" read-only>
+        <a-tag>描述</a-tag>
+        {{op.audSuggest}}
+      </div>
+      <!-- <div class="subscript" v-if="op.reviewStatus == 1">已审核</div> -->
+    </a-card>
   </div>
 </template>
 <script>
@@ -52,17 +51,17 @@ export default {
     visidId: {
       type: String
     },
-     submitNos: {
+    submitNos: {
       type: String
-    },
+    }
   },
-  watch:{
- visidId: function() {
-   console.log(this.visidId,'dddddddddddd')
-  this.getDetailData({visId:this.visidId,submitNo:this.submitNos,reviewResouce:2})
-    this.getRecord({visId:this.visidId,submitNo:this.submitNos})
-    this.getTemplate({visId:this.visidId,submitNo:this.submitNos})
-    this.basedata({visId:this.visidId,submitNo:this.submitNos})
+  watch: {
+    visidId: function() {
+      console.log(this.visidId, 'dddddddddddd')
+      this.getDetailData({ visId: this.visidId, submitNo: this.submitNos, reviewResouce: 2 })
+      this.getRecord({ visId: this.visidId, submitNo: this.submitNos })
+      this.getTemplate({ visId: this.visidId, submitNo: this.submitNos })
+      this.basedata({ visId: this.visidId, submitNo: this.submitNos })
     }
   },
 
@@ -90,19 +89,19 @@ export default {
       },
       auditStatus: true,
       baseDatas: [],
-      prescOrderId:'',
+      prescOrderId: ''
     }
   },
   mounted() {
-    this.getDetailData({visId:this.visidId,submitNo:this.submitNos,reviewResouce:2})
-    this.getRecord({visId:this.visidId,submitNo:this.submitNos})
-    this.getTemplate({visId:this.visidId,submitNo:this.submitNos})
-    this.basedata({visId:this.visidId,submitNo:this.submitNos})
+    this.getDetailData({ visId: this.visidId, submitNo: this.submitNos, reviewResouce: 2 })
+    this.getRecord({ visId: this.visidId, submitNo: this.submitNos })
+    this.getTemplate({ visId: this.visidId, submitNo: this.submitNos })
+    this.basedata({ visId: this.visidId, submitNo: this.submitNos })
   },
   methods: {
     // 传值给父组件
-     onChangs(e){
-     this.$emit('adoptMessage',e.target.value)
+    onChangs(e) {
+      this.$emit('adoptMessage', e.target.value)
     },
     // 左右互动
     clickTagsCard(data) {
@@ -114,8 +113,8 @@ export default {
         }
       }
       this.prescOrderId = data.prescOrderId
-      this.$emit('listStatus',data)
-      this.$store.state.faData = data;
+      this.$emit('listStatus', data)
+      this.$store.state.faData = data
       this.levelColor = data.levelColor
       this.rightData.push()
     },
@@ -126,8 +125,8 @@ export default {
     //   }
     // },
     // 基础数据
-    basedata(params={}) {
-      params.reviewResouce = 2;
+    basedata(params = {}) {
+      params.reviewResouce = 2
       this.$axios({
         url: this.api.baseData,
         method: 'put',
@@ -144,22 +143,24 @@ export default {
         })
     },
     //右边预判情况基础数据
-    getDetailData(params={}) {
+    getDetailData(params = {}) {
       selectOutDetail(params)
         .then(res => {
           if (res.code == '200') {
-            this.leftData = res.data
-            this.rightData = this.leftData.reviewOrderissueVOList
-            this.tagsData = this.leftData.levelTotalsList
-            this.dealTagsData(this.tagsData)
-            this.deal(this.rightData)
-            // this.$emit('listStatus', 'ddddd')
-            this.leftData.clinicPrescVOList.forEach((item, index) => {
-              if (item.auditingStatus !== '1') {
-                this.auditStatus = false
-              }        
-            })
-             this.$emit('saveStatus', this.auditStatus)
+            if (res.data && res.data.length) {
+              this.leftData = res.data
+              this.rightData = this.leftData.reviewOrderissueVOList
+              this.tagsData = this.leftData.levelTotalsList
+              this.dealTagsData(this.tagsData)
+              this.deal(this.rightData)
+              // this.$emit('listStatus', 'ddddd')
+              this.leftData.clinicPrescVOList.forEach((item, index) => {
+                if (item.auditingStatus !== '1') {
+                  this.auditStatus = false
+                }
+              })
+              this.$emit('saveStatus', this.auditStatus)
+            }
           } else {
             this.warn(res.msg)
           }
@@ -191,8 +192,7 @@ export default {
       }
     },
     // 右边预判情况树形结构数据
-    getTemplate(params={}) {
-      
+    getTemplate(params = {}) {
       this.$axios({
         url: this.api.selectWithReviewId,
         method: 'put',
@@ -273,7 +273,7 @@ export default {
         }
       }
       this.templateText = pd.reviewTemplate
-        this.$emit('upchange',this.templateText)
+      this.$emit('upchange', this.templateText)
       this.templateTitle = pd.titles
       this.rightData.push()
     },
@@ -336,8 +336,7 @@ export default {
       this.checkedAll = true
     },
     // 右边干预记录
-    getRecord(params={}) {
-     
+    getRecord(params = {}) {
       this.$axios({
         url: this.api.selectWithVisId,
         method: 'put',
@@ -361,7 +360,7 @@ export default {
 .dealRight {
   .ant-card {
     position: relative;
-      overflow: hidden;
+    overflow: hidden;
   }
   .subscript {
     color: white;

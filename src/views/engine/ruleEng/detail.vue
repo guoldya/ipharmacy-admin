@@ -29,19 +29,19 @@
         </a-form-item>
 
         <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['dsName']" />
+          <a-input :read-only="readOnly" v-decorator="['dsName',{rules:[{ max:32,message:'最多32个字符' }]}]" />
         </a-form-item>
         <a-form-item label="sql文本" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-textarea :read-only="readOnly" v-decorator="['sqlText']" />
+          <a-textarea :read-only="readOnly" v-decorator="['sqlText',{rules:[{ max:2500,message:'最多2500个字符' }]}]" />
         </a-form-item>
         <a-form-item label="值" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['val']" />
+          <a-input :read-only="readOnly" v-decorator="['val',{rules:[{ max:32,message:'最多32个字符' }]}]" />
         </a-form-item>
         <a-form-item label="显示名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['display']" />
+          <a-input :read-only="readOnly" v-decorator="['display',{rules:[{ max:32,message:'最多32个字符' }]}]" />
         </a-form-item>
         <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-radio-group v-decorator="[ 'status']">
+          <a-radio-group v-decorator="['status']">
             <a-radio v-for="(op,index) in status" :value="op.id" :key="index">{{op.text}}</a-radio>
           </a-radio-group>
         </a-form-item>
@@ -65,7 +65,8 @@ export default {
         selectOne: 'sys/coreRuleDatasource/selectOne',
         updt: 'sys/coreRuleDatasource/update',
         dataFrom: 'sys/coreDbDatasource/selectList',
-        selectTitlesList: 'sys/coreFactCol/selectCoreFactColTreeList'
+        selectTitlesList: 'sys/coreFactCol/selectListNonHaveRuleDb',
+        insert:'sys/coreRuleDatasource/insert'
       },
       spinning: false,
       labelCol: {
@@ -89,9 +90,14 @@ export default {
     }
   },
   computed: {},
+  created(){
+ setTimeout(() => {
+            this.form.setFieldsValue({ status: 1 })
+          })
+  },
   mounted() {
     this.getTreeList()
-    this.getDatas({})
+    this.getDatas()
     this.getselectData({ id: this.$route.params.id })
   },
   methods: {
@@ -134,7 +140,9 @@ export default {
       return items
     },
     // 数据源的查询
-    getDatas(params = {}) {
+    getDatas() {
+       let params={};
+      //  params.id=this.$route.params.id=='new'?'':this.$route.params.id
       this.$axios({
         url: this.api.dataFrom,
         method: 'put',
@@ -191,8 +199,10 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
+          let urls
+          urls=this.$route.params.id=='new'?'insert':'updt'
           this.$axios({
-            url: this.api.updt,
+            url: this.api[urls],
             method: 'post',
             data: values
           })

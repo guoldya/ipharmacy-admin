@@ -14,7 +14,7 @@
           </a-col>
           <a-col :xl="7" :xxl="7" class="ages">
             <span class="bianhao">{{RecordDelData.admitNum}}</span>
-            <span class="sex">{{RecordDelData.patientSex}}</span>
+            <span class="sex">{{RecordDelData.patientSex?'男':'女'}}</span>
             <span class="nianlin">{{RecordDelData.agevalue}}岁</span>
           </a-col>
           <a-col class="titleText" :xl="3" :xxl="3">
@@ -242,7 +242,8 @@ export default {
         concernedPatientUpdate: 'sys/concernedPatient/update',
         turnpage: 'sys/reviewOrderissue/selectHospitalLeadVisIdAndLagVisId',
         updateReviewStatus: '/sys/reviewOrderissue/updateReviewOrderissueAndIssuerecodeStatus',
-        rewviewupdate: 'sys/reviewProblem/update'
+        rewviewupdate: 'sys/reviewProblem/update',
+        dealData: 'sys/reviewOrderissue/selectPrescList'
       },
       loading: false,
       inspectionData: [],
@@ -315,13 +316,18 @@ export default {
     if (this.planScope == 1) {
       let data = JSON.parse(sessionStorage.getItem('patinRew'))
       let params = { visId: data.visId, submitNo: data.submitNo, reviewResouce: Number(data.planScope) }
-      selectOutDetail(params)
+      this.$axios({
+        url: this.api.dealData,
+        method: 'put',
+        data: params
+      })
         .then(res => {
           if (res.code == '200') {
-            this.RecordDelData = res.data
-            this.leftData = res.data
-            this.$store.state.drugList = this.leftData.clinicPrescVOList[0].prescVOList
-          
+            if (res.data!=null) { 
+              this.RecordDelData = res.data
+              this.leftData = res.data
+              this.$store.state.drugList = this.leftData.clinicPrescVOList[0].prescVOList
+            }
           } else {
             this.allLoading = false
             this.warn(res.msg)
@@ -343,7 +349,6 @@ export default {
       }
       let reviewProblemVOList = []
       this.$store.state.proslist.forEach(item => {
-       
         this.checkDel(item, 'index')
         reviewProblemVOList.push(item)
       })
@@ -472,7 +477,7 @@ export default {
     // 获取患者个人信息
     getRecordDelData(params = {}) {
       this.$axios({
-        url: this.api.selectRecordDel,
+        url: this.api.dealData,
         method: 'put',
         data: params
       })
@@ -480,8 +485,7 @@ export default {
           if (res.code == '200') {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
-            this.$store.state.drugList = this.docDatas
-      
+            this.$store.state.drugList = this.docData
             this.docDatasCopy = this.docDatas
             this.visId = this.$route.params.visId
             this.patientId = res.data.patientId
@@ -642,6 +646,9 @@ export default {
 </script>
 
 <style  lang="less">
+.ant-pro-footer-toolbar{
+    z-index: 10px;
+  }
 .detailPres {
   .patientDetail {
     margin: 5px;

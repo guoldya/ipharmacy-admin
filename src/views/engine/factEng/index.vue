@@ -43,11 +43,11 @@ export default {
       columns: [
         { text: '编码', value: 'id', width: 150, align: 'left' },
         { text: '类型', value: 'colType', width: 150, align: 'left',format: this.coltypeFormat },
-        { text: '名称', value: 'colName', width: 300, align: 'left' },
+        { text: '名称', value: 'colName', width: 200, align: 'left' },
         { text: '属性对应类型', value: 'colDbType', width: 120, align: 'left' ,format:this.colDtypeFormat},
         { text: '显示顺序', value: 'colNo', align: 'left' },
         { text: '更新人', value: 'updatorName', align: 'left' },
-        { text: '更新时间', value: 'updateTime', align: 'left', format: this.timeFormat },
+        { text: '更新时间', value: 'updateTime', align: 'left', format: this.timeFormat,width:140 },
         { text: '状态', value: 'status', align: 'center', width: 80 }
       ],
       items: [
@@ -119,7 +119,7 @@ export default {
     adds() {
       this.$router.push({
        name: 'factEngDetail',
-        params: { id:2 }
+        params: { id:'new' }
       })
     },
     // 编辑修改数据

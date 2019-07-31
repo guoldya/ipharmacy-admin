@@ -97,6 +97,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
+           this.loadingTable = false;
             let params = values
             params.patientid = this.$route.params.patientid
             this.$axios({

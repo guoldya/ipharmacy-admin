@@ -829,6 +829,36 @@ export const asyncRouterMap = [
               }
           ]
       },
+      {
+        path: '/drugStore',
+        name: 'drugStore',
+        component: PageView,
+        meta: { title: '药师信息字典', keepAlive: false, icon: 'zoom-in' },
+        children: [
+          {
+            path: '/drugStore/apothecary',
+            name: 'apothecary',
+            component: RouteView,
+            meta: { title: '药师信息字典', multistage: true },
+            children: [
+              {
+                path: '/drugStore/apothecary/index',
+                name: 'apothecaryIndex',
+                component: () => import('@/views/drugStore/apothecary/index.vue'),
+                meta: { title: '药师信息字典', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/drugStore/apothecary/detail/:indexId',
+                name: 'apothecaryDetail',
+                hidden: true,
+                component: () => import('@/views/drugStore/apothecary/detail.vue'),
+                meta: { title: '药师信息字典详情', detail: true, description: '药师信息字典设置' }
+              }
+            ]
+          }
+        ]
+      },
+    
       
     ]
   },

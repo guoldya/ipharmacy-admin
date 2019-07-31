@@ -24,7 +24,7 @@
               @click="goTo(item)"
             ></a>
             <a class="drugname" v-else v-html="item.drugnames" @click="goTo(item)"></a>
-            <p class="detail">
+            <p class="search-detail">
               <template v-for="(value, key) in item">
                 <span v-if="key!='drugnames'&&key!='drugcode'">
                   <span class="detail-title">&nbsp;{{keysName[key]}}：</span>
@@ -203,7 +203,7 @@ export default {
       font-size: 18px;
     }
   }
-  .detail {
+  .search-detail {
     word-break: break-all;
     display: -webkit-box;
     -webkit-line-clamp: 3; /*限制在一个块元素显示的文本的行数*/
