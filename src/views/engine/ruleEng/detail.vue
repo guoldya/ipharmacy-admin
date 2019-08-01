@@ -172,7 +172,9 @@ export default {
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
-              let { id, dsId, dsName, sqlText, val, display, status } = reqArr,
+              console.log(reqArr,'222')
+              let id = ''+reqArr.id;
+              let {  dsId, dsName, sqlText, val, display, status } = reqArr,
                 formData = {
                   id,
                   dsId,

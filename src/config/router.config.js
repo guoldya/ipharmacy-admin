@@ -615,16 +615,16 @@ export const asyncRouterMap = [
             meta: { title: '药品分组维护', multistage: true },
             children: [
               {
-                path: '/baseData/groupingSpec/index',
+                path: '/baseData/drugAdministration/index',
                 name: 'groupingSpecIndex',
-                component: () => import('@/views/baseData/groupingSpec/index.vue'),
+                component: () => import('@/views/baseData/drugAdministration/index.vue'),
                 meta: { title: '药品分组维护', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/baseData/groupingSpec/detail/:id/',
+                path: '/baseData/drugAdministration/detail/:id/',
                 name: 'groupingSpecDetail',
                 hidden: true,
-                component: () => import('@/views/baseData/groupingSpec/detail.vue'),
+                component: () => import('@/views/baseData/drugAdministration/detail.vue'),
                 meta: { title: '点评结论字典', hiddenHeaderContent: true, detail: true }
               }
             ]

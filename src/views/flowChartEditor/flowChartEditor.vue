@@ -37,7 +37,8 @@
       :confirmLoading="modal.confirmLoading"
       @cancel="modalCancel"
       class="drugModal"
-      width="600px">
+      width="600px"
+      :maskClosable="false">
       <a-ruleModal :handleChange="ruleModalChange"></a-ruleModal>
     </a-modal>
 
@@ -951,7 +952,7 @@
           list[key].verdictType = Number(list[key].verdictType)
           delete  list[key].index
         }
-        coreRuleNodeUpdate({ ruleNodeVOS: list,status:'0' }).then(res => {
+        coreRuleNodeUpdate({ ruleNodeVOS: list,status:'0',ruleId:this.$route.params.id  }).then(res => {
           if (res.code == '200') {
             this.success('保存成功')
           } else {

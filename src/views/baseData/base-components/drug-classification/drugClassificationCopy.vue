@@ -1,13 +1,10 @@
 <template>
   <div>
     <a-row>
-      <a-col :span="13">
-        <a-input placeholder="请输入"/>
+      <a-col :span="16">
+        <a-input-search placeholder="请输入" />
       </a-col>
-      <a-col class="treeCol" :span="5">
-        <a-button size="small" type="primary">查询</a-button>
-      </a-col>
-      <a-col :span="6" class="treeCol">
+      <a-col :span="8" class="treeCol">
         <a-dropdown :trigger="['click']">
           <a class="more">
             操作
@@ -323,6 +320,10 @@ export default {
         params.status = '1'
       }
       params.categoryId = this.nodeData.key
+      params.categoryName = this.nodeData.title
+      params.categoryCode = this.nodeData.categoryCode
+      params.spellCode = this.nodeData.spellCode
+      params.categoryType=this.nodeData.categoryType
       this.$axios({
         url: this.api.updateStatus,
         method: 'post',
@@ -401,6 +402,7 @@ export default {
     },
     addGdata(params, gdata) {
       let obj = {}
+      console.log(1)
       obj.key = params.categoryId
       obj.title = params.categoryName
       obj.pid = params.pid
@@ -487,4 +489,7 @@ export default {
 .icon {
   cursor: pointer;
 }
+  .treeCol{
+    text-align: right;
+  }
 </style>

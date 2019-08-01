@@ -130,6 +130,7 @@
         :confirmLoading="Modal.confirmLoading"
         @cancel="handleCancel"
         class="ruleModal"
+        :maskClosable="false"
       >
         <a-form :form="form">
           <a-form-item
@@ -158,6 +159,7 @@
         :confirmLoading="drugModal.confirmLoading"
         @cancel="drugCancel"
         width="600px"
+        :maskClosable="false"
       >
         <a-form :form="drugForm">
           <a-form-item

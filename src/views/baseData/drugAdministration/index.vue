@@ -43,6 +43,7 @@
           showSizeChanger
           showQuickJumper
           :total="total"
+          v-model="currents"
           class="pnstyle"
           :defaultPageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
@@ -102,7 +103,7 @@
               <a-form-item label="备注"
                            :label-col="{ span: 4 }"
                            :wrapper-col="{ span: 17 }">
-                <a-textarea v-decorator="[ 'remark',{rules: [{max: 250,message:'输入备注过长'}]}  ]"/>
+                <a-textarea v-decorator="[ 'remark',{rules: [{max: 100,message:'输入备注过长'}]}  ]"/>
               </a-form-item>
             <a-form-item label="状态"
                          :label-col="{ span: 4 }"
@@ -182,7 +183,6 @@
           specUpdate:'sys/coreGroupingSpec/update',
           coreGroupingInsert:'sys/coreGroupingSpecDetail/insert',
           coreGroupingSpecDetailDelete:'sys/coreGroupingSpecDetail/delete',
-
     },
         loading: false,
         spinLoading:false,
@@ -229,7 +229,9 @@
         drugForm:this.$form.createForm(this),
         total: null,
         total1:null,
-        pageSize: 10
+        pageSize: 10,
+        currents:1,
+        searchData:{},
       }
     },
     mounted() {
@@ -257,19 +259,24 @@
     methods: {
       //搜索
       search() {
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
         let params = this.$refs.searchPanel.form.getFieldsValue()
-        params.pageSize = 10
+        params.pageSize = this.pageSize
         params.offset = 0
         this.getData(params)
       },
       //重置
       resetForm() {
+        this.searchData = {}
         this.$refs.searchPanel.form.resetFields()
         this.getData({ pageSize: 10, offset: 0 })
       },
       //获取网格数据
       getData(params={}) {
         this.loading = true;
+        if (params.offset == 0) {
+          this.currents = 1
+        }
         this.$axios({
           url: this.api.coreSelectPage,
           method: 'put',
@@ -291,18 +298,22 @@
       },
       //页码数change事件
       pageChangeSize(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+        let params = this.searchData
+        params.offset = (page - 1) * pageSize
+        params.pageSize = pageSize
+        this.pageSize = pageSize;
+        this.getData(params)
       },
       //页码跳转事件
       pageChange(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
+        let params = this.searchData
+        params.offset = (page - 1) * pageSize
+        params.pageSize = pageSize
+        this.pageSize = pageSize
+        this.getData(params)
       },
       //编辑按钮事件
       edits(data) {
-        // this.$router.push({
-        //   name: 'drugAdminDetail',
-        //   params:{id:data.id}
-        // })
         this.addModal.isNew = false;
         this.addModal.visible = true;
         this.addModal.title = '编辑分类';
@@ -326,12 +337,12 @@
       changeStatus(data){
         let params = {}
         if (data.status == '1') {
-          params.status = '0'
+          data.status = '0'
         } else {
-          params.status = '1'
+          data.status = '1'
         }
         params.id = data.id
-        console.log(params)
+        params.status = data.status
         this.$axios({
           url: this.api.coreUpdateStatus,
           method: 'post',
@@ -344,7 +355,6 @@
               } else {
                 this.success('启用成功')
               }
-              this.getData()
             } else {
               if (data.status == '1') {
                 this.warn('停用失败')
@@ -461,7 +471,10 @@
               .then(res => {
                 if (res.code == '200') {
                   this.success(res.msg);
-                  this.getData();
+                  let params = {};
+                  params.offset = (this.currents - 1) * this.pageSize
+                  params.pageSize = this.pageSize
+                  this.getData({});
                 } else {
                   this.warn(res.msg)
                 }

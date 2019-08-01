@@ -7,7 +7,7 @@
     </div>
     <a-form :form="form" @submit="handleSubmit">
       <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input read-only    placeholder='<系统自动生产>' v-decorator="['id',]"/>
+        <a-input class="readOnlyInput"  :disabled="true"    placeholder='<系统自动生产>' v-decorator="['id',]"/>
       </a-form-item>
       <a-form-item label="ICD编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input :read-only="readOnly"  placeholder='ICD编码...' v-decorator="['icdcode', {rules: [{ required: true, message: '请输入编号' },{max: 20,message:'最多输入20个字'}]}]"/>
@@ -25,7 +25,7 @@
         <a-input :read-only="readOnly" v-decorator="['spellcode',{rules:[,{max: 50,message:'最多输入50个字'}]}]"/>
       </a-form-item>
       <a-form-item label="自定义名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input :read-only="readOnly" v-decorator="['icdname',{rules:[,{max: 200,message:'最多输入200个字'}]}]"/>
+        <a-input :read-only="readOnly" v-decorator="['icdname',{rules:[{ required: true, message: '请输入编号' },{max: 200,message:'最多输入200个字'}]}]"/>
       </a-form-item>
       <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-textarea :read-only="readOnly" v-decorator="['remark',{rules:[,{max: 2000,message:'最多输入2000个字'}]}]"/>
@@ -84,7 +84,7 @@ export default {
   },
   computed: {},
   mounted() {
-    if (this.$route.params.id == -1) {
+    if (this.$route.params.id == 'n') {
       this.isNew = true
     }else{
       this.isNew = false;
@@ -99,7 +99,9 @@ export default {
         if (!err) {
            this.loadingTable = false;
             let params = values
+          if (this.$route.params.patientid != 'n'){
             params.patientid = this.$route.params.patientid
+          }
             this.$axios({
               url: this.api.diagnosisMgtupdate,
               method: 'post',

@@ -20,7 +20,9 @@
                     :filterOption="false"
                     @search="handleSearch"
                     @change="handleChange"
+                    v-if="disable"
                     :disabled="disable"
+                    class="readOnlyInput"
                 >
                     <a-select-option
                         v-for="(item,index) in this.drugAllList"
@@ -40,7 +42,40 @@
                         </div>
                     </a-select-option>
                 </a-select>
-                <a-button type="primary" :disabled="disable" @click="addVary">添加关联</a-button>
+              <a-select
+                style="width:400px"
+                showSearch
+                allowClear
+                mode="single"
+                optionLabelProp="title"
+                autoClearSearchValue
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="handleSearch"
+                @change="handleChange"
+
+                v-else
+              >
+                <a-select-option
+                  v-for="(item,index) in this.drugAllList"
+                  :value="item.varietyCode"
+                  :key="index"
+                  :engname="item.engName"
+                  :drugkinds="item.drugIndicator"
+                  :title="item.varietyName"
+                >
+                  <div class="ypmingcheng">
+                    <span>{{item.varietyName}}</span>
+                  </div>
+                  <div class="hechengayao">
+                    {{item.engName}}
+                    <a-tag v-if="item.iscompound==1">合成药</a-tag>
+                    <a-tag>{{item.drugIndicator|drugIndicator_filter}}</a-tag>
+                  </div>
+                </a-select-option>
+              </a-select>
+                <a-button class="margin-left-5" type="primary" :disabled="disable" @click="addVary">添加关联</a-button>
             </a-input-group>
         </div>
         <div>
@@ -492,7 +527,6 @@ export default {
         },
         // 提交输入框内容
         handleSearch(value) {
-            console.log(value)
             let params = { keyword: value }
             this.$axios({
                 url: this.api.getDrugList,
@@ -512,7 +546,6 @@ export default {
         },
         // 里面值改变
         handleChange(value, option) {
-            console.log(value)
             this.selectDrugData = value
         },
         // 控制气泡框
@@ -531,7 +564,6 @@ export default {
                 return
             }
             // Determining condition before show the popconfirm.
-            console.log(this.condition)
             if (this.condition) {
                 this.confirm() // next step
             } else {

@@ -87,6 +87,7 @@
         ></a-pagination>
       </a-spin>
       <a-modal
+        :maskClosable="false"
         :title="drugModal.modalTitle"
         :visible="drugModal.visible"
         @ok="drugOk"
@@ -250,6 +251,9 @@
       this.handleSearch = debounce(this.handleSearch, 800)
       this.searchCoreRule = debounce(this.searchCoreRule, 800)
       return {
+        api:{
+          updateStatus:'sys/coreRule/updateStatus'
+        },
         loadedKeys: ['1', '2'],
         //树形机构数据
         gData: [],
@@ -273,7 +277,7 @@
         current: 1,
         items: [
           { text: '编辑', showtip: false, click: this.edit },
-          { text: '删除', color: '#E6A23C', showtip: true, tip: '确认删除吗？', click: this.delRow },
+          { text: '删除', color: '#E6A23C', showtip: true, tip: '确认删除吗？', click: this.del },
           { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus },
           { text: '停用', color: '#ff9900', showtip: true, tip: '确认停用吗？', click: this.changeStatus }
         ],
@@ -517,7 +521,10 @@
             coreRuleUpdate(params)
               .then(res => {
                 if (res.code == '200') {
-                  this.getPageData()
+                  let params = {};
+                  params.offset = 0
+                  params.pageSize = this.pageSize
+                  this.getPageData(params)
                   this.success(res.msg)
                 } else {
                   this.warn(res.msg)
@@ -570,11 +577,12 @@
         let params = this.pageChangeFilter
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize
+        this.pageSize = pageSize
         this.getPageData(params)
       },
       //页面跳转事件
       pageChange(page, pageSize) {
-        // this.pageSize = pageSize;
+        this.pageSize = pageSize;
         let params = this.pageChangeFilter
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize
@@ -603,18 +611,25 @@
       //操作启用停用
       updateStatus(row) {
         let params = {}
-        if (row.status == 1) {
-          params.status = 0
+        if (row.status == '1') {
+          params.status = '0'
         } else {
-          params.status = 1
+          params.status = '1'
         }
         params.id = row.id
-        coreRuleUpdate(params)
-          .then(res => {
+        this.$axios({
+          url: this.api.updateStatus,
+          method: 'put',
+          data: params
+        }).then(res => {
             if (res.code == '200') {
               this.success('操作成功', () => {
                 row.status = params.status
               })
+              let params = {};
+              params.offset = (this.current - 1) * this.pageSize
+              params.pageSize = this.pageSize
+              this.getPageData(params)
             } else {
               this.warn(res.msg)
             }
@@ -627,19 +642,24 @@
       del(value) {
         let params = {}
         params.id = value.id
-        coreRuleDelete(params)
-          .then(res => {
-            if (res.code == '200') {
-              this.success(res.msg, () => {
-                this.getPageData()
-              })
-            } else {
-              this.warn(res.msg)
-            }
-          })
-          .catch(err => {
-            this.error(err)
-          })
+        if(value.status ==1){
+          this.warn('请停用后再删除')
+        }else{
+          coreRuleDelete(params)
+            .then(res => {
+              if (res.code == '200') {
+                this.success(res.msg, () => {
+                  this.getPageData()
+                })
+              } else {
+                this.warn(res.msg)
+              }
+            })
+            .catch(err => {
+              this.error(err)
+            })
+        }
+
       },
 
       //filter

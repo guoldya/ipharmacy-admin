@@ -8,6 +8,14 @@
                     </a>
                 </div>
                 <a-form :form="form" id="form">
+                  <a-form-item label="方案编号" v-bind="formItemLayout">
+                    <a-input
+                      placeholder="系统自动生成"
+                      v-decorator="['planId']"
+                      :disabled="true"
+                      class="readOnlyInput"
+                    />
+                  </a-form-item>
                     <a-form-item label="方案名称" v-bind="formItemLayout">
                         <a-input
                             placeholder="请输入..."
@@ -258,6 +266,7 @@ export default {
                             }
                             setTimeout(() => {
                                 this.form.setFieldsValue({
+                                    planId: res.data.planId,
                                     planName: res.data.planName,
                                     planType: res.data.planType,
                                     planScope: res.data.planScope,

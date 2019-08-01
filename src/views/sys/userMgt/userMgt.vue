@@ -78,22 +78,8 @@
       <div style="width: 500px;">
         <a-form :form="form">
           <a-form-item label="机构" v-bind="formItemLayout">
-            <!--<a-select-->
-            <!--:disabled="!isNew"-->
-            <!--placeholder="请选择"-->
-            <!--@change="orgChange"-->
-            <!--v-decorator="[-->
-            <!--'orgId',-->
-            <!--{rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}-->
-            <!--]"-->
-            <!--&gt;-->
-            <!--<a-select-option :value="item.orgId" v-for="(item,index) in orgData"-->
-            <!--:key="index">-->
-            <!--{{item.title}}-->
-            <!--</a-select-option>-->
-            <!--</a-select>-->
             <a-tree-select
-              :disabled="!isNew"
+              v-if="isNew"
               @change="orgChange"
               :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
               :treeData="orgData"
@@ -101,30 +87,27 @@
               treeDefaultExpandAll
               v-decorator="[
                                 'orgId',
-                                {rules: [{ required: true, message: '请选择机构' }],initialValue: formData.orgId}
+                                {rules: [{ required: true, message: '请选择机构' }]}
+                                ]"
+            ></a-tree-select>
+            <a-tree-select
+              v-else
+              class="readOnlyInput"
+              :disabled="true"
+              @change="orgChange"
+              :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+              :treeData="orgData"
+              placeholder="请选择机构"
+              treeDefaultExpandAll
+              v-decorator="[
+                                'orgId',
+                                {rules: [{ required: true, message: '请选择机构' }]}
                                 ]"
             ></a-tree-select>
           </a-form-item>
           <a-form-item label="部门" v-bind="formItemLayout">
-            <!--<a-select-->
-            <!--:disabled="!isNew"-->
-            <!--placeholder="请选择..."-->
-            <!--@change="deptChange"-->
-            <!--v-decorator="[-->
-            <!--'deptId',-->
-            <!--{rules: [{ required: true, message: '请输选择所属部门' }],initialValue: formData.deptId}-->
-            <!--]"-->
-            <!--&gt;-->
-            <!--<a-select-option-->
-            <!--v-for="(item,index) in deptData"-->
-            <!--:value="item.deptId"-->
-            <!--:key="index"-->
-            <!--&gt;-->
-            <!--{{item.title}}-->
-            <!--</a-select-option>-->
-            <!--</a-select>-->
             <a-tree-select
-              :disabled="!isNew"
+              v-if="isNew"
               @change="deptChange"
               :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
               :treeData="deptData"
@@ -132,17 +115,47 @@
               treeDefaultExpandAll
               v-decorator="[
                                 'deptId',
-                                {rules: [{ required: true, message: '请选择所属部门' }],initialValue: formData.deptId}
+                                {rules: [{ required: true, message: '请选择所属部门' }]}
+                                ]"
+            ></a-tree-select>
+            <a-tree-select
+              v-else
+              class="readOnlyInput"
+              :disabled="true"
+              @change="deptChange"
+              :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+              :treeData="deptData"
+              placeholder="请输选择部门"
+              treeDefaultExpandAll
+              v-decorator="[
+                                'deptId',
+                                {rules: [{ required: true, message: '请选择所属部门' }]}
                                 ]"
             ></a-tree-select>
           </a-form-item>
           <a-form-item label="人员" v-bind="formItemLayout">
             <a-select
-              :disabled="!isNew"
+              v-if="isNew"
               placeholder="请选择人员"
               v-decorator="[
                                 'personId',
-                                {rules: [{ required: true, message: '请选择人员' }],initialValue: formData.personId}
+                                {rules: [{ required: true, message: '请选择人员' }]}
+                                ]"
+            >
+              <a-select-option
+                v-for="(item,index) in personData"
+                :value="item.personId"
+                :key="index"
+              >{{item.name}}</a-select-option>
+            </a-select>
+            <a-select
+              v-else
+              class="readOnlyInput"
+              :disabled="true"
+              placeholder="请选择人员"
+              v-decorator="[
+                                'personId',
+                                {rules: [{ required: true, message: '请选择人员' }]}
                                 ]"
             >
               <a-select-option
@@ -157,14 +170,14 @@
               placeholder="请输入..."
               v-decorator="[
                                 'account',
-                                {rules: [{ required: true, message: '请输入账号' },{ max:20,message:'最多20个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.account}
+                                {rules: [{ required: true, message: '请输入账号' },{ max:20,message:'最多20个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}]}
                                 ]"
             />
           </a-form-item>
           <a-form-item label="密码" v-bind="formItemLayout">
             <a-input
               placeholder="若不填，后台将生成默认密码"
-              v-decorator="['password',{rules:[{ max:30,message:'最多30个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.password}]"
+              v-decorator="['password',{rules:[{ max:30,message:'最多30个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}]}]"
             />
           </a-form-item>
           <a-form-item label="状态" :required="true" v-bind="formItemLayout">
@@ -205,6 +218,7 @@ export default {
       ],
       total: 0,
       current: 1,
+      pageSize:10,
       isNew: true,
       visible: false,
       loading: false,
@@ -257,10 +271,22 @@ export default {
     },
     edit(row) {
       this.isNew = false
+      this.visible = true
       this.getDeptData(row.orgId)
       this.getPersonData(row.deptId)
       this.formData = row
-      this.visible = true
+      let params = {
+        orgId:this.formData.orgId,
+        deptId:this.formData.deptId,
+        personId:this.formData.personId,
+        account:this.formData.account,
+        password:this.formData.password,
+      }
+      setTimeout(()=>{
+        this.form.setFieldsValue(params)
+      },100)
+
+
     },
     cancel() {
       this.visible = false
@@ -368,6 +394,7 @@ export default {
     },
     sizeChange(current, size) {
       this.current = 1
+      this.pageSize = size
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.pageSize = size
       this.getData(params)

@@ -78,6 +78,7 @@
       :width="800"
       v-model="visible"
       @ok="handleOk"
+      :maskClosable="false"
     >
       <a-form :autoFormCreate="(form)=>{this.form = form}">
 

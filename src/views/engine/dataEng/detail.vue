@@ -8,29 +8,33 @@
     <a-spin tip="加载中..." :spinning="spinning">
       <a-form :form="form" @submit="handleSubmit">
         <a-form-item label="原型列名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input read-only placeholder="由系统自动生成,无需填写" v-decorator="['id']" />
+          <a-input class="readOnlyInput" :disabled="true" placeholder="由系统自动生成,无需填写" v-decorator="['id']" />
         </a-form-item>
         <a-form-item label="数据源名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
+            maxLength="50"
             v-decorator="['dsName',{rules:[{message:'请输入数据源名称',required:true},{ max:50,message:'最多50个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="驱动名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
+            maxLength="50"
             v-decorator="['driverClass',{rules:[{message:'请输入驱动名称',required:true},{ max:50,message:'最多50个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="数据库连接" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
+            maxLength="128"
             v-decorator="['url',{rules:[{message:'请输入数据库连接',required:true},{ max:128,message:'最多128个字符' }]}]"
           />
         </a-form-item>
         <a-form-item label="用户名称" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
+            maxLength="50"
             v-decorator="['username',{rules:[{message:'请输入用户名称',required:true},{ max:50,message:'最多50个字符' }]}]"
           />
         </a-form-item>
@@ -38,6 +42,7 @@
           <a-input
             type='password'
             :read-only="readOnly"
+            maxLength="16"
             v-decorator="['password',{rules:[{message:'请输入密码',required:true},{ max:16,message:'最多16个字符' }]}]"
           />
         </a-form-item>
@@ -56,6 +61,7 @@
         <a-form-item label="验证查询" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
+            maxLength="2500"
             v-decorator="['testSql',{rules:[{message:'请输入验证查询',required:true},{ max:2500,message:'最多2500个字符' }]}]"
           />
         </a-form-item>
@@ -136,10 +142,6 @@ export default {
                   initialsize,
                   maxactive,
                   testSql,
-                  createBy,
-                  createTime,
-                  updateBy,
-                  updateTime,
                   status
                 } = reqArr,
                 formData = {
@@ -152,10 +154,6 @@ export default {
                   initialsize,
                   maxactive,
                   testSql,
-                  createBy,
-                  createTime,
-                  updateBy,
-                  updateTime,
                   status
                 }
               this.form.setFieldsValue(formData)

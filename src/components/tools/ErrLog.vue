@@ -19,6 +19,7 @@
                 :footer="null"
                 centered
                 width="100%"
+                :maskClosable="false"
         >
             <div>
                 <a-button type="danger" @click="handleLogClean">

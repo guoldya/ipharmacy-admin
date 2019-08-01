@@ -174,6 +174,7 @@ export default {
     changeStatus(data) {
       let params = {}
       params.id = data.id
+      params.codeClass = '7'
       if (data.status == '1') {
         params.status = '0'
       } else {
@@ -186,18 +187,10 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            if (data.status == '1') {
-              this.success('停用成功')
-            } else {
-              this.success('启用成功')
-            }
+           this.success(res.data)
             this.getTreeList({ codeclass: 7 })
           } else {
-            if (data.status == '1') {
-              this.warn('停用失败')
-            } else {
-              this.warn('启用失败')
-            }
+           this.warn(res.data)
           }
         })
         .catch(err => {

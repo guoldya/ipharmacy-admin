@@ -191,12 +191,14 @@ export default {
         },
         //搜索获取
         getFormData() {
-            let params = this.$refs.searchPanel.form.getFieldsValue()
-            if (params.searchDate) {
+            let params = this.$refs.searchPanel.form.getFieldsValue();
+            if (params.searchDate.length>0) {
                 params.searchDate = [
                     params.searchDate[0].format('YYYY-MM-DD HH:mm'),
                     params.searchDate[1].format('YYYY-MM-DD HH:mm')
                 ]
+            }else{
+              delete params.searchDate
             }
             return params
         },
