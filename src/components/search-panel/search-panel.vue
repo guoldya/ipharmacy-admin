@@ -26,6 +26,7 @@
                                     :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
                                     :treeData="item.treeData"
                                     placeholder="请选择"
+                                    @select="onSelect"
                                     v-decorator="[ item.dataField]"
                                 ></a-tree-select>
                             </a-form-item>
@@ -132,7 +133,10 @@ export default {
         },
         choose:{
             type:Object,
-        }
+        },
+      onSelect:{
+          type:Function
+      }
     },
     data() {
         return {
@@ -146,13 +150,13 @@ export default {
             },
             formItemLayout: {
                 labelCol: {
-                    lg: { span: 8 },
-                    sm: { span: 7 },
+                    lg: { span: 9 },
+                    sm: { span: 9 },
                     xxl: { span: 6 }
                 },
                 wrapperCol: {
-                    lg: { span: 10 },
-                    sm: { span: 17 },
+                    lg: { span: 15 },
+                    sm: { span: 15 },
                     xxl: { span: 18 }
                 }
             }

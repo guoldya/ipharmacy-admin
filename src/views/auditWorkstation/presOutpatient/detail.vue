@@ -215,7 +215,7 @@
                                         <a v-else></a>
                                     </a-dropdown>
                                 </div>
-                                <a-textarea :rows="4" v-model="templateText"></a-textarea>
+                                <a-textarea :rows="4" maxlength="100" v-model="templateText"></a-textarea>
                                 <div class="margin-top-10">
                                     <span class="dealP">问题描述：</span>
                                     <span v-for="(ta,index) in tagsData " class="margin-left-5" :key=index>
@@ -309,6 +309,7 @@
             @ok="handleOk"
             @cancel="handleCancel"
             width="600px"
+            :maskClosable="false"
         >
             <a-form :form="form">
                 <a-form-item label="分类" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">

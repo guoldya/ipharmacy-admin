@@ -7,6 +7,7 @@
             @cancel="addRuleCancel"
             class="drugModal"
             width="700px"
+            :maskClosable="false"
         >
             <a-form :form="drugForm">
                 <a-form-item label="类型" :label-col="{ span: 4 }" :wrapper-col="{ span: 17 }">

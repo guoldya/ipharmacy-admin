@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-card>
-            <Searchpanel ref="searchPanel" :list="list">
+            <Searchpanel ref="searchPanel" :list="list" :choose="choose" :onSelect="selectTree">
                 <div slot="control">
                     <a-button type="primary" @click="search">查询</a-button>
                     <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
@@ -76,6 +76,7 @@
                         :width="item.width"
                         :align="item.align"
                         :formatter="item.formatter"
+                        :show-overflow-tooltip="true"
                     >
                         <template slot-scope="props">
                             <span v-if="item.prop == 'submitName'">
@@ -151,7 +152,7 @@
                             </a-row>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="action" label="操作" width="140" align="center">
+                    <el-table-column prop="action" label="操作" width="140" align="center" fixed= "right">
                         <template slot-scope="props">
                             <a @click="looks(props.row)">查看</a>
                             <a-divider type="vertical" />
@@ -190,6 +191,7 @@
                 @cancel="handleCancel"
                 width="600px"
                 class="modals"
+                :maskClosable="false"
             >
                 <a-tabs defaultActiveKey="1" size="small" style="width: 550px">
                     <a-tab-pane tab="预判情况" key="1" class="tabPaneLeft">
@@ -274,7 +276,7 @@
                                 </a>
                                 <a v-else></a>
                             </a-dropdown>
-                            <a-textarea :rows="4" v-model="templateText"></a-textarea>
+                            <a-textarea :rows="4" v-model="templateText" maxlength="100"></a-textarea>
                         </div>
                     </a-tab-pane>
                     <a-tab-pane tab="干预记录" key="2">
@@ -326,11 +328,12 @@ export default {
                 reviewTemplateUpdate: 'sys/reviewTemplate/update',
                 selectTribunalRecordNum: 'sys/reviewOrderissue/selectTribunalRecordNum',
                 reviewUpdateStatus: 'sys/reviewPlanorder/updateStatus',
-                selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
+                selectTreeData: 'sys/sysDepts/selectDeptsTreeListNotByOrgId',
                 selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
                 selectOrderDetail: 'sys/reviewOrderissue/selectReviewOrderissueDetail',
                 updateReviewList: 'sys/reviewOrderissue/updateReviewOrderissueList',
-                selectPlanInPlanCount: 'sys/reviewPlanorder/selectUsingPlanInPlanorderCount'
+                selectPlanInPlanCount: 'sys/reviewPlanorder/selectUsingPlanInPlanorderCount',
+                orgUrl: '/sys/sysOrgs/selectList',
             },
             labelCol: {
                 xs: { span: 24 },
@@ -355,8 +358,9 @@ export default {
             columns: [
                 { title: '处方号', prop: 'orderNo', width: 100, align: 'center' },
                 { title: '处方时间', prop: 'submitTime', width: 140 },
+                { title: '机构', prop: 'orgTitle', width: 140 },
+              { title: '开单科室', prop: 'deptName', width: 110 },
                 { title: '开单医生', prop: 'submitName', width: 90 },
-                { title: '开单科室', prop: 'deptName', width: 110 },
                 { title: '门诊号', prop: 'admitNum', width: 120 },
                 { title: '患者', prop: 'pname', width: 80 },
                 { title: '性别', prop: 'sex', width: 50, align: 'center' },
@@ -391,25 +395,30 @@ export default {
             checkedAll: true,
             iconSpin: true,
             openTrialTime: null,
-            pageChangeFilter: {}
+            pageChangeFilter: {},
+            orgData: [],
         }
     },
     computed: {
+      choose() {
+        return { isshow: false, isextend: true }
+      },
         list() {
             return [
+              { name: '机构', dataField: 'orgId', type: 'tree-select', keyExpr: 'keyword', treeData: this.orgData },
+              {
+                name: '开单科室',
+                dataField: 'admitDept',
+                type: 'tree-select',
+                keyExpr: 'keyword',
+                treeData: this.treeDatas,
+              },
+              { name: '开单医生', dataField: 'submitName', type: 'text' },
                 {
                     name: '患者',
                     dataField: 'pname',
                     type: 'text'
                 },
-                { name: '开单医生', dataField: 'submitName', type: 'text' },
-                {
-                    name: '开单科室',
-                    dataField: 'admitDept',
-                    type: 'tree-select',
-                    keyExpr: 'keyword',
-                    treeData: this.treeDatas
-                }
             ]
         }
     },
@@ -417,8 +426,8 @@ export default {
         //获取后台数据
 
         // 获取科室数据
-        this.getTreeseldata()
         this.getOpenTrial()
+      this.getOrgData()
         this.openTrialTime = setInterval(() => {
             this.getOpenTrial()
         }, 15000)
@@ -496,6 +505,42 @@ export default {
                     this.error(err)
                 })
         },
+
+      getOrgData(obj = {}) {
+        this.$axios({
+          url: this.api.orgUrl,
+          method: 'put',
+          data: obj
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.orgData = this.getOrgTreeData(res.rows, undefined)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      getOrgTreeData(data, pid) {
+        let tree = []
+        data.forEach(item => {
+          let row = item
+          row.key = item.orgId
+          row.value = item.orgId
+          if (pid == item.parentId) {
+            row.children = this.getOrgTreeData(data, item.orgId)
+            tree.push(row)
+          }
+        })
+        return tree
+      },
+
+      selectTree(value){
+          console.log(value,'value');
+        this.getTreeseldata({orgId:value})
+      },
         //搜索
         search() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
@@ -939,7 +984,7 @@ export default {
             params.auditType = '1'
             params.passType = '1'
             params.reviewOpinion = this.templateText
-            params.reviewVerdict = '1'
+            params.reviewVerdict = '2'
             params.reviewIds = []
             params.reviewIds[0] = this.tempRowData.reviewId
             this.$axios({

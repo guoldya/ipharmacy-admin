@@ -37,7 +37,7 @@ export default {
             },
             loading: false,
             total: 10,
-            curent: 1,
+            current: 1,
             pageSize: 100000,
             visible: false,
             confirmLoading: false,
@@ -228,7 +228,8 @@ export default {
                 .then(res => {
                     if (res.code == '200') {
                         if (data.status == '1') {
-                            this.success('停用成功')
+                            this.success('停用成功');
+
                         } else {
                             this.success('启用成功')
                         }

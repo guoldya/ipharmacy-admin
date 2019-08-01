@@ -154,6 +154,7 @@
         width="750px"
         class="modals"
         okText="驳回"
+        :maskClosable="false"
       >
         <jodgeStation :visData="visDatas" @adoptMessage="updateData" @upchange="updateDatas"></jodgeStation>
       </a-modal>

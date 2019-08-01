@@ -95,7 +95,7 @@
                 </a>
                 <a v-else></a>
               </a-dropdown>
-             <a-textarea :rows="4" v-model="templateText" @change='onChangs'   class="texts"></a-textarea>
+             <a-textarea :rows="4" maxlength="100" v-model="templateText" @change='onChangs'   class="texts"></a-textarea>
             </div>
           </a-tab-pane>
           <a-tab-pane tab="干预记录" key="2">

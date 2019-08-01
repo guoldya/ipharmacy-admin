@@ -37,7 +37,7 @@
             </div>
           </Searchpanel>
 
-          <a-button class="margin-top-10" :disabled="disable" type="primary" @click="addMdc">新增</a-button>
+          <a-button class="margin-top-10"  type="primary" @click="addMdc">新增</a-button>
           <a-spin tip="加载中..." :spinning="loadingTable">
             <el-table
               ref="table"
@@ -81,7 +81,7 @@
                       @confirm="updateStatus(props.row,'0')"
                       v-else
                     >
-                      <a>停用</a>
+                      <a style="color:#ff9900">停用</a>
                     </a-popconfirm>
                     <a-divider type="vertical" v-if="props.row.type == 2"/>
                   </span>
@@ -144,9 +144,10 @@ export default {
       disable: true,
       form: this.$form.createForm(this),
       // key值也就是id值
-      id: '',
+      id: 'n',
       value:'',
-      current:1
+      current:1,
+      searchData:{},
     }
   },
   mounted() {
@@ -237,8 +238,8 @@ export default {
     //搜索
     search() {
       if($.trim(this.id).length>0) {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
-        // this.current=2
+        let params = this.$refs.searchPanel.form.getFieldsValue();
+        this.searchData =  this.$refs.searchPanel.form.getFieldsValue();
         params.pageSize = 10
         params.offset = 1
         params.patientid = this.id
@@ -248,6 +249,7 @@ export default {
     //重置
     resetForm() {
       if($.trim(this.id).length>0){
+        this.searchData = {}
         this.$refs.searchPanel.form.resetFields()
         let params = { patientid: this.id }
         this.getPageData(params)
@@ -286,7 +288,7 @@ export default {
     addMdc() {
       this.$router.push({
         name: 'diagnosisMgtDetail',
-        params: {id:-1 ,patientid:-1 }
+        params: {id:'n' ,patientid:this.id }
       })
     },
     // 编辑事件
@@ -352,6 +354,9 @@ export default {
 
     //获取网格分页
     getPageData(params = {}) {
+      if (params.offset ==0){
+        this.current = 1;
+      }
       params.patientid = this.id
       this.loadingTable = true
       this.$axios({
@@ -379,20 +384,30 @@ export default {
 
     //页面数change事件
     pageChangeSize(page, pageSize) {
-      this.getPageData({ offset: (page - 1) * pageSize, pageSize: pageSize })
-      this.current = offset / 10
+      let params = this.searchData
+      this.pageSize = pageSize;
+      params.offset = (page - 1) * pageSize
+      params.pageSize = pageSize
+      this.getPageData(params)
     },
     //页面跳转事件
     pageChange(page, pageSize) {
+      this.pageSize = pageSize;
+      let params = this.searchData
+      params.offset = (page - 1) * pageSize
+      params.pageSize = pageSize
       this.getPageData({ offset: (page - 1) * pageSize, pageSize: this.pageSize })
     },
 
     //操作启用停用
     updateStatus(row, val) {
       let params = {}
+      if (row.status == '1') {
+        params.status = '0'
+      } else {
+        params.status = '1'
+      }
       params.id = row.id
-      params.status = val
-      params.offset=(this.current-1)*10
       this.$axios({
         url: this.api.diagnosisMgtupdate,
         method: 'post',
@@ -401,7 +416,10 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
-              this.getPageData({offset:(this.current-1)*10})
+              let params = {};
+              params.offset = (this.current - 1) * this.pageSize
+              params.pageSize = this.pageSize
+              this.getPageData(params)
             })
           } else {
             this.warn(res.msg)

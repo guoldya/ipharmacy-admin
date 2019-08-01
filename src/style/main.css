@@ -218,3 +218,21 @@ padding: 0 32px;
 .padding5{
   padding: 0px 5px;
 }
+.readOnlyInput{
+  border: 1px dashed #d9d9d9 !important;
+  background-color: #ffff !important;
+  cursor:default;
+  color: rgba(0, 0, 0, 0.65);
+}
+.readOnlyInput:hover{
+  border: 1px dashed #2d8cf0 !important;
+  background-color: #ffff !important;
+  cursor:default;
+  color: rgba(0, 0, 0, 0.65);
+}
+.ant-select-disabled .ant-select-selection {
+  border: 0px;
+  background-color: #ffff ;
+  cursor:default;
+  color: rgba(0, 0, 0, 0.65);
+}

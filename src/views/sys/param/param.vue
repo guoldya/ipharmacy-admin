@@ -83,7 +83,7 @@
                         </a-select>
                     </a-form-item>
                     <a-form-item
-                            label="参数"
+                            label="参数名称"
                             v-bind="formItemLayout"
                     >
                         <a-input
@@ -118,7 +118,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'paramValue',{rules: [{ required: true, message: '请输入参数值' },{ max:40,message:'最多50个字' }],initialValue: formData.paramValue}]"/>
+                                v-decorator="[ 'paramValue',{rules: [{ required: true, message: '请输入参数值' },{ max:50,message:'最多50个字' },{ message: '只能输入数字和字母', pattern: /^\w+$/}],initialValue: formData.paramValue}]"/>
                     </a-form-item>
                     <a-form-item
                             label="备注"
@@ -127,7 +127,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'ramark',{rules: [{ max:120 ,message:'最多125个字' }],initialValue: formData.ramark}]"/>
+                                v-decorator="[ 'ramark',{rules: [{ max:80 ,message:'最多80个字' }],initialValue: formData.ramark}]"/>
                     </a-form-item>
                 </a-form>
             </div>

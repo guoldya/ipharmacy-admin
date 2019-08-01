@@ -2,7 +2,6 @@
   <div>
     <a-input-search style="margin-bottom: 8px" placeholder="Search" @change="onChange" />
     <a-tree
-      @expand="onExpand"
       :expandedKeys="expandedKeys"
       :autoExpandParent="autoExpandParent"
       :treeData="gData"
@@ -85,10 +84,10 @@
       }
     },
     methods: {
-      onExpand  (expandedKeys) {
-        this.expandedKeys = expandedKeys
-        this.autoExpandParent = false
-      },
+      // onExpand  (expandedKeys) {
+      //   this.expandedKeys = expandedKeys
+      //   this.autoExpandParent = false
+      // },
       onChange (e) {
         const value = e.target.value
         const expandedKeys = dataList.map((item) => {

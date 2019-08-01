@@ -11,20 +11,21 @@
         :form="form"
         @submit="handleSubmit"
       >
-<!--        <a-form-item-->
-<!--          label="等级编号"-->
-<!--          :label-col="labelCol"-->
-<!--          :wrapper-col="wrapperCol"-->
-<!--        >-->
-<!--          <a-input class="readOnlyInput" :read-only="readOnlys" v-decorator="['auditLevel',-->
-<!--        {rules: [{ required: true, message: '请输入编号' },{pattern:/^([1-9][0-9]{0,1}|100)$/,message:'请输入两位数字'}]}]"/>-->
-<!--        </a-form-item>-->
+        <a-form-item
+          label="等级编号"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+        >
+          <a-input class="readOnlyInput"  :disabled="true" v-decorator="['auditLevel',
+        {rules: [{ required: true, message: '请输入编号' },{pattern:/^([1-9][0-9]{0,1}|100)$/,message:'请输入两位数字'}]}]"/>
+        </a-form-item>
         <a-form-item
           label="等级名称"
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-input :read-only="readOnly" v-decorator="['levelName',
+          <a-input  v-if="readOnly" class="readOnlyInput"  :disabled="true" v-decorator="['levelName',]"/>
+          <a-input v-else v-decorator="['levelName',
         {rules: [{ required: true, message: '请输入等级名称' },{max: 50,message:'输入名称过长'}]}]"/>
         </a-form-item>
         <a-form-item
@@ -32,7 +33,9 @@
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-textarea :read-only="readOnly"
+          <a-textarea v-if="readOnly" class="readOnlyInput"  :disabled="true"
+                      v-decorator="['levelDescription',]"/>
+          <a-textarea v-else
                       v-decorator="['levelDescription',
                      {rules: [{max: 200,message:'输入等级说明过长'}]}]"/>
         </a-form-item>
@@ -136,7 +139,7 @@
             if (res.code == '200') {
               this.listData = res.data
               this.form.setFieldsValue({
-                // auditLevel: res.data.auditLevel,
+               auditLevel: res.data.auditLevel,
                 levelName: this.listData.levelName,
                 handleType: this.listData.handleType,
                 levelDescription: this.listData.levelDescription,
@@ -236,13 +239,17 @@
     z-index: 3;
   }
   .readOnlyInput{
-    border: 1px dashed #ddd;
+    border: 1px dashed #d9d9d9;
+    background-color: #ffff !important;
+    cursor:default;
+    color: rgba(0, 0, 0, 0.65);
   }
   .readOnlyInput:hover{
-    border: 1px dashed #ddd;
+    border: 1px dashed #2d8cf0 !important;
+    background-color: #ffff !important;
+    cursor:default;
+    color: rgba(0, 0, 0, 0.65);
   }
-  .readOnlyInput:active{
-    border: 1px dashed #ddd;
-  }
+
 
 </style>
