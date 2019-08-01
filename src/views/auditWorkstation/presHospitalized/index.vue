@@ -269,14 +269,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchYJSMapData()
+    //this.fetchYJSMapData()
     this.getTreeseldata()
     this.selectEasonData()
-    // this.getStatusDatas({ reviewResouce: 2 })
-    // this.$router.push({
-    //     name: 'presHospitalizedDetail',
-    //     params: { visId: 1, maxSubmitNo: 2,reviewId:3,isNew:1, }
-    //   })
+  
   },
   methods: {
     // 获取医生

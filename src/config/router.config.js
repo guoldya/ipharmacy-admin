@@ -340,7 +340,6 @@ export const asyncRouterMap = [
               }
             ]
           },
-
           {
             path: '/auditWorkstation/presHospitalDetail/detail',
             name: 'presHospitalDetail',
@@ -356,7 +355,6 @@ export const asyncRouterMap = [
               }
             ]
           },
-
           {
             path: '/auditWorkstation/presHistory',
             name: 'presHistory',
@@ -876,7 +874,57 @@ export const asyncRouterMap = [
                 meta: { title: '药师信息字典详情', detail: true, description: '药师信息字典设置' }
               }
             ]
-          }
+          },
+          {
+            path: '/drugStore/drugText',
+            name: 'drugText',
+            component: RouteView,
+            meta: { title: '药师审核', multistage: true },
+            children: [
+              {
+                path: '/drugStore/drugText/index',
+                name: 'drugTextIndex',
+                component: () => import('@/views/drugStore/drugText/index.vue'),
+                meta: { title: '药师审核', hiddenHeaderContent: true, index: true }
+              }        
+            ]
+          },
+          {
+            path: '/drugStore/drugShop',
+            name: 'drugShop',
+            component: RouteView,
+            meta: { title: '药店信息字典', multistage: true },
+            children: [
+              {
+                path: '/drugStore/drugShop/index',
+                name: 'drugShopIndex',
+                component: () => import('@/views/drugStore/drugShop/index.vue'),
+                meta: { title: '药店信息字典', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/drugStore/drugShop/detail/:indexId',
+                name: 'drugShopDetail',
+                hidden: true,
+                component: () => import('@/views/drugStore/drugShop/detail.vue'),
+                meta: { title: '药店信息字典详情', detail: true, description: '药店信息字典设置' }
+              }
+            ]
+          },
+          {
+            path: '/drugStore/drugShopCheck',
+            name: 'drugShopCheck',
+            component: RouteView,
+            meta: { title: '药店审核', multistage: true },
+            children: [
+              {
+                path: '/drugStore/drugShopCheck/index',
+                name: 'drugShopCheckIndex',
+                component: () => import('@/views/drugStore/drugShopCheck/index.vue'),
+                meta: { title: '药店审核', hiddenHeaderContent: true, index: true }
+              }        
+            ]
+          },
+          
         ]
       },
     

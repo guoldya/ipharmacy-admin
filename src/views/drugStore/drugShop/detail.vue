@@ -2,7 +2,7 @@
   <div class="yaoshi">
     <a-card>
       <header>
-        <h3 class="returns"><返回</h3>
+        <h3 class="returns" @click="backTo"><返回</h3>
         <div class="does">
           <a-button type="primary">保存</a-button>
           <a-button>取消</a-button>
@@ -18,7 +18,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.title}:`,
+                `${item.name}:`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -31,27 +31,28 @@
               </a-form-item>
             </a-col>
           </a-row>
-          <a-form-item label="个人介绍" class="texts">
-            <a-textarea
-              v-decorator="['username',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
-              placeholder="请输入个人介绍"
-            />
-          </a-form-item>
-          <a-form-item label="擅长领域" class="texts">
-            <a-textarea
-              v-decorator="['username',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
-              placeholder="请输入擅长领域"
-            />
-          </a-form-item>
           <a-form-item label="备注" class="texts">
             <a-textarea
               v-decorator="['username',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
               placeholder="请输入备注"
             />
           </a-form-item>
+          <a-form-item label="药店图标" class="texts unplod">
+            <a-upload
+              name="avatar"
+              listType="picture-card"
+              class="avatar-uploader"
+              :showUploadList="false"
+            >
+              <div>
+                <a-icon :type="loading ? 'loading' : 'plus'" />
+                <div class="ant-upload-text">Upload</div>
+              </div>
+            </a-upload>
+          </a-form-item>
         </a-form>
       </div>
-      <h2>执业药师注册证</h2>
+      <h2>药店营业执照</h2>
       <a-divider style="margin: 10px 0;" />
       <div id="components-form-demo-advanced-search">
         <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
@@ -60,7 +61,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.title}:`,
+                `${item.name}:`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -73,7 +74,7 @@
               </a-form-item>
             </a-col>
           </a-row>
-          <a-form-item label="执业范围" class="texts">
+          <a-form-item label="经营范围" class="texts">
             <a-textarea
               v-decorator="['username',{rules:[{message:'请输入用户名称',required:true},{ max:50,message:'最多50个字符' }]}]"
             />
@@ -93,7 +94,7 @@
           </a-form-item>
         </a-form>
       </div>
-      <h2>执业药师资格证书</h2>
+      <h2>药品经营许可证</h2>
       <a-divider style="margin: 10px 0;" />
       <div id="components-form-demo-advanced-search">
         <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
@@ -102,7 +103,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.title}:`,
+                `${item.name}:`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -115,7 +116,7 @@
               </a-form-item>
             </a-col>
           </a-row>
-          <a-form-item label="执业范围" class="texts">
+          <a-form-item label="经营范围" class="texts">
             <a-textarea
               v-decorator="['username',{rules:[{message:'请输入用户名称',required:true},{ max:50,message:'最多50个字符' }]}]"
             />
@@ -135,24 +136,29 @@
           </a-form-item>
         </a-form>
       </div>
-      <h2>执业药师资格证书</h2>
+      <h2>药品经营质量管理规范认证证书（GSP）</h2>
       <a-divider style="margin: 10px 0;" />
       <div id="components-form-demo-advanced-search">
         <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
-          <a-form-item label="身份证正面" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
-          </a-form-item>
-          <a-form-item label="身份证反面" class="texts unplod">
+          <a-row :gutter="24">
+            <a-col v-for="item in druglist" :key="item.title" :span="6">
+              <a-form-item :label="`${item.title}`">
+                <a-input
+                  v-decorator="[
+                `${item.name}:`,
+                {
+                  rules: [{
+                    required: !item.require ,
+                    message: 'Input something!',
+                  }],
+                }
+              ]"
+                  :placeholder="`请输入${item.title}`"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-form-item label="资质上传" class="texts unplod">
             <a-upload
               name="avatar"
               listType="picture-card"
@@ -171,126 +177,320 @@
   </div>
 </template>
 <script>
+import {datas} from './json'
 export default {
   data() {
     return {
       expand: false,
       form: this.$form.createForm(this),
-      loading: false
+      loading: false,
     }
   },
   computed: {
     formBase() {
       return [
         {
-          title: '药师编码',
-          require: true
+          title: '药店编码',
+          require: true,
+          name:'orgCode'
         },
         {
-          title: '账号'
+          title: '药店名称',
+            name:'orgName'
         },
         {
-          title: '姓名'
+          title: '简码',  
+            name:'simpleCode'
         },
         {
-          title: '简码',
-          require: true
+          title: '药店类型',
+          require: true,
+            name:''
         },
         {
-          title: '性别'
+          title: '联系人',
+            name:'contacts'
         },
         {
-          title: '身份证号'
+          title: '联系电话',
+          name:'telephone'
         },
         {
-          title: '执业机构'
+          title: '区域',
+          name:'areaId'
         },
         {
-          title: '职称'
+          title: '地址',
+          name:'address'
         },
         {
-          title: '执业地点'
+          title: '药店性质',
+          name:'enable'
         },
         {
-          title: '联系电话'
+          title: '配送方式',
+          name:'authStatus'
         },
         {
-          title: '毕业院校'
+          title: '开户银行',
+          name:'bank'
         },
         {
-          title: '学历'
+          title: '账号',
+          name:'account'
         },
         {
-          title: '专业'
+          title: '营业时间',
+          name:'blFundingTime'
         },
         {
-          title: '参加工作时间'
+          title: '特色服务',
+          name:'cook'
         }
       ]
     },
     practiceForms() {
       return [
         {
-          title: '资格证书号'
+          title: '名称',
+          name:'blName'
         },
         {
-          title: '注册证编号'
+          title: '类型',
+          name:'blType'
         },
         {
-          title: '姓名'
+          title: '住所',
+          name:'blAddr'
         },
         {
-          title: '执业地区'
+          title: '注册资金',
+          name:'blRegistCapital'
         },
         {
-          title: '执业类别'
+          title: '成立日期',
+          name:'blFundingTime'
         },
         {
-          title: '执业单位'
+          title: '经营期限',
+          name:'type'
         },
         {
-          title: '有效期至'
+          title: '法定代表人',
+          name:'blPerson'
         },
         {
-          title: '发证机关'
+          title: '登记日期',
+          name:'blLicenseTime'
         },
         {
-          title: '注册日期'
+          title: '登记机关',
+          name:'blLicenseOrg'
         }
       ]
     },
     certificateForms() {
       return [
         {
-          title: '管理号'
+          title: '企业名称',
+          name:'dblName'
         },
         {
-          title: '姓名'
+          title: '注册地址',
+          name:'dblStoreAddr'
         },
         {
-          title: '性别'
+          title: '法定代表人',
+          name:'dblPerson'
         },
         {
-          title: '出生日期'
+          title: '企业负责人',
+          name:'dblPrincipal'
         },
         {
-          title: '专业类别'
+          title: '质量负责人',
+          name:'dblQuaPrincipal'
         },
         {
-          title: '批准日期'
+          title: '仓库地址',
+          name:'dblStoreAddr'
         },
         {
-          title: '签发单位'
+          title: '证号',
+          name:'dblNo'
         },
         {
-          title: '签发日期'
+          title: '经营方式',
+          name:'dblBizMode'
         }
+      ]
+    },
+    druglist(){
+ return [
+        {
+          title: '企业名称',
+          name:'gspName'
+        },
+        {
+          title: '地址',
+          name:'gspAddr'
+        },
+        {
+          title: '认证范围',
+          name:'gspScope'
+        },
+        {
+          title: '证书编号',
+          name:'gspNo'
+        },
+        {
+          title: '有效期至',
+          name:'gspValidTime'
+        },
+        {
+          title: '发证机关',
+          name:'gspLicenseOrg'
+        },
+        {
+          title: '发证日期:',
+          name:'gspLicenseTime'
+        },
       ]
     }
   },
-  created() {},
+  created() {
+     console.log(datas)
+     let reqArr=datas[0]
+     let {
+                account,
+    address,
+    areaId,
+    authStatus,
+    bank,
+    blAddr,
+    blBizLimit,
+    blBizScope,
+    blFundingTime,
+    blLicenseOrg,
+    blLicenseTime,
+    blName,
+    blPerson,
+    blPic,
+    blRegistCapital,
+    blType,
+    blUrl,
+    contacts,
+    createBy,
+    createTime,
+    dblAddr,
+    dblBizMode,
+    dblBizScope,
+    dblLicenseOrg,
+    dblLicenseTime,
+    dblName,
+    dblNo,
+    dblPerson,
+    dblPic,
+    dblPrincipal,
+    dblQuaPrincipal,
+    dblStoreAddr,
+    dblUrl,
+    dblValidTime,
+    dispatchType,
+    enable,
+    gspAddr,
+    gspLicenseOrg,
+    gspLicenseTime,
+    gspName,
+    gspNo,
+    gspPic,
+    gspScope,
+    gspUrl,
+    gspValidTime,
+    id,
+    latitude,
+    logoUrl,
+    longitude,
+    nature,
+    orgCode,
+    orgName,
+    orgType,
+    remark,
+    simpleCode,
+    status,
+    telephone,
+    type,
+    updateTime,
+                } = reqArr,
+                formData = {
+                    account,
+    address,
+    areaId,
+    authStatus,
+    bank,
+    blAddr,
+    blBizLimit,
+    blBizScope,
+    blFundingTime,
+    blLicenseOrg,
+    blLicenseTime,
+    blName,
+    blPerson,
+    blPic,
+    blRegistCapital,
+    blType,
+    blUrl,
+    contacts,
+    createBy,
+    createTime,
+    dblAddr,
+    dblBizMode,
+    dblBizScope,
+    dblLicenseOrg,
+    dblLicenseTime,
+    dblName,
+    dblNo,
+    dblPerson,
+    dblPic,
+    dblPrincipal,
+    dblQuaPrincipal,
+    dblStoreAddr,
+    dblUrl,
+    dblValidTime,
+    dispatchType,
+    enable,
+    gspAddr,
+    gspLicenseOrg,
+    gspLicenseTime,
+    gspName,
+    gspNo,
+    gspPic,
+    gspScope,
+    gspUrl,
+    gspValidTime,
+    id,
+    latitude,
+    logoUrl,
+    longitude,
+    nature,
+    orgCode,
+    orgName,
+    orgType,
+    remark,
+    simpleCode,
+    status,
+    telephone,
+    type,
+    updateTime
+                }
+              this.form.setFieldsValue(formData)
+  },
   mounted() {},
   methods: {
+    // 表单赋值
+    giveFormData(){
+        
+    },
     // 查询数据
     handleSubmit(e) {
       e.preventDefault()
@@ -318,7 +518,7 @@ export default {
     },
     backTo() {
       this.$router.push({
-        name: 'dataEngindex'
+        name: 'drugShopIndex'
       })
     },
     confirm(e) {},
@@ -334,7 +534,8 @@ export default {
         console.log('error', error)
         console.log('Received values of form: ', values)
       })
-    }
+    },
+    
   }
 }
 </script>

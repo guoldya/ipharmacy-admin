@@ -21,8 +21,9 @@
               ]"
           ></a-tree-select>
         </a-form-item>
-        <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol" >
           <a-select
+           :disabled="onlyRead"
             v-decorator="[ 'colType',{
                   rules: [{
                     required: true,
@@ -56,16 +57,21 @@
             v-decorator="['colNo',{rules:[{pattern:/^\d{1,4}$/,message:'请输入输入4位以内数字',required:true}]}]"
           />
         </a-form-item>
-        <a-form-item label="数据库" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <!-- <a-form-item label="数据库" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['sql',{rules:[{message:'请输入数据库',required:true},{ max:2500,message:'最多2500个字符' }]}]"
+            v-decorator="['dbId',{rules:[{message:'请输入数据库',required:true},{ max:2500,message:'最多2500个字符' }]}]"
           />
+        </a-form-item> -->
+         <a-form-item label="数据源" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-select v-decorator="[ 'dbId']">
+            <a-select-option v-for="(op,index) in lists" :value="op.id" :key="index">{{op.dsName}}</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="扩展字段" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['dbId',{rules:[{pattern:/^\d{1,4}$/,message:'请输入数字',required:true}]}]"
+            v-decorator="['colSql',{rules:[{message:'请输入数字',required:true}]}]"
           />
         </a-form-item>
         <a-form-item label="属性类型" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -124,7 +130,9 @@ export default {
       api: {
         selectOne: 'sys/coreFactCol/selectOne',
         updt: 'sys/coreFactCol/update',
-        selectTree: 'sys/coreFactCol/selectListWithoutSelf'
+        selectTree: 'sys/coreFactCol/selectListWithoutSelf',
+         dataFrom: 'sys/coreDbDatasource/selectList',
+
       },
       spinning: false,
       labelCol: {
@@ -143,16 +151,22 @@ export default {
       listData: {},
       readOnly: false,
       isNew: true,
-      treedata: []
+      treedata: [],
+      lists:[],
+      onlyRead:false
     }
   },
   created(){
  setTimeout(() => {
-            this.form.setFieldsValue({ status: 1 })
+    if (this.$route.params.id == 'new'){
+            this.form.setFieldsValue({ status: 1,colType:2})
+            this.onlyRead=true
+    }
           })
   },
   computed: {},
   mounted() {
+       this.getDatas()
     this.getselectData({ id: this.$route.params.id })
     if (this.$route.params.id == 'new') {
       this.getTree({id:''})
@@ -161,6 +175,29 @@ export default {
     }
   },
   methods: {
+    // 数据源的查询
+    getDatas() {
+       let params={};
+      //  params.id=this.$route.params.id=='new'?'':this.$route.params.id
+      this.$axios({
+        url: this.api.dataFrom,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.lists = res.rows
+          } else {
+            this.loadingTable = false
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.loadingTable = false
+          this.error(err)
+        })
+    },
+    // 树形结构
     getTree(params = {}) {
       this.$axios({
         url: this.api.selectTree,
@@ -231,6 +268,9 @@ export default {
             this.loadingTable = false
             this.error(err)
           })
+      }
+      else{
+
       }
     },
     handleSubmit(e) {
