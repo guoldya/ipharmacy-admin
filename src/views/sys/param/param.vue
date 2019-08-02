@@ -90,7 +90,7 @@
                                 placeholder="请输入..."
                                 v-decorator="[
                                 'paramName',
-                                {rules: [{ required: true, message: '请输入参数' },{ max:10,message:'最多10个字' }],initialValue: formData.paramName}
+                                {rules: [{ required: true, message: '请输入参数' },{ max:6,message:'最多6个字' }],initialValue: formData.paramName}
                                 ]"
                         />
                     </a-form-item>
@@ -118,7 +118,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'paramValue',{rules: [{ required: true, message: '请输入参数值' },{ max:50,message:'最多50个字' },{ message: '只能输入数字和字母', pattern: /^\w+$/}],initialValue: formData.paramValue}]"/>
+                                v-decorator="[ 'paramValue',{rules: [{ required: true, message: '请输入参数值' },{ max:40,message:'最多40个字' },{ message: '只能输入数字和字母', pattern: /^\w+$/}],initialValue: formData.paramValue}]"/>
                     </a-form-item>
                     <a-form-item
                             label="备注"
@@ -127,7 +127,7 @@
                         <a-textarea
                                 placeholder="请输入..."
                                 :autosize="{ minRows: 4 }"
-                                v-decorator="[ 'ramark',{rules: [{ max:80 ,message:'最多80个字' }],initialValue: formData.ramark}]"/>
+                                v-decorator="[ 'ramark',{rules: [{ max:60 ,message:'最多60个字' }],initialValue: formData.ramark}]"/>
                     </a-form-item>
                 </a-form>
             </div>
@@ -219,6 +219,7 @@
                 return text;
             },
             edit(row){
+              this.form.resetFields();
                 this.isNew = false;
                 this.formData = row;
                 this.visible = true

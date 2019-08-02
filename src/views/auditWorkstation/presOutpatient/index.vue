@@ -115,7 +115,7 @@
                         </template>
                     </el-table-column>
                     <!--问题tags列-->
-                    <el-table-column prop="problem" label="问题" min-width="500">
+                    <el-table-column prop="problem" label="问题" min-width="400">
                         <template slot-scope="props">
                             <a-row
                                 v-for="(op,index) in props.row.orderissueVOS"
@@ -152,7 +152,7 @@
                             </a-row>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="action" label="操作" width="140" align="center" fixed= "right">
+                    <el-table-column prop="action" label="操作" width="140" align="center">
                         <template slot-scope="props">
                             <a @click="looks(props.row)">查看</a>
                             <a-divider type="vertical" />

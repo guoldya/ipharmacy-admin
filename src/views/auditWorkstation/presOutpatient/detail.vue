@@ -614,6 +614,7 @@ export default {
                         } else {
                             this.auditStatus = false
                         }
+                      this.$forceUpdate();
                     } else {
                         this.warn(res.msg)
                     }
@@ -657,6 +658,7 @@ export default {
                         } else {
                             this.auditStatus = false
                         }
+                      this.$forceUpdate();
                     } else {
                         this.warn(res.msg)
                     }

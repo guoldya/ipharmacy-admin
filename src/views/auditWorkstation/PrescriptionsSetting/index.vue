@@ -226,9 +226,9 @@
       changeStatus(data) {
         let params = {}
         if (data.status == '1') {
-          params.status = 0
+          params.status = '0'
         } else {
-          params.status = 1
+          params.status = '1'
         }
         params.planId = data.planId
         this.$axios({
@@ -238,21 +238,13 @@
         })
           .then(res => {
             if (res.code == '200') {
-              if (data.status == '0') {
-                this.success('停用成功')
-              } else {
-                this.success('启用成功')
-              }
+              this.success(res.msg)
               let data =  this.searchData
               data.pageSize = this.pageSize;
               data.offset =(this.current - 1) * this.pageSize;
               this.getData(data)
             } else {
-              if (data.status == '1') {
-                this.warn('停用失败')
-              } else {
-                this.warn('启用失败')
-              }
+              this.warn(res.msg)
             }
           })
           .catch(err => {
