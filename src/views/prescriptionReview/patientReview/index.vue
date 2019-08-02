@@ -27,7 +27,7 @@
       </detail-list>
     </a-card>
     <a-card class="margin-top-5">
-      <Searchpanel ref="searchPanel" :list="list" :choose="choose">
+      <Searchpanel ref="searchPanel" :list="list" :choose="choose" >
         <div slot="control">
           <a-button type="primary" @click="search" style="margin-right: 5px">查询</a-button>
           <a-button class @click="resetForm" style="margin-right: 10px">重置</a-button>
@@ -312,9 +312,11 @@ export default {
         prescDocName:data.prescDocName
       }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
+      let obj={ visId: data.visId, maxSubmitNo: !!data.submitNo?data.submitNo:'2'}
+       console.log(obj)
       this.$router.push({
         name: 'patientReviewDetail',
-        params: { visId: data.visId, maxSubmitNo: data.submitNo }
+        params: obj
       })
     },
     // 获取医生
@@ -402,6 +404,9 @@ export default {
       if (data && data.length) {
         return data == 1 ? '随机' : '比例'
       }
+    }, 
+    checkSeclec(){
+
     }
   }
 }

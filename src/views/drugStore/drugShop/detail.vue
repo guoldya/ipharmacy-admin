@@ -18,7 +18,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.name}:`,
+                `${item.name}`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -38,7 +38,8 @@
             />
           </a-form-item>
           <a-form-item label="药店图标" class="texts unplod">
-            <a-upload
+            <!-- <a-upload
+             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
               name="avatar"
               listType="picture-card"
               class="avatar-uploader"
@@ -48,7 +49,8 @@
                 <a-icon :type="loading ? 'loading' : 'plus'" />
                 <div class="ant-upload-text">Upload</div>
               </div>
-            </a-upload>
+            </a-upload>-->
+            <Upload :count="1" ref="uploadIcon" />
           </a-form-item>
         </a-form>
       </div>
@@ -61,7 +63,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.name}:`,
+                `${item.name}`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -80,17 +82,7 @@
             />
           </a-form-item>
           <a-form-item label="资质上传" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+            <Upload :count="1" ref="uploadlicense" />
           </a-form-item>
         </a-form>
       </div>
@@ -103,7 +95,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.name}:`,
+                `${item.name}`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -122,17 +114,7 @@
             />
           </a-form-item>
           <a-form-item label="资质上传" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+            <Upload :count="1" ref="uploadAgree" />
           </a-form-item>
         </a-form>
       </div>
@@ -145,7 +127,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.name}:`,
+                `${item.name}`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -159,17 +141,7 @@
             </a-col>
           </a-row>
           <a-form-item label="资质上传" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+            <Upload :count="1" ref="uploadGSP" />
           </a-form-item>
         </a-form>
       </div>
@@ -177,14 +149,18 @@
   </div>
 </template>
 <script>
-import {datas} from './json'
+import { datas } from './json'
+import Upload from '@/my-components/upload/upload'
 export default {
   data() {
     return {
       expand: false,
       form: this.$form.createForm(this),
-      loading: false,
+      loading: false
     }
+  },
+  components: {
+    Upload
   },
   computed: {
     formBase() {
@@ -192,60 +168,60 @@ export default {
         {
           title: '药店编码',
           require: true,
-          name:'orgCode'
+          name: 'orgCode'
         },
         {
           title: '药店名称',
-            name:'orgName'
+          name: 'orgName'
         },
         {
-          title: '简码',  
-            name:'simpleCode'
+          title: '简码',
+          name: 'simpleCode'
         },
         {
           title: '药店类型',
           require: true,
-            name:''
+          name: ''
         },
         {
           title: '联系人',
-            name:'contacts'
+          name: 'contacts'
         },
         {
           title: '联系电话',
-          name:'telephone'
+          name: 'telephone'
         },
         {
           title: '区域',
-          name:'areaId'
+          name: 'areaId'
         },
         {
           title: '地址',
-          name:'address'
+          name: 'address'
         },
         {
           title: '药店性质',
-          name:'enable'
+          name: 'enable'
         },
         {
           title: '配送方式',
-          name:'authStatus'
+          name: 'authStatus'
         },
         {
           title: '开户银行',
-          name:'bank'
+          name: 'bank'
         },
         {
           title: '账号',
-          name:'account'
+          name: 'account'
         },
         {
           title: '营业时间',
-          name:'blFundingTime'
+          name: 'blFundingTime'
         },
         {
           title: '特色服务',
-          name:'cook'
+          name: 'cook'
         }
       ]
     },
@@ -253,39 +229,39 @@ export default {
       return [
         {
           title: '名称',
-          name:'blName'
+          name: 'blName'
         },
         {
           title: '类型',
-          name:'blType'
+          name: 'blType'
         },
         {
           title: '住所',
-          name:'blAddr'
+          name: 'blAddr'
         },
         {
           title: '注册资金',
-          name:'blRegistCapital'
+          name: 'blRegistCapital'
         },
         {
           title: '成立日期',
-          name:'blFundingTime'
+          name: 'blFundingTime'
         },
         {
           title: '经营期限',
-          name:'type'
+          name: 'type'
         },
         {
           title: '法定代表人',
-          name:'blPerson'
+          name: 'blPerson'
         },
         {
           title: '登记日期',
-          name:'blLicenseTime'
+          name: 'blLicenseTime'
         },
         {
           title: '登记机关',
-          name:'blLicenseOrg'
+          name: 'blLicenseOrg'
         }
       ]
     },
@@ -293,203 +269,230 @@ export default {
       return [
         {
           title: '企业名称',
-          name:'dblName'
+          name: 'dblName'
         },
         {
           title: '注册地址',
-          name:'dblStoreAddr'
+          name: 'dblStoreAddr'
         },
         {
           title: '法定代表人',
-          name:'dblPerson'
+          name: 'dblPerson'
         },
         {
           title: '企业负责人',
-          name:'dblPrincipal'
+          name: 'dblPrincipal'
         },
         {
           title: '质量负责人',
-          name:'dblQuaPrincipal'
+          name: 'dblQuaPrincipal'
         },
         {
           title: '仓库地址',
-          name:'dblStoreAddr'
+          name: 'dblStoreAddr'
         },
         {
           title: '证号',
-          name:'dblNo'
+          name: 'dblNo'
         },
         {
           title: '经营方式',
-          name:'dblBizMode'
+          name: 'dblBizMode'
         }
       ]
     },
-    druglist(){
- return [
+    druglist() {
+      return [
         {
           title: '企业名称',
-          name:'gspName'
+          name: 'gspName'
         },
         {
           title: '地址',
-          name:'gspAddr'
+          name: 'gspAddr'
         },
         {
           title: '认证范围',
-          name:'gspScope'
+          name: 'gspScope'
         },
         {
           title: '证书编号',
-          name:'gspNo'
+          name: 'gspNo'
         },
         {
           title: '有效期至',
-          name:'gspValidTime'
+          name: 'gspValidTime'
         },
         {
           title: '发证机关',
-          name:'gspLicenseOrg'
+          name: 'gspLicenseOrg'
         },
         {
           title: '发证日期:',
-          name:'gspLicenseTime'
-        },
+          name: 'gspLicenseTime'
+        }
       ]
     }
   },
-  created() {
-     console.log(datas)
-     let reqArr=datas[0]
-     let {
-                account,
-    address,
-    areaId,
-    authStatus,
-    bank,
-    blAddr,
-    blBizLimit,
-    blBizScope,
-    blFundingTime,
-    blLicenseOrg,
-    blLicenseTime,
-    blName,
-    blPerson,
-    blPic,
-    blRegistCapital,
-    blType,
-    blUrl,
-    contacts,
-    createBy,
-    createTime,
-    dblAddr,
-    dblBizMode,
-    dblBizScope,
-    dblLicenseOrg,
-    dblLicenseTime,
-    dblName,
-    dblNo,
-    dblPerson,
-    dblPic,
-    dblPrincipal,
-    dblQuaPrincipal,
-    dblStoreAddr,
-    dblUrl,
-    dblValidTime,
-    dispatchType,
-    enable,
-    gspAddr,
-    gspLicenseOrg,
-    gspLicenseTime,
-    gspName,
-    gspNo,
-    gspPic,
-    gspScope,
-    gspUrl,
-    gspValidTime,
-    id,
-    latitude,
-    logoUrl,
-    longitude,
-    nature,
-    orgCode,
-    orgName,
-    orgType,
-    remark,
-    simpleCode,
-    status,
-    telephone,
-    type,
-    updateTime,
-                } = reqArr,
-                formData = {
-                    account,
-    address,
-    areaId,
-    authStatus,
-    bank,
-    blAddr,
-    blBizLimit,
-    blBizScope,
-    blFundingTime,
-    blLicenseOrg,
-    blLicenseTime,
-    blName,
-    blPerson,
-    blPic,
-    blRegistCapital,
-    blType,
-    blUrl,
-    contacts,
-    createBy,
-    createTime,
-    dblAddr,
-    dblBizMode,
-    dblBizScope,
-    dblLicenseOrg,
-    dblLicenseTime,
-    dblName,
-    dblNo,
-    dblPerson,
-    dblPic,
-    dblPrincipal,
-    dblQuaPrincipal,
-    dblStoreAddr,
-    dblUrl,
-    dblValidTime,
-    dispatchType,
-    enable,
-    gspAddr,
-    gspLicenseOrg,
-    gspLicenseTime,
-    gspName,
-    gspNo,
-    gspPic,
-    gspScope,
-    gspUrl,
-    gspValidTime,
-    id,
-    latitude,
-    logoUrl,
-    longitude,
-    nature,
-    orgCode,
-    orgName,
-    orgType,
-    remark,
-    simpleCode,
-    status,
-    telephone,
-    type,
-    updateTime
-                }
-              this.form.setFieldsValue(formData)
+  created() {},
+  mounted() {
+    this.giveFormData()
   },
-  mounted() {},
   methods: {
     // 表单赋值
-    giveFormData(){
-        
+    giveFormData() {
+      let reqArr = datas[0]
+      let {
+          account,
+          address,
+          areaId,
+          authStatus,
+          bank,
+          blAddr,
+          blBizLimit,
+          blBizScope,
+          blFundingTime,
+          blLicenseOrg,
+          blLicenseTime,
+          blName,
+          blPerson,
+          blPic,
+          blRegistCapital,
+          blType,
+          blUrl,
+          contacts,
+          createBy,
+          createTime,
+          dblAddr,
+          dblBizMode,
+          dblBizScope,
+          dblLicenseOrg,
+          dblLicenseTime,
+          dblName,
+          dblNo,
+          dblPerson,
+          dblPic,
+          dblPrincipal,
+          dblQuaPrincipal,
+          dblStoreAddr,
+          dblUrl,
+          dblValidTime,
+          dispatchType,
+          enable,
+          gspAddr,
+          gspLicenseOrg,
+          gspLicenseTime,
+          gspName,
+          gspNo,
+          gspPic,
+          gspScope,
+          gspUrl,
+          gspValidTime,
+          id,
+          latitude,
+          logoUrl,
+          longitude,
+          nature,
+          orgCode,
+          orgName,
+          orgType,
+          remark,
+          simpleCode,
+          status,
+          telephone,
+          type,
+          updateTime
+        } = reqArr,
+        formData = {
+          account,
+          address,
+          areaId,
+          authStatus,
+          bank,
+          blAddr,
+          blBizLimit,
+          blBizScope,
+          blFundingTime,
+          blLicenseOrg,
+          blLicenseTime,
+          blName,
+          blPerson,
+          blPic,
+          blRegistCapital,
+          blType,
+          blUrl,
+          contacts,
+          createBy,
+          createTime,
+          dblAddr,
+          dblBizMode,
+          dblBizScope,
+          dblLicenseOrg,
+          dblLicenseTime,
+          dblName,
+          dblNo,
+          dblPerson,
+          dblPic,
+          dblPrincipal,
+          dblQuaPrincipal,
+          dblStoreAddr,
+          dblUrl,
+          dblValidTime,
+          dispatchType,
+          enable,
+          gspAddr,
+          gspLicenseOrg,
+          gspLicenseTime,
+          gspName,
+          gspNo,
+          gspPic,
+          gspScope,
+          gspUrl,
+          gspValidTime,
+          id,
+          latitude,
+          logoUrl,
+          longitude,
+          nature,
+          orgCode,
+          orgName,
+          orgType,
+          remark,
+          simpleCode,
+          status,
+          telephone,
+          type,
+          updateTime
+        }
+      this.form.setFieldsValue(formData)
+      let arrObj = [
+        { name: 'uploadIcon', url: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg' },
+        { name: 'uploadlicense', url: 'eccfdc23-eedc-4620-be7f-8cf6f350fd35.png' },
+        { name: 'uploadAgree', url: '9a75716e-e260-40f9-b2a0-e17b8bd1c25c.jpg' },
+        { name: 'uploadGSP', url: '42778a8b-5d60-4660-bff0-ff3a1d061310.jpeg' }
+      ]
+      arrObj.forEach((item, index) => {
+    let obj= {
+          fileName: item.url,
+          name: item.url,
+          status: 'done',
+          uid: '-1',
+          url: `http://192.168.0.150:40080/res/${item.url}`
+        }
+          this.$refs[item.name].fileList = [obj]
+          this.$refs[item.name].imgArr = [obj]  
+      })
+      // let obj = {
+      //   fileName: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg',
+      //   name: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg',
+      //   status: 'done',
+      //   uid: '-1',
+      //   url: 'http://192.168.0.150:40080/res/89bb44dd-3b4a-40cc-b144-4a095163f973.jpg'
+      // }
+      // setTimeout(() => {
+      //   this.$refs.upload.fileList = [obj]
+      //   this.$refs.upload.imgArr = [obj]
+      // })
     },
     // 查询数据
     handleSubmit(e) {
@@ -534,8 +537,7 @@ export default {
         console.log('error', error)
         console.log('Received values of form: ', values)
       })
-    },
-    
+    }
   }
 }
 </script>
