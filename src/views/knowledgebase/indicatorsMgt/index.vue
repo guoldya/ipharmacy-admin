@@ -93,6 +93,7 @@ export default {
       ],
       dataSource: [],
       current:1,
+      searchData:{},
     }
   },
   computed: {
@@ -138,7 +139,8 @@ export default {
   methods: {
     //搜索
     search() {
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params = this.$refs.searchPanel.form.getFieldsValue();
+      this.searchData =  this.$refs.searchPanel.form.getFieldsValue();
       params.pageSize = this.pageSize
       params.offset = 0
       this.getData(params)
@@ -146,10 +148,11 @@ export default {
     //重置
     resetForm({}) {
       this.$refs.searchPanel.form.resetFields()
+      this.searchData ={};
       this.getData({ pageSize: this.pageSize, offset: 0 })
     },
     // 获取初始数据
-    getData(params = { pageSize: 10, offset: 0 }) {
+    getData(params = {}) {
       if(params.offset==0){
         this.current=1
       }
@@ -183,13 +186,13 @@ export default {
     //   this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize })
     // },
      pageChange(page, pageSize) {
-        let params =  this.$refs.searchPanel.form.getFieldsValue()
+        let params =  this.searchData
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize
         this.getData(params)
       },
       pageChangeSize(page, pageSize) {
-        let params =  this.$refs.searchPanel.form.getFieldsValue()
+        let params =  this.searchData
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize
         this.getData(params)

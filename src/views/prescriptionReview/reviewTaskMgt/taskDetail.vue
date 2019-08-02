@@ -85,7 +85,7 @@
           showSizeChanger
           v-model="current"
           class="pnstyle"
-          :defaultPageSize="10"
+          :defaultPageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="sizeChange"
           @change="pageChange"
@@ -156,6 +156,7 @@
         items: [   { text: '删除', showtip: true, color: '#ff9900', tip: '确认删除吗？', click: this.del }],
         total: 0,
         current: 1,
+        pageSize:10,
         planDetail: {},
         headData: {}
       }
@@ -235,12 +236,14 @@
       pageChange(page, size) {
         let params = {}
         params.offset = (page - 1) * size
+        params.pageSize = size
         this.getData(params)
       },
       sizeChange(current, size) {
-        this.current = 1
         let params = {}
+        this.pageSize = size
         params.pageSize = size
+        params.offset = (current - 1) * size
         this.getData(params)
       },
       getData(obj = {}) {
@@ -276,7 +279,10 @@
         })
           .then(res => {
             if (res.code == '200') {
-              this.getData()
+              let params = {}
+              params.pageSize = this.pageSize
+              params.offset = (this.current - 1) *  this.pageSize
+              this.getData(params)
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -295,7 +301,10 @@
         })
           .then(res => {
             if (res.code == '200') {
-              this.getData()
+              let params = {}
+              params.pageSize = this.pageSize
+              params.offset = (this.current - 1) *  this.pageSize
+              this.getData(params)
               this.getTitleData()
               this.success(res.msg)
             } else {

@@ -55,7 +55,8 @@ export default {
       ],
       colors: '#ffffff',
       dataSource: [],
-      parentId: ''
+      parentId: '',
+      searchData:{},
     }
   },
   computed: {
@@ -96,6 +97,7 @@ export default {
     search() {
       //TODO:枚举值回来以后在调用分页查询
       let params = this.$refs.searchPanel.form.getFieldsValue()
+      this.searchData = this.$refs.searchPanel.form.getFieldsValue()
       for (let item in params) {
         if (typeof params[item] == 'string') {
           //  let arr=params[item].split('').filter(item =>{
@@ -110,6 +112,7 @@ export default {
     },
     // 清空搜索，重置数据
     resetForm() {
+      this.searchData = {}
       this.$refs.searchPanel.form.resetFields()
       this.getTreeList({ codeclass: 7 })
     },
@@ -154,19 +157,15 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            // if (paramsNum.length == 1) {
-              this.dataSource = this.getDataChildren(res.rows, undefined)
-            // } else {
-            //   this.dataSource = res.rows
-            // }
+            this.dataSource = this.getDataChildren(res.rows, undefined)
             this.loading = false
           } else {
-            this.loadingTable = false
+            this.loading = false
             this.warn(res.msg)
           }
         })
         .catch(err => {
-          this.loadingTable = false
+          this.loading = false
           this.error(err)
         })
     },
@@ -187,10 +186,12 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-           this.success(res.data)
-            this.getTreeList({ codeclass: 7 })
+           this.success(res.msg)
+            let obj = this.searchData;
+            obj.codeClass = 7
+            this.getTreeList(obj)
           } else {
-           this.warn(res.data)
+           this.warn(res.msg)
           }
         })
         .catch(err => {

@@ -240,8 +240,9 @@ export default {
       if($.trim(this.id).length>0) {
         let params = this.$refs.searchPanel.form.getFieldsValue();
         this.searchData =  this.$refs.searchPanel.form.getFieldsValue();
-        params.pageSize = 10
-        params.offset = 1
+        params.pageSize = this.pageSize
+        params.offset = 0;
+        this.current = 1;
         params.patientid = this.id
         this.getPageData(params)
       }
@@ -250,8 +251,10 @@ export default {
     resetForm() {
       if($.trim(this.id).length>0){
         this.searchData = {}
-        this.$refs.searchPanel.form.resetFields()
+        this.$refs.searchPanel.form.resetFields();
         let params = { patientid: this.id }
+        params.pageSize = this.pageSize
+        params.offset = 0;
         this.getPageData(params)
         this.current=1
       }
@@ -303,6 +306,9 @@ export default {
     onSelect(selectedKeys, e) {
       this.id = e.node.dataRef.key
       let params={patientid:this.id}
+      this.current = 1;
+      params.offset = 0;
+      params.pageSize = this.pageSize
       this.getPageData(params)
     },
     //异步加载数据
@@ -416,7 +422,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
-              let params = {};
+              let params = this.searchData;
               params.offset = (this.current - 1) * this.pageSize
               params.pageSize = this.pageSize
               this.getPageData(params)

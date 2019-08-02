@@ -8,7 +8,7 @@
     <a-spin tip="加载中..." :spinning="spinning">
       <a-form :form="form" @submit="handleSubmit">
         <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input read-only placeholder="由系统自动生成,无需填写" v-decorator="['id']" />
+          <a-input class="readOnlyInput" :disabled="true" placeholder="由系统自动生成,无需填写" v-decorator="['id']" />
         </a-form-item>
         <a-form-item label="上级编号" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-tree-select

@@ -16,7 +16,6 @@
         :items="items"
         :opColWidth="110"
         :moreOp="false"
-        height="430"
         :currentChange="currentChange"
       ></a-treeTable>
     </a-spin>
@@ -57,7 +56,8 @@ export default {
       ],
       colors: '#ffffff',
       dataSource: [],
-      parentId: ''
+      parentId: '',
+      searchData:{}
     }
   },
   computed: {
@@ -100,7 +100,8 @@ export default {
     // 按条件搜索
     search() {
       //TODO:枚举值回来以后在调用分页查询
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params = this.$refs.searchPanel.form.getFieldsValue();
+      this.searchData = this.$refs.searchPanel.form.getFieldsValue();
       for (let item in params) {
         if (typeof params[item] == 'string') {
           let arr = this.delSpace(params[item])
@@ -112,8 +113,9 @@ export default {
     },
     // 清空搜索，重置数据
     resetForm() {
+      this.searchData = {}
       this.$refs.searchPanel.form.resetFields()
-      this.getTreeList()
+      this.getTreeList({})
     },
     // 添加数据
     adds() {
@@ -188,7 +190,7 @@ export default {
             } else {
               this.success('启用成功')
             }
-            this.getTreeList()
+            this.getTreeList(this.searchData)
           } else {
             if (data.status == '1') {
               this.warn('停用失败')

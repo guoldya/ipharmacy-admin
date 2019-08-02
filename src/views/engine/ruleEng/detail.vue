@@ -29,16 +29,16 @@
         </a-form-item>
 
         <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['dsName',{rules:[{ max:32,message:'最多32个字符' }]}]" />
+          <a-input maxLength="10" :read-only="readOnly" v-decorator="['dsName',{rules:[{ max:10,message:'最多10个字符' }]}]" />
         </a-form-item>
         <a-form-item label="sql文本" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-textarea :read-only="readOnly" v-decorator="['sqlText',{rules:[{ max:2500,message:'最多2500个字符' }]}]" />
+          <a-textarea maxLength="10" :read-only="readOnly" v-decorator="['sqlText',{rules:[{ max:2000,message:'最多2000个字符' }]}]" />
         </a-form-item>
         <a-form-item label="值" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['val',{rules:[{ max:32,message:'最多32个字符' }]}]" />
+          <a-input maxLength="10" :read-only="readOnly" v-decorator="['val',{rules:[{ max:10,message:'最多10个字符' }]}]" />
         </a-form-item>
         <a-form-item label="显示名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input :read-only="readOnly" v-decorator="['display',{rules:[{ max:32,message:'最多32个字符' }]}]" />
+          <a-input maxLength="10" :read-only="readOnly" v-decorator="['display',{rules:[{ max:10,message:'最多10个字符' }]}]" />
         </a-form-item>
         <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-radio-group v-decorator="['status']">

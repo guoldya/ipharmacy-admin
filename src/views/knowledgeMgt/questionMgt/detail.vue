@@ -16,14 +16,29 @@
       </a-form-item>
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
-          :read-only="disable"
+          v-if="disable"
+          class="readOnlyInput"
+          :disabled="true"
           v-decorator="[
                 'id',
                 {
                   rules: [{
                     required: true,
                     message: '请输入问题编码',
-                  },{max:3,message:'两位有效编码'}],
+                  },{max:2,message:'两位有效编码'}],
+                }
+              ]"
+          placeholder="一般由数字和字母组成"
+        />
+        <a-input
+         v-else
+          v-decorator="[
+                'id',
+                {
+                  rules: [{
+                    required: true,
+                    message: '请输入问题编码',
+                  },{max:2,message:'两位有效编码'}],
                 }
               ]"
           placeholder="一般由数字和字母组成"
@@ -31,6 +46,7 @@
       </a-form-item>
       <a-form-item label="问题名称" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
+          maxLength="33"
           v-decorator="[
                 'name',
                 {
@@ -44,10 +60,10 @@
         />
       </a-form-item>
       <a-form-item label="拼音编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input v-decorator="['spellCode']" placeholder="为空时由系统自动生成"/>
+        <a-input maxLength="15" v-decorator="['spellCode']" placeholder="为空时由系统自动生成"/>
       </a-form-item>
-      <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-textarea v-decorator="['remark']" placeholder="可以添加更多丰富的信息"/>
+      <a-form-item  label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-textarea maxLength="80" v-decorator="['remark']" placeholder="可以添加更多丰富的信息"/>
       </a-form-item>
       <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-radio-group v-decorator="[ 'status',{initialValue:'1'}]">

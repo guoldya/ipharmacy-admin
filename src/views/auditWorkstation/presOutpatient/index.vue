@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-card>
-            <Searchpanel ref="searchPanel" :list="list" :choose="choose" :onSelect="selectTree">
+            <Searchpanel ref="searchPanel" :list="list" :choose="choose">
                 <div slot="control">
                     <a-button type="primary" @click="search">查询</a-button>
                     <a-button style="margin-left: 5px" @click="resetForm">重置</a-button>
@@ -405,7 +405,7 @@ export default {
       },
         list() {
             return [
-              { name: '机构', dataField: 'orgId', type: 'tree-select', keyExpr: 'keyword', treeData: this.orgData },
+              { name: '机构', dataField: 'orgId', type: 'tree-select', keyExpr: 'keyword', treeData: this.orgData,onSelect:this.selectTree},
               {
                 name: '开单科室',
                 dataField: 'admitDept',

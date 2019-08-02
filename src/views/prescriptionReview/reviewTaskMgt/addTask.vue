@@ -10,6 +10,7 @@
                         <a-form-item label="任务名称" v-bind="formItemLayout">
                             <a-input
                                 placeholder="请输入任务名称..."
+                                maxLength="33"
                                 v-decorator="['name',{rules: [{ required: true, message: '请输入任务名称' },{ max:20 }]}]"
                             />
                         </a-form-item>
@@ -83,10 +84,11 @@
                             </a-col>
                             <a-col :span="12">
                                 <a-form-item v-if="ruleNum ==1 " v-bind="formmin" label="抽样数">
-                                    <a-input
+                                    <a-input-number
                                         style="width: 190px"
+                                        :min="1"
                                         v-decorator="['extractionsNumber',{rules: [{ required: true, message: '请输入抽样数量' }]}]"
-                                    ></a-input>
+                                    ></a-input-number>
                                 </a-form-item>
 
                                 <a-form-item v-else-if="ruleNum ==2 " v-bind="formmin" label="抽样比例">
@@ -112,18 +114,20 @@
                         <a-row>
                             <a-col :span="12">
                                 <a-form-item label="科室抽样数" v-bind="formmin" :required="true">
-                                    <a-input
+                                    <a-input-number
                                         style="width: 190px"
+                                        :min="1"
                                         v-decorator="['depteLimit',{rules: [{ required: true, message: '请输入抽样数量' }]}]"
-                                    ></a-input>
+                                    ></a-input-number>
                                 </a-form-item>
                             </a-col>
                             <a-col :span="12">
                                 <a-form-item label="医生抽样数" v-bind="formmin" :required="true">
-                                    <a-input
+                                    <a-input-number
                                         style="width: 190px"
+                                        :min="1"
                                         v-decorator="['doctorLimit',{rules: [{ required: true, message: '请输入抽样数量' }]}]"
-                                    ></a-input>
+                                    ></a-input-number>
                                 </a-form-item>
                             </a-col>
                         </a-row>

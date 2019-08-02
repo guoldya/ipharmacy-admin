@@ -71,7 +71,6 @@ export default {
       },
       loading: false,
       total: null,
-      curent: 1,
       pageSize: 10,
       columns: [
         { title: '编号', value: 'id', width: 60, align: 'right' },
@@ -90,7 +89,8 @@ export default {
       ],
       levelColor: '#ffffff',
       dataSource: [],
-      current: 1
+      current: 1,
+      searchData:{},
     }
   },
   computed: {
@@ -125,17 +125,22 @@ export default {
   methods: {
     //搜索
     search() {
-      let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.pageSize = 10
+      let params = this.$refs.searchPanel.form.getFieldsValue();
+      this.searchData = this.$refs.searchPanel.form.getFieldsValue();
+      params.pageSize = this.pageSize
       params.offset = 0
       this.getData(params)
     },
     //重置
     resetForm() {
+      this.searchData = {}
       this.$refs.searchPanel.form.resetFields()
-      this.getData({ pageSize: 10, offset: 0 })
+      this.getData({ pageSize: this.pageSize, offset: 0 })
     },
-    getData(params = { pageSize: 10, offset: 0 }) {
+    getData(params = {}) {
+      if(params.offset==0){
+        this.current=1
+      }
       this.loading = true
       this.$axios({
         url: this.api.selectPage,
@@ -158,15 +163,14 @@ export default {
         })
     },
     pageChange(page, pageSize) {
-      this.curent = page
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params = this.searchData
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getData(params)
     },
     pageChangeSize(page, pageSize) {
       this.pageSize = pageSize
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params =  this.searchData
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getData(params)
@@ -182,7 +186,10 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.getData({ offset: (this.current - 1) * 10, pageSize: this.pageSize })
+            let data =  this.searchData;
+            data.offset =  (this.current - 1) * this.pageSize;
+            data.pageSize = this.pageSize;
+            this.getData(data)
             this.success(res.msg)
           } else {
             this.warn(res.msg)
