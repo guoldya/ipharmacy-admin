@@ -439,6 +439,9 @@ export default {
             }
         }, 500)
     },
+    destroyed(){
+       this.openTrialTime=null
+    },
     methods: {
         //判断是否已经开启审方
         getOpenTrial() {

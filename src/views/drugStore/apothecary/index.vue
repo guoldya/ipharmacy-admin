@@ -31,11 +31,14 @@
                 :text="scope.row.status==0?'停用':'启用'"
               />
             </span>
-              <span v-else-if="item.value == 'updateTime'">
-              {{changeTime(scope.row.updateTime)}}
-            </span>
+            <span v-else-if="item.value == 'updateTime'">{{changeTime(scope.row.updateTime)}}</span>
             <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
             <span v-else>{{scope.row[item.value]}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
+          <template slot-scope="scope">
+            <opcol :items="items" :more="false" :data="scope.row" :filterItem="['status']"></opcol>
           </template>
         </el-table-column>
       </el-table>
@@ -70,16 +73,15 @@ export default {
       curent: 1,
       pageSize: 10,
       columns: [
-        { title: '操作', value: 'id', width: 60, align: 'right' },
         { title: '药师编码', value: 'dsName', align: 'left', width: 100 },
         { title: '姓名', value: 'display', align: 'left', width: 100 },
-        { title: '性别', value: 'sqlText', align: 'left' ,width: 120},
-        { title: '身份证', value: 'updatorName',  },
-        { title: '职业类别', value: 'updateTime', width: 140, },
+        { title: '性别', value: 'sqlText', align: 'left', width: 120 },
+        { title: '身份证', value: 'updatorName' },
+        { title: '职业类别', value: 'updateTime', width: 140 },
         { title: '职业范围', value: 'range', width: 80, align: 'center' },
         { title: '执业地点', value: 'address', width: 80, align: 'center' },
         { title: '职称', value: 'professional', width: 80, align: 'center' },
-        { title: '状态', value: 'status', width: 80, align: 'center' },
+        { title: '状态', value: 'status', width: 80, align: 'center' }
       ],
       items: [
         { text: '编辑', showtip: false, click: this.edits },
@@ -87,7 +89,20 @@ export default {
         { text: '停用', color: '#ff9900', showtip: true, tip: '确认停用吗？', click: this.user, status: '0' }
       ],
       levelColor: '#ffffff',
-      dataSource: [{id:'编辑',dsName:"Du0361",display:"彭丫男测试医师",sqlText:"女",updatorName:"归公",updateTime:"全天下",range:"哈哈",address:"议题啊偶",professional:"多顶顶",status:"1"}],
+      dataSource: [
+        {
+          id: '编辑',
+          dsName: 'Du0361',
+          display: '彭丫男',
+          sqlText: '女',
+          updatorName: '归公',
+          updateTime: '全天下',
+          range: '哈哈',
+          address: '议题啊偶',
+          professional: '多顶顶',
+          status: '1'
+        }
+      ],
       current: 1
     }
   },
@@ -98,12 +113,12 @@ export default {
           name: '药师',
           dataField: 'id',
           type: 'text'
-        },
+        }
       ]
     }
   },
   mounted() {
-   // this.getData()
+    // this.getData()
   },
   methods: {
     //搜索
@@ -141,24 +156,24 @@ export default {
         })
     },
     pageChange(page, pageSize) {
-      this.curent=page
+      this.curent = page
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getData(params)
     },
     pageChangeSize(page, pageSize) {
-      this.pageSize=pageSize
+      this.pageSize = pageSize
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getData(params)
     },
-    
+
     edits(data) {
       this.$router.push({
-        name: 'ruleEngDetail',
-        params: { id: data.id }
+        name: 'apothecaryDetail',
+        params: { id: '1' }
       })
     },
 
@@ -172,10 +187,10 @@ export default {
     //枚举
     // 改时间格式
     changeTime(time) {
-      if(time){
-          return time.replace(/(:\d{2})$/, '')
+      if (time) {
+        return time.replace(/(:\d{2})$/, '')
       }
-    },
+    }
   }
 }
 </script>

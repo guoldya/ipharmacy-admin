@@ -27,15 +27,15 @@
       </detail-list>
     </a-card>
     <a-card class="margin-top-5">
-      <Searchpanel ref="searchPanel" :list="list" :choose="choose" >
+      <Searchpanel ref="searchPanel" :list="list" :choose="choose">
         <div slot="control">
-          <a-button type="primary" @click="search" style="margin-right: 5px">查询</a-button>
-          <a-button class @click="resetForm" style="margin-right: 10px">重置</a-button>
+          <a-button type="primary" @click="search" style="margin-right: 5px" :disabled="show">查询</a-button>
+          <a-button class @click="resetForm" style="margin-right: 10px" :disabled="show">重置</a-button>
         </div>
       </Searchpanel>
     </a-card>
     <a-card class="margin-top-5">
-      <a-button type="primary">自动点评</a-button>
+      <a-button :type="buttonType" @click="magicRew">{{rewButoon}}</a-button>
       <a-spin tip="加载中..." :spinning="loading" class="tables">
         <el-table
           ref="multipleTable"
@@ -66,7 +66,7 @@
               <span v-else>{{scope.row[item.prop]}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="action" label="操作" width="140" align="center">
+          <el-table-column prop="action" label="操作" width="140" align="center" v-if="!show">
             <template slot-scope="props">
               <div>
                 <a @click="looks(props.row)" v-if="props.row.status==1">点评</a>
@@ -108,7 +108,8 @@ export default {
         getbase: 'sys/reviewInfo/selectReviewRecordDetail',
         selectform: 'sys/reviewFilter/selectReviewFilterPageByPersonId',
         selectTreeData: 'sys/sysDepts/selectDeptsTreeList',
-        selectEason: 'sys/sysPersons/selectSysPersonsByOrgId'
+        selectEason: 'sys/sysPersons/selectSysPersonsByOrgId',
+        filter: 'sys/reviewProblem/automatedComments'
       },
       items: [{ text: '编辑', showtip: false, click: this.edits }],
       columns: [
@@ -118,9 +119,9 @@ export default {
         { title: '性别', prop: 'patientSex', width: 55, format: this.sexCheck },
         { title: '年龄', prop: 'patientAge', width: 55 },
         { title: '处方号', prop: 'prescNum', width: 100 },
-        { title: '科室', prop: 'prescDeptName'},
+        { title: '科室', prop: 'prescDeptName' },
         { title: '医生', prop: 'prescDocName', width: 100 },
-        { title: '点评结果', prop: 'status', align: 'center', format: this.statusGrade,width:120 }
+        { title: '点评结果', prop: 'status', align: 'center', format: this.statusGrade, width: 120 }
         // { title: '操作', prop: 'action', align: 'left' }
       ],
       loading: false,
@@ -130,12 +131,16 @@ export default {
       id: 1,
       database: {},
       isid: 1,
+      show: false,
       treeDatas: [],
       EasonData: [],
       paintlist: {
         admit: '门诊号',
         time: '处方时间'
-      }
+      },
+      rewButoon: '自动点评',
+      // buttonType:'danger'
+      buttonType: 'primary'
     }
   },
   computed: {
@@ -200,6 +205,34 @@ export default {
     this.selectEasonData()
   },
   methods: {
+    // 自动点评
+    magicRew() {
+      if (this.rewButoon == '自动点评') {
+        let arr=[]
+        this.dataSource.filter(item=>{
+           if(item.status==1){
+            arr.push(item.filterId)
+           }
+        })
+        this.$axios({
+          url: this.api.filter,
+          method: 'post',
+          data: arr
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.buttonText = '停止点评'
+              this.buttonType = 'danger'
+              this.show = true
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      }
+    },
     // 表单数据
     getformData(params = { pageSize: 10, offset: 0 }) {
       this.$axios({
@@ -270,7 +303,7 @@ export default {
       return params
     },
     search() {
-      this.current=1
+      this.current = 1
       let params = this.getFormData()
       params.pageSize = 10
       params.offset = 0
@@ -308,12 +341,12 @@ export default {
         visId: data.visId,
         planScope: data.planScope,
         status: data.status,
-        prescDate:data.prescDate,
-        prescDocName:data.prescDocName
+        prescDate: data.prescDate,
+        prescDocName: data.prescDocName
       }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
-      let obj={ visId: data.visId, maxSubmitNo: !!data.submitNo?data.submitNo:'2'}
-       console.log(obj)
+      let obj = { visId: data.visId, maxSubmitNo: !!data.submitNo ? data.submitNo : '2' }
+      console.log(obj)
       this.$router.push({
         name: 'patientReviewDetail',
         params: obj
@@ -386,7 +419,7 @@ export default {
     },
     // 过滤状态
     statusGrade(data) {
-      let num = Number(data.status)-1
+      let num = Number(data.status) - 1
       return this.enum.completeStatus[num]
     },
     // 过滤时间
@@ -404,10 +437,8 @@ export default {
       if (data && data.length) {
         return data == 1 ? '随机' : '比例'
       }
-    }, 
-    checkSeclec(){
-
-    }
+    },
+    checkSeclec() {}
   }
 }
 </script>

@@ -184,106 +184,137 @@ export default {
       return [
         {
           title: '药师编码',
-          require: true
+          require: true,
+          name: 'code'
         },
         {
-          title: '账号'
+          title: '账号',
+          name: 'account'
         },
         {
-          title: '姓名'
+          title: '姓名',
+          name: 'name'
         },
         {
           title: '简码',
-          require: true
+          require: true,
+          name: 'simpleCode'
         },
         {
-          title: '性别'
+          title: '性别',
+          name: 'sex'
         },
         {
-          title: '身份证号'
+          title: '身份证号',
+          name: 'idCard'
         },
         {
-          title: '执业机构'
+          title: '执业机构',
+          name: 'jobOrg'
         },
         {
-          title: '职称'
+          title: '职称',
+          name: 'profession'
         },
         {
-          title: '执业地点'
+          title: '执业地点',
+          name: 'jobAddr'
         },
         {
-          title: '联系电话'
+          title: '联系电话',
+          name: 'telephone'
         },
         {
-          title: '毕业院校'
+          title: '毕业院校',
+          name: 'gradInst'
         },
         {
-          title: '学历'
+          title: '学历',
+          name: 'education'
         },
         {
-          title: '专业'
+          title: '专业',
+          name: 'major'
         },
         {
-          title: '参加工作时间'
+          title: '参加工作时间',
+          name: 'jobStartTime'
         }
       ]
     },
     practiceForms() {
       return [
         {
-          title: '资格证书号'
+          title: '资格证书号',
+          name: 'orgCode'
         },
         {
-          title: '注册证编号'
+          title: '注册证编号',
+          name: 'orgCode'
         },
         {
-          title: '姓名'
+          title: '姓名',
+          name: 'orgCode'
         },
         {
-          title: '执业地区'
+          title: '执业地区',
+          name: 'orgCode'
         },
         {
-          title: '执业类别'
+          title: '执业类别',
+          name: 'orgCode'
         },
         {
-          title: '执业单位'
+          title: '执业单位',
+          name: 'orgCode'
         },
         {
-          title: '有效期至'
+          title: '有效期至',
+          name: 'orgCode'
         },
         {
-          title: '发证机关'
+          title: '发证机关',
+          name: 'orgCode'
         },
         {
-          title: '注册日期'
+          title: '注册日期',
+          name: 'orgCode'
         }
       ]
     },
     certificateForms() {
       return [
         {
-          title: '管理号'
+          title: '管理号',
+          name: 'orgCode'
         },
         {
-          title: '姓名'
+          title: '姓名',
+          name: 'orgCode'
         },
         {
-          title: '性别'
+          title: '性别',
+          name: 'orgCode'
         },
         {
-          title: '出生日期'
+          title: '出生日期',
+          name: 'orgCode'
         },
         {
-          title: '专业类别'
+          title: '专业类别',
+          name: 'orgCode'
         },
         {
-          title: '批准日期'
+          title: '批准日期',
+          name: 'orgCode'
         },
         {
-          title: '签发单位'
+          title: '签发单位',
+          name: 'orgCode'
         },
         {
-          title: '签发日期'
+          title: '签发日期',
+          name: 'orgCode'
         }
       ]
     }

@@ -13,7 +13,7 @@
             <span class="renming">{{RecordDelData.patientName}}</span>
           </a-col>
           <a-col :xl="7" :xxl="7" class="ages">
-            <span class="bianhao">{{RecordDelData.admitNum}}</span>
+            <!-- <span class="bianhao">{{RecordDelData.admitNum}}</span> -->
             <span class="sex">{{RecordDelData.patientSex?'男':'女'}}</span>
             <span class="nianlin">{{RecordDelData.agevalue}}岁</span>
           </a-col>
@@ -647,7 +647,7 @@ export default {
 
 <style  lang="less">
 .ant-pro-footer-toolbar{
-    z-index: 10px;
+    z-index: 10
   }
 .detailPres {
   .patientDetail {

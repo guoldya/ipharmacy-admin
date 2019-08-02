@@ -38,18 +38,6 @@
             />
           </a-form-item>
           <a-form-item label="药店图标" class="texts unplod">
-            <!-- <a-upload
-             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>-->
             <Upload :count="1" ref="uploadIcon" />
           </a-form-item>
         </a-form>
@@ -336,7 +324,10 @@ export default {
   },
   created() {},
   mounted() {
-    this.giveFormData()
+    if (this.$route.params.id == 1) {
+      console.log('ddd')
+      this.giveFormData()
+    }
   },
   methods: {
     // 表单赋值
@@ -466,21 +457,22 @@ export default {
         }
       this.form.setFieldsValue(formData)
       let arrObj = [
-        { name: 'uploadIcon', url: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg' },
+        // { name: 'uploadIcon', url: '9a75716e-e260-40f9-b2a0-e17b8bd1c25c.jpg' },
+         { name: 'uploadIcon', url: '42778a8b-5d60-4660-bff0-ff3a1d061310.jpeg' },
+        { name: 'uploadGSP', url: '9a75716e-e260-40f9-b2a0-e17b8bd1c25c.jpg' },
         { name: 'uploadlicense', url: 'eccfdc23-eedc-4620-be7f-8cf6f350fd35.png' },
-        { name: 'uploadAgree', url: '9a75716e-e260-40f9-b2a0-e17b8bd1c25c.jpg' },
-        { name: 'uploadGSP', url: '42778a8b-5d60-4660-bff0-ff3a1d061310.jpeg' }
+        { name: 'uploadAgree', url: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg' }
       ]
       arrObj.forEach((item, index) => {
-    let obj= {
+        let obj = {
           fileName: item.url,
           name: item.url,
           status: 'done',
           uid: '-1',
           url: `http://192.168.0.150:40080/res/${item.url}`
         }
-          this.$refs[item.name].fileList = [obj]
-          this.$refs[item.name].imgArr = [obj]  
+        this.$refs[item.name].fileList = [obj]
+        this.$refs[item.name].imgArr = [obj]
       })
       // let obj = {
       //   fileName: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg',
@@ -543,6 +535,9 @@ export default {
 </script>
 <style lang='less'>
 .yaoshi {
+  .ant-upload-list-picture-card .ant-upload-list-item{
+        height:75px;
+  }
   .texts {
     .ant-form-item-label {
       width: 7%;
