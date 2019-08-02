@@ -375,6 +375,7 @@
                             let that = this;
                             this.getDeptData(res.data.orgId);
                             this.formData = JSON.parse(JSON.stringify(res.data));
+
                             console.log(this.formData,'form')
                             this.formData.birthday = moment(res.data.birthday,'YYYY-MM-DD');
                             let obj = {
@@ -384,6 +385,7 @@
                                     name:res.data.signPic,
                                     fileName:res.data.signPic
                                 };
+                                console.log(obj)
                             if(res.data.signPic){
                                 setTimeout(()=>{
                                     that.$refs.upload.fileList = [obj];

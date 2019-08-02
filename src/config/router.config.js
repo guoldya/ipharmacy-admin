@@ -902,7 +902,7 @@ export const asyncRouterMap = [
                 meta: { title: '药店信息字典', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/drugStore/drugShop/detail/:indexId',
+                path: '/drugStore/drugShop/detail/:id',
                 name: 'drugShopDetail',
                 hidden: true,
                 component: () => import('@/views/drugStore/drugShop/detail.vue'),

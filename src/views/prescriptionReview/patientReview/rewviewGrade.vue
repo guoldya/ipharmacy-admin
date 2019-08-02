@@ -5,7 +5,7 @@
         <a-tab-pane tab="点评结果" key="1">
           <div class="content" v-if="statu==2||statu==3">
             <a-row>
-            <a-col :span="6">
+            <a-col :span="7">
               <a-icon type="warning" theme="filled" style="color:#FFAD0E;font-size:20px" />&emsp;是否为合理处方:
             </a-col>
             <a-col class="check" :span="14"> 
@@ -14,7 +14,7 @@
             </a-col>
             </a-row>
              <a-row class="rewPerson">
-            <a-col :span="6">
+            <a-col :span="7">
               点评人：
             </a-col>
             <a-col class="check" :span="14"> 
@@ -22,7 +22,7 @@
             </a-col>
             </a-row>
        <a-row class="rewPerson">
-            <a-col :span="6">
+            <a-col :span="7">
               点评时间：
             </a-col>
             <a-col class="check" :span="14"> 
@@ -201,7 +201,8 @@ export default {
     this.getruleData({ codeClass: 7 })
     this.getDrugList()
     this.getprobleList({ filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId })
-    console.log(this.value)
+    //console.log(this.value)
+    console.log('eeee')
   },
   computed: {},
   mounted() {},

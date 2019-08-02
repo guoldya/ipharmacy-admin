@@ -13,7 +13,7 @@
             <span class="renming">{{RecordDelData.patientName}}</span>
           </a-col>
           <a-col :xl="7" :xxl="7" class="ages">
-            <span class="bianhao">{{RecordDelData.admitNum}}</span>
+            <!-- <span class="bianhao">{{RecordDelData.admitNum}}</span> -->
             <span class="sex">{{RecordDelData.patientSex?'男':'女'}}</span>
             <span class="nianlin">{{RecordDelData.agevalue}}岁</span>
           </a-col>
@@ -310,11 +310,11 @@ export default {
   },
   mounted() {
     this.routerData = this.$route.params
+     let data = JSON.parse(sessionStorage.getItem('patinRew'))
     if (this.planScope == 2) {
-      this.getRecordDelData({ visid: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo })
+      this.getRecordDelData({ visid: this.$route.params.visId, reviewResouce: Number(data.planScope) })
     }
     if (this.planScope == 1) {
-      let data = JSON.parse(sessionStorage.getItem('patinRew'))
       let params = { visId: data.visId, submitNo: data.submitNo, reviewResouce: Number(data.planScope) }
       this.$axios({
         url: this.api.dealData,
@@ -459,20 +459,20 @@ export default {
     //     })
     // },
     // 更换患者
-    slePatients(data) {
-      this.$router.push({
-        name: 'presHospitalizedDetail',
-        params: { visId: data.visId, maxSubmitNo: data.submitNo }
-      })
-      this.visidIdnum = data.visId
+    // slePatients(data) {
+    //   this.$router.push({
+    //     name: 'presHospitalizedDetail',
+    //     params: { visId: data.visId, maxSubmitNo: data.submitNo }
+    //   })
+    //   this.visidIdnum = data.visId
 
-      this.submitNos = data.submitNo
-      //this.visDatas = { visId: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo }
-      this.getRecordDelData({ visid: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
-      if (this.routerData.isNew == 1) {
-        this.turnpage({ visId: data.visId, maxSubmitNo: data.submitNo, isNew: 1 })
-      }
-    },
+    //   this.submitNos = data.submitNo
+    //   //this.visDatas = { visId: this.$route.params.visId, submitNo: this.$route.params.maxSubmitNo }
+    //   this.getRecordDelData({ visid: this.$route.params.visId, maxSubmitNo: this.$route.params.maxSubmitNo })
+    //   if (this.routerData.isNew == 1) {
+    //     this.turnpage({ visId: data.visId, maxSubmitNo: data.submitNo, isNew: 1 })
+    //   }
+    // },
 
     // 获取患者个人信息
     getRecordDelData(params = {}) {
@@ -647,7 +647,7 @@ export default {
 
 <style  lang="less">
 .ant-pro-footer-toolbar{
-    z-index: 10px;
+    z-index: 10
   }
 .detailPres {
   .patientDetail {
