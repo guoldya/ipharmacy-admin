@@ -121,7 +121,7 @@
       search() {
         this.searchData = this.$refs.searchPanel.form.getFieldsValue()
         let params = this.$refs.searchPanel.form.getFieldsValue()
-        params.pageSize = 10
+        params.pageSize = this.pageSize
         params.offset = 0
         this.getData(params)
       },
@@ -129,7 +129,7 @@
       resetForm() {
         this.searchData = {}
         this.$refs.searchPanel.form.resetFields()
-        this.getData({ pageSize: 10, offset: 0 })
+        this.getData({ pageSize: this.pageSize, offset: 0 })
       },
       getData(params = {}) {
         this.loading = true

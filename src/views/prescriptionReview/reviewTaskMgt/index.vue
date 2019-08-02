@@ -4,7 +4,7 @@
             <countReview :countList="countText"></countReview>
         </a-card>
         <a-card class="margin-top-5">
-            <Searchpanel ref="searchPanel" :list="list">
+            <Searchpanel ref="searchPanel" :list="list" >
                 <div slot="control">
                     <a-button type="primary" @click="search">查询</a-button>
                     <a-button class="margin-left-5" @click="resetForm">重置</a-button>
@@ -179,8 +179,6 @@ export default {
             dataSource: [],
             bmDataSource: [],
             columns: [
-
-
                 { title: '范围', value: 'planScope', width: 60, format: this.taskScope, align: 'center' },
                 { title: '任务名称', value: 'name' },
                 { title: '抽取数量', value: 'extractionsNumber', width: 100, align: 'right' },
@@ -212,7 +210,8 @@ export default {
                 { itemCount: 0, item: '抽取点评', itemColors: '#4586ff' },
                 { itemCount: 0, item: '已点评', itemColors: '#2dc89f' },
                 { itemCount: 0, item: '问题点评', itemColors: '#ff6781' }
-            ]
+            ],
+          searchData:{},
         }
     },
     computed: {
@@ -283,23 +282,31 @@ export default {
             return params
         },
         search() {
-            let params = this.getFormData()
+            let params = this.getFormData();
+            this.searchData = this.getFormData();
+            params.offset = 0;
+            params.pageSize = this.pageSize;
             this.getData(params)
         },
         //重置
         resetForm() {
             this.$refs.searchPanel.form.resetFields()
-            this.getData()
+            this.searchData = {}
+            params.offset = 0;
+            params.pageSize = this.pageSize;
+            this.getData(params)
         },
         pageChange(page, size) {
-            let params = this.getFormData()
+            let params = this.searchData
             params.offset = (page - 1) * size
+            params.pageSize = size
+            this.pageSize = size
             this.getData(params)
         },
         sizeChange(current, size) {
-            this.current = 1
-            let params = this.getFormData()
+            let params = this.searchData
             params.pageSize = size
+            params.offset = (current - 1) * size
             this.getData(params)
         },
         getData(obj = {}) {
@@ -346,7 +353,10 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.getData()
+                        let data = this.searchData
+                        data.pageSize = this.pageSize
+                        data.offset = (this.current - 1) * this.pageSize
+                        this.getData(data)
                         this.success(res.msg)
                     } else {
                         this.warn(res.msg)
@@ -372,7 +382,10 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-              this.getData()
+              let params = this.searchData
+              params.pageSize = this.pageSize
+              params.offset = (this.current - 1) * this.pageSize
+              this.getData(params)
               this.success(res.msg)
             } else {
               this.warn(res.msg)
@@ -391,7 +404,10 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.getData()
+                        let params = this.searchData
+                        params.pageSize = this.pageSize
+                        params.offset = (this.current - 1) * this.pageSize
+                        this.getData(params)
                         this.success('删除成功')
                     } else {
                         this.warn(res.msg)
@@ -431,12 +447,14 @@ export default {
         bmSizeChange(current, size) {
             this.bmCurrent = 1
             let params = this.getFormData()
+            params.offset = (current - 1) * size
             params.pageSize = size
             this.getData(params)
         },
         bmPageChange(page, size) {
             let params = this.getFormData()
             params.offset = (page - 1) * size
+            params.pageSize = size
             this.getData(params)
         },
         //过滤

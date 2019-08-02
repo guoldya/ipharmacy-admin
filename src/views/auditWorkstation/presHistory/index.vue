@@ -109,7 +109,7 @@ export default {
             dateFormat: 'YYYY-MM-DD HH:mm',
             dateList: [],
             searchDate: [],
-            pageChangeFilter: { searchDate: this.dateList }
+            searchData: { searchDate: this.dateList }
         }
     },
     computed: {
@@ -192,11 +192,13 @@ export default {
         //搜索获取
         getFormData() {
             let params = this.$refs.searchPanel.form.getFieldsValue();
-            if (params.searchDate.length>0) {
+            if (params.searchDate) {
+              if (params.searchDate.length>0) {
                 params.searchDate = [
-                    params.searchDate[0].format('YYYY-MM-DD HH:mm'),
-                    params.searchDate[1].format('YYYY-MM-DD HH:mm')
+                  params.searchDate[0].format('YYYY-MM-DD HH:mm'),
+                  params.searchDate[1].format('YYYY-MM-DD HH:mm')
                 ]
+              }
             }else{
               delete params.searchDate
             }
@@ -206,23 +208,22 @@ export default {
         //搜索
         search() {
             let params = this.getFormData()
-            this.pageChangeFilter = this.getFormData()
+            this.searchData = this.getFormData()
             params.pageSize = this.pageSize
+            params.offset = 0;
             this.dateList = params.searchDate
             this.getData(params)
         },
         //重置
         resetForm() {
-            // this.$refs.searchPanel.form.resetFields(['reviewResouce', 'passType', 'auditLevel', 'reviewVerdict', []])
             this.$refs.searchPanel.form.resetFields()
-            this.pageChangeFilter = { searchDate: this.dateList }
-            let params = this.getFormData()
-            params.pageSize = '20'
-            this.pageSize = 20
-            this.dateList = params.searchDate
+            this.searchData = {}
+            let params = {}
+            params.pageSize = this.pageSize
+            params.offset = 0;
             this.getData(params)
         },
-        getData(params = { pageSize: 20, offset: 0 }) {
+        getData(params = { }) {
             this.loading = true
             this.$axios({
                 url: this.api.selectRevisionHistory,
@@ -258,7 +259,6 @@ export default {
                     params.searchDate[1].format('YYYY-MM-DD HH:mm')
                 ]
             }
-
             this.getData(params)
         },
         pageChangeSize(page, pageSize) {

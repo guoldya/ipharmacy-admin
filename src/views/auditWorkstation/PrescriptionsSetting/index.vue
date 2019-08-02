@@ -98,7 +98,6 @@
         },
         loading: false,
         total: 10,
-        curent: 1,
         pageSize: 10,
         visible: false,
         confirmLoading: false,
@@ -127,7 +126,7 @@
         Modal:{
           visible:false,
         },
-        pageChangeFilter:{},
+        searchData:{},
       }
     },
     computed: {
@@ -172,18 +171,18 @@
       //搜索
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue()
-        this.pageChangeFilter = this.$refs.searchPanel.form.getFieldsValue()
-        params.pageSize = 10
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
+        params.pageSize = this.pageSize
         params.offset = 0
         this.getData(params)
       },
       //重置
       resetForm() {
-           this.pageChangeFilter={}
+           this.searchData={}
         this.$refs.searchPanel.form.resetFields()
-        this.getData({ pageSize: 10, offset: 0 })
+        this.getData({ pageSize:  this.pageSize, offset: 0 })
       },
-      getData(params = { pageSize: 10, offset: 0 }) {
+      getData(params = {}) {
         this.loading = true
         if(params.offset==0){
           this.current=1
@@ -204,15 +203,16 @@
         })
       },
       pageChange(page, pageSize) {
-        let params =this.pageChangeFilter
+        let params =this.searchData
         params.offset=(page - 1) * pageSize;
         params.pageSize=pageSize;
         this.getData(params)
       },
       pageChangeSize(page, pageSize){
-        this.current = 1;
-        let params = this.pageChangeFilter
+        this.pageSize = pageSize
+        let params = this.searchData
         params.pageSize = pageSize;
+        params.offset=(page - 1) * pageSize;
         this.getData(params)
       },
       //新增
@@ -238,12 +238,15 @@
         })
           .then(res => {
             if (res.code == '200') {
-              data.status = params.status;
               if (data.status == '0') {
                 this.success('停用成功')
               } else {
                 this.success('启用成功')
               }
+              let data =  this.searchData
+              data.pageSize = this.pageSize;
+              data.offset =(this.current - 1) * this.pageSize;
+              this.getData(data)
             } else {
               if (data.status == '1') {
                 this.warn('停用失败')

@@ -170,7 +170,7 @@
       search() {
         let params = this.getFormData()
         this.searchData =  this.getFormData()
-        params.pageSize = 10
+        params.pageSize = this.pageSize
         params.offset = 0
         this.getData(params)
       },
@@ -179,9 +179,9 @@
         this.searchData = {};
         this.paramsData = {};
         this.$refs.searchPanel.form.resetFields()
-        this.getData({ pageSize: 10, offset: 0 })
+        this.getData({ pageSize: this.pageSize, offset: 0 })
       },
-      getData(params = { pageSize: 10, offset: 0 }) {
+      getData(params = {}) {
         this.loading = true;
         if (this.paramsData.id){
           params.id =  this.paramsData.id;

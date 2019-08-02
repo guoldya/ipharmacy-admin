@@ -240,6 +240,7 @@
                     orgUrl: '/sys/sysOrgs/selectList',
                     delUrl:'/sys/sysRole/delete',
                     updateUrl:'/sys/sysRole/update',
+                    updateStatusUrl:'sys/sysRole/updateStatus',
                     userUrl:'/sys/sysRole/selectUsersByRoleId',
                     updateUserUrl:'/sys/sysRole/insertOrDeleteRoleUser',
                     userByOrgUrl:'/sys/sysRole/selectUsersByRoleIdNotInUserIds',
@@ -374,7 +375,7 @@
                 }
                 params.roleId = row.roleId;
                 this.$axios({
-                    url: this.api.updateUrl,
+                    url: this.api.updateStatusUrl,
                     method: 'post',
                     data: params
                 }).then(res => {
