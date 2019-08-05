@@ -28,7 +28,22 @@
               name: '业务指标',
               type: 'gauge',
               radius: '100%',
-              detail: {formatter:'{value}%'},
+              detail: {formatter:'{value}%',color:'#ffffff',},
+              title : {
+                textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                  fontWeight: 'bolder',
+                  fontSize: 20,
+                  fontStyle: 'italic',
+                  color: '#fff',
+                  shadowColor : '#fff', //默认透明
+                  shadowBlur: 10
+                }
+              },
+              axisTick:{
+                lineStyle:{
+                  color:'#ccc'
+                }
+              },
               data: [{value: 50, name: '完成率'}]
             }
           ]

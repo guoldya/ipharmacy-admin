@@ -21,7 +21,8 @@
         option:{
           backgroundColor: '#404a59',
           title: {
-            text: '基础雷达图'
+            text: '基础雷达图',
+            textStyle:{color:'#ffffff'}
           },
           tooltip: {},
           radar: {
@@ -29,7 +30,7 @@
             radius: '50%',
             name: {
               textStyle: {
-                color: '#fff',
+                color: '#ffffff',
                 backgroundColor: '#999',
                 borderRadius: 3,
                 padding: [3, 5]

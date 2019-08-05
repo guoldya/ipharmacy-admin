@@ -97,7 +97,6 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-           this.loadingTable = false;
             let params = values
           if (this.$route.params.patientid != 'n'){
             params.patientid = this.$route.params.patientid
@@ -120,6 +119,8 @@ export default {
                 this.loadingTable = false
                 this.error(err)
               })
+        }else{
+          this.loadingTable = false;
         }
       })
     },

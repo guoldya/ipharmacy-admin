@@ -10,8 +10,7 @@
                         <a-form-item label="任务名称" v-bind="formItemLayout">
                             <a-input
                                 placeholder="请输入任务名称..."
-                                maxLength="33"
-                                v-decorator="['name',{rules: [{ required: true, message: '请输入任务名称' },{ max:20 }]}]"
+                                v-decorator="['name',{rules: [{ required: true, message: '请输入任务名称' },{ max:33,message:'输入任务名称过长' }]}]"
                             />
                         </a-form-item>
                         <a-form-item v-bind="formItemLayout" label="方案范围" :required="true">

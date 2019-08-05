@@ -1,6 +1,6 @@
-<template style="height:  calc(100%);">
-    <div style="background-color: #232325;height:  calc(100%);">
-      <a-card style="background-color: #232325">
+<template >
+    <div class="charts">
+      <a-card class="puFull" >
         <a-row  :gutter="10">
         <a-col :span="6">
           <countText :countList="countText"></countText>
@@ -69,6 +69,14 @@
   }
 </script>
 
-<style scoped>
-
+<style>
+.puFull{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #232325;
+}
+  .charts .ant-card-bordered{
+   border: 0px ;
+  }
 </style>

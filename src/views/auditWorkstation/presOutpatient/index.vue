@@ -688,8 +688,6 @@ export default {
                             this.buttonText = '开始审方'
                             this.buttonType = 'primary'
                             this.disable = true
-                            this.countText = []
-                            this.dataSource = []
                             this.total = null
                             if (res.data > 0) {
                                 this.$confirm({
@@ -705,6 +703,8 @@ export default {
                                             })
                                             .then(res => {
                                                 if (res.code == '200') {
+                                                  this.countText = []
+                                                  this.dataSource = []
                                                     _this.success('批量通过成功')
                                                 } else {
                                                     _this.warn(res.msg)
@@ -723,6 +723,8 @@ export default {
                                             })
                                             .then(res => {
                                                 if (res.code == '200') {
+                                                  this.countText = []
+                                                  this.dataSource = []
                                                     _this.success('批量驳回成功')
                                                 } else {
                                                     _this.warn(res.msg)
@@ -995,7 +997,11 @@ export default {
             let params = {}
             params.auditType = '1'
             params.passType = '1'
+          if($.trim(this.templateText).length>0){
             params.reviewOpinion = this.templateText
+          }else{
+            params.reviewOpinion = '驳回'
+          }
             params.reviewVerdict = '2'
             params.reviewIds = []
             params.reviewIds[0] = this.tempRowData.reviewId

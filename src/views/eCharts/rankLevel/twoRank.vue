@@ -20,7 +20,7 @@
       return{
         option:{
           backgroundColor: '#404a59',
-          color: ['#333'],
+          color: ['#ffffff'],
           tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -63,7 +63,7 @@
               formatter: function (value, index) {
                 return value;
               },
-              color: '#333'
+              color: '#ffffff'
             },
             axisTick: {
               show: false,
@@ -79,7 +79,7 @@
             },
             axisLine: {
               lineStyle: {
-                color: '#909396',
+                color: '#ffffff',
               }
             },
             data: ['张三三', '李四四', '王五五','赵六六','张三','李四','王五','赵六','张三三','李四四'
@@ -96,7 +96,7 @@
                   position: 'right',
                   formatter: '{c}',
                   textStyle: {
-                    color: '#333'
+                    color: '#ffffff'
                   }
                 }
               },
