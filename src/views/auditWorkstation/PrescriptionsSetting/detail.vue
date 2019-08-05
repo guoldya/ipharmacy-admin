@@ -19,8 +19,7 @@
                     <a-form-item label="方案名称" v-bind="formItemLayout">
                         <a-input
                             placeholder="请输入..."
-                            maxLength="33"
-                            v-decorator="['planName',{rules: [{ required: true, message: '请输入方案名称' }]}]"
+                            v-decorator="['planName',{rules: [{ required: true, message: '请输入方案名称' },{max:33,message:'输入方案名称过长'}]}]"
                         />
                     </a-form-item>
                     <a-form-item v-bind="formItemLayout" label="方案类型" :required="true">
@@ -45,7 +44,7 @@
                         </a-radio-group>
                     </a-form-item>
                     <a-form-item label="方案描述" v-bind="formItemLayout">
-                        <a-textarea maxLength="60" v-decorator="['describe',]" />
+                        <a-textarea  v-decorator="['describe',{rule:[{max:60,message:'输入方案描述过长'}]}]" />
                     </a-form-item>
                     <a-form-item :wrapperCol="{ span: 7}" style="text-align: right">
                         <a-button type="primary" @click="addCondition()">

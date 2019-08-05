@@ -626,7 +626,7 @@
               this.success('操作成功', () => {
                 row.status = params.status
               })
-              let params = {};
+              let params =this.pageChangeFilter;
               params.offset = (this.current - 1) * this.pageSize
               params.pageSize = this.pageSize
               this.getPageData(params)
@@ -649,7 +649,10 @@
             .then(res => {
               if (res.code == '200') {
                 this.success(res.msg, () => {
-                  this.getPageData()
+                  let data =this.pageChangeFilter;
+                  data.offset = (this.current - 1) * this.pageSize
+                  data.pageSize = this.pageSize
+                  this.getPageData(data)
                 })
               } else {
                 this.warn(res.msg)

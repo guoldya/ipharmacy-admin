@@ -57,6 +57,7 @@
     font-size: 24px;
     margin: 0 auto;
     text-align: center;
+    color: #ffffff;
   }
 
   .countFor .countItem {

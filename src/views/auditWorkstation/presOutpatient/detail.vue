@@ -103,7 +103,7 @@
                                             <span class="font-bold">{{dealtime(op.reviewTime)}}</span>
                                         </a-col>
                                     </a-row>
-                                  <a-row>
+                                  <a-row v-if="op.reviewOpinion">
                                     <a-col>审核意见: <span class="font-bold">{{op.reviewOpinion}}</span> </a-col>
                                   </a-row>
                                     <a-row class="dealRow">

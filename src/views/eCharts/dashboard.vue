@@ -1,5 +1,5 @@
 <template>
-    <div id="myDash" :style="{width:widths, height:heights}" ref="myEchart" />
+    <div id="myDash" :style="{width:widths, height:heights}" ref="myDash" />
 </template>
 
 <script>
@@ -24,13 +24,22 @@
             formatter: "{a} <br/>{b} : {c}%"
           },
           series: [
-
             {
               name: '业务指标',
               type: 'gauge',
-              detail: {formatter:'{value}%'},
+              detail: {formatter:'{value}%',color:'#ffffff'},
+              title : {
+                textStyle: {       // 其余属性默认使用全局文本样式，详见TEXTSTYLE
+                  fontWeight: 'bolder',
+                  fontSize: 20,
+                  fontStyle: 'italic',
+                  color: '#fff',
+                  shadowColor : '#fff', //默认透明
+                  shadowBlur: 10
+                }
+              },
               radius: '100%',
-              data: [{value: 50, name: '完成率'}]
+              data: [{value: 50, name: '完成率',color:'#ffffff'}],
             }
           ]
         },

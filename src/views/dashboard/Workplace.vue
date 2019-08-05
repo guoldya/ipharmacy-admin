@@ -133,7 +133,13 @@
         avatar: '',
         user: {},
 
-        projects: [],
+        projects: [
+          {description: "那是一种内在的东西， 他们到达不了，也无法触及的",
+            id: 1,
+            status: 1,
+            title: "Alipay",
+            updatedAt: "2018-07-26 00:00:00"},
+        ],
         loading: true,
         radarLoading: true,
         activities: [],

@@ -56,24 +56,23 @@
       </a-form-item>
       <a-form-item label="问题名称" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
-          maxLength="33"
           v-decorator="[
                 'name',
                 {
                   rules: [{
                     required: true,
                     message: '请输入问题名称',
-                  }],
+                  },{max:33,message:'问题名称过长'},],
                 }
               ]"
           placeholder="你想新增问题的名称"
         />
       </a-form-item>
       <a-form-item label="拼音编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input maxLength="15" v-decorator="['spellCode']" placeholder="为空时由系统自动生成"/>
+        <a-input  v-decorator="['spellCode',{rule:[,{max:15,message:'拼音码输入过多'}]}]" placeholder="为空时由系统自动生成"/>
       </a-form-item>
       <a-form-item  label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-textarea maxLength="80" v-decorator="['remark']" placeholder="可以添加更多丰富的信息"/>
+        <a-textarea  v-decorator="['remark',{rule:[,{max:80,message:'备注超长'}]}]" placeholder="可以添加更多丰富的信息"/>
       </a-form-item>
       <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-radio-group v-decorator="[ 'status',{initialValue:'1'}]">
