@@ -104,18 +104,18 @@ export default {
           status: 1,
           telephone: '13612345678'
         },
-        {
-          address: '渝北区的测试药店5地址',
-          areaId: 500112,
-          authStatus: 1,
-          contacts: '测试药店5',
-          dispatchType: 3,
-          id: 67,
-          orgCode: 'OC0261',
-          orgName: '测试药店5',
-          status: 1,
-          telephone: '13222333322'
-        }
+        // {
+        //   address: '渝北区的测试药店5地址',
+        //   areaId: 500112,
+        //   authStatus: 1,
+        //   contacts: '测试药店5',
+        //   dispatchType: 3,
+        //   id: 67,
+        //   orgCode: 'OC0261',
+        //   orgName: '测试药店5',
+        //   status: 1,
+        //   telephone: '13222333322'
+        // }
       ],
       current: 1
     }

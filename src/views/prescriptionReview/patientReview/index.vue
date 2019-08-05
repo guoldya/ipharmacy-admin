@@ -140,7 +140,8 @@ export default {
       },
       rewButoon: '自动点评',
       // buttonType:'danger'
-      buttonType: 'primary'
+      buttonType: 'primary',
+      timeInitialize: null
     }
   },
   computed: {
@@ -204,16 +205,41 @@ export default {
     this.getTreeseldata()
     this.selectEasonData()
   },
+  destroyed() {
+    clearInterval(this.timeInitialize)
+    this.timeInitialize = null
+  },
   methods: {
+    // 定时器
+    setTimeRval(data) {
+      this.timeInitialize = setInterval(() => {
+        this.getformData()
+        let state = null
+        this.dataSource.forEach(item => {
+          if (item.status == 1) {
+            state = false
+          }
+        })
+        if (state != false) {
+          this.$message.info('自动点评已完成')
+          this.buttonText = '自动点评'
+          this.buttonType = 'primary'
+          this.show = false
+          clearInterval(this.timeInitialize)
+          this.timeInitialize = null
+        }
+      }, data)
+    },
     // 自动点评
     magicRew() {
       if (this.rewButoon == '自动点评') {
-        let arr=[]
-        this.dataSource.filter(item=>{
-           if(item.status==1){
+        let arr = []
+        this.dataSource.filter(item => {
+          if (item.status == 1) {
             arr.push(item.filterId)
-           }
+          }
         })
+
         this.$axios({
           url: this.api.filter,
           method: 'post',
@@ -224,6 +250,7 @@ export default {
               this.buttonText = '停止点评'
               this.buttonType = 'danger'
               this.show = true
+              this.setTimeRval(10000)
             } else {
               this.warn(res.msg)
             }

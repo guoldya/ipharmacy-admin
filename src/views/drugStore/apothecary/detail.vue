@@ -18,7 +18,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.title}:`,
+                `${item.name}`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -33,17 +33,17 @@
           </a-row>
           <a-form-item label="个人介绍" class="texts">
             <a-textarea
-              v-decorator="['username',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
+              v-decorator="['profile',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
               placeholder="请输入个人介绍"
             />
           </a-form-item>
           <a-form-item label="擅长领域" class="texts">
             <a-textarea
-              v-decorator="['username',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
+              v-decorator="['expertField',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
               placeholder="请输入擅长领域"
             />
           </a-form-item>
-          <a-form-item label="备注" class="texts">
+          <a-form-item label="remark" class="texts">
             <a-textarea
               v-decorator="['username',{rules:[{message:'请输入用户名称',required:false},{ max:50,message:'最多50个字符' }]}]"
               placeholder="请输入备注"
@@ -60,7 +60,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.title}:`,
+                `${item.name}`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -79,17 +79,7 @@
             />
           </a-form-item>
           <a-form-item label="资质上传" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+             <Upload :count="1" ref="uploadIcon" />
           </a-form-item>
         </a-form>
       </div>
@@ -102,7 +92,7 @@
               <a-form-item :label="`${item.title}`">
                 <a-input
                   v-decorator="[
-                `${item.title}:`,
+                `${item.name}`,
                 {
                   rules: [{
                     required: !item.require ,
@@ -121,17 +111,7 @@
             />
           </a-form-item>
           <a-form-item label="资质上传" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+             <Upload :count="1" ref="uploadlicense" />
           </a-form-item>
         </a-form>
       </div>
@@ -140,30 +120,10 @@
       <div id="components-form-demo-advanced-search">
         <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
           <a-form-item label="身份证正面" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+            <Upload :count="1" ref="uploadGSP" />
           </a-form-item>
           <a-form-item label="身份证反面" class="texts unplod">
-            <a-upload
-              name="avatar"
-              listType="picture-card"
-              class="avatar-uploader"
-              :showUploadList="false"
-            >
-              <div>
-                <a-icon :type="loading ? 'loading' : 'plus'" />
-                <div class="ant-upload-text">Upload</div>
-              </div>
-            </a-upload>
+           <Upload :count="1" ref="uploadGSP" />
           </a-form-item>
         </a-form>
       </div>
@@ -171,6 +131,8 @@
   </div>
 </template>
 <script>
+import { datas } from './json'
+import Upload from '@/my-components/upload/upload'
 export default {
   data() {
     return {
@@ -178,6 +140,9 @@ export default {
       form: this.$form.createForm(this),
       loading: false
     }
+  },
+   components: {
+    Upload
   },
   computed: {
     formBase() {
@@ -246,39 +211,39 @@ export default {
       return [
         {
           title: '资格证书号',
-          name: 'orgCode'
+          name: 'regArea'
         },
         {
           title: '注册证编号',
-          name: 'orgCode'
+          name: 'regIssueOrg'
         },
         {
           title: '姓名',
-          name: 'orgCode'
+          name: 'regName'
         },
         {
           title: '执业地区',
-          name: 'orgCode'
+          name: 'regOrgName'
         },
         {
           title: '执业类别',
-          name: 'orgCode'
+          name: 'regScope'
         },
         {
           title: '执业单位',
-          name: 'orgCode'
+          name: 'regType'
         },
         {
           title: '有效期至',
-          name: 'orgCode'
+          name: 'regIssueTime'
         },
         {
           title: '发证机关',
-          name: 'orgCode'
+          name: 'regOrgName'
         },
         {
           title: '注册日期',
-          name: 'orgCode'
+          name: 'regIssueOrg'
         }
       ]
     },
@@ -286,42 +251,160 @@ export default {
       return [
         {
           title: '管理号',
-          name: 'orgCode'
+          name: 'qcBirthday'
         },
         {
           title: '姓名',
-          name: 'orgCode'
+          name: 'qcAuthTime'
         },
         {
           title: '性别',
-          name: 'orgCode'
+          name: 'qcIssueOrg'
         },
         {
           title: '出生日期',
-          name: 'orgCode'
+          name: 'qcIssueTime'
         },
         {
           title: '专业类别',
-          name: 'orgCode'
+          name: 'qcName'
         },
         {
           title: '批准日期',
-          name: 'orgCode'
+          name: 'qcMajor'
         },
         {
           title: '签发单位',
-          name: 'orgCode'
+          name: 'qcNo'
         },
         {
           title: '签发日期',
-          name: 'orgCode'
+          name: 'qcSex'
         }
       ]
     }
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.giveFormData()
+  },
   methods: {
+    giveFormData() {
+      let reqArr = datas[0]
+      console.log(reqArr)
+      let {
+          account,
+          authStatus,
+          code,
+          education,
+          expertField,
+          gradInst,
+          id,
+          idCard,
+          idCardBack,
+          idCardBackUrl,
+          idCardFront,
+          idCardFrontUrl,
+          jobAddr,
+          jobOrg,
+          jobStartTime,
+          major,
+          name,
+          profession,
+          profile,
+          qcAuthTime,
+          qcBirthday,
+          qcIssueOrg,
+          qcIssueTime,
+          qcMajor,
+          qcName,
+          qcNo,
+          qcPic,
+          qcSex,
+          qcUrl,
+          regArea,
+          regIssueOrg,
+          regIssueTime,
+          regName,
+          regNo,
+          regOrgName,
+          regPic,
+          regQuaNo,
+          regScope,
+          regType,
+          regUrl,
+          regValidTime,
+          remark,
+          sex,
+          simpleCode,
+          telephone
+        } = reqArr,
+        formData = {
+          account,
+          authStatus,
+          code,
+          education,
+          expertField,
+          gradInst,
+          id,
+          idCard,
+          idCardBack,
+          idCardBackUrl,
+          idCardFront,
+          idCardFrontUrl,
+          jobAddr,
+          jobOrg,
+          jobStartTime,
+          major,
+          name,
+          profession,
+          profile,
+          qcAuthTime,
+          qcBirthday,
+          qcIssueOrg,
+          qcIssueTime,
+          qcMajor,
+          qcName,
+          qcNo,
+          qcPic,
+          qcSex,
+          qcUrl,
+          regArea,
+          regIssueOrg,
+          regIssueTime,
+          regName,
+          regNo,
+          regOrgName,
+          regPic,
+          regQuaNo,
+          regScope,
+          regType,
+          regUrl,
+          regValidTime,
+          remark,
+          sex,
+          simpleCode,
+          telephone
+        }
+      this.form.setFieldsValue(formData)
+      let arrObj = [
+        { name: 'uploadIcon', url: '42778a8b-5d60-4660-bff0-ff3a1d061310.jpeg' },
+        { name: 'uploadGSP', url: '9a75716e-e260-40f9-b2a0-e17b8bd1c25c.jpg' },
+        { name: 'uploadlicense', url: 'eccfdc23-eedc-4620-be7f-8cf6f350fd35.png' },
+        { name: 'uploadAgree', url: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg' }
+      ]
+      arrObj.forEach((item, index) => {
+        let obj = {
+          fileName: item.url,
+          name: item.url,
+          status: 'done',
+          uid: '-1',
+          url: `http://192.168.0.150:40080/res/${item.url}`
+        }
+        this.$refs[item.name].fileList = [obj]
+        this.$refs[item.name].imgArr = [obj]
+      })
+    },
     // 查询数据
     handleSubmit(e) {
       e.preventDefault()

@@ -557,6 +557,7 @@ export default {
     height: 25px;
     .returns {
       float: left;
+      cursor: pointer;
     }
     .does {
       float: right;

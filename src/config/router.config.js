@@ -194,8 +194,7 @@ export const asyncRouterMap = [
                 meta: { title: '事实原型详情', detail: true, description: '事实原型详情自定义设置' }
               }
             ]
-          },
-          
+          }
         ]
       },
       // 全文检索
@@ -245,8 +244,8 @@ export const asyncRouterMap = [
                 path: '/monitoring/warningQuery/index',
                 name: 'warningQueryIndex',
                 component: () => import('@/views/monitoring/warningQuery/index.vue'),
-                meta: { title: '预警查询',  index: true }
-              },
+                meta: { title: '预警查询', index: true }
+              }
             ]
           },
           {
@@ -260,13 +259,12 @@ export const asyncRouterMap = [
                 path: '/monitoring/detailProblem/index',
                 name: 'detailProblemIndex',
                 component: () => import('@/views/monitoring/detailProblem/index.vue'),
-                meta: { title: '问题详情',  index: true }
-              },
+                meta: { title: '问题详情', index: true }
+              }
             ]
-          },
+          }
         ]
       },
-
 
       // 审方
       {
@@ -275,7 +273,6 @@ export const asyncRouterMap = [
         component: PageView,
         meta: { title: '审方工作站', keepAlive: false, icon: 'laptop' },
         children: [
-         
           {
             path: '/auditWorkstation/PrescriptionsSetting',
             name: 'PrescriptionsSetting',
@@ -395,14 +392,14 @@ export const asyncRouterMap = [
                 name: 'reviewTaskMgtAdd',
                 hidden: true,
                 component: () => import('@/views/prescriptionReview/reviewTaskMgt/addTask.vue'),
-                meta: { title: '新增点评任务', detail: true, }
+                meta: { title: '新增点评任务', detail: true }
               },
               {
                 path: '/prescriptionReview/reviewTaskMgt/detail/:recordId',
                 name: 'reviewTaskMgtDetail',
                 hidden: true,
                 component: () => import('@/views/prescriptionReview/reviewTaskMgt/taskDetail.vue'),
-                meta: { title: '任务内容明细', detail: true, }
+                meta: { title: '任务内容明细', detail: true }
               }
             ]
           },
@@ -426,7 +423,7 @@ export const asyncRouterMap = [
                 meta: { title: '点评任务详情', detail: true, description: '点评任务' }
               }
             ]
-          },
+          }
         ]
       },
       {
@@ -456,7 +453,7 @@ export const asyncRouterMap = [
               }
             ]
           },
-         
+
           {
             path: '/knowledgeMgt/questionMgt',
             name: 'questionMgt',
@@ -491,7 +488,7 @@ export const asyncRouterMap = [
                 meta: { title: '规则管理', hiddenHeaderContent: true, index: true }
               }
             ]
-          },
+          }
         ]
       },
       {
@@ -626,7 +623,7 @@ export const asyncRouterMap = [
                 meta: { title: '点评结论字典', hiddenHeaderContent: true, detail: true }
               }
             ]
-          },
+          }
         ]
       },
 
@@ -785,68 +782,68 @@ export const asyncRouterMap = [
         ]
       },
       {
-          path: '/mapMgt',
-          name: 'mapMgt',
-          component: PageView,
-          meta: { title: '对码管理', icon: 'check-circle-o' },
-          children:[
+        path: '/mapMgt',
+        name: 'mapMgt',
+        component: PageView,
+        meta: { title: '对码管理', icon: 'check-circle-o' },
+        children: [
+          {
+            path: '/mapMgt/drugContrast',
+            name: 'drugContrast',
+            component: RouteView,
+            meta: { title: '药品对码', multistage: true },
+            children: [
               {
-                path: '/mapMgt/drugContrast',
-                name: 'drugContrast',
-                component: RouteView,
-                meta: { title: '药品对码', multistage: true },
-                children: [
-                  {
-                    path: '/mapMgt/drugContrast/index',
-                    name: 'drugContrastIndex',
-                    component: () => import('@/views/mapMgt/drugContrast/index.vue'),
-                    meta: { title: '药品对码', hiddenHeaderContent: true, index: true }
-                  },   
-                ]
-              },
-              {
-                path: '/mapMgt/Icdtrast',
-                name: 'Icdtrast',
-                component: RouteView,
-                meta: { title: 'Icd数据对码', multistage: true },
-                children: [
-                  {
-                    path: '/mapMgt/Icdtrast/index',
-                    name: 'IcdtrastIndex',
-                    component: () => import('@/views/mapMgt/Icdtrast/index.vue'),
-                    meta: { title: 'Icd数据对码', hiddenHeaderContent: true, index: true }
-                  }
-                ]
-              },
-              {
-                path: '/mapMgt/Frequence',
-                name: 'Frequence',
-                component: RouteView,
-                meta: { title: '用药频次对码', multistage: true },
-                children: [
-                  {
-                    path: '/mapMgt/Frequence/index',
-                    name: 'FrequenceIndex',
-                    component: () => import('@/views/mapMgt/Frequence/index.vue'),
-                    meta: { title: '用药频次对码', hiddenHeaderContent: true, index: true }
-                  }
-                ]
-              },
-              {
-                path: '/mapMgt/medicineWay',
-                name: 'medicineWay',
-                component: RouteView,
-                meta: { title: '给药途径对码', multistage: true },
-                children: [
-                  {
-                    path: '/mapMgt/medicineWay/index',
-                    name: 'medicineWayIndex',
-                    component: () => import('@/views/mapMgt/medicineWay/index.vue'),
-                    meta: { title: '给药途径对码', hiddenHeaderContent: true, index: true }
-                  }
-                ]
+                path: '/mapMgt/drugContrast/index',
+                name: 'drugContrastIndex',
+                component: () => import('@/views/mapMgt/drugContrast/index.vue'),
+                meta: { title: '药品对码', hiddenHeaderContent: true, index: true }
               }
-          ]
+            ]
+          },
+          {
+            path: '/mapMgt/Icdtrast',
+            name: 'Icdtrast',
+            component: RouteView,
+            meta: { title: 'Icd数据对码', multistage: true },
+            children: [
+              {
+                path: '/mapMgt/Icdtrast/index',
+                name: 'IcdtrastIndex',
+                component: () => import('@/views/mapMgt/Icdtrast/index.vue'),
+                meta: { title: 'Icd数据对码', hiddenHeaderContent: true, index: true }
+              }
+            ]
+          },
+          {
+            path: '/mapMgt/Frequence',
+            name: 'Frequence',
+            component: RouteView,
+            meta: { title: '用药频次对码', multistage: true },
+            children: [
+              {
+                path: '/mapMgt/Frequence/index',
+                name: 'FrequenceIndex',
+                component: () => import('@/views/mapMgt/Frequence/index.vue'),
+                meta: { title: '用药频次对码', hiddenHeaderContent: true, index: true }
+              }
+            ]
+          },
+          {
+            path: '/mapMgt/medicineWay',
+            name: 'medicineWay',
+            component: RouteView,
+            meta: { title: '给药途径对码', multistage: true },
+            children: [
+              {
+                path: '/mapMgt/medicineWay/index',
+                name: 'medicineWayIndex',
+                component: () => import('@/views/mapMgt/medicineWay/index.vue'),
+                meta: { title: '给药途径对码', hiddenHeaderContent: true, index: true }
+              }
+            ]
+          }
+        ]
       },
       {
         path: '/drugStore',
@@ -886,7 +883,7 @@ export const asyncRouterMap = [
                 name: 'drugTextIndex',
                 component: () => import('@/views/drugStore/drugText/index.vue'),
                 meta: { title: '药师审核', hiddenHeaderContent: true, index: true }
-              }        
+              }
             ]
           },
           {
@@ -921,14 +918,62 @@ export const asyncRouterMap = [
                 name: 'drugShopCheckIndex',
                 component: () => import('@/views/drugStore/drugShopCheck/index.vue'),
                 meta: { title: '药店审核', hiddenHeaderContent: true, index: true }
-              }        
+              }
             ]
-          },
-          
+          }
         ]
       },
-    
-      
+      // 药学日常工作
+      {
+        path: '/pharmacistStation',
+        name: 'pharmacistStation',
+        component: PageView,
+        meta: { title: '药学日常工作', keepAlive: false, icon: 'bar-chart' },
+        children: [
+          {
+            path: '/pharmacistStation/wardMaintain',
+            name: 'wardMaintain',
+            component: RouteView,
+            meta: { title: '病区管理', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/wardMaintain/index',
+                name: 'wardMaintainIndex',
+                component: () => import('@/views/pharmacistStation/wardMaintain/index.vue'),
+                meta: { title: '病区管理', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/pharmacistStation/wardMaintain/patients-statistics',
+                name: 'wardMaintainDetail',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/wardMaintain/patients-statistics.vue'),
+                meta: { title: '病区管理详情', detail: true, description: '病区管理设置' }
+              }
+            ]
+          },
+          {
+            path: '/pharmacistStation/checkRecord',
+            name: 'checkRecord',
+            component: RouteView,
+            meta: { title: '患者记录', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/checkRecord/index',
+                name: 'checkRecordIndex',
+                component: () => import('@/views/pharmacistStation/checkRecord/index.vue'),
+                meta: { title: '患者记录', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/pharmacistStation/checkRecord/detail',
+                name: 'checkRecordDetail',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/checkRecord/detail.vue'),
+                meta: { title: '患者记录详情', detail: true, description: '患者记录设置' }
+              }
+            ]
+          },
+        ]
+      }
     ]
   },
 

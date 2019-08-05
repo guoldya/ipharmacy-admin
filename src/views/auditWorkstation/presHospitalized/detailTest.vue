@@ -26,7 +26,7 @@
                     <span v-if="props.row.quesNum>0">
                       <!-- <a-tag color="red" :key="index">{{props.row.quesNum}}</a-tag> -->
                       <!-- z-index: 5; -->
-                       <a-badge :count="props.row.quesNum" />
+                      <a-badge :count="props.row.quesNum" />
                     </span>
                   </div>
                   <div class="pagetwo">
@@ -187,9 +187,11 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-              this.testsDeldata = res.data.clinicTestreportList
-              this.testsDeltopdata = res.data
-              this.copytestsDeldata = res.data.clinicTestreportList
+              if (res.data && res.data.length) {
+                this.testsDeldata = res.data.clinicTestreportList
+                this.testsDeltopdata = res.data
+                this.copytestsDeldata = res.data.clinicTestreportList
+              }
             } else {
               this.warn(res.msg)
             }
@@ -255,92 +257,91 @@ export default {
 }
 </script>
 <style lang='less' >
-.all{
-.testchk {
-   .ant-badge-count {
-    z-index: 5;
-  }
-  .el-table th {
-    background-color: white !important;
-  }
-  .ant-card-body {
-    padding: 2px 2px;
-  }
-  .ant-col-6 {
-    margin-top: 10px;
-  }
-}
-.details {
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  .ant-checkbox-wrapper {
-    float: right;
-  }
- 
-}
-.borders {
-  width: 0;
-  border-right: 1px solid #ebeef5;
-}
-.contents {
-  margin-left: 12px;
-  width: 99%;
-}
-.dealRowchild {
-  margin-top: 8px;
-}
-.dealRow {
-  //margin-top: 5px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.dealRow .dealCol {
-  line-height: 25px;
-}
-
-.dealRow .sizeWeight {
-  font-size: 16px;
-  font-weight: bold;
-}
-.jiantou {
-  margin-bottom: 0em;
-  font-weight: bold;
-  font-size: 20px;
-}
-.tableLineHeight {
-  line-height: 14px;
-  .tag {
-    display: inline-block;
-  }
-  .pageone {
-    margin-top: 9px;
-    span {
-      padding-left: 3px;
-      line-height: 20px;
+.all {
+  .testchk {
+    .ant-badge-count {
+      z-index: 5;
+    }
+    .el-table th {
+      background-color: white !important;
+    }
+    .ant-card-body {
+      padding: 2px 2px;
+    }
+    .ant-col-6 {
+      margin-top: 10px;
     }
   }
-  .pagetwo {
-    margin-top: 5px;
-    margin-bottom: 8px;
-    opacity: 0.8;
-  }
-  .pageone {
-    .ant-badge {
-      margin-top: -7px !important;
+  .details {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    .ant-checkbox-wrapper {
+      float: right;
     }
   }
-  .ant-pro-footer-toolbar {
-    z-index: 9999;
+  .borders {
+    width: 0;
+    border-right: 1px solid #ebeef5;
   }
-}
-.zwsjs {
-  text-align: center;
-  margin-top: 25px;
-  font-size: 14px;
-  color: #909399;
-}
+  .contents {
+    margin-left: 12px;
+    width: 99%;
+  }
+  .dealRowchild {
+    margin-top: 8px;
+  }
+  .dealRow {
+    //margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  .dealRow .dealCol {
+    line-height: 25px;
+  }
+
+  .dealRow .sizeWeight {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .jiantou {
+    margin-bottom: 0em;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .tableLineHeight {
+    line-height: 14px;
+    .tag {
+      display: inline-block;
+    }
+    .pageone {
+      margin-top: 9px;
+      span {
+        padding-left: 3px;
+        line-height: 20px;
+      }
+    }
+    .pagetwo {
+      margin-top: 5px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+    .pageone {
+      .ant-badge {
+        margin-top: -7px !important;
+      }
+    }
+    .ant-pro-footer-toolbar {
+      z-index: 9999;
+    }
+  }
+  .zwsjs {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #909399;
+  }
 }
 </style>
 
