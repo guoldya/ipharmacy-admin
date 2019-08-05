@@ -149,12 +149,16 @@ export default {
                 labelCol: {
                     lg: { span: 9 },
                     sm: { span: 9 },
-                    xxl: { span: 6 }
+                    md:{span:9},
+                  xl:{span:8},
+                    xxl: { span: 8 }
                 },
                 wrapperCol: {
                     lg: { span: 15 },
                     sm: { span: 15 },
-                    xxl: { span: 18 }
+                    md:{span:15},
+                  xl:{span:16},
+                    xxl: { span: 16 }
                 }
             }
         }

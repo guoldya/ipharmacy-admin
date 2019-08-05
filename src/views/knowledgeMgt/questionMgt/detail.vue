@@ -14,18 +14,28 @@
           v-decorator="[ 'parentId', ]"
         ></a-tree-select>
       </a-form-item>
+<!--      <a-form-item label="问题序号" :label-col="labelCol" :wrapper-col="wrapperCol">-->
+<!--        <a-input-->
+<!--          class="readOnlyInput"-->
+<!--          :disabled="true"-->
+<!--          v-decorator="[-->
+<!--                'id',-->
+<!--              ]"-->
+<!--          placeholder="<系统自动生成>"-->
+<!--        />-->
+<!--      </a-form-item>-->
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           v-if="disable"
           class="readOnlyInput"
           :disabled="true"
           v-decorator="[
-                'id',
+                'code',
                 {
                   rules: [{
                     required: true,
                     message: '请输入问题编码',
-                  },{max:2,message:'两位有效编码'}],
+                  },{max:10,message:'两位有效编码'}],
                 }
               ]"
           placeholder="一般由数字和字母组成"
@@ -33,12 +43,12 @@
         <a-input
          v-else
           v-decorator="[
-                'id',
+                'code',
                 {
                   rules: [{
                     required: true,
                     message: '请输入问题编码',
-                  },{max:2,message:'两位有效编码'}],
+                  },{max:10,message:'两位有效编码'},{ message: '两位有效编码', pattern: /^[0-9a-zA-Z]{1,10}$/}],
                 }
               ]"
           placeholder="一般由数字和字母组成"
@@ -133,6 +143,7 @@ export default {
             this.getIdData = res.data;
             params.parentId = res.data.parentId;
             params.id = res.data.id;
+            params.code = res.data.code;
             params.name = res.data.name;
             params.spellCode = res.data.spellCode;
             params.remark = res.data.remark;
@@ -163,7 +174,7 @@ export default {
             })
               .then(res => {
                 if (res.code == '200') {
-                  this.$message.info('保存成功!')
+                  this.success(res.msg)
                   setTimeout(this.backTo, 500)
                 }else{
                   this.warn(res.msg)
@@ -187,6 +198,8 @@ export default {
                 if (res.code == '200') {
                   this.$message.info('保存成功!')
                   setTimeout(this.backTo, 500)
+                }else{
+                  this.warn(res.msg)
                 }
               })
               .catch(err => {

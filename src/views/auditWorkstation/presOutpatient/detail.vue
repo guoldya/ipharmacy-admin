@@ -103,6 +103,9 @@
                                             <span class="font-bold">{{dealtime(op.reviewTime)}}</span>
                                         </a-col>
                                     </a-row>
+                                  <a-row>
+                                    <a-col>审核意见: <span class="font-bold">{{op.reviewOpinion}}</span> </a-col>
+                                  </a-row>
                                     <a-row class="dealRow">
                                         <el-table
                                             class="margin-top-10 width-100"
@@ -155,7 +158,7 @@
                     <div class="dealRight">
                         <a-tabs defaultActiveKey="1" size="small" class="width-100">
                             <a-tab-pane tab="预判情况" key="1">
-                                <div class="auditOpinion" v-if="auditStatus">
+                                <div class="auditOpinion" v-if="opStatus">
                                     <p class="dealP" style="float: left">审核意见:</p>
                                     <a-button
                                         type="primary"
@@ -215,7 +218,7 @@
                                         <a v-else></a>
                                     </a-dropdown>
                                 </div>
-                                <a-textarea :rows="4" maxlength="100" v-model="templateText"></a-textarea>
+                                <a-textarea :rows="4" maxlength="100" v-model="templateText" v-if="opStatus"></a-textarea>
                                 <div class="margin-top-10">
                                     <span class="dealP">问题描述：</span>
                                     <span v-for="(ta,index) in tagsData " class="margin-left-5" :key=index>
@@ -255,7 +258,8 @@
                                     :key="index"
                                 >
                                     <a-tag class="tagStyle" :color="op.levelColor">{{op.auditName }}</a-tag>
-                                    <span :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
+                                    <span v-if="op.auditClass=='0' || !op.auditClass" :style="{fontWeight:'bold'}">其他分类</span>
+                                    <span v-else :style="{fontWeight:'bold'}">{{op.auditClass}}</span>
                                     <span class="marLeft10">
                                         <i
                                             class="iconfont action action-yaopin1"
@@ -408,14 +412,14 @@
                 @click="refuse"
                 style="margin-left: 5px"
                 :loading="loading"
-                v-if="auditStatus"
+                v-if="opStatus"
             >驳回</a-button>
             <a-button
                 type="primary"
                 class="margin-left-5"
                 @click="submit"
                 :loading="loading"
-                v-if="auditStatus"
+                v-if="opStatus"
             >通过</a-button>
         </footer-tool-bar>
     </div>
@@ -507,7 +511,8 @@ export default {
                 visId: null,
                 maxSubmitNo: null
             },
-            quesNumTotal: 0
+            quesNumTotal: 0,
+            opStatus:true,
         }
     },
     mounted() {
@@ -516,6 +521,7 @@ export default {
         this.getRecord()
         this.getAttention()
         if ( this.routerData.isNew == 1) {
+          this.auditStatus = true
             this.getLeadAndLag()
         } else {
             this.auditStatus = false
@@ -543,7 +549,12 @@ export default {
                         }
                         this.rightData.forEach((item, index) => {
                             if (item.reviewStatus == '0') {
-                                this.auditStatus = true
+                                // this.auditStatus = true;
+                                this.opStatus = true;
+                            }else{
+                              // this.auditStatus = false;
+                              this.opStatus = false;
+                              return
                             }
                         })
                     } else {
@@ -610,6 +621,7 @@ export default {
                         this.getRecord()
                         this.getAttention()
                         if (  this.routerData.isNew == 1) {
+                          this.auditStatus = true
                             this.getLeadAndLag()
                         } else {
                             this.auditStatus = false
@@ -628,7 +640,7 @@ export default {
             let params = {}
             params.auditType = '1'
             // params.passType = "1";
-            if (this.templateText) {
+            if ($.trim(this.templateText).length>0) {
                 params.reviewOpinion = this.templateText
             } else {
                 params.reviewOpinion = '驳回'
@@ -654,6 +666,7 @@ export default {
                         this.getRecord()
                         this.getAttention()
                         if ( this.routerData.isNew == 1) {
+                          this.auditStatus = true
                             this.getLeadAndLag()
                         } else {
                             this.auditStatus = false
@@ -917,6 +930,7 @@ export default {
         },
         // 更换患者
         slePatients(data) {
+          console.log(data,'dag')
             window.localStorage.removeItem('outpatientData')
             window.localStorage.setItem('outpatientData',JSON.stringify({visId:data.visId,submitNo: data.maxSubmitNo,isNew:1}))
             this.getDetailData()
@@ -924,6 +938,7 @@ export default {
             this.getRecord()
             this.getAttention()
             if (this.routerData.isNew == 1) {
+              this.auditStatus = true
                 this.getLeadAndLag()
             } else {
                 this.auditStatus = false
@@ -1036,6 +1051,7 @@ export default {
             this.getRecord()
             this.getAttention()
             if ( this.routerData.isNew == 1) {
+              this.auditStatus = true
                 this.getLeadAndLag()
             } else {
                 this.auditStatus = false
