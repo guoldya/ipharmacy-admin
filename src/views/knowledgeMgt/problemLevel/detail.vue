@@ -16,8 +16,7 @@
           :label-col="labelCol"
           :wrapper-col="wrapperCol"
         >
-          <a-input class="readOnlyInput"  :disabled="true" v-decorator="['auditLevel',
-        {rules: [{ required: true, message: '请输入编号' },{pattern:/^([1-9][0-9]{0,1}|100)$/,message:'请输入两位数字'}]}]"/>
+          <a-input class="readOnlyInput"  placeholder="<系统自动生成>" :disabled="true" v-decorator="['auditLevel',]"/>
         </a-form-item>
         <a-form-item
           label="等级名称"

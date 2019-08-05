@@ -10,13 +10,13 @@
             <a-button type="primary" @click="addUser" class="margin-top-10">新增人员</a-button>
             <a-spin tip="加载中..." :spinning="spinning">
                 <el-table class="margin-top-10" :data="dataSource" border style="width: 100%">
-                    <el-table-column fixed="right" label="操作" width="150" align="center">
+                    <el-table-column fixed="right" label="操作" width="100" align="center">
                         <template slot-scope="scope">
                             <a @click="edit(scope.row)">编辑</a>
-                            <a-divider type="vertical" />
-                            <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)">
-                                <a class="delColor">删除</a>
-                            </a-popconfirm>
+<!--                            <a-divider type="vertical" />-->
+<!--                            <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)">-->
+<!--                                <a class="delColor">删除</a>-->
+<!--                            </a-popconfirm>-->
                             <a-divider type="vertical" />
                             <a-popconfirm
                                 title="确认启用吗?"
@@ -122,7 +122,8 @@ export default {
             ],
             pageChangeFilter:{},
             total: 0,
-            current: 1
+            current: 1,
+            pageSize:10,
         }
     },
     components: {
@@ -190,7 +191,10 @@ export default {
                 .then(res => {
                     if (res.code == '200') {
                         this.success('删除成功!', () => {
-                            this.getData()
+                          let params = this.pageChangeFilter;
+                          params.offset = (this.current - 1) * this.pageSize;
+                          params.pageSize = this.pageSize;
+                            this.getData(params)
                         })
                     } else {
                         this.warn(res.msg)
@@ -203,11 +207,10 @@ export default {
         changeStatus(row, flag) {
           let params = {}
             if (flag) {
-              row.status = '1'
+              params.status = '1'
             } else {
-              row.status = '0'
+              params.status = '0'
             }
-            params.status = row.status
             params.personId = row.personId
             this.$axios({
                 url: this.api.updateUrl,
@@ -216,7 +219,11 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                      this.success(res.msg)
+                      this.success(res.msg);
+                      let data = this.pageChangeFilter;
+                      data.offset = (this.current - 1) * this.pageSize;
+                      data.pageSize = this.pageSize;
+                      this.getData(data)
                     } else {
                         this.warn(res.msg)
                     }
@@ -238,12 +245,17 @@ export default {
             this.current = 1
             let params = this.$refs.searchPanel.form.getFieldsValue()
             params.pageSize = size
+          this.pageSize = size;
             this.getData(params)
         },
         getData(params = {}) {
             this.spinning = true
-            params.pageSize = params.pageSize || 10
-            params.offset = params.offset || 0
+          if (params.offset==0){
+            this.current = 1;
+          }
+          console.log(params,'22')
+            // params.pageSize = params.pageSize || 10
+            // params.offset = params.offset || 0
             this.$axios({
                 url: this.api.userUrl,
                 method: 'put',

@@ -1044,6 +1044,20 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/eCharts',
+    component: BlankLayout,
+    redirect: '/eCharts/eChartFlow',
+    children: [
+      {
+        path: 'eChartFlow',
+        name: 'eChartFlow',
+        component: () => import('@/views/eCharts/eChartFlow')
+      }
+    ]
+  },
+
+
+  {
     path: '/500',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/500')
   },

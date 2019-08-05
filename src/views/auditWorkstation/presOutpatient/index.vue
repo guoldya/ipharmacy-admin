@@ -115,7 +115,7 @@
                         </template>
                     </el-table-column>
                     <!--问题tags列-->
-                    <el-table-column prop="problem" label="问题" min-width="500">
+                    <el-table-column prop="problem" label="问题" min-width="400">
                         <template slot-scope="props">
                             <a-row
                                 v-for="(op,index) in props.row.orderissueVOS"
@@ -131,12 +131,18 @@
                                 <a-col :span="22">
                                     <a-tooltip placement="top" :key="index">
                                         <template slot="title" style="width: 300px">
-                                            {{op.auditClass}}：{{op.auditDescription}}
+                                          <span v-if="op.auditClass=='0' || !op.auditClass">
+                                            其他分类：{{op.auditDescription}}
+                                          </span>
+                                          <span v-else>
+                                              {{op.auditClass}}：{{op.auditDescription}}
+                                          </span>
                                             <br />
                                             描述：{{op.auditSuggest}}
                                         </template>
                                         <div class="multiLineText">
-                                            <span class="auditClass">{{op.auditClass}}：</span>
+                                            <span class="auditClass" v-if="op.auditClass=='0' || !op.auditClass">其他分类：</span>
+                                          <span class="auditClass" v-else>{{op.auditClass}}：</span>
                                             {{op.auditDescription}}
                                             <span
                                                 class="auditClass"
@@ -152,7 +158,7 @@
                             </a-row>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="action" label="操作" width="140" align="center" fixed= "right">
+                    <el-table-column prop="action" label="操作" width="140" align="center">
                         <template slot-scope="props">
                             <a @click="looks(props.row)">查看</a>
                             <a-divider type="vertical" />
@@ -634,10 +640,12 @@ export default {
         selectBox(selection, row) {
             //点击后获取这条数据
             this.selections = selection
+          console.log(this.selections,'222')
         },
         //全选
         selectAll(selection) {
-            this.selections = selection
+            this.selections = selection;
+            console.log(this.selections,'222')
         },
 
         //开始审方
@@ -753,23 +761,23 @@ export default {
                 params.reviewOpinion = '批量通过'
                 params.reviewVerdict = '1'
                 params.reviewIds = reviewIds
-                this.$axios({
-                    url: this.api.updateReviewStatus,
-                    method: 'put',
-                    data: params
-                })
-                    .then(res => {
-                        if (res.code == '200') {
-                            this.fetchYJSMapData()
-                            this.getCountText()
-                            this.success(res.msg)
-                        } else {
-                            this.warn(res.msg)
-                        }
-                    })
-                    .catch(err => {
-                        this.error(err)
-                    })
+                // this.$axios({
+                //     url: this.api.updateReviewStatus,
+                //     method: 'put',
+                //     data: params
+                // })
+                //     .then(res => {
+                //         if (res.code == '200') {
+                //             this.fetchYJSMapData()
+                //             this.getCountText()
+                //             this.success(res.msg)
+                //         } else {
+                //             this.warn(res.msg)
+                //         }
+                //     })
+                //     .catch(err => {
+                //         this.error(err)
+                //     })
             }
         },
         //批量驳回
@@ -788,23 +796,23 @@ export default {
                 params.reviewOpinion = '批量驳回'
                 params.reviewVerdict = '2'
                 params.reviewIds = reviewIds
-                this.$axios({
-                    url: this.api.updateReviewStatus,
-                    method: 'put',
-                    data: params
-                })
-                    .then(res => {
-                        if (res.code == '200') {
-                            this.fetchYJSMapData()
-                            this.getCountText()
-                            this.success(res.msg)
-                        } else {
-                            this.warn(res.msg)
-                        }
-                    })
-                    .catch(err => {
-                        this.error(err)
-                    })
+                // this.$axios({
+                //     url: this.api.updateReviewStatus,
+                //     method: 'put',
+                //     data: params
+                // })
+                //     .then(res => {
+                //         if (res.code == '200') {
+                //             this.fetchYJSMapData()
+                //             this.getCountText()
+                //             this.success(res.msg)
+                //         } else {
+                //             this.warn(res.msg)
+                //         }
+                //     })
+                //     .catch(err => {
+                //         this.error(err)
+                //     })
             }
         },
         //单个通过
@@ -836,6 +844,7 @@ export default {
         },
         //单个驳回
         rejectedSingle(data) {
+            this.templateText = '驳回'
             this.Modal.visible = true
             this.tempRowData = data.row
             this.problemsData = data.row.orderissueVOS
@@ -1066,6 +1075,7 @@ export default {
             this.timeInitialize = setInterval(() => {
                 this.fetchYJSMapData()
                 this.getCountText()
+              this.selections = [];
             }, data)
         }
     },
