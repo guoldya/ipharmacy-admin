@@ -50,7 +50,7 @@
               <a-icon type="sync" style="color:#1890ff" />
               <span class="updrw" @click="rush">重新点评</span>
             </a>
-            <aside v-for="item in proList" v-if="proList&&proList.length">
+            <aside v-for="item in proList" v-if="proList&&proList.length&&proList[0].cId">
               <p>&emsp;&emsp;药品：{{fliterdrug(item.prescId)}}</p>
               <p>点评结论：{{fliterreview(item.cId)}}</p>
               <p>

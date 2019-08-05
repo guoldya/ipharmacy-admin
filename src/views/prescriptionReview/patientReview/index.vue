@@ -35,7 +35,17 @@
       </Searchpanel>
     </a-card>
     <a-card class="margin-top-5">
-      <a-button :type="buttonType" @click="magicRew">{{rewButoon}}</a-button>
+      <a-popconfirm
+        v-if="buttonType == 'danger'"
+        title="确定停止点评?"
+        @confirm="magicRew"
+        okText="确定"
+        cancelText="取消"
+      >
+        <a-button class="margin-left-5" :type="buttonType">{{rewButoon}}</a-button>
+      </a-popconfirm>
+      <a-button v-else class="margin-left-5" @click="magicRew" :type="buttonType">{{rewButoon}}</a-button>
+      <!-- <a-button :type="buttonType" @click="magicRew">{{rewButoon}}</a-button> -->
       <a-spin tip="加载中..." :spinning="loading" class="tables">
         <el-table
           ref="multipleTable"
@@ -141,7 +151,9 @@ export default {
       rewButoon: '自动点评',
       // buttonType:'danger'
       buttonType: 'primary',
-      timeInitialize: null
+      timeInitialize: null,
+      buttonText: '自动点评',
+      alldatasouce: []
     }
   },
   computed: {
@@ -170,7 +182,7 @@ export default {
         },
         {
           name: '医生',
-          dataField: 'personId',
+          dataField: 'prescDocId',
           type: 'select',
           keyExpr: 'personId',
           valueExpr: 'name',
@@ -178,7 +190,7 @@ export default {
         },
         {
           name: '科室',
-          dataField: 'admitDept',
+          dataField: 'prescDeptId',
           type: 'tree-select',
           keyExpr: 'keyword',
           treeData: this.treeDatas
@@ -212,34 +224,66 @@ export default {
   methods: {
     // 定时器
     setTimeRval(data) {
+      let num = 0
       this.timeInitialize = setInterval(() => {
-        this.getformData()
-        let state = null
-        this.dataSource.forEach(item => {
-          if (item.status == 1) {
-            state = false
+        ++num
+        this.getformData({status: 1,pageSize: this.pageChangeSize, offset: 0})
+        this.rewRange(num)
+      }, data)
+    },
+    // 点评频率
+    rewRange(val) {
+      let params = { offset: val * 10, pageChangeSize: this.pageChangeSize }
+      this.$axios({
+        url: this.api.selectform,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.alldatasouce = res.rows
+            let arr = []
+            this.alldatasouce.filter(item => {
+              if (item.status == 1) {
+                arr.push(item.filterId)
+              }
+            })
+            this.$axios({
+              url: this.api.filter,
+              method: 'post',
+              data: arr
+            })
+              .then(res => {
+                if (res.code == '200') {
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.error(err)
+              })
+          } else {
+            this.warn(res.msg)
           }
         })
-        if (state != false) {
-          this.$message.info('自动点评已完成')
-          this.buttonText = '自动点评'
-          this.buttonType = 'primary'
-          this.show = false
-          clearInterval(this.timeInitialize)
-          this.timeInitialize = null
-        }
-      }, data)
+        .catch(err => {
+          this.error(err)
+        })
     },
     // 自动点评
     magicRew() {
       if (this.rewButoon == '自动点评') {
+        // this.rewButoon = '停止点评'
+        // this.buttonType = 'danger'
+        // this.show = true
+        // console.log('444')
+        this.setTimeRval(10000)
         let arr = []
         this.dataSource.filter(item => {
           if (item.status == 1) {
             arr.push(item.filterId)
           }
         })
-
         this.$axios({
           url: this.api.filter,
           method: 'post',
@@ -247,10 +291,9 @@ export default {
         })
           .then(res => {
             if (res.code == '200') {
-              this.buttonText = '停止点评'
+              this.rewButoon = '停止点评'
               this.buttonType = 'danger'
               this.show = true
-              this.setTimeRval(10000)
             } else {
               this.warn(res.msg)
             }
@@ -259,9 +302,17 @@ export default {
             this.error(err)
           })
       }
+      if (this.rewButoon == '停止点评') {
+        this.buttonType = 'primary'
+        this.show = false
+        this.rewButoon = '自动点评'
+        clearInterval(this.timeInitialize)
+        this.timeInitialize = null
+      }
     },
     // 表单数据
     getformData(params = { pageSize: 10, offset: 0 }) {
+      this.loading = true
       this.$axios({
         url: this.api.selectform,
         method: 'put',
@@ -269,9 +320,11 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
+            this.loading = false
             this.dataSource = res.rows
             if (this.dataSource && this.dataSource.length) {
               this.total = res.total
+              let param = { pageSize: this.total, offset: 0 }
               this.isid = this.dataSource[0].planScope
               if (this.dataSource[0].planScope == 2) {
                 this.columns = [
