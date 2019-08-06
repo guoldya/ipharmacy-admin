@@ -97,8 +97,8 @@
                     v-for="(item,index) in this.drugAllList"
                     :value="index"
                     :key="item.id"
-                    :id='item.id'
-                    :icdname='item.icdname'
+                    :id="item.id"
+                    :icdname="item.icdname"
                   >
                     <a-row>
                       <a-col>{{item.icdname}}</a-col>
@@ -163,7 +163,7 @@
 import debounce from 'lodash/debounce'
 export default {
   data() {
-     this.handleSearch = debounce(this.handleSearch, 800)
+    this.handleSearch = debounce(this.handleSearch, 800)
     return {
       similarSpin: false,
       similarTotal: 0,
@@ -187,7 +187,8 @@ export default {
         mapUrl: 'sys/dicIcdMapper/insert',
         icdAll: 'sys/hisIcd/selectPage',
         dicDrugSelectList: 'sys/dicDrug/selectDrugListByKeyword',
-         icdSelectList: 'sys/dicIcd/selectDicIcdByKeyword',
+        icdSelectList: 'sys/dicIcd/selectDicIcdByKeyword',
+        orgUrl: '/sys/sysOrgs/selectList'
       },
       loading: false,
       columnscheckdtl: [
@@ -205,15 +206,24 @@ export default {
       icdnames: '',
       isActive: true,
       isShow: true,
-      marpperId:'',
-      icdname:'',
-      icdname:'',
-      drugAllList:[]
+      marpperId: '',
+      icdname: '',
+      icdname: '',
+      drugAllList: [],
+      orgData: []
     }
   },
   computed: {
     list() {
       return [
+        {
+          name: '机构',
+          dataField: 'orgId',
+          type: 'tree-select',
+          keyExpr: 'keyword',
+          treeData: this.orgData
+          // onSelect: this.selectTree
+        },
         {
           name: 'ICD名称',
           dataField: 'icdName',
@@ -231,10 +241,12 @@ export default {
     }
   },
   mounted() {
+    this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
     this.getData()
+    this.getOrgData()
   },
   methods: {
-     // 搜索
+    // 搜索
     handleSearch(value) {
       let params = { keyword: value, id: this.marpperId }
       this.$axios({
@@ -253,8 +265,8 @@ export default {
           this.error(err)
         })
     },
-     // 获取选择框数据
-     getDrugList() {
+    // 获取选择框数据
+    getDrugList() {
       let params = { keyword: '', id: this.marpperId }
       this.$axios({
         url: this.api.icdSelectList,
@@ -273,24 +285,23 @@ export default {
         })
     },
     // 数据实例化
-     handleChange(value, option) {
-      console.log()
+    handleChange(value, option) {
       let params = option.data.attrs
       this.disable = false
       this.isShow = true
-      this.icdname =params.icdname
+      this.icdname = params.icdname
       this.MData.id = params.id
     },
-     // 点击名称栏
-     changeFormat() {
+    // 点击名称栏
+    changeFormat() {
       this.isShow = false
       this.disable = true
       this.getDrugList()
     },
     //点击第左边的table列事件
     clickLeftRow(row) {
-       this.icdname = ''
-      this.isShow=true
+      this.icdname = ''
+      this.isShow = true
       this.isActive = false
       let params = { icdName: row.icdname }
       this.icdnames = row.icdname
@@ -304,8 +315,7 @@ export default {
         this.getSimilarData(params)
       }
     },
-     
-   
+
     //右边部分数据的获取
     getSimilarData(params = {}) {
       this.similarSpin = true
@@ -333,7 +343,7 @@ export default {
         })
     },
     //左边部分的数据获取
-    getData(params = { pageSize: 20, offset: 0 }) {
+    getData(params = { pageSize: 20, offset: 0, orgId: this.$store.state.user.account.info.orgId }) {
       this.spinning = true
       this.$axios({
         url: this.api.icdAll,
@@ -357,10 +367,10 @@ export default {
     },
     //点击右边的table事件
     clickRightRow(row) {
-      this.isShow=true
+      this.isShow = true
       this.MData = row
       this.disable = false
-       this.icdname = this.MData.icdname
+      this.icdname = this.MData.icdname
     },
     //点击确定的处理事件
     clickSure() {
@@ -370,9 +380,9 @@ export default {
         icdid: this.MData.id,
         icdname: this.icdname,
         id: this.NData.mapperId,
-         orgId: this.NData.orgId,
+        orgId: this.NData.orgId
       }
-       this.marpperId = this.NData.mapperId
+      this.marpperId = this.NData.mapperId
       const arrl = Object.keys(this.MData)
       if (arrl.length == 0) {
         this.$message.info('请添加知识库数据!')
@@ -392,7 +402,7 @@ export default {
                 this.getData()
                 this.loading = false
                 this.isActive = true
-                 this.icdname=''
+                this.icdname = ''
               })
             } else {
               this.loading = false
@@ -419,23 +429,24 @@ export default {
     },
     //重置
     resetForm() {
-      this.$refs.searchPanel.form.resetFields()
-      this.getData({ pageSize: 20, offset: 0 })
+      this.$refs.searchPanel.form.resetFields(['icdName', 'isCurrent', []])
+      let params = { pageSize: 20, offset: 0 }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
       this.getData(params)
     },
     //页码size change事件
     pageChangeSize(page, pageSize) {
-       this.pageSize = pageSize
-       this.current=1
-      let params = { offset:0, pageSize: pageSize }
+      this.pageSize = pageSize
+      this.current = 1
+      let params = { offset: 0, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
       this.current = page
-      let params = { offset: (page - 1)*pageSize, pageSize: pageSize }
+      let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
@@ -471,15 +482,49 @@ export default {
         this.N = 1
       }
     },
-    lostFocus(){
+    lostFocus() {},
+    // 机构选取
+    getOrgData(obj = {}) {
+      this.$axios({
+        url: this.api.orgUrl,
+        method: 'put',
+        data: obj
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.orgData = this.getOrgTreeData(res.rows, undefined)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    getOrgTreeData(data, pid) {
+      let tree = []
+      data.forEach(item => {
+        let row = item
+        row.key = item.orgId
+        row.value = item.orgId
+        if (pid == item.parentId) {
+          row.children = this.getOrgTreeData(data, item.orgId)
+          tree.push(row)
+        }
+      })
+      return tree
+    },
 
+    selectTree(value) {
+      console.log(value, 'value')
+      this.getTreeseldata({ orgId: value })
     }
   }
 }
 </script>
 <style lang='less'>
 .testchks {
-   .ant-card{
+  .ant-card {
     padding-top: 12px;
   }
   .zhishiku {
@@ -496,9 +541,9 @@ export default {
     color: rgba(0, 0, 0, 0.85);
   }
 }
-.headers{
-    line-height: 36px;
-  }
+.headers {
+  line-height: 36px;
+}
 .detailsa {
   .table-th {
     background: #fafafa;
@@ -524,16 +569,16 @@ export default {
     text-align: right;
     color: rgba(0, 0, 0, 0.85);
   }
-  
+
   .box {
-      line-height: 35px;
-      border-bottom: 1px solid #ebeef5;
-      div {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
+    line-height: 35px;
+    border-bottom: 1px solid #ebeef5;
+    div {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
+  }
 }
 .surea {
   float: right;
@@ -546,5 +591,4 @@ export default {
 .pt {
   pointer-events: none;
 }
- 
 </style>

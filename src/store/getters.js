@@ -10,6 +10,7 @@ const getters = {
   avatar: state => state.user.account.avatar,
   lockpasswd: state => state.preference.info.lockPasswd,
   nickname: state => state.user.account.info.username,
+  instituId:state => state.user.account.info.orgId,
   welcome: state => state.user.account.welcome,
   userInfo: state => state.user.account.info,
   userId: state=> state.user.account.id,

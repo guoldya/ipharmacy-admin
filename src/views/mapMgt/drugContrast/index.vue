@@ -226,7 +226,8 @@ export default {
         hisDrugDataUrl: '/sys/hisDrug/selectPage',
         similarDrugDataUrl: '/sys/hisDrug/selectSimilarDrugPage',
         mapUrl: 'sys/dicDrugMapper/insert',
-        dicDrugSelectList: 'sys/dicDrug/selectDrugListByKeyword'
+        dicDrugSelectList: 'sys/dicDrug/selectDrugListByKeyword',
+        orgUrl: '/sys/sysOrgs/selectList'
       },
       loading: false,
       columnscheckdtl: [
@@ -246,12 +247,21 @@ export default {
       isShow: true,
       drugAllList: [],
       isActive: true,
-      drugselval: ''
+      drugselval: '',
+      orgData: []
     }
   },
   computed: {
     list() {
       return [
+        {
+          name: '机构',
+          dataField: 'orgId',
+          type: 'tree-select',
+          keyExpr: 'keyword',
+          treeData: this.orgData
+          // onSelect: this.selectTree
+        },
         {
           name: '药品名称',
           dataField: 'drugName',
@@ -269,7 +279,9 @@ export default {
     }
   },
   mounted() {
+    this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
     this.getData()
+    this.getOrgData()
   },
 
   methods: {
@@ -393,7 +405,7 @@ export default {
         })
     },
     //左边部分的数据获取
-    getData(params = { pageSize: 20, offset: 0 }) {
+    getData(params = { pageSize: 20, offset: 0, orgId: this.$store.state.user.account.info.orgId }) {
       this.spinning = true
       this.$axios({
         url: this.api.hisDrugDataUrl,
@@ -489,22 +501,26 @@ export default {
     },
     //重置
     resetForm() {
-      this.$refs.searchPanel.form.resetFields()
-      this.getData({ pageSize: 20, offset: 0 })
-      // this.getData(params)
+       this.$refs.searchPanel.form.resetFields(['drugName', 'id', []])
+      let params = { pageSize: 20, offset: 0 }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      this.current = 1
+      this.getData(params)
+      // this.$refs.searchPanel.form.resetFields()
+      // this.getData({ pageSize: 20, offset: 0 })
     },
-   //页码size change事件
+    //页码size change事件
     pageChangeSize(page, pageSize) {
-       this.pageSize = pageSize
-       this.current=1
-      let params = { offset:0, pageSize: pageSize }
+      this.pageSize = pageSize
+      this.current = 1
+      let params = { offset: 0, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
       this.current = page
-      let params = { offset: (page - 1)*pageSize, pageSize: pageSize }
+      let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
@@ -524,6 +540,37 @@ export default {
       params.producedBy = this.MData.producedBy
       params.pageSize = size
       this.getSimilarData(params)
+    },
+    // 机构选取
+    getOrgData(obj = {}) {
+      this.$axios({
+        url: this.api.orgUrl,
+        method: 'put',
+        data: obj
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.orgData = this.getOrgTreeData(res.rows, undefined)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    getOrgTreeData(data, pid) {
+      let tree = []
+      data.forEach(item => {
+        let row = item
+        row.key = item.orgId
+        row.value = item.orgId
+        if (pid == item.parentId) {
+          row.children = this.getOrgTreeData(data, item.orgId)
+          tree.push(row)
+        }
+      })
+      return tree
     }
   }
 }

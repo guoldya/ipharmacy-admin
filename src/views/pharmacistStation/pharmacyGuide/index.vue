@@ -29,11 +29,12 @@
           >
              <span slot="customRender" slot-scope="item">
             <a-dropdown>
-              <a-menu slot="overlay" @click="handleMenuClick">
-                <a-menu-item   :key="key">{{menuItem[key]}}</a-menu-item>
+              <a-menu slot="overlay"  @click="handleMenuClick">
+                <!--<a-menu-item   >{{menuItem[key]}}</a-menu-item>-->
+                <a-menu-item  v-for="(item,index) in menuItem" :key="index">{{item[key]}}</a-menu-item>
               </a-menu>
               <span style="margin-left: 8px">
-              {{item.key}} <a-icon type="caret-down" />
+              {{item.name}} <a-icon type="caret-down" />
             </span>
             </a-dropdown>
           </span>
@@ -46,11 +47,12 @@
               </span>
             </div>
             <a-spin :spinning="loading" tip="加载中...">
-              <a-table bordered :columns="columns"
-                       class="margin-top-10"
-                       :dataSource="data"
-                       :pagination="pagination"
-                       @change="handleTableChange"
+              <el-table
+                highlight-current-row
+                class="margin-top-10"
+                :data="data"
+                border
+                style="width: 100%"
               >
 
                 <el-table-column
@@ -74,7 +76,7 @@
                   </template>
                 </el-table-column>
 
-              </a-table>
+              </el-table>
               <a-pagination
                 showSizeChanger
                 showQuickJumper
@@ -112,39 +114,43 @@
           key: 'tab1',
           tab:'患者主页'
         }, {
-          key: '药学服务',
+          key: 'tab2',
+          name: '药学服务',
           scopedSlots: { tab: 'customRender'}
         },
           {
-            key: '临床信息',
+            name: '临床信息',
+            key: 'tab3',
             scopedSlots: { tab: 'customRender'}
           },
           {
-            key: '学员工作',
+            name: '学员工作',
+            key: 'tab4',
             scopedSlots: { tab: 'customRender'}
           }],
-        menuItem: {
+        menuItem:[{
           tab1: 'content1',
           tab2: 'content2',
-          tab3: 'content3',
-          tab4: 'content4',
-        },
+        },{
+          tab1: 'content3',
+          tab2: 'content4',
+        }],
         loading:false,
         columns: [
-          { title: '患者姓名', value: 'auditLevel', width: 120, align: 'right'},
-          { title: '住院号', value: 'levelType', align: 'center', width: 100 },
-          { title: '性别', value: 'levelName', align: 'center', width: 100 },
-          { title: '年龄', value: 'handleType', align: 'center', width: 110},
-          { title: '入院时间', value: 'levelDescription',  width: 100},
-          { title: '患者位置', value: 'status1', width: 100, align: 'center' },
-          { title: '入院诊断', value: 'status2', align: 'center',width: 90 },
-          { title: '指导内容', value: 'status3', align: 'center' },
-          { title: '紧急程度', value: 'statu4s', width: 90, align: 'center' },
-          { title: '建议类别', value: 'statu5s', width: 90, align: 'center' },
-          { title: '指导状态', value: 'statu6s', width: 90, align: 'center' },
-          { title: '创建人', value: 'status7', width: 90, align: 'center' },
-          { title: '指导时间', value: 'status8', width: 90, align: 'center' },
-          { title: '审核状态', value: 'status9', width: 90, align: 'center' },
+          { title: '患者姓名', value: 'auditLevel', width: 100, align: 'left'},
+          { title: '住院号', value: 'levelType', align: 'right', width: 100 },
+          { title: '性别', value: 'levelName', align: 'left', width: 100 },
+          { title: '年龄', value: 'handleType', align: 'right', width: 80},
+          { title: '入院时间', value: 'levelDescription',  width: 100, align: 'left'},
+          { title: '患者位置', value: 'status1', width: 100, align: 'left' },
+          { title: '入院诊断', value: 'status2', align: 'left',width: 120 },
+          { title: '指导内容', value: 'status3', align: 'left' },
+          { title: '紧急程度', value: 'statu4s', width: 90, align: 'left' },
+          { title: '建议类别', value: 'statu5s', width: 90, align: 'left' },
+          { title: '指导状态', value: 'statu6s', width: 90, align: 'left' },
+          { title: '创建人', value: 'status7', width: 90, align: 'left' },
+          { title: '指导时间', value: 'status8', width: 90, align: 'left' },
+          { title: '审核状态', value: 'status9', width: 90, align: 'left' },
         ],
         items: [
           { text: '编辑', showtip: false, click: this.edits },
