@@ -28,12 +28,27 @@
                     <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
                         <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
                     </a-popconfirm>
+                  <a-select
+                    v-if="disable"
+                    style="width: 120px"
+                    class="margin-left-5 readOnlyInput"
+                    placeholder="刷新频率"
+                    @change="rateChange"
+                    :disabled="true"
+                    defaultValue="10秒"
+                  >
+                    <a-select-option
+                      :value="op.id"
+                      v-for="(op,index) in this.enum.refreshRate"
+                      :key="index"
+                    >{{op.text}}</a-select-option>
+                  </a-select>
                     <a-select
+                      v-else
                         style="width: 120px"
                         class="margin-left-5"
                         placeholder="刷新频率"
                         @change="rateChange"
-                        :disabled="disable"
                         defaultValue="10秒"
                     >
                         <a-select-option
@@ -703,9 +718,10 @@ export default {
                                             })
                                             .then(res => {
                                                 if (res.code == '200') {
-                                                  this.countText = []
-                                                  this.dataSource = []
-                                                    _this.success('批量通过成功')
+                                                  _this.countText = []
+                                                  _this.dataSource = []
+                                                    _this.success('批量通过成功');
+                                                  _this.getCountText()
                                                 } else {
                                                     _this.warn(res.msg)
                                                 }
@@ -723,9 +739,10 @@ export default {
                                             })
                                             .then(res => {
                                                 if (res.code == '200') {
-                                                  this.countText = []
-                                                  this.dataSource = []
-                                                    _this.success('批量驳回成功')
+                                                  _this.countText = []
+                                                  _this.dataSource = []
+                                                  _this.success('批量驳回成功');
+                                                  _this.getCountText()
                                                 } else {
                                                     _this.warn(res.msg)
                                                 }
@@ -763,23 +780,23 @@ export default {
                 params.reviewOpinion = '批量通过'
                 params.reviewVerdict = '1'
                 params.reviewIds = reviewIds
-                // this.$axios({
-                //     url: this.api.updateReviewStatus,
-                //     method: 'put',
-                //     data: params
-                // })
-                //     .then(res => {
-                //         if (res.code == '200') {
-                //             this.fetchYJSMapData()
-                //             this.getCountText()
-                //             this.success(res.msg)
-                //         } else {
-                //             this.warn(res.msg)
-                //         }
-                //     })
-                //     .catch(err => {
-                //         this.error(err)
-                //     })
+                this.$axios({
+                    url: this.api.updateReviewStatus,
+                    method: 'put',
+                    data: params
+                })
+                    .then(res => {
+                        if (res.code == '200') {
+                          this.success(res.msg)
+                            this.fetchYJSMapData()
+                            this.getCountText()
+                        } else {
+                            this.warn(res.msg)
+                        }
+                    })
+                    .catch(err => {
+                        this.error(err)
+                    })
             }
         },
         //批量驳回
@@ -798,23 +815,24 @@ export default {
                 params.reviewOpinion = '批量驳回'
                 params.reviewVerdict = '2'
                 params.reviewIds = reviewIds
-                // this.$axios({
-                //     url: this.api.updateReviewStatus,
-                //     method: 'put',
-                //     data: params
-                // })
-                //     .then(res => {
-                //         if (res.code == '200') {
-                //             this.fetchYJSMapData()
-                //             this.getCountText()
-                //             this.success(res.msg)
-                //         } else {
-                //             this.warn(res.msg)
-                //         }
-                //     })
-                //     .catch(err => {
-                //         this.error(err)
-                //     })
+                this.$axios({
+                    url: this.api.updateReviewStatus,
+                    method: 'put',
+                    data: params
+                })
+                    .then(res => {
+                        if (res.code == '200') {
+                          this.success(res.msg)
+                            this.fetchYJSMapData()
+                            this.getCountText()
+
+                        } else {
+                            this.warn(res.msg)
+                        }
+                    })
+                    .catch(err => {
+                        this.error(err)
+                    })
             }
         },
         //单个通过

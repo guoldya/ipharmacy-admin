@@ -404,7 +404,6 @@
             </template>
             <a-button
                 @click="cancel"
-                v-if="routerData.isNew == 1"
                 class="margin-left-5"
                 :loading="loading"
             >返回</a-button>
@@ -973,11 +972,20 @@ export default {
         },
 
         cancel() {
+
+          if(this.routerData.isNew ==1){
             this.closeTag({
-                tagName: 'presOutpatientDetail',
-                aimName: 'presOutpatientIndex',
-                vm: this
+              tagName: 'presOutpatientDetail',
+              aimName: 'presOutpatientIndex',
+              vm: this
             })
+          }else{
+            this.closeTag({
+              tagName: 'presOutpatientDetail',
+              aimName: 'presHistoryIndex',
+              vm: this
+            })
+          }
             // this.$router.push({
             //   name: 'presOutpatientIndex'
             // })

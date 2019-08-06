@@ -175,7 +175,7 @@ export default {
     data() {
         return {
             api: {
-                drugVarietyPageId: 'sys/dicDrugcategory/selectDrugVarietyPageByCategoryId',
+                drugVarietyPageId: 'sys/dicDrugvariety/selectPage',
                 dicBaseSelectList: 'sys/dicBase/selectClassList',
                 drugVarietyIdUpdate: 'sys/dicDrugvariety/update'
             },

@@ -205,7 +205,6 @@
               showSearch
               allowClear
               mode="single"
-              optionLabelProp="title"
               :defaultActiveFirstOption="false"
               :showArrow="false"
               :filterOption="false"

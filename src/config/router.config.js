@@ -972,8 +972,65 @@ export const asyncRouterMap = [
               }
             ]
           },
+          {
+            path: '/pharmacyStation/pharmacyGuide',
+            name: 'pharmacyGuide',
+            component: RouteView,
+            meta: { title: '用药指导', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/pharmacyGuide/index',
+                name: 'index',
+                component: () => import('@/views/pharmacistStation/pharmacyGuide/index.vue'),
+                meta: { title: '用药指导', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/pharmacistStation/pharmacyGuide/pharmacyGuideDetail',
+                name: 'pharmacyGuideDetail',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/pharmacyGuide/pharmacyGuideDetail.vue'),
+                meta: { title: '用药指导详情', detail: true}
+              }
+            ]
+          },
+          {
+            path: '/pharmacistStation/consultationRecord',
+            name: 'consultationRecord',
+            component: RouteView,
+            meta: { title: '会诊记录', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/consultationRecord/index',
+                name: 'consultationRecordIndex',
+                component: () => import('@/views/pharmacistStation/consultationRecord/index.vue'),
+                meta: { title: '会诊记录', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/pharmacistStation/consultationRecord/detail',
+                name: 'consultationRecordDetail',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/consultationRecord/detail.vue'),
+                meta: { title: '会诊记录详情', detail: true,}
+              }
+            ]
+          },
+          {
+            path: '/pharmacistStation/patientsHome',
+            name: 'patientsHome',
+            component: RouteView,
+            meta: { title: '患者主页', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/patientsHome/index',
+                name: 'patientsHomeIndex',
+                component: () => import('@/views/pharmacistStation/patientsHome/index.vue'),
+                meta: { title: '患者主页', hiddenHeaderContent: true, index: true }
+              },
+            ]
+          },
         ]
       }
+
     ]
   },
 

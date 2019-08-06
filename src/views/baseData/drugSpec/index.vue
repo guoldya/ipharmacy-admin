@@ -47,7 +47,7 @@
         // nodeData: {},
         disable: true,
         api: {
-          drugVarietyPageId: 'sys/dicDrugcategory/selectDrugVarietyPageByCategoryId',
+          drugVarietyPageId: 'sys/dicDrugvariety/selectPage',
           dicDrugSelectPage: 'sys/dicDrug/selectPage',
           dicBaseSelectList: 'sys/dicBase/selectClassList'
         },

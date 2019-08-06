@@ -137,11 +137,12 @@ export default {
             let { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status } = arr,
               formData = { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status }
             this.form.setFieldsValue(formData);
-            if (arr.icdtype == '1'){
-              this.readOnly =true
-            } else{
-              this.readOnly =false
-            }
+            // console.log(arr,'arr')
+            // if (arr.icdtype == '1'){
+            //   this.readOnly =true
+            // } else{
+            //   this.readOnly =false
+            // }
           } else {
             this.warn(res.msg)
           }
