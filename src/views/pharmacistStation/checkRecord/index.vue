@@ -22,8 +22,8 @@
           <el-table-column fixed="right" label="操作" :width="180" align="center" v-if="true">
             <template slot-scope="scope">
               <a @click="looks(scope.row)">审查</a>
+                 <a-divider type="vertical"/>
               <a @click="looks(scope.row)">查看</a>
-              <a-divider type="vertical" v-if="scope.row.status == 1" />
               <a-popconfirm
                 title="确定删除?"
                 @confirm="del(scope.row)"
@@ -51,13 +51,7 @@
                 <a-badge v-else-if="scope.row.status== '3'" status="processing" text="筛选完成" />
               </span>
               <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
-              <span v-else-if="item.value == 'percentageComplete'">
-                <el-progress
-                  :text-inside="true"
-                  :stroke-width="15"
-                  :percentage="scope.row.percentageComplete"
-                />
-              </span>
+
               <span
                 v-else-if="item.value == 'rationalPercentage' && scope.row.percentageComplete"
               >{{scope.row.percentageComplete}}%</span>
@@ -88,22 +82,24 @@ export default {
     return {
       api: {},
       spinning: false,
-      dataSource: [],
+      dataSource: [
+        { planScope: 3, name: '顶你个肺', extractionsNumber: '菜市口', rationalPercentage: '金三顺', enter: '多顶顶' }
+      ],
       total: null,
       current: 1,
       columns: [
         { title: '监护等级', value: 'planScope', width: 90, format: this.taskScope, align: 'center' },
-        { title: '类别', value: 'name' ,width:80},
+        { title: '类别', value: 'name', width: 80 },
         { title: '患者位置', value: 'extractionsNumber', width: 100, align: 'right' },
         { title: '住院号', value: 'percentageComplete', width: 130 },
         { title: '患者姓名', value: 'rationalPercentage', width: 100, align: 'right' },
         { title: '性别', value: 'filterStartTime', width: 70 },
         { title: '年龄', value: 'filterEndTime', width: 70 },
         { title: '入院时间', value: 'updateTime', width: 130 },
-         { title: '入院诊断', value: 'enter', },
+        { title: '入院诊断', value: 'enter' },
         { title: '记录人', value: 'user', width: 100, align: 'center' },
-         { title: '记录时间', value: 'enterTime', width: 130 },
-         { title: '审核状态', value: 'status', width: 100 },
+        { title: '记录时间', value: 'enterTime', width: 130 },
+        { title: '审核状态', value: 'status', width: 100 }
       ]
     }
   },
@@ -172,7 +168,11 @@ export default {
     // 重置
     resetForm() {},
     //新增
-    adds() {},
+    adds() {
+    this.$router.push({
+      name:'checkRecordDetail'
+    })
+    },
     // 查看
     rowClick() {},
     // 改变页码数

@@ -955,20 +955,20 @@ export const asyncRouterMap = [
             path: '/pharmacistStation/checkRecord',
             name: 'checkRecord',
             component: RouteView,
-            meta: { title: '患者记录', multistage: true },
+            meta: { title: '查房记录', multistage: true },
             children: [
               {
                 path: '/pharmacistStation/checkRecord/index',
                 name: 'checkRecordIndex',
                 component: () => import('@/views/pharmacistStation/checkRecord/index.vue'),
-                meta: { title: '患者记录', hiddenHeaderContent: true, index: true }
+                meta: { title: '查房记录', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/pharmacistStation/checkRecord/detail',
                 name: 'checkRecordDetail',
                 hidden: true,
                 component: () => import('@/views/pharmacistStation/checkRecord/detail.vue'),
-                meta: { title: '患者记录详情', detail: true, description: '患者记录设置' }
+                meta: { title: '查房记录详情', detail: true, description: '查房记录设置' }
               }
             ]
           },

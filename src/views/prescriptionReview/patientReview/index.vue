@@ -153,7 +153,8 @@ export default {
       buttonType: 'primary',
       timeInitialize: null,
       buttonText: '自动点评',
-      alldatasouce: []
+      alldatasouce: [],
+      pageSize: 10
     }
   },
   computed: {
@@ -227,13 +228,13 @@ export default {
       let num = 0
       this.timeInitialize = setInterval(() => {
         ++num
-        this.getformData({status: 1,pageSize: this.pageChangeSize, offset: 0})
+        this.getformData({ status: 1, pageSize: this.pageSize, offset: 0 })
         this.rewRange(num)
       }, data)
     },
     // 点评频率
     rewRange(val) {
-      let params = { offset: val * 10, pageChangeSize: this.pageChangeSize }
+      let params = { offset: 0, pageSize: this.pageSize, status: 1 }
       this.$axios({
         url: this.api.selectform,
         method: 'put',
@@ -242,26 +243,36 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.alldatasouce = res.rows
-            let arr = []
-            this.alldatasouce.filter(item => {
-              if (item.status == 1) {
-                arr.push(item.filterId)
-              }
-            })
-            this.$axios({
-              url: this.api.filter,
-              method: 'post',
-              data: arr
-            })
-              .then(res => {
-                if (res.code == '200') {
-                } else {
-                  this.warn(res.msg)
+            if (this.alldatasouce && this.alldatasouce.length) {
+              let arr = []
+              this.alldatasouce.filter(item => {
+                if (item.status == 1) {
+                  arr.push(item.filterId)
                 }
               })
-              .catch(err => {
-                this.error(err)
+              this.$axios({
+                url: this.api.filter,
+                method: 'post',
+                data: arr
               })
+                .then(res => {
+                  if (res.code == '200') {
+                  } else {
+                    this.warn(res.msg)
+                  }
+                })
+                .catch(err => {
+                  this.error(err)
+                })
+            }
+            if (this.alldatasouce == undefined) {
+              this.buttonType = 'primary'
+              this.show = false
+              this.rewButoon = '自动点评'
+              clearInterval(this.timeInitialize)
+              this.timeInitialize = null
+                this.$message.info('自动点评已完成!')
+            }
           } else {
             this.warn(res.msg)
           }
@@ -277,7 +288,7 @@ export default {
         // this.buttonType = 'danger'
         // this.show = true
         // console.log('444')
-        this.setTimeRval(10000)
+        this.setTimeRval(6000)
         let arr = []
         this.dataSource.filter(item => {
           if (item.status == 1) {
@@ -294,6 +305,7 @@ export default {
               this.rewButoon = '停止点评'
               this.buttonType = 'danger'
               this.show = true
+              this.$refs.searchPanel.form.resetFields()
             } else {
               this.warn(res.msg)
             }
@@ -308,6 +320,7 @@ export default {
         this.rewButoon = '自动点评'
         clearInterval(this.timeInitialize)
         this.timeInitialize = null
+        this.getformData({ pageSize: this.pageSize, offset: 0 })
       }
     },
     // 表单数据
