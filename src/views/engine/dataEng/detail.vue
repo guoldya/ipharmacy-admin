@@ -50,7 +50,7 @@
         <a-form-item label="最大活跃" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input
             :read-only="readOnly"
-            v-decorator="['maxactive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4-10位以内的字符',required:true}]}]"
+            v-decorator="['maxactive',{rules: [{pattern:/^\d{1,4}$/,message:'请输入4位以内的数字',required:true}]}]"
           />
         </a-form-item>
         <a-form-item label="验证查询" :label-col="labelCol" :wrapper-col="wrapperCol">

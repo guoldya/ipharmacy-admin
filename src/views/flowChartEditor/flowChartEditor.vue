@@ -571,6 +571,7 @@
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
+                    console.log(params,'222333')
                     // this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
                     if (params.lo == 1) {
                       this.boxInitialized.inputType = 'input'
@@ -619,10 +620,10 @@
             case 'edge':
               //选中后设置颜色 和连接线的宽度
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-              console.log(ev.item,'222');
+              console.log(ev.item.source.model.shape,'222');
               console.log(this.edgeInitialized.inputEdge)
               let sourceP = ev.item.source.model
-              // if ($.trim(this.edgeInitialized.inputEdge) == 0) {
+              if (sourceP.shape == "model-rect-attribute") {
                   if (sourceP.lo == 1) {
                     this.edgeInitialized.inputEdge = 'input'
                   } else if (sourceP.lo == 2) {
@@ -653,7 +654,7 @@
                   } else if (sourceP.colDbType == 3) {
                     this.edgeInitialized.inValueEdge = 'text'
                   }
-              // }
+              }
               setTimeout(() => {
                 _this.selectEdge.id = ev.item.model.id
                 _this.selectEdge.label = ev.item.model.label

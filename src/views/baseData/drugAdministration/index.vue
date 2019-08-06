@@ -98,12 +98,12 @@
               <a-form-item style="padding-top: 20px" label="名称"
                            :label-col="{ span: 4 }"
                            :wrapper-col="{ span: 17 }">
-                <a-input v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入名称' },{max: 32,message:'输入名称过长'}]} ]"/>
+                <a-input v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入名称' },{max: 20,message:'输入名称过长'}]} ]"/>
               </a-form-item>
               <a-form-item label="备注"
                            :label-col="{ span: 4 }"
                            :wrapper-col="{ span: 17 }">
-                <a-textarea v-decorator="[ 'remark',{rules: [{max: 100,message:'输入备注过长'}]}  ]"/>
+                <a-textarea v-decorator="[ 'remark',{rules: [{max: 50,message:'输入备注过长'}]}  ]"/>
               </a-form-item>
             <a-form-item label="状态"
                          :label-col="{ span: 4 }"
@@ -316,7 +316,7 @@
       edits(data) {
         this.addModal.isNew = false;
         this.addModal.visible = true;
-        this.addModal.title = '编辑分类';
+        this.addModal.title = '编辑分组';
         this.editData = data;
         setTimeout(()=>{
           this.form.setFieldsValue({
@@ -330,19 +330,18 @@
       addClass() {
         this.form.resetFields();
         this.addModal.visible = true;
-        this.addModal.title = '新增分类';
+        this.addModal.title = '新增分组';
         this.addModal.isNew = true;
       },
       //启用停用
       changeStatus(data){
         let params = {}
         if (data.status == '1') {
-          data.status = '0'
+          params.status = '0'
         } else {
-          data.status = '1'
+          params.status = '1'
         }
         params.id = data.id
-        params.status = data.status
         this.$axios({
           url: this.api.coreUpdateStatus,
           method: 'post',
@@ -350,11 +349,10 @@
         })
           .then(res => {
             if (res.code == '200') {
-              if (data.status == '1') {
-                this.success('停用成功')
-              } else {
-                this.success('启用成功')
-              }
+              let obj = this.searchData
+              obj.offset = (this.currents - 1) * this.pageSize
+              obj.pageSize = this.pageSize
+              this.getData(obj);
             } else {
               if (data.status == '1') {
                 this.warn('停用失败')
@@ -462,7 +460,6 @@
             if (!this.addModal.isNew){
               values.id = this.editData.id;
             }
-            console.log(values,'values');
             this.$axios({
               url: this.api.specUpdate,
               method: 'post',
@@ -474,7 +471,8 @@
                   let params = {};
                   params.offset = (this.currents - 1) * this.pageSize
                   params.pageSize = this.pageSize
-                  this.getData({});
+                  this.addModal.visible = false;
+                  this.getData(params);
                 } else {
                   this.warn(res.msg)
                 }
@@ -484,7 +482,6 @@
               })
           }
         })
-        this.addModal.visible = false;
       },
       handleSearch(value){
         let params = {keyword:value,id:this.classData.id};

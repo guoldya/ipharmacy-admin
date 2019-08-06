@@ -18,16 +18,18 @@
             </template>
             <a-row :gutter="6">
               <a-col :span="6" v-for="item in newHospital" :key="item">
-                <a-card class="margin-top-5">
+                <a-card class="margin-top-5 pageCard">
+                  <a-row>
+                    <a-col style="text-align: right">
+                      <i class="iconfont action action-biaoshi fontSize24"/>
+                    </a-col>
+                  </a-row>
                   <a-row>
                     <a-col span="12" class="aRow"><span class="fontSize32 font-bold">35</span> <span class="fontSize24 margin-left-5">床</span></a-col>
-                    <a-col span="12" style="text-align: right">
-                      <a-icon class="icon" type="question"/>
-                      <a-icon class="icon" type="question-circle"/>
-                      <a-icon class="icon" type="plus"/>
-                      <a-icon class="icon" type="question"/>
-                      <a-icon class="icon" type="question-circle"/>
-                      <a-icon class="icon" type="plus"/>
+                    <a-col span="12" style="text-align: right;padding-right: 20px;">
+                      <i class="iconfont action action-guanzhu  icon"/>
+                      <i class="iconfont action action-add  icon"/>
+                      <i class="iconfont action action-chakan  icon"/>
                     </a-col>
                   </a-row>
                   <div class="aRow  fontSize14">
@@ -86,7 +88,7 @@
             </template>
             <a-row :gutter="6">
               <a-col :span="6" v-for="item in newHospital" :key="item">
-                <a-card class="margin-top-5">
+                <a-card class="margin-top-5 pageCard">
                   <div class="aRow"><span class="fontSize32 font-bold">35</span> <span class="fontSize24 margin-left-5">床</span></div>
                   <div class="aRow  fontSize14">
                     <span>刘港</span>
@@ -176,26 +178,36 @@
   }
 
   .fontSize32 {
-    font-size: 36px;
+    font-size: 28px;
   }
 
   .aRow {
-    padding-left: 16px;
+    padding-left: 30px;
     line-height: 28px;
   }
 
  .wardMain .ant-card-body {
-    padding: 8px 16px !important;
+    padding: 0px 0px !important;
   }
   .pageCard :hover {
-  .icon {
-    display: inline-block;
-  }
+      .icon {
+         display: inline-block;
+    }
+    background-color: #F4F9FE;
   }
   .icon {
     display: none;
-    font-size: 14px;
     margin-right: 5px;
-
+    color: #5281FB;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    background-color: #DCE5FD;
+  }
+  .icon:hover{
+    color: #5281FB;
+    text-align: center;
+    background-color: #DCE5FD;
+    cursor: pointer;
   }
 </style>

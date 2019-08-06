@@ -209,10 +209,9 @@ export default {
           })
             .then(res => {
               if (res.code == '200') {
-                this.$message.info('保存成功!')
+                this.success(res.msg)
                 this.backTo()
               } else {
-                this.$message.error('保存失败!')
                 this.warn(res.msg)
               }
             })
