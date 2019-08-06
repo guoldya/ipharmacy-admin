@@ -972,8 +972,30 @@ export const asyncRouterMap = [
               }
             ]
           },
+          {
+            path: '/pharmacyStation/pharmacyGuide',
+            name: 'pharmacyGuide',
+            component: RouteView,
+            meta: { title: '用药指导', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/pharmacyGuide/index',
+                name: 'index',
+                component: () => import('@/views/pharmacistStation/pharmacyGuide/index.vue'),
+                meta: { title: '用药指导', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/pharmacistStation/pharmacyGuide/pharmacyGuideDetail',
+                name: 'pharmacyGuideDetail',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/pharmacyGuide/pharmacyGuideDetail.vue'),
+                meta: { title: '用药指导详情', detail: true}
+              }
+            ]
+          },
         ]
       }
+
     ]
   },
 
