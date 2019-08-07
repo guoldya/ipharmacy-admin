@@ -506,7 +506,6 @@
         editor.add(this.toolbar)
         editor.add(this.contextmenu)
         editor.add(this.detailpannel)
-
         // 流图读取数据
         // this.g6data && this.flow.read(this.g6data)
         // let temp = localStorage.getItem('test')

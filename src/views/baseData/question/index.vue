@@ -86,6 +86,7 @@ export default {
          this.classification.disable = true
       }
       this.nodeData = e.node.dataRef
+      console.log(this.nodeData,'nodeData')
       this.variety.categoryId = e.node.dataRef.key
       if (this.variety.categoryId) {
         this.getVarietiesData({ categoryId: this.variety.categoryId })

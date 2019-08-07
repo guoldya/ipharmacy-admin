@@ -303,6 +303,7 @@ export default {
     updateTreeNode() {
       this.Modal.visible = true
       this.Modal.title = '编辑分类'
+      console.log(this.nodeData,'2233')
       setTimeout(() => {
         this.form.setFieldsValue({
           categoryName: this.nodeData.title,
@@ -347,7 +348,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(this.nodeData)
+          console.log(values,'values')
           if (this.Modal.title == '编辑分类') {
             values.categoryCode = this.nodeData.categoryCode
             values.categoryId = this.nodeData.key
@@ -408,6 +409,7 @@ export default {
       obj.pid = params.pid
       obj.spellCode = params.spellCode
       obj.categoryType = params.categoryType
+      obj.categoryProperty = params.categoryProperty
       obj.status = params.status
       obj.isLeaf = true
       for (let i in gdata) {
@@ -424,6 +426,7 @@ export default {
       console.log(params, 'params')
       let obj = {}
       obj.key = params.categoryId
+      obj.categoryProperty = params.categoryProperty
       obj.title = params.categoryName
       obj.spellCode = params.spellCode
       obj.categoryType = params.categoryType

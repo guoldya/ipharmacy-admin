@@ -3,7 +3,7 @@
     <div class="tags-nav" v-if="multipage">
       <contextmenu :itemList="curtagName === homepath ? contextmenuListIndex : contextmenuList"  :visible.sync="menuVisible" @select="onMenuSelect" />
       <a-tabs
-        style="margin-top: -22px; margin-bottom: 7px; margin-left:-20px;"
+        style="margin-top: -22px; margin-bottom: -7px; margin-left:0px;"
         :active-key="current"
         hideAdd
         type="editable-card"
@@ -27,7 +27,7 @@
               关闭其他
             </a-menu-item>
           </a-menu>
-          <a-button style="margin-left: 2px;margin-top:6px;padding: 0px 4px">
+          <a-button style="margin-right:13px;margin-top:7px;padding: 0px 4px">
             <a-icon type="down" />
           </a-button>
         </a-dropdown>

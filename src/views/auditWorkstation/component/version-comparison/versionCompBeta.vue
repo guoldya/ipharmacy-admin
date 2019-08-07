@@ -152,10 +152,9 @@ export default {
                 this.submitEdition = this.reviewList[0].edition
                 this.otherTime = this.reviewList[0].submitTime
                 this.getOtherData(this.submitValue)
-
                 setTimeout(() => {
                     this.tableContrast()
-                }, 100)
+                }, 500)
             }
         },
         //获取网格信息
@@ -243,6 +242,8 @@ export default {
         },
         //数据对比级网格数据
         tableContrast() {
+          console.log(this.currentData,'this.currentData');
+          console.log(this.otherData,'this.otherData')
             this.dataSource = []
             for (let key in this.currentData) {
                 this.dataSource.push({
