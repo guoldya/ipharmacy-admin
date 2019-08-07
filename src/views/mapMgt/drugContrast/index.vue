@@ -471,7 +471,11 @@ export default {
                 this.MData = {}
                 this.similarData = []
                 this.drugName = ''
-                this.getData({ pageSize: this.pageSize, offset: (this.current - 1) * 10 })
+                this.getData({
+                  pageSize: this.pageSize,
+                  offset: (this.current - 1) * 10,
+                  orgId: this.$store.state.user.account.info.orgId
+                })
 
                 this.loading = false
                 this.isActive = true
@@ -501,7 +505,7 @@ export default {
     },
     //重置
     resetForm() {
-       this.$refs.searchPanel.form.resetFields(['drugName', 'id', []])
+      this.$refs.searchPanel.form.resetFields(['drugName', 'isCurrent', []])
       let params = { pageSize: 20, offset: 0 }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
@@ -634,6 +638,7 @@ export default {
     float: right;
     margin-top: 10px;
     margin-bottom: 5px;
+    margin-right: 10px;
   }
   .ant-input-number {
     width: 100% !important;

@@ -2,7 +2,7 @@
   <div class="yaoshi">
     <a-card>
       <header>
-        <h3 class="returns"><返回</h3>
+        <h3 class="returns"  @click="backTo"><返回</h3>
         <div class="does">
           <a-button type="primary">保存</a-button>
           <a-button>取消</a-button>
@@ -432,7 +432,7 @@ export default {
     },
     backTo() {
       this.$router.push({
-        name: 'dataEngindex'
+        name: 'apothecaryIndex'
       })
     },
     confirm(e) {},
@@ -503,6 +503,9 @@ export default {
 
   .ant-form-item-label {
     width: 30%;
+  }
+  .returns{
+    cursor: pointer;
   }
 }
 </style>

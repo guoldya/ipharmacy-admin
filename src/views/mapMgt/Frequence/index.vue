@@ -53,7 +53,7 @@
     </a-Col>
 
     <a-Col :span="11" class="details">
-      <a-card  title="用药频次对码">
+      <a-card title="用药频次对码">
         <a-row class="box table-th">
           <a-col :span="6"></a-col>
           <a-col :span="8">医院用药频次</a-col>
@@ -67,7 +67,7 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">名称：</a-col>
           <a-col :span="8">{{NData.frequenceName}}</a-col>
-          <a-Col :span="10" class="td-content"  @click="changeFormat"> 
+          <a-Col :span="10" class="td-content" @click="changeFormat">
             <div :class="{'pt':isActive}">
               <header v-if="isShow" class="headers">
                 <a-tooltip placement="topLeft" style="cursor: pointer;">
@@ -77,7 +77,7 @@
                   {{ this.remark}}
                 </a-tooltip>
               </header>
-              <footer v-if="!isShow" >
+              <footer v-if="!isShow">
                 <a-select
                   style="width:100%"
                   showSearch
@@ -96,7 +96,7 @@
                     :value="item.id"
                     :key="item.dosageForms"
                     :remark="item.remark"
-                    :code='item.code'
+                    :code="item.code"
                   >
                     <a-row>
                       <a-col>{{item.remark}}</a-col>
@@ -108,7 +108,8 @@
                   </a-select-option>
                 </a-select>
               </footer>
-            </div></a-Col>
+            </div>
+          </a-Col>
         </a-row>
         <div class="surea">
           <a-button @click="clickCancel">取消</a-button>
@@ -160,7 +161,7 @@
 import debounce from 'lodash/debounce'
 export default {
   data() {
-     this.handleSearch = debounce(this.handleSearch, 800)
+    this.handleSearch = debounce(this.handleSearch, 800)
     return {
       similarSpin: false,
       similarTotal: 0,
@@ -180,8 +181,8 @@ export default {
         hisDrugDataUrl: '/sys/hisFrequence/selectPage',
         similarDrugDataUrl: '/sys/hisFrequence/selectSimilarDicFrequencePage',
         mapUrl: 'sys/dicFrequenceMapper/insert',
-         dicDrugSelectList: 'sys/dicFrequence/selectDicFrequenceByKeyword',
-         
+        dicDrugSelectList: 'sys/dicFrequence/selectDicFrequenceByKeyword',
+         orgUrl: '/sys/sysOrgs/selectList'
       },
       loading: false,
       columnscheckdtl: [
@@ -196,16 +197,25 @@ export default {
       N: 1,
       disable: true,
       frequenceName: '',
-       marpperId: '',
+      marpperId: '',
       remark: '',
       isShow: true,
       drugAllList: [],
-      isActive: true
+      isActive: true,
+       orgData: []
     }
   },
   computed: {
     list() {
       return [
+        {
+          name: '机构',
+          dataField: 'orgId',
+          type: 'tree-select',
+          keyExpr: 'keyword',
+          treeData: this.orgData
+          // onSelect: this.selectTree
+        },
         {
           name: '名称',
           dataField: 'frequenceName',
@@ -223,10 +233,12 @@ export default {
     }
   },
   mounted() {
+    this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
     this.getData()
+     this.getOrgData()
   },
   methods: {
-       // 搜索
+    // 搜索
     handleSearch(value) {
       let params = { keyword: value, id: this.marpperId }
       this.$axios({
@@ -276,18 +288,18 @@ export default {
       this.disable = false
       this.isShow = true
       this.remark = params.remark
-       this.MData.id =value
-        //this.MData.code = params.code
+      this.MData.id = value
+      //this.MData.code = params.code
     },
     lostFocus() {
-      this.remark=value
+      this.remark = value
       this.isShow = true
     },
     //点击第左边的table列事件
     clickLeftRow(row) {
-       this.remark = ''
-      this.isShow=true
-       this.isActive = false
+      this.remark = ''
+      this.isShow = true
+      this.isActive = false
       let params = { frequenceName: row.frequenceName }
       this.frequenceName = row.frequenceName
       this.NData = row
@@ -296,7 +308,7 @@ export default {
         this.getSimilarData(params)
       } else {
         this.MData = row.dicFrequence
-         this.remark = this.MData.remark
+        this.remark = this.MData.remark
         this.getSimilarData(params)
       }
     },
@@ -334,7 +346,7 @@ export default {
         })
     },
     //左边部分的数据获取
-    getData(params = { pageSize: 20, offset: 0 }) {
+    getData(params = { pageSize: 20, offset: 0, orgId: this.$store.state.user.account.info.orgId }) {
       this.spinning = true
       this.$axios({
         url: this.api.hisDrugDataUrl,
@@ -360,8 +372,8 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.disable = false
-        this.isShow=true
-         this.remark = this.MData.remark
+      this.isShow = true
+      this.remark = this.MData.remark
     },
     //点击确定的处理事件
     clickSure() {
@@ -374,7 +386,7 @@ export default {
         // frequenceCode: this.MData.code,
         frequenceId: this.MData.id,
         frequenceName: this.remark,
-        id:this.NData.mapperId
+        id: this.NData.mapperId
       }
       if (Object.keys(this.MData).length == 0) {
         $message.info('请添加知识库数据')
@@ -393,8 +405,8 @@ export default {
               this.similarData = []
               this.getData()
               this.loading = false
-               this.isActive=true
-                this.remark=''
+              this.isActive = true
+              this.remark = ''
             })
           } else {
             this.loading = false
@@ -420,22 +432,26 @@ export default {
     },
     //重置
     resetForm() {
-      this.$refs.searchPanel.form.resetFields()
-      this.getData({ pageSize: 20, offset: 0 })
-      // this.getData(params)s
+      // this.$refs.searchPanel.form.resetFields()
+      // this.getData({ pageSize: 20, offset: 0 })
+      this.$refs.searchPanel.form.resetFields(['frequenceName', 'isCurrent', []])
+      let params = { pageSize: 20, offset: 0 }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      this.current = 1
+      this.getData(params)
     },
-     //页码size change事件
+    //页码size change事件
     pageChangeSize(page, pageSize) {
-       this.pageSize = pageSize
-       this.current=1
-      let params = { offset:0, pageSize: pageSize }
+      this.pageSize = pageSize
+      this.current = 1
+      let params = { offset: 0, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
       this.current = page
-      let params = { offset: (page - 1)*pageSize, pageSize: pageSize }
+      let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
@@ -453,16 +469,47 @@ export default {
       params.frequenceName = this.frequenceName
       params.pageSize = size
       this.getSimilarData(params)
-    }
+    },
+     // 机构选取
+    getOrgData(obj = {}) {
+      this.$axios({
+        url: this.api.orgUrl,
+        method: 'put',
+        data: obj
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.orgData = this.getOrgTreeData(res.rows, undefined)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    getOrgTreeData(data, pid) {
+      let tree = []
+      data.forEach(item => {
+        let row = item
+        row.key = item.orgId
+        row.value = item.orgId
+        if (pid == item.parentId) {
+          row.children = this.getOrgTreeData(data, item.orgId)
+          tree.push(row)
+        }
+      })
+      return tree
+    },
   }
 }
 </script>
 <style lang='less'>
 .testchk {
-   .headers{
-    line-height:35px;
+  .headers {
+    line-height: 35px;
   }
-   .zhishiku {
+  .zhishiku {
     padding-left: 5px;
   }
   .ant-card-body {
@@ -470,7 +517,7 @@ export default {
     padding-right: 0;
     padding-top: 1px;
   }
-   .ant-card{
+  .ant-card {
     padding-top: 12px;
   }
 }
@@ -488,11 +535,11 @@ export default {
     height: 30px;
     padding-left: 5px;
   }
-    .table-th {
-      background: #fafafa;
-      font-weight: bold;
-      color: rgba(0, 0, 0, 0.85);
-    }
+  .table-th {
+    background: #fafafa;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+  }
   .ant-row {
     line-height: 30px;
   }
@@ -501,7 +548,7 @@ export default {
     color: rgba(0, 0, 0, 0.85);
   }
   .box {
-      line-height: 35px;
+    line-height: 35px;
     border-bottom: 1px solid #ebeef5;
     div {
       text-overflow: ellipsis;
@@ -515,6 +562,7 @@ export default {
   float: right;
   margin-top: 10px;
   margin-bottom: 5px;
+  margin-right: 10px;
 }
 
 .ant-input-number {

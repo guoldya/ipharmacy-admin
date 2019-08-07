@@ -1028,9 +1028,50 @@ export const asyncRouterMap = [
               },
             ]
           },
+          {
+            path: '/pharmacistStation/medicalEducation',
+            name: 'medicalEducation',
+            component: RouteView,
+            meta: { title: '用药教育', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/medicalEducation/medicalEducationIndex',
+                name: 'medicalEducationIndex',
+                component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationIndex.vue'),
+                meta: { title: '用药教育', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/pharmacistStation/medicalEducation/medicalEducationAdd',
+                name: 'medicalEducationAdd',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationAdd.vue'),
+                meta: { title: '用药教育新增', detail: true,}
+              }
+            ]
+          },
+          {
+            path: '/pharmacistStation/drugEvaluation',
+            name: 'drugEvaluation',
+            component: RouteView,
+            meta: { title: '药学评估', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/drugEvaluation/index',
+                name: 'drugEvaluationIndex',
+                component: () => import('@/views/pharmacistStation/drugEvaluation/index.vue'),
+                meta: { title: '药学评估', hiddenHeaderContent: true, index: true }
+              },
+              {
+                path: '/pharmacistStation/drugEvaluation/detail',
+                name: 'drugEvaluationDetail',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/drugEvaluation/detail.vue'),
+                meta: { title: '药学评估详情', detail: true,}
+              }
+            ]
+          },
         ]
-      }
-
+      },
     ]
   },
 
