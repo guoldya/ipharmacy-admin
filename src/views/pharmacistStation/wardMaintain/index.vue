@@ -17,7 +17,7 @@
               <i class="iconfont action action-huanzhe1 fontSize24"/> <span class="font-bold fontSize16">新入院患者人</span>
             </template>
             <a-row :gutter="6">
-              <a-col :span="6" v-for="item in newHospital" :key="item">
+              <a-col :xs="24" :sm="12" :lg="8" :xl="6" v-for="item in newHospital" :key="item">
                 <a-card class="margin-top-5 pageCard">
                   <a-row>
                     <a-col style="text-align: right">
@@ -46,7 +46,7 @@
                   <div class="aRow fontSize14">右侧脑桥小脑角膜瘤</div>
                   <div class="aRow fontSize14">
                     <span>医生: 曾金城/陈闯</span>
-                    <span class="margin-left-20">药师: 黄晶锐</span>
+                    <span class="margin-left-20">药师: 黄晶锐/胡清</span>
                   </div>
                   <div class="aRow fontSize14">入院3天</div>
                 </a-card>
@@ -58,7 +58,7 @@
               <i class="iconfont action action-huanzhe1 fontSize24"/> <span class="font-bold fontSize16">术前准备患者人</span>
             </template>
             <a-row :gutter="6">
-              <a-col :span="6" v-for="item in newHospital" :key="item">
+              <a-col :xs="24" :sm="12" :lg="8" :xl="6"  v-for="item in newHospital" :key="item">
                 <a-card class="margin-top-5 pageCard">
                   <div class="aRow"><span class="fontSize32 font-bold">35</span> <span class="fontSize24 margin-left-5">床</span></div>
                   <div class="aRow  fontSize14">
@@ -75,7 +75,7 @@
                   <div class="aRow fontSize14">右侧脑桥小脑角膜瘤</div>
                   <div class="aRow fontSize14">
                     <span>医生: 曾金城/陈闯</span>
-                    <span class="margin-left-20">药师: 黄晶锐</span>
+                    <span class="margin-left-20">药师: 黄晶锐/胡清</span>
                   </div>
                   <div class="aRow fontSize14">入院3天</div>
                 </a-card>
@@ -87,7 +87,7 @@
               <i class="iconfont action action-huanzhe1 fontSize24"/> <span class="font-bold fontSize16">术后患者人</span>
             </template>
             <a-row :gutter="6">
-              <a-col :span="6" v-for="item in newHospital" :key="item">
+              <a-col :xs="24" :sm="12" :lg="8" :xl="6" v-for="item in newHospital" :key="item">
                 <a-card class="margin-top-5 pageCard">
                   <div class="aRow"><span class="fontSize32 font-bold">35</span> <span class="fontSize24 margin-left-5">床</span></div>
                   <div class="aRow  fontSize14">
@@ -104,7 +104,7 @@
                   <div class="aRow fontSize14">右侧脑桥小脑角膜瘤</div>
                   <div class="aRow fontSize14">
                     <span>医生: 曾金城/陈闯</span>
-                    <span class="margin-left-20">药师: 黄晶锐</span>
+                    <span class="margin-left-20">药师: 黄晶锐/胡清</span>
                   </div>
                   <div class="aRow fontSize14">入院3天</div>
                 </a-card>
@@ -138,7 +138,13 @@
         ],
         activeKey: ['1', '2', '3', '4'],
         newHospital: [1, 2, 3, 4, 5, 6, 7, 8],
-        projects: []
+        projects: [],
+        labelCol: {
+          xs: { span: 12 },
+          sm: { span: 8 },
+          md:{span:6},
+          xl:{span:6},
+        },
       }
     },
     computed: {
@@ -198,14 +204,16 @@
   .icon {
     display: none;
     margin-right: 5px;
+    font-size: 10px;
     color: #5281FB;
-    height: 30px;
-    width: 30px;
+    height: 29px;
+    width: 29px;
     text-align: center;
     background-color: #DCE5FD;
   }
   .icon:hover{
     color: #5281FB;
+    /*margin-right: 5px;*/
     text-align: center;
     background-color: #DCE5FD;
     cursor: pointer;

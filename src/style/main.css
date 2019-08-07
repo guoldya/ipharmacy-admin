@@ -1,3 +1,9 @@
+.fontSize16{
+  font-size: 16px;
+}
+.fontSize36 {
+  font-size: 36px;
+}
 .disFlex{
   display: flex;
   justify-content: space-between;

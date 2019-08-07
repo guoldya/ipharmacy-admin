@@ -33,7 +33,7 @@
         <a-divider type="vertical"/>
         <span>皮肤科 5病区/2床</span>
         <a-divider type="vertical"/>
-        <span>诊断：过敏性屁眼</span>
+        <span>诊断：过敏性皮炎</span>
         <a-divider type="vertical"/>
         <span>护士：胡清/黄晶锐</span>
         <a-divider type="vertical"/>
