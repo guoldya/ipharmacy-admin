@@ -584,6 +584,7 @@ export default {
   float: right;
   margin-top: 10px;
   margin-bottom: 5px;
+  margin-right: 10px;
 }
 .ant-input-number {
   width: 100% !important;

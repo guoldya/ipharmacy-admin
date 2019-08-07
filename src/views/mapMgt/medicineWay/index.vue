@@ -68,7 +68,7 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">名称：</a-col>
           <a-col :span="8">{{NData.name}}</a-col>
-         <a-Col :span="10" class="td-content" @click="changeFormat">
+          <a-Col :span="10" class="td-content" @click="changeFormat">
             <div :class="{'pt':isActive}">
               <header v-if="isShow" class="headers">
                 <a-tooltip placement="topLeft" style="cursor: pointer;">
@@ -182,6 +182,7 @@ export default {
         mapUrl: 'sys/dicWayMapper/insert',
         icdAll: 'sys/hisWay/selectPage',
         dicDrugSelectList: 'sys/hisWay/selectDicWayByKeyword',
+        orgUrl: '/sys/sysOrgs/selectList'
       },
       loading: false,
       columnscheckdtl: [
@@ -196,16 +197,25 @@ export default {
       N: 1,
       disable: true,
       icdnames: '',
-       marpperId: '',
+      marpperId: '',
       name: '',
       isShow: true,
       drugAllList: [],
-      isActive: true
+      isActive: true,
+      orgData: []
     }
   },
   computed: {
     list() {
       return [
+        {
+          name: '机构',
+          dataField: 'orgId',
+          type: 'tree-select',
+          keyExpr: 'keyword',
+          treeData: this.orgData
+          // onSelect: this.selectTree
+        },
         {
           name: '名称',
           dataField: 'name',
@@ -223,10 +233,12 @@ export default {
     }
   },
   mounted() {
-    this.getData({ pageSize: this.pageSize, offset: 0 })
+    this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
+    this.getData({ pageSize: this.pageSize, offset: 0, orgId: this.$store.state.user.account.info.orgId })
+    this.getOrgData()
   },
   methods: {
-      // 搜索
+    // 搜索
     handleSearch(value) {
       let params = { keyword: value, id: this.marpperId }
       this.$axios({
@@ -272,7 +284,6 @@ export default {
     },
     // 实例化右边相似
     handleChange(value, option) {
-    
       let params = option.data.attrs
       this.disable = false
       this.isShow = true
@@ -280,24 +291,24 @@ export default {
       this.MData.id = value
     },
     lostFocus() {
-      this.name=value
-     
+      this.name = value
+
       this.isShow = true
     },
     //点击第左边的table列事件
     clickLeftRow(row) {
-       this.name = ''
+      this.name = ''
       this.isActive = false
       let params = { icdName: row.icdname }
       this.icdnames = row.icdname
-      this.isCurrent=row.isCurrent
+      this.isCurrent = row.isCurrent
       this.NData = row
       this.MData = {}
       if (this.NData.isCurrent == '0') {
         this.getSimilarData(params)
       } else {
         this.MData = row.dicBase
-         this.name = this.MData.name
+        this.name = this.MData.name
         this.getSimilarData(params)
       }
     },
@@ -363,7 +374,7 @@ export default {
         hisWayName: this.NData.name,
         wayId: this.MData.id,
         wayName: this.MData.name,
-         id:this.NData.mapperId
+        id: this.NData.mapperId
       }
       const arrl = Object.keys(this.MData)
       if (arrl.length == 0) {
@@ -381,10 +392,10 @@ export default {
                 this.NData = {}
                 this.MData = {}
                 this.similarData = []
-                 this.name=''
-                this.getData({pageSize:this.pageSize,offset:(this.current-1)*10})
+                this.name = ''
+                this.getData({ pageSize: this.pageSize, offset: (this.current - 1) * 10,orgId: this.$store.state.user.account.info.orgId })
                 this.loading = false
-                 this.isActive=true
+                this.isActive = true
               })
             } else {
               this.loading = false
@@ -411,23 +422,27 @@ export default {
     },
     //重置
     resetForm() {
-      this.$refs.searchPanel.form.resetFields()
-      this.getData({ pageSize: 20, offset: 0 })
+      // this.$refs.searchPanel.form.resetFields()
+      // this.getData({ pageSize: 20, offset: 0 })
+      // this.current = 1
+      this.$refs.searchPanel.form.resetFields(['name', 'isCurrent', []])
+      let params = { pageSize: 20, offset: 0 }
+      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
-      //this.getData(params)
+      this.getData(params)
     },
-     //页码size change事件
+    //页码size change事件
     pageChangeSize(page, pageSize) {
-       this.pageSize = pageSize
-       this.current=1
-      let params = { offset:0, pageSize: pageSize }
+      this.pageSize = pageSize
+      this.current = 1
+      let params = { offset: 0, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
       this.current = page
-      let params = { offset: (page - 1)*pageSize, pageSize: pageSize }
+      let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.getData(params)
     },
@@ -462,16 +477,47 @@ export default {
       if (val > 1) {
         this.N = 1
       }
+    },
+    // 机构选取
+    getOrgData(obj = {}) {
+      this.$axios({
+        url: this.api.orgUrl,
+        method: 'put',
+        data: obj
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.orgData = this.getOrgTreeData(res.rows, undefined)
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    getOrgTreeData(data, pid) {
+      let tree = []
+      data.forEach(item => {
+        let row = item
+        row.key = item.orgId
+        row.value = item.orgId
+        if (pid == item.parentId) {
+          row.children = this.getOrgTreeData(data, item.orgId)
+          tree.push(row)
+        }
+      })
+      return tree
     }
   }
 }
 </script>
 <style lang='less'>
 .testchk {
-   .ant-card{
+  .ant-card {
     padding-top: 12px;
   }
-  .headers{
+  .headers {
     line-height: 36px;
   }
   .zhishiku {
@@ -482,11 +528,11 @@ export default {
     padding-right: 0;
     padding-top: 1px;
   }
-   .table-th {
-      background: #fafafa;
-      font-weight: bold;
-      color: rgba(0, 0, 0, 0.85);
-    }
+  .table-th {
+    background: #fafafa;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+  }
 }
 
 .details {
@@ -502,11 +548,11 @@ export default {
     height: 30px;
     padding-left: 5px;
   }
-   .table-th {
-      background: #fafafa;
-      font-weight: bold;
-      color: rgba(0, 0, 0, 0.85);
-    }
+  .table-th {
+    background: #fafafa;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+  }
   .ant-row {
     line-height: 30px;
   }
@@ -528,6 +574,7 @@ export default {
   float: right;
   margin-top: 10px;
   margin-bottom: 5px;
+  margin-right: 10px;
 }
 
 .ant-input-number {
