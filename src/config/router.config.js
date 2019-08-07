@@ -1040,6 +1040,13 @@ export const asyncRouterMap = [
                 component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationIndex.vue'),
                 meta: { title: '用药教育', hiddenHeaderContent: true, index: true }
               },
+              {
+                path: '/pharmacistStation/medicalEducation/medicalEducationAdd',
+                name: 'medicalEducationAdd',
+                hidden: true,
+                component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationAdd.vue'),
+                meta: { title: '用药教育新增', detail: true,}
+              }
             ]
           },
         ]

@@ -6,7 +6,7 @@
         <a-button class="margin-left-5" @click="resetForm">重置</a-button>
       </div>
     </Searchpanel>
-    <!-- <a-button class="margin-top-10" type="primary" @click="add">新增</a-button> -->
+     <a-button class="margin-top-10" type="primary" @click="medicalEducationAdd">新增</a-button>
     <a-spin :spinning="loading" tip="加载中...">
       <el-table
         class="margin-top-10"
@@ -148,6 +148,11 @@
       }
     },
     methods:{
+      medicalEducationAdd(){
+        this.$router.push({
+          name: 'medicalEducationAdd',
+        })
+      },
       //搜索
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue();

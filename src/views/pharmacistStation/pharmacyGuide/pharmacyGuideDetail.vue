@@ -1,22 +1,21 @@
 <template>
     <div class="pharmacyGuideDetail">
-      <a-card>
         <a-row :gutter="10">
-          <a-col :xl="8" :xxl="5">
+          <a-col :xl="8" :xxl="5" v-if="$route.params.btn==='look'">
             <div class="ruleCow">
               <a-card>
-                <a-input-search style="width: 275px" class="txtCenter" placeholder="输入要查询日期" @search="" />
+                <a-input-search class="txtCenter" placeholder="输入要查询日期" @search="" />
                 <a-list size="large" class="margin-top-10" bordered :dataSource="date">
-                  <a-list-item style="padding-left: 38%;" slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
+                  <a-list-item style="padding-left: 34%;" slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
                 </a-list>
               </a-card>
             </div>
           </a-col>
-          <a-col :xl="16" :xxl="19">
+          <a-col  :xxl="$route.params.btn==='look'?19:24" :xl="$route.params.btn==='look'?16:24">
             <a-card>
                <a-icon type="star" class="star" theme="filled" :style="{ color: '#1890ff' }" />
               <a-row>
-                <span class="titleText font-bold fontSize36">梁汉文</span>
+                <span class="titleText font-bold" style="font-size: 22px;color: #1890ff">梁汉文</span>
                 <span class="titleText margin-left-20">
                   <a-tag
                     class="tagStyle"
@@ -55,10 +54,10 @@
             </a-card>
             <a-card class="margin-top-5" style="border-bottom: none;">
               <div class="medicineGuide">
-                <span><a-icon type="medicine-box" /> 指导信息</span>
+                <span class="font-bold fontSize16"><a-icon type="medicine-box" /> 指导信息</span>
                 <span>
                   <a-button @click="backTo"><a-icon type="arrow-left" />返回</a-button>
-                  <a-button type="primary">新增</a-button>
+                  <a-button type="primary" v-if="$route.params.btn==='look'">新增</a-button>
                   <a-button type="primary">保存</a-button>
               </span>
               </div>
@@ -94,11 +93,11 @@
               <a-row class="margin-top-10">
                 <a-col :span="8">
                   记录时间：
-                  <a-input placeholder="2019-06-30" style="width: 200px;margin-left: 24px" />
+                  <a-input placeholder="2019-06-30" style="width: 200px;margin-left: 18px" />
                 </a-col>
                 <a-col :span="16">
                   有效时间：
-                  <a-input placeholder="2019-07-30" style="width: 200px;margin-left: 24px" />
+                  <a-input placeholder="2019-07-30" style="width: 200px;margin-left: 18px" />
                 </a-col>
               </a-row>
 
@@ -108,47 +107,21 @@
                   <a-checkbox-group  :options="plainOptions" v-model="checkValue" @change="onChange" />
                 </a-col>
               </a-row>
-            </a-card>
 
-            <div class="plusBtn margin-top-10"><a-button type="primary"><a-icon type="plus" />问题医嘱</a-button></div>
+              <div class="disFlex margin-top-10">
+                <span  class="font-bold fontSize16">问题医嘱：</span>
+                <span><a-button type="primary"><a-icon type="plus" />问题医嘱</a-button>
+                </span>
+              </div>
 
-            <a-spin :spinning="loading" tip="加载中...">
-              <el-table
-                highlight-current-row
-                class="margin-top-10"
-                :data="doctorAdviceContentData" border
-              >
-                <el-table-column
-                  v-for="item in doctorAdviceContentColumns"
-                  :show-overflow-tooltip="true"
-                  :key="item.value"
-                  :label="item.title"
-                  :prop="item.value"
-                  :width="item.width"
-                  :align="item.align"
+              <a-spin :spinning="loading" tip="加载中...">
+                <el-table
+                  highlight-current-row
+                  class="margin-top-10"
+                  :data="doctorAdviceContentData" border
                 >
-                </el-table-column>
-                <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-                  <template slot-scope="scope">
-                   <span>删除</span>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </a-spin>
-
-            <div class="disFlex margin-top-10">
-              <span>医嘱信息：</span>
-              <span><a-button type="primary"><a-icon type="plus" />医嘱信息</a-button></span>
-            </div>
-
-            <a-spin :spinning="loading" tip="加载中...">
-              <el-table
-                highlight-current-row
-                class="margin-top-10"
-                :data="doctorAdviceContentData" border
-              >
                   <el-table-column
-                    v-for="item in doctorAdviceInfoColumns"
+                    v-for="item in doctorAdviceContentColumns"
                     :show-overflow-tooltip="true"
                     :key="item.value"
                     :label="item.title"
@@ -157,29 +130,57 @@
                     :align="item.align"
                   >
                   </el-table-column>
-                <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-                  <template slot-scope="scope">
-                    <span>删除</span>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </a-spin>
+                  <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
+                    <template slot-scope="scope">
+                     <span>删除</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </a-spin>
 
-            <div class="disFlex margin-top-10">
-              <span>用药建议内容：</span>
-              <span class="btnGroup">
-                <a-button type="primary"><a-icon type="plus" />另存为模板</a-button>
-                <a-button type="primary"><a-icon type="plus" />模板引用</a-button>
-                <a-button type="primary"><a-icon type="file-text" />查房便签</a-button>
-                <a-button type="primary"><a-icon type="experiment" />化验信息</a-button>
-              </span>
-            </div>
+              <div class="disFlex margin-top-10">
+                <span  class="font-bold fontSize16">医嘱信息：</span>
+                <span ><a-button type="primary"><a-icon type="plus" />医嘱信息</a-button></span>
+              </div>
 
-            <a-textarea class="margin-top-10" :autosize="{minRows: 4,maxRows: 6 }" />
+              <a-spin :spinning="loading" tip="加载中...">
+                <el-table
+                  highlight-current-row
+                  class="margin-top-10"
+                  :data="doctorAdviceContentData" border
+                >
+                    <el-table-column
+                      v-for="item in doctorAdviceInfoColumns"
+                      :show-overflow-tooltip="true"
+                      :key="item.value"
+                      :label="item.title"
+                      :prop="item.value"
+                      :width="item.width"
+                      :align="item.align"
+                    >
+                    </el-table-column>
+                  <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
+                    <template slot-scope="scope">
+                      <span>删除</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </a-spin>
 
+              <div class="disFlex margin-top-10">
+                <span class="font-bold fontSize16">用药建议内容：</span>
+                <span class="btnGroup">
+                  <a-button style="background-color: #32C5D2;color: #fff"><a-icon type="plus" />另存为模板</a-button>
+                  <a-button type="primary"><a-icon type="plus" />模板引用</a-button>
+                  <a-button  style="background-color:#C49F47;color:#fff "><a-icon type="file-text" />查房便签</a-button>
+                  <a-button  style="background-color: #32C5D2;color: #fff"><a-icon type="experiment" />化验信息</a-button>
+                </span>
+              </div>
+
+              <a-textarea class="margin-top-10" :autosize="{minRows: 4,maxRows: 6 }" />
+            </a-card>
           </a-col>
         </a-row>
-      </a-card>
     </div>
 </template>
 
@@ -222,6 +223,12 @@
         medicineAdviceInfoData:[],
       }
     },
+    props:{
+
+    },
+    mounted(){
+      console.log(this.$route)
+    },
     methods:{
       onChange (checkedValues) {
         console.log('checked = ', checkedValues)
@@ -241,14 +248,11 @@
 </script>
 
 <style scoped lang="less">
-  /deep/.ruleCow  .ant-card-body {
-    padding: 15px 0 ;
-    text-align: center;
-  }
+
   .star{
     float: right;
     font-size: 20px;
-    background-color: lightblue;
+    background-color: #DCE5FD;
     padding:6px;
     position: relative;
     top: -25px;
@@ -256,9 +260,6 @@
  .pharmacyGuideDetail {
    .btnGroup button:not(:last-child){
      margin-right: 8px;
-   }
-   .plusBtn{
-     text-align: right;
    }
      .medicineGuide{
        display: flex;
