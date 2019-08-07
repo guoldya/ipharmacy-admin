@@ -2,7 +2,7 @@
     <div class="pharmacyGuideIndex">
       <a-card>
         <a-row class="blodRow">
-          <a-col :span="4">内分泌科：李艳</a-col>
+          <a-col :span="3">内分泌科：李艳</a-col>
           <a-col :span="2">9110267</a-col>
           <a-col :span="2"> 女</a-col>
           <a-col :span="2">23</a-col>

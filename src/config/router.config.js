@@ -1028,9 +1028,22 @@ export const asyncRouterMap = [
               },
             ]
           },
+          {
+            path: '/pharmacistStation/medicalEducation',
+            name: 'medicalEducation',
+            component: RouteView,
+            meta: { title: '用药教育', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/medicalEducation/medicalEducationIndex',
+                name: 'medicalEducationIndex',
+                component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationIndex.vue'),
+                meta: { title: '用药教育', hiddenHeaderContent: true, index: true }
+              },
+            ]
+          },
         ]
-      }
-
+      },
     ]
   },
 

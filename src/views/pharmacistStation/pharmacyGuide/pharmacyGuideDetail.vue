@@ -1,67 +1,57 @@
 <template>
     <div class="pharmacyGuideDetail">
       <a-card>
-        <a-row class="ruleRow" :gutter="10">
+        <a-row :gutter="10">
           <a-col :xl="8" :xxl="5">
             <div class="ruleCow">
               <a-card>
-                <a-row>
-                  <a-col :span="18">
-                    <a-input-search
-                      @pressEnter=""
-                      style="width: 200px"
-                      @search=""
-                      placeholder="输入要查询的日期"
-                      @change=''
-                    />
-                  </a-col>
-                </a-row>
-                <a-row>
-                    <a-col>
-                      <el-table
-                        :header-cell-style="headerCellStyle"
-                        highlight-current-row
-                        class="margin-top-10"
-                        :data="date" border
-                      >
-                        <el-table-column
-                          :show-overflow-tooltip="true"
-                          :key="1"
-                          prop="value"
-                          align="center"
-
-                        >
-                        </el-table-column>
-                      </el-table>
-                    </a-col>
-                </a-row>
+                <a-input-search style="width: 275px" class="txtCenter" placeholder="输入要查询日期" @search="" />
+                <a-list size="large" class="margin-top-10" bordered :dataSource="date">
+                  <a-list-item style="padding-left: 38%;" slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
+                </a-list>
               </a-card>
             </div>
           </a-col>
           <a-col :xl="16" :xxl="19">
             <a-card>
-              <a-row class="userInfo">
-                <a-col :span="3" class="userName"><span>梁汉文</span></a-col>
-                <a-col :span="4" class="userNum"><span>656565655</span></a-col>
-                <a-col :span="5" class="item">
-                  <span>肝</span>
-                  <span>肾</span>
-                  <span>心</span>
-                </a-col>
+               <a-icon type="star" class="star" theme="filled" :style="{ color: '#1890ff' }" />
+              <a-row>
+                <span class="titleText font-bold fontSize36">梁汉文</span>
+                <span class="titleText margin-left-20">
+                  <a-tag
+                    class="tagStyle"
+                    :color="'#40a9ff'"
+                    :key="1"
+                  >91084654</a-tag>
+                  <a-tag
+                    class="tagStyle"
+                    :color="'#40a9ff'"
+                    :key="2"
+                  >肝</a-tag>
+                  <a-tag
+                    class="tagStyle"
+                    :color="'#58C7CF'"
+                    :key="3"
+                  >肾</a-tag>
+                  <a-tag
+                    class="tagStyle"
+                    :color="'#B497EE'"
+                    :key="4"
+                  >心</a-tag>
+                </span>
               </a-row>
-              <a-row class="margin-top-10">
-                <a-col :span="2"><span>男</span></a-col>
-                <a-col :span="2"><span>35岁</span></a-col>
-                <a-col :span="4"><span>皮肤科 5病区 2床</span></a-col>
-                <a-col :span="4"><span>医护：张三/李四</span></a-col>
-                <a-col :span="4"><span>入院日期：2019-01-01</span></a-col>
+              <a-row class="fontSize16 margin-top-10">
+                <span>男</span>
+                <a-divider type="vertical"/>
+                <span>35岁</span>
+                <a-divider type="vertical"/>
+                <span>皮肤科 5病区/2床</span>
+                <a-divider type="vertical"/>
+                <span>医护：胡清/黄晶锐</span>
+                <a-divider type="vertical"/>
+                <span>入院日期：2019-08-05</span>
               </a-row>
-              <a-row class="margin-top-10">
-                <a-col><span>诊断：过敏性皮炎</span></a-col>
-              </a-row>
-              <div>
-
-              </div>
+              <p class="margin-top-10">诊断：过敏性皮炎</p>
             </a-card>
             <a-card class="margin-top-5" style="border-bottom: none;">
               <div class="medicineGuide">
@@ -185,7 +175,7 @@
               </span>
             </div>
 
-            <a-textarea class="margin-top-10" :autosize="{maxRows: 6 }" />
+            <a-textarea class="margin-top-10" :autosize="{minRows: 4,maxRows: 6 }" />
 
           </a-col>
         </a-row>
@@ -198,15 +188,9 @@
     name: 'pharmacyGuideDetail',
     data(){
       return{
-        date:[
-          {value:'2019-08-01'},
-          {value:'2019-08-02',},
-          {value:'2019-08-03'},
-          {value:'2019-08-04'},
-          {value:'2019-08-05'},
-          {value:'2019-08-06'},
-          {value:'2019-08-07'},
-
+        date:['2019-08-01','2019-08-02','2019-08-03',
+          '2019-08-04','2019-08-05','2019-08-06',
+          '2019-08-07'
         ],
         loading:false,
         data:[{time:'2010-01-01'},{time:'2011-01-01'},{time:'2012-01-01'}],
@@ -257,6 +241,18 @@
 </script>
 
 <style scoped lang="less">
+  /deep/.ruleCow  .ant-card-body {
+    padding: 15px 0 ;
+    text-align: center;
+  }
+  .star{
+    float: right;
+    font-size: 20px;
+    background-color: lightblue;
+    padding:6px;
+    position: relative;
+    top: -25px;
+  }
  .pharmacyGuideDetail {
    .btnGroup button:not(:last-child){
      margin-right: 8px;
