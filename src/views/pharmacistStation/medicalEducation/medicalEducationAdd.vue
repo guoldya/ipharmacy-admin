@@ -22,14 +22,14 @@
           <span>入院日期：2017-4-8</span>
         </aside>
       </a-card>
-      <a-card class="margin-top-5" style="border-bottom: none">
+      <a-card class="margin-top-5 borderNone">
         <div class="disFlex">
           <span class="font-bold fontSize16">用药教育</span>
           <span>
             <a-button @click="backTo"><a-icon type="arrow-left" />返回</a-button>
             <a-button type="primary" class="margin-left-5">保存</a-button>
             <a-button type="danger" class="margin-left-5">删除</a-button>
-            <a-button style="background-color: #32C5D2;color: #fff" class="margin-left-5">打印</a-button>
+            <a-button class="margin-left-5 greenBg">打印</a-button>
           </span>
         </div>
       </a-card>
@@ -41,7 +41,7 @@
               <span>药品列表</span>
               <!--<a-button size="small" type="primary" class="margin-left-20">在院</a-button>-->
             </span>
-            <a-select defaultValue="在院" class="margin-left-20" style="width: 120px" @change="handleChange">
+            <a-select defaultValue="在院" class="margin-left-20" :style="{width: '120px'}" @change="handleChange">
               <a-select-option v-for="(item,i) in selectText" :key="i" :value="item.value">
                 {{item.item}}
               </a-select-option>
@@ -81,9 +81,9 @@
             v-if="true"
           >
             <template  slot-scope="scope">
-              <a-icon type="close" style="color: red;cursor: pointer"/>
-              <a-icon type="arrow-up" class="margin-left-20" style="color:#1890ff;cursor: pointer"/>
-              <a-icon type="arrow-down" class="margin-left-20" style="color:#1890ff;cursor: pointer "/>
+              <a-icon type="close" class=" danger cursor"/>
+              <a-icon type="arrow-up" class="margin-left-20 primary cursor"/>
+              <a-icon type="arrow-down" class="margin-left-20 primary cursor"/>
             </template>
           </el-table-column>
         </el-table>
@@ -139,10 +139,10 @@
 
 <style scoped lang="less">
   .medicalEducationAdd{
-    .columnBorder{
-      padding: 0 8px;
-      border: 1px solid #e8e8e8;;
+    .cursor{
+      cursor: pointer;
     }
+    
     .star{
       float: right;
       font-size: 20px;

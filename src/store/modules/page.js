@@ -17,7 +17,8 @@ export default {
     current: '',
     // 需要缓存的页面 name
     keepAlive: [],
-    curRoute:{}
+    curRoute:{},
+    
   },
   actions: {
     /**
@@ -382,6 +383,7 @@ export default {
     }
   },
   mutations: {
+    
     /**
      * @class keepAlive
      * @description 从已经打开的页面记录中更新需要缓存的页面记录

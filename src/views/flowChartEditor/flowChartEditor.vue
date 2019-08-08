@@ -21,6 +21,8 @@
         v-bind:selectEdge="selectEdge"
         v-bind:boxInitialized="boxInitialized"
         v-bind:edgeInitialized="edgeInitialized"
+        v-bind:preData="preData"
+        v-bind:judgePreData="judgePreData"
       ></a-detailpanel>
       <!-- 缩略图 -->
       <a-navigator ref="navigator" v-bind:graphAPI="graph"></a-navigator>
@@ -75,7 +77,8 @@
     coreRuleNodeSelectOne,
     coreRuleNodeUpdate,
     reviewAuditlevelSelect,
-    coreRuleNodeSelectColId
+    coreRuleNodeSelectColId,
+    coreFactColAll
   } from '@/api/login'
 
   export default {
@@ -116,6 +119,7 @@
           restrictionType: null,
           verdictType: null,
           itemId: null,
+          precondition:null,
           itemName: null,
           ro: null,
           lo: null,
@@ -183,6 +187,10 @@
         verifyStatus:true,
         //新增规则
           addVisible:false,
+        CoreFactAllTree:[],
+        prePid:null,
+        preData:[],
+        judgePreData:[],
       }
     },
     mounted() {
@@ -192,6 +200,8 @@
       this.getNodeData()
       this.getDataList();
       // this.getReviewLevel();
+      this.getCoreFactAllStart();
+
     },
     computed: {
       selectNodeInAccordanceWith() {
@@ -230,6 +240,9 @@
       },
       selectNodeItemId() {
         return this.selectNode.itemId
+      },
+      selectNodePrecondition() {
+        return this.selectNode.precondition
       },
       selectNodeItemName() {
         return this.selectNode.itemName
@@ -359,6 +372,11 @@
         //     }
         //   }
         // }
+      },
+      selectNodePrecondition(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { precondition: newValue })
+        }
       },
       selectNodeItemName(newValue, oldValue) {
         if (newValue != oldValue) {
@@ -564,9 +582,13 @@
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
+                    _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
+                    _this.getPrePidData(_this.selectNode.itemId,this.CoreFactAllTree);
+                    _this.preData = [];
+                    _this.preData.push( _this.getPreData(_this.prePid,this.CoreFactAllTree));
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
@@ -603,6 +625,7 @@
                     _this.selectNode.lo = params.lo
                     _this.selectNode.colDbType = params.colDbType
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
+                    _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
@@ -614,6 +637,9 @@
               } else {
                 _this.multiId.push(ev.item.model.id)
               }
+              _this.getPrePidData(_this.selectNode.itemId,this.CoreFactAllTree);
+              _this.judgePreData = [];
+              _this.judgePreData.push( _this.getPreData(_this.prePid,this.CoreFactAllTree));
               break
             case 'edge':
               //选中后设置颜色 和连接线的宽度
@@ -1167,6 +1193,7 @@
                 handleType: nodeData[key].handleType,
                 itemName: nodeData[key].itemName,
                 itemId: nodeData[key].itemId,
+                precondition:nodeData[key].precondition,
                 assertVal: nodeData[key].assertVal,
                 assertValList: nodeData[key].assertValList,
                 assertVal1: nodeData[key].assertVal1,
@@ -1392,6 +1419,79 @@
       addRuleCancel(){
         this.addVisible = false;
       },
+
+
+      getCoreFactAllStart(){
+        coreFactColAll({}).then(res => {
+          if (res.code == '200') {
+            let indexData = this.dealAllStartTree(res.rows);
+            this.CoreFactAllTree = this.dealNodeTree(indexData, 'undefined');
+          } else {
+            this.warn(res.msg)
+          }
+        }).catch(err => {
+          this.error(err)
+        })
+      },
+      //处理模型字段
+      dealAllStartTree(list){
+        let indexData = {}
+        for (let key in list) {
+          let children = indexData[list[key].pid]
+          if (children instanceof Array) {
+            children.push({
+              title:list[key].colName,
+              value:''+list[key].id,
+              key:list[key].id,
+              disabled:list[key].isleaf? true:false,
+              id:list[key].id,
+              pid:list[key].pid,
+              lo:list[key].lo,
+              colDbType:list[key].colDbType,
+
+            })
+          } else {
+            children = [{
+              title:list[key].colName,
+              value:''+list[key].id,
+              key:list[key].id,
+              disabled:list[key].isleaf? true:false,
+              id:list[key].id,
+              pid:list[key].pid,
+              lo:list[key].lo,
+              colDbType:list[key].colDbType,
+            }]
+          }
+          indexData[list[key].pid] = children
+        }
+        return indexData;
+      },
+      dealNodeTree(indexData, pid) {
+        let children = indexData[pid]
+        if (children != null && children != undefined) {
+          for (let ckey in children) {
+            let cnode = children[ckey]
+            children[ckey].children = this.recursiveNodeTree(indexData, cnode.id)
+          }
+        }
+        return children
+      },
+      getPrePidData(id,data){
+        for(let key in data){
+          if (id == data[key].id){
+            this.prePid = data[key].pid;
+          }else{
+            this.getPrePidData(id,data[key].children)
+          }
+        }
+      },
+      getPreData(pid,data){
+        for(let key in data){
+          if (pid == data[key].id){
+            return data[key]
+          }
+        }
+      }
     }
   }
 </script>
