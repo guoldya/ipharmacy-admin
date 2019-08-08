@@ -58,7 +58,7 @@
       verifyFlow: Function,
       submitFlow: Function,
       copyRule: Function,
-      addRuleData: Function
+      addRuleData: Function,
     },
     mounted(){
     },

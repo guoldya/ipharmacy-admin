@@ -1,15 +1,15 @@
 <template>
-  <div class="detailCont">
+  <div class="consultation">
     <a-row>
-      <a-col :span="5">
+      <a-col v-if="!isNew" :span="5" class="timeListCard">
         <a-card>
           <a-input-search placeholder="输入要查询日期" @search="onSearch"/>
           <a-list size="large" bordered :dataSource="data">
-            <a-list-item slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
+            <a-list-item slot="renderItem" slot-scope="item, index" @click="clickList(item)">{{item}}</a-list-item>
           </a-list>
         </a-card>
       </a-col>
-      <a-col :span="19" class="padding-left-5">
+      <a-col :span="isNew ? 24:19" class="padding-left-5">
         <a-card>
           <header>
             <span>梁汉文</span>
@@ -30,39 +30,44 @@
             <span>入院日期：2017-4-8</span>
           </aside>
         </a-card>
-        <a-card class="margin-top-10">
+        <a-card class="margin-top-5">
           <header class="record">
             <a-icon type="book"/>
             <span class="font-bold fontSize16">会诊记录</span>
           </header>
           <a-form>
+            <a-row>
             <a-form-item
               class="margin-top-10"
               style="width: 350px;"
-              v-bind="formItemLayout"
+              v-bind="consultationItemLayout"
               label="会诊时间"
             >
               <a-date-picker/>
             </a-form-item>
+            </a-row>
             <a-row>
-              <a-col :span="12" class="font-bold">会诊信息</a-col>
+              <a-col :span="12" class="font-bold  fontSize16 lineHeight">会诊信息</a-col>
               <a-col :span="12" style="text-align: right">
-                <a-button style="background-color:#C49F47 "  icon="file-text">药物医嘱</a-button>
-                <a-button style="background-color:#32C5D2 " class="margin-left-5"  icon="experiment" >化验信息</a-button>
+                <a-button class="adviceButton"  icon="file-text">药物医嘱</a-button>
+                <a-button class="laboratoryButton margin-left-5"  icon="experiment" >化验信息</a-button>
               </a-col>
             </a-row>
-
             <a-divider/>
-            <h3 class="record">患者主诉：</h3>
-            <a-textarea placeholder="说明情况" :rows="4"/>
-            <h3 class="record drugfenxi">医学问题：</h3>
-            <a-textarea placeholder="所犯医学问题" :rows="4"/>
-            <h3 class="record drugfenxi">医学评估：</h3>
-            <a-textarea placeholder="医学评估" :rows="4"/>
-            <h3 class="record drugfenxi">监护计划：</h3>
-            <a-textarea placeholder="监护计划" :rows="4"/>
-            <h3 class="record drugfenxi">结果：</h3>
-            <a-textarea placeholder="结果" :rows="4"/>
+            <a-row>
+              <a-form-item label="病史、用药史概要及病程记录" class="record">
+                <a-textarea v-decorator="['defcode1']" placeholder="病史、用药史概要及病程记录" :rows="4"/>
+              </a-form-item>
+              <a-form-item label="主要医疗或药学问题"  class="record">
+                <a-textarea v-decorator="['defcode2']" placeholder="主要医疗或药学问题" :rows="4"/>
+              </a-form-item>
+              <a-form-item label="药学会诊(讨论)意见和建议"  class="record">
+                <a-textarea v-decorator="['defcode3']" placeholder="药学会诊(讨论)意见和建议" :rows="4"/>
+              </a-form-item>
+              <a-form-item label="遗留问题、解决方式及随访情况"  class="record">
+                <a-textarea v-decorator="['defcode4']" placeholder="遗留问题、解决方式及随访情况" :rows="4"/>
+              </a-form-item>
+            </a-row>
           </a-form>
         </a-card>
       </a-col>
@@ -79,6 +84,7 @@
       </a-button>
       <a-button
         @click="adds"
+        type="primary"
         style="margin-left: 5px"
         :loading="loading"
       >新增
@@ -107,7 +113,10 @@
     name: 'index',
     data() {
       return {
-        formItemLayout: {
+        api:{
+          updateUrl:'sys/update',
+        },
+        consultationItemLayout: {
           labelCol: {
             xs: { span: 6 },
             sm: { span: 5 },
@@ -120,42 +129,59 @@
         form: this.$form.createForm(this),
         data: ['2014-5-6', '2014-5-7', '2014-5-7', '2014-5-7', '2014-5-7'],
         loading: false,
+        isNew:false,
       }
     },
     computed: {},
 
-    created() {
-    },
-
     mounted() {
-    },
-    destroyed() {
     },
     methods: {
       moment,
       onSearch() {
 
       },
+      clickList(data){
+        console.log(data,'data')
+      },
       //新增
       adds() {
-        this.$router.push({
-          name: 'checkRecordDetail'
+        this.isNew = true;
+
+      },
+      submit(e) {
+        e.preventDefault();
+        this.form.validateFields((err, values) => {
+          if (!err) {
+              this.$axios({
+                url: this.api.updateUrl,
+                method: 'post',
+                data: values
+              }).then(res => {
+                if (res.code == '200') {
+                  this.success(res.msg)
+                  this.backTo()
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+                .catch(err => {
+                  this.error(err)
+                })
+          }
         })
       },
-      submit() {
-
-      },
       backTo() {
-
+        this.$router.push({
+          name: 'consultationRecordIndex'
+        })
       }
     }
   }
 </script>
 
 <style lang='less'>
-  .detailCont {
-    margin-top: 10px;
-
+  .consultation {
     .ant-list {
       margin-top: 10px;
     }
@@ -193,5 +219,31 @@
     .fontSize16 {
       font-size: 16px;
     }
+    .adviceButton{
+      color: #fff;
+      background-color:#C49F47
+    }
+    .adviceButton:hover{
+      border: 1px #C49F47 solid;
+      color: #fff;
+    }
+    .laboratoryButton{
+      color: #fff;
+      background-color:#32C5D2;
+    }
+    laboratoryButton:hover{
+      border: 1px #32C5D2 solid;
+      color: #fff;
+    }
+    .ant-form label{
+      font-size: 16px;
+    }
+    .timeListCard{
+      .ant-card-body {
+        padding: 5px;
+        zoom: 1;
+      }
+    }
+
   }
 </style>

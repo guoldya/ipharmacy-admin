@@ -78,7 +78,7 @@ export const asyncRouterMap = [
       {
         path: '/knowledgebase',
         name: 'knowledgebase',
-        component: PageView,
+        component: RouteView,
         meta: { title: '知识库维护', keepAlive: false, icon: 'laptop' },
         children: [
           {
@@ -129,7 +129,7 @@ export const asyncRouterMap = [
       {
         path: '/engine',
         name: 'engine',
-        component: PageView,
+        component: RouteView,
         meta: { title: '引擎规则', keepAlive: false, icon: 'database' },
         children: [
           {
@@ -201,7 +201,7 @@ export const asyncRouterMap = [
       {
         path: '/AllTextSearch',
         name: 'AllTextSearch',
-        component: PageView,
+        component: RouteView,
         meta: { title: '全文检索', keepAlive: false, icon: 'zoom-in' },
         children: [
           {
@@ -231,7 +231,7 @@ export const asyncRouterMap = [
       {
         path: '/monitoring',
         name: 'monitoring',
-        component: PageView,
+        component: RouteView,
         meta: { title: '监控预警', keepAlive: false, icon: 'exception' },
         children: [
           {
@@ -270,7 +270,7 @@ export const asyncRouterMap = [
       {
         path: '/auditWorkstation',
         name: 'auditWorkstation',
-        component: PageView,
+        component: RouteView,
         meta: { title: '审方工作站', keepAlive: false, icon: 'laptop' },
         children: [
           {
@@ -372,7 +372,7 @@ export const asyncRouterMap = [
       {
         path: '/prescriptionReview',
         name: 'prescriptionReview',
-        component: PageView,
+        component: RouteView,
         meta: { title: '处方点评', keepAlive: false, icon: 'pushpin' },
         children: [
           {
@@ -429,7 +429,7 @@ export const asyncRouterMap = [
       {
         path: '/knowledgeMgt',
         name: 'knowledgeMgt',
-        component: PageView,
+        component: RouteView,
         meta: { title: '规则管理', keepAlive: false, icon: 'diff' },
         children: [
           {
@@ -494,7 +494,7 @@ export const asyncRouterMap = [
       {
         path: '/baseData',
         name: 'baseData',
-        component: PageView,
+        component: RouteView,
         meta: { title: '基础数据', keepAlive: false, icon: 'diff' },
         children: [
           {
@@ -631,7 +631,7 @@ export const asyncRouterMap = [
       // {
       //   path: '/testPage',
       //   name: 'testPage',
-      //   component: PageView,
+      //   component: RouteView,
       //   redirect: '/test/test',
       //   meta: { title: '测试', icon: 'check-circle-o', permission: ['result'] },
       //   children: [
@@ -676,7 +676,7 @@ export const asyncRouterMap = [
       {
         path: '/sys',
         name: 'sys',
-        component: PageView,
+        component: RouteView,
         redirect: '/sys/org',
         meta: { title: '系统设置', icon: 'check-circle-o', permission: ['result'] },
         children: [
@@ -784,7 +784,7 @@ export const asyncRouterMap = [
       {
         path: '/mapMgt',
         name: 'mapMgt',
-        component: PageView,
+        component: RouteView,
         meta: { title: '对码管理', icon: 'check-circle-o' },
         children: [
           {
@@ -848,7 +848,7 @@ export const asyncRouterMap = [
       {
         path: '/drugStore',
         name: 'drugStore',
-        component: PageView,
+        component: RouteView,
         meta: { title: '药师信息字典', keepAlive: false, icon: 'zoom-in' },
         children: [
           {
@@ -927,7 +927,7 @@ export const asyncRouterMap = [
       {
         path: '/pharmacistStation',
         name: 'pharmacistStation',
-        component: PageView,
+        component: RouteView,
         meta: { title: '药学日常工作', keepAlive: false, icon: 'bar-chart' },
         children: [
           {

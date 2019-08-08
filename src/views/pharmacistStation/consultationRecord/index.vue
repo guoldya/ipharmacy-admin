@@ -72,7 +72,7 @@
           class="pnstyle"
           :defaultPageSize="10"
           :pageSizeOptions="['10', '20','50']"
-          @showSizeChange="sizeChange"
+          @showSizeChange="pageChangeSize"
           @change="pageChange"
           size="small"
         ></a-pagination>
@@ -85,14 +85,17 @@
     name: 'index',
     data() {
       return {
-        api: {},
+        api: {
+          selectPageUrl: 'sys/reviewAuditlevel/selectPage',
+          updateStatusUrl: 'sys/reviewAuditlevel/update'
+        },
         spinning: false,
         dataSource: [],
         total: null,
         current: 1,
         columns: [
           { title: '监护等级', value: 'planScope', width: 90, format: this.taskScope, align: 'center' },
-          { title: '类别', value: 'name' ,width:80},
+          { title: '类别', value: 'name', width: 80 },
           { title: '患者位置', value: 'extractionsNumber', width: 100, align: 'right' },
           { title: '住院号', value: 'percentageComplete', width: 130 },
           { title: '患者姓名', value: 'rationalPercentage', width: 100, align: 'right' },
@@ -102,7 +105,8 @@
           { title: '入院诊断', value: 'enter', },
           { title: '记录人', value: 'user', width: 100, align: 'center' },
           { title: '会诊时间', value: 'enterTime', width: 130 },
-        ]
+        ],
+        searchData: {}
       }
     },
     computed: {
@@ -141,26 +145,97 @@
         ]
       }
     },
-
-    created() {},
-
-    mounted() {},
-    destroyed() {},
+    mounted() {
+      // this.getData();
+    },
     methods: {
       // 查询
-      search() {},
+      search() {
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        params.pageSize = this.pageSize
+        params.offset = 0
+        this.getData(params)
+      },
       // 重置
-      resetForm() {},
+      resetForm() {
+        this.searchData = {}
+        this.$refs.searchPanel.form.resetFields()
+        this.getData({ pageSize: this.pageSize, offset: 0 })
+      },
+      getData(params = {}) {
+        this.loading = true
+        if (params.offset == 0) {
+          this.current = 1
+        }
+        this.$axios({
+          url: this.api.selectPageUrl,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.dataSource = res.rows
+              this.total = res.total
+              this.loading = false
+            } else {
+              this.loading = false
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.loading = false
+            this.error(err)
+          })
+      },
       //新增
       adds() {
         this.$router.push({
           name: 'consultationRecordDetail',
         })
       },
-      // 改变页码数
-      sizeChange() {},
-      // 分页条数
-      pageChange() {}
+      pageChange(page, pageSize) {
+        let params = this.searchData
+        params.offset = (page - 1) * pageSize
+        params.pageSize = pageSize
+        this.getData(params)
+      },
+      pageChangeSize(page, pageSize) {
+        let params = this.searchData
+        this.pageSize = pageSize
+        params.offset = (page - 1) * pageSize
+        params.pageSize = pageSize
+        this.getData(params)
+      },
+      //启用停用
+      user(data) {
+        let params = {}
+        if (data.status == 1) {
+          params.status = '0'
+        } else {
+          params.status = '1'
+        }
+        params.id = data.id;
+        this.$axios({
+          url: this.api.updateStatusUrl,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success(res.msg)
+              let dataList =  this.searchData;
+              dataList.offset = (this.current-1)*this.pageSize;
+              dataList.pageSize = this.pageSize;
+              this.getData(dataList)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
     }
   }
 </script>

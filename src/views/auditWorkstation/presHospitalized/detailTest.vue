@@ -212,8 +212,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.testDatas = res.rows
-            if (this.$checkArray(this.testDatas)) {
-              this.testid = res.rows[0].testId
+            if (this.testDatas) {
               this.getBeginData(res.rows[0])
             }
             this.loading = false

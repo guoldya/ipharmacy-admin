@@ -506,7 +506,6 @@
         editor.add(this.toolbar)
         editor.add(this.contextmenu)
         editor.add(this.detailpannel)
-
         // 流图读取数据
         // this.g6data && this.flow.read(this.g6data)
         // let temp = localStorage.getItem('test')
@@ -571,7 +570,6 @@
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
-                    console.log(params,'222333')
                     // this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
                     if (params.lo == 1) {
                       this.boxInitialized.inputType = 'input'
@@ -620,8 +618,6 @@
             case 'edge':
               //选中后设置颜色 和连接线的宽度
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-              console.log(ev.item.source.model.shape,'222');
-              console.log(this.edgeInitialized.inputEdge)
               let sourceP = ev.item.source.model
               if (sourceP.shape == "model-rect-attribute") {
                   if (sourceP.lo == 1) {
@@ -629,7 +625,6 @@
                   } else if (sourceP.lo == 2) {
                     this.edgeInitialized.inputEdge = 'scopeInput'
                   } else if (sourceP.lo == 3) {
-                    console.log(111222);
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId;
                     let paramsData = {id: sourceP.itemId};
@@ -1266,7 +1261,6 @@
       getDealPieChart() {
         let newNodeData = []
         let yHeight = 1
-        console.log(this.pieChartData,'12')
         for (let key in this.pieChartData) {
           let data = this.pieChartData[key];
           let yLength = data.length / 2;

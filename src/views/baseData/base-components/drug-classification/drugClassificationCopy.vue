@@ -140,6 +140,7 @@ export default {
         dicDrugSelectList: 'sys/dicBase/selectClassList',
         drugCategoryUpdate: 'sys/dicDrugcategory/update',
         updateStatus: 'sys/dicDrugcategory/updateStatus',
+        selectOne:'sys/dicDrugcategory/selectOne',
       },
       columns: [],
       baseData: [],
@@ -303,14 +304,30 @@ export default {
     updateTreeNode() {
       this.Modal.visible = true
       this.Modal.title = '编辑分类'
-      setTimeout(() => {
-        this.form.setFieldsValue({
-          categoryName: this.nodeData.title,
-          spellCode: this.nodeData.spellCode,
-          categoryProperty: this.nodeData.categoryProperty,
-          status: this.nodeData.status
+      let params = {};
+      this.$axios({
+        url: this.api.selectOne,
+        method: 'put',
+        data: {categoryId:this.nodeData.key}
+      })
+        .then(res => {
+          if (res.code == '200') {
+            params = res.data;
+            setTimeout(() => {
+              this.form.setFieldsValue({
+                categoryName: params.categoryName,
+                spellCode: params.spellCode,
+                categoryProperty: params.categoryProperty,
+                status: params.status
+              })
+            }, 0)
+          } else {
+            this.warn(res.msg)
+          }
         })
-      }, 0)
+        .catch(err => {
+          this.error(err)
+        })
     },
     enableTreeNode() {
       let params = {}
@@ -347,7 +364,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(this.nodeData)
+          console.log(values,'values')
           if (this.Modal.title == '编辑分类') {
             values.categoryCode = this.nodeData.categoryCode
             values.categoryId = this.nodeData.key
@@ -408,6 +425,7 @@ export default {
       obj.pid = params.pid
       obj.spellCode = params.spellCode
       obj.categoryType = params.categoryType
+      obj.categoryProperty = params.categoryProperty
       obj.status = params.status
       obj.isLeaf = true
       for (let i in gdata) {
@@ -424,6 +442,7 @@ export default {
       console.log(params, 'params')
       let obj = {}
       obj.key = params.categoryId
+      obj.categoryProperty = params.categoryProperty
       obj.title = params.categoryName
       obj.spellCode = params.spellCode
       obj.categoryType = params.categoryType

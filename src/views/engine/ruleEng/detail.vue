@@ -32,7 +32,7 @@
           <a-input  :read-only="readOnly" v-decorator="['dsName',{rules:[{ max:10,message:'最多10个字符' }]}]" />
         </a-form-item>
         <a-form-item label="sql文本" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-textarea  :read-only="readOnly" v-decorator="['sqlText',{rules:[{ max:2000,message:'最多2000个字符' }]}]" />
+          <a-textarea  :read-only="readOnly" v-decorator="['sqlText',{rules:[{ required: true,message:'请输入sql文本'},{ max:2000,message:'最多2000个字符' }]}]" />
         </a-form-item>
         <a-form-item label="值" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-input  :read-only="readOnly" v-decorator="['val',{rules:[{ max:10,message:'最多10个字符' }]}]" />

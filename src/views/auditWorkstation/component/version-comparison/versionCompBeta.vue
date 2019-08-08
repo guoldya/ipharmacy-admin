@@ -30,7 +30,7 @@
                         :data="dataSource"
                         :cell-style="cellStyle"
                         @row-click="rowClickCurrent"
-                        show-overflow-tooltip
+
                     >
                         <el-table-column
                             :prop="item.value"
@@ -40,6 +40,7 @@
                             :width="item.width"
                             :align="item.align"
                             :formatter="item.formatter"
+                            show-overflow-tooltip
                         >
                             <template slot-scope="props">
                                 <span v-if="item.value == 'mark'">
@@ -98,7 +99,7 @@ export default {
             columns: [
                 // { title: '编号', value: 'seqNum', width: 50, align: 'right' },
                 { title: '', value: 'mark', width: 19, align: 'left' },
-                { title: '总量', value: 'amountStr', width: 80 },
+                { title: '总量', value: 'amountStr', width: 60 },
                 { title: '用量', value: 'frequency', width: 80 },
                 { title: '用法', value: 'useType', width: 80 },
                 { title: '规格', value: 'spec', width: 80 },
@@ -106,7 +107,7 @@ export default {
                 { title: '规格', value: 'otSpec', width: 80 },
                 { title: '用法', value: 'otUseType', width: 80 },
                 { title: '用量', value: 'otFrequency', width: 80 },
-                { title: '总量', value: 'otAmountStr', width: 80 }
+                { title: '总量', value: 'otAmountStr', width: 60 }
             ],
             dataSource: []
         }
@@ -152,10 +153,9 @@ export default {
                 this.submitEdition = this.reviewList[0].edition
                 this.otherTime = this.reviewList[0].submitTime
                 this.getOtherData(this.submitValue)
-
                 setTimeout(() => {
                     this.tableContrast()
-                }, 100)
+                }, 500)
             }
         },
         //获取网格信息
@@ -187,7 +187,7 @@ export default {
         },
         //获取其他网格信息
         getOtherData(subNo) {
-            this.spinning = true
+            this.currentSpinning = true
             let params = {}
             params.prescNum = this.orderValue
             params.subNo = subNo
@@ -199,15 +199,15 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.spinning = false
+                        this.currentSpinning = false
                         this.otherData = res.rows
                     } else {
-                        this.spinning = false
+                        this.currentSpinning = false
                         this.warn(res.msg)
                     }
                 })
                 .catch(err => {
-                    this.spinning = false
+                    this.currentSpinning = false
                     this.error(err)
                 })
         },
@@ -239,7 +239,7 @@ export default {
             }
             setTimeout(() => {
                 this.tableContrast()
-            }, 100)
+            }, 500)
         },
         //数据对比级网格数据
         tableContrast() {
@@ -287,6 +287,7 @@ export default {
                     otUseType: dealData[j].useType
                 })
             }
+
         },
         cellStyle(row, column) {
             if (row.row.amountStr != row.row.otAmountStr && row.row.amountStr && row.row.otAmountStr) {

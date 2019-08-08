@@ -10,18 +10,8 @@
             <a-input-group compact>
                 <a-select
                     style="width:400px"
-                    showSearch
-                    allowClear
-                    mode="single"
-                    optionLabelProp="title"
-                    autoClearSearchValue
-                    :defaultActiveFirstOption="false"
-                    :showArrow="false"
-                    :filterOption="false"
-                    @search="handleSearch"
-                    @change="handleChange"
                     v-if="disable"
-                    :disabled="disable"
+                    :disabled="true"
                     class="readOnlyInput"
                 >
                     <a-select-option
@@ -54,7 +44,6 @@
                 :filterOption="false"
                 @search="handleSearch"
                 @change="handleChange"
-
                 v-else
               >
                 <a-select-option
@@ -358,10 +347,16 @@ export default {
                     this.loading = false
                 })
         },
-        // 添加品种
-        addVary(params = {}) {
+        // 添加关联
+        addVary() {
+          let params = {}
+          if (this.selectDrugData){
             params.dicId = this.variety.categoryId
             params.varietyCodeList = [this.selectDrugData]
+          }else{
+            this.warn('请选择药品品种');
+            return
+          }
             this.loading = true
             this.$axios({
                 url: this.api.addvarylist,
@@ -382,10 +377,6 @@ export default {
                     this.error(err)
                     this.loading = false
                 })
-        },
-        // 选择框数据
-        handleChange(selectedItems) {
-            this.selectedItems = selectedItems
         },
         //获取树形表数据
         // getVarietiesData(params = {}) {
@@ -546,6 +537,7 @@ export default {
         },
         // 里面值改变
         handleChange(value, option) {
+          console.log(value,'222');
             this.selectDrugData = value
         },
         // 控制气泡框

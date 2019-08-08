@@ -59,7 +59,7 @@
       />
       <!-- layout content -->
       <a-layout-content
-        :style="{ margin: '24px 24px 0', height: '100%', paddingTop: fixedHeader ? '64px' : '0' }">
+        :style="{ margin: '24px 10px 0', height: '100%', paddingTop: fixedHeader ? '64px' : '0' }">
         <slot></slot>
       </a-layout-content>
       <!-- layout footer -->
@@ -470,7 +470,7 @@
 
     // 内容区
     .layout-content {
-      margin: 24px 24px 0px;
+      margin: 24px 10px 0px;
       height: 100%;
       height: 64px;
       padding: 0 12px 0 0;
