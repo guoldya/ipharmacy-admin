@@ -2,10 +2,10 @@
   <div class="yaoshi">
     <a-card>
       <header>
-        <h3 class="returns"  @click="backTo"><返回</h3>
+        <h3 class="returns" @click="backTo"><返回</h3>
         <div class="does">
-          <a-button type="primary">保存</a-button>
-          <a-button>取消</a-button>
+          <a-button type="primary" @click="save">保存</a-button>
+          <a-button @click="cancle">取消</a-button>
         </div>
       </header>
       <a-divider />
@@ -79,7 +79,7 @@
             />
           </a-form-item>
           <a-form-item label="资质上传" class="texts unplod">
-             <Upload :count="1" ref="uploadIcon" />
+            <Upload :count="1" ref="uploadIcon" />
           </a-form-item>
         </a-form>
       </div>
@@ -111,7 +111,7 @@
             />
           </a-form-item>
           <a-form-item label="资质上传" class="texts unplod">
-             <Upload :count="1" ref="uploadlicense" />
+            <Upload :count="1" ref="uploadlicense" />
           </a-form-item>
         </a-form>
       </div>
@@ -123,7 +123,7 @@
             <Upload :count="1" ref="uploadGSP" />
           </a-form-item>
           <a-form-item label="身份证反面" class="texts unplod">
-           <Upload :count="1" ref="uploadGSP" />
+            <Upload :count="1" ref="uploadGSP" />
           </a-form-item>
         </a-form>
       </div>
@@ -141,7 +141,7 @@ export default {
       loading: false
     }
   },
-   components: {
+  components: {
     Upload
   },
   computed: {
@@ -290,120 +290,121 @@ export default {
   },
   methods: {
     giveFormData() {
-      let reqArr = datas[0]
-      console.log(reqArr)
-      let {
-          account,
-          authStatus,
-          code,
-          education,
-          expertField,
-          gradInst,
-          id,
-          idCard,
-          idCardBack,
-          idCardBackUrl,
-          idCardFront,
-          idCardFrontUrl,
-          jobAddr,
-          jobOrg,
-          jobStartTime,
-          major,
-          name,
-          profession,
-          profile,
-          qcAuthTime,
-          qcBirthday,
-          qcIssueOrg,
-          qcIssueTime,
-          qcMajor,
-          qcName,
-          qcNo,
-          qcPic,
-          qcSex,
-          qcUrl,
-          regArea,
-          regIssueOrg,
-          regIssueTime,
-          regName,
-          regNo,
-          regOrgName,
-          regPic,
-          regQuaNo,
-          regScope,
-          regType,
-          regUrl,
-          regValidTime,
-          remark,
-          sex,
-          simpleCode,
-          telephone
-        } = reqArr,
-        formData = {
-          account,
-          authStatus,
-          code,
-          education,
-          expertField,
-          gradInst,
-          id,
-          idCard,
-          idCardBack,
-          idCardBackUrl,
-          idCardFront,
-          idCardFrontUrl,
-          jobAddr,
-          jobOrg,
-          jobStartTime,
-          major,
-          name,
-          profession,
-          profile,
-          qcAuthTime,
-          qcBirthday,
-          qcIssueOrg,
-          qcIssueTime,
-          qcMajor,
-          qcName,
-          qcNo,
-          qcPic,
-          qcSex,
-          qcUrl,
-          regArea,
-          regIssueOrg,
-          regIssueTime,
-          regName,
-          regNo,
-          regOrgName,
-          regPic,
-          regQuaNo,
-          regScope,
-          regType,
-          regUrl,
-          regValidTime,
-          remark,
-          sex,
-          simpleCode,
-          telephone
-        }
-      this.form.setFieldsValue(formData)
-      let arrObj = [
-        { name: 'uploadIcon', url: '42778a8b-5d60-4660-bff0-ff3a1d061310.jpeg' },
-        { name: 'uploadGSP', url: '9a75716e-e260-40f9-b2a0-e17b8bd1c25c.jpg' },
-        { name: 'uploadlicense', url: 'eccfdc23-eedc-4620-be7f-8cf6f350fd35.png' },
-        { name: 'uploadAgree', url: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg' }
-      ]
-      arrObj.forEach((item, index) => {
-        let obj = {
-          fileName: item.url,
-          name: item.url,
-          status: 'done',
-          uid: '-1',
-          url: `http://192.168.0.150:40080/res/${item.url}`
-        }
-        this.$refs[item.name].fileList = [obj]
-        this.$refs[item.name].imgArr = [obj]
-      })
+      if (this.$route.params.id == 1) {
+        let reqArr = datas[0]
+        let {
+            account,
+            authStatus,
+            code,
+            education,
+            expertField,
+            gradInst,
+            id,
+            idCard,
+            idCardBack,
+            idCardBackUrl,
+            idCardFront,
+            idCardFrontUrl,
+            jobAddr,
+            jobOrg,
+            jobStartTime,
+            major,
+            name,
+            profession,
+            profile,
+            qcAuthTime,
+            qcBirthday,
+            qcIssueOrg,
+            qcIssueTime,
+            qcMajor,
+            qcName,
+            qcNo,
+            qcPic,
+            qcSex,
+            qcUrl,
+            regArea,
+            regIssueOrg,
+            regIssueTime,
+            regName,
+            regNo,
+            regOrgName,
+            regPic,
+            regQuaNo,
+            regScope,
+            regType,
+            regUrl,
+            regValidTime,
+            remark,
+            sex,
+            simpleCode,
+            telephone
+          } = reqArr,
+          formData = {
+            account,
+            authStatus,
+            code,
+            education,
+            expertField,
+            gradInst,
+            id,
+            idCard,
+            idCardBack,
+            idCardBackUrl,
+            idCardFront,
+            idCardFrontUrl,
+            jobAddr,
+            jobOrg,
+            jobStartTime,
+            major,
+            name,
+            profession,
+            profile,
+            qcAuthTime,
+            qcBirthday,
+            qcIssueOrg,
+            qcIssueTime,
+            qcMajor,
+            qcName,
+            qcNo,
+            qcPic,
+            qcSex,
+            qcUrl,
+            regArea,
+            regIssueOrg,
+            regIssueTime,
+            regName,
+            regNo,
+            regOrgName,
+            regPic,
+            regQuaNo,
+            regScope,
+            regType,
+            regUrl,
+            regValidTime,
+            remark,
+            sex,
+            simpleCode,
+            telephone
+          }
+        this.form.setFieldsValue(formData)
+        let arrObj = [
+          { name: 'uploadIcon', url: '42778a8b-5d60-4660-bff0-ff3a1d061310.jpeg' },
+          { name: 'uploadGSP', url: '9a75716e-e260-40f9-b2a0-e17b8bd1c25c.jpg' },
+          { name: 'uploadlicense', url: 'eccfdc23-eedc-4620-be7f-8cf6f350fd35.png' },
+          { name: 'uploadAgree', url: '89bb44dd-3b4a-40cc-b144-4a095163f973.jpg' }
+        ]
+        arrObj.forEach((item, index) => {
+          let obj = {
+            fileName: item.url,
+            name: item.url,
+            status: 'done',
+            uid: '-1',
+            url: `http://192.168.0.150:40080/res/${item.url}`
+          }
+          this.$refs[item.name].fileList = [obj]
+          this.$refs[item.name].imgArr = [obj]
+        })
+      }
     },
     // 查询数据
     handleSubmit(e) {
@@ -447,6 +448,17 @@ export default {
       this.form.validateFields((error, values) => {
         console.log('error', error)
         console.log('Received values of form: ', values)
+      })
+    },
+    save() {
+      this.$message.info('保存成功!')
+      this.$router.push({
+        name: 'apothecaryIndex'
+      })
+    },
+    cancle() {
+      this.$router.push({
+        name: 'apothecaryIndex'
       })
     }
   }
@@ -504,7 +516,7 @@ export default {
   .ant-form-item-label {
     width: 30%;
   }
-  .returns{
+  .returns {
     cursor: pointer;
   }
 }

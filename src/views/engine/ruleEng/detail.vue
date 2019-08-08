@@ -113,6 +113,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.treedata = this.getDataChildren(res.rows, undefined)
+            this.getnewData(this.treedata)
             this.loading = false
           } else {
             this.loadingTable = false
@@ -132,12 +133,23 @@ export default {
           items.push({
             title: item.colName,
             value: item.id + '',
-            // key: item.id,
             children: this.getDataChildren(bdata, item.id)
           })
         }
       }
       return items
+    },
+     // 二次递归
+    getnewData(data) {
+      for (var key in data) {
+        var item = data[key]
+        if (data[key].children.length>0) {
+          data[key].disabled = true
+          this.getnewData(data[key].children)
+        } else {
+          data[key].disabled = false
+        }
+      }
     },
     // 数据源的查询
     getDatas() {

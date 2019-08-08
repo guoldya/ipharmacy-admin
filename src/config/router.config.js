@@ -864,7 +864,7 @@ export const asyncRouterMap = [
                 meta: { title: '药师信息字典', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/drugStore/apothecary/detail/:indexId',
+                path: '/drugStore/apothecary/detail/:id',
                 name: 'apothecaryDetail',
                 hidden: true,
                 component: () => import('@/views/drugStore/apothecary/detail.vue'),

@@ -393,7 +393,14 @@ export default {
                 this.MData = {}
                 this.similarData = []
                 this.name = ''
-                this.getData({ pageSize: this.pageSize, offset: (this.current - 1) * 10,orgId: this.$store.state.user.account.info.orgId })
+               let param = {
+                  pageSize: this.pageSize,
+                  offset: (this.current - 1) * 10
+                }
+                Object.assign(param, this.$refs.searchPanel.form.getFieldsValue())
+                this.getData(
+                  param
+                )
                 this.loading = false
                 this.isActive = true
               })

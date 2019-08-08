@@ -403,7 +403,14 @@ export default {
               this.NData = {}
               this.MData = {}
               this.similarData = []
-              this.getData()
+              let param = {
+                  pageSize: this.pageSize,
+                  offset: (this.current - 1) * 10
+                }
+                Object.assign(param, this.$refs.searchPanel.form.getFieldsValue())
+                this.getData(
+                  param
+                )
               this.loading = false
               this.isActive = true
               this.remark = ''

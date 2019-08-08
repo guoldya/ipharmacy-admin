@@ -471,12 +471,14 @@ export default {
                 this.MData = {}
                 this.similarData = []
                 this.drugName = ''
-                this.getData({
+                let param = {
                   pageSize: this.pageSize,
-                  offset: (this.current - 1) * 10,
-                  orgId: this.$store.state.user.account.info.orgId
-                })
-
+                  offset: (this.current - 1) * 10
+                }
+                Object.assign(param, this.$refs.searchPanel.form.getFieldsValue())
+                this.getData(
+                  param
+                )
                 this.loading = false
                 this.isActive = true
               })
