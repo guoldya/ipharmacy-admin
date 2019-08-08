@@ -43,7 +43,7 @@
               v-bind="consultationItemLayout"
               label="会诊时间"
             >
-              <a-date-picker/>
+              <a-date-picker  format="YYYY-MM-DD HH:mm"/>
             </a-form-item>
             </a-row>
             <a-row>
@@ -87,6 +87,7 @@
         type="primary"
         style="margin-left: 5px"
         :loading="loading"
+        v-if="!isNew"
       >新增
       </a-button>
       <a-button
