@@ -67,6 +67,17 @@
               @select="coreFactTreeChange">
             </a-tree-select>
           </a-form-item>
+          <a-form-item label="前置条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-tree-select
+              size="small"
+              :allowClear="true"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+              :treeData="judgePreData"
+              v-model="selectNode.itemId"
+              treeDefaultExpandAll
+              class="nodeSelect">
+            </a-tree-select>
+          </a-form-item>
           <a-form-item v-if="boxInitialized.inputType !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select v-if="boxInitialized.inputType !='select' && boxInitialized.inValueType =='number'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
@@ -129,6 +140,16 @@
                 @select="attributeEdge"
                 treeDefaultExpandAll>
               </a-tree-select>
+          </a-form-item>
+          <a-form-item label="前置条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-tree-select
+              size="small"
+              :allowClear="true"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+              :treeData="preData"
+              v-model="selectNode.itemId"
+              treeDefaultExpandAll>
+            </a-tree-select>
           </a-form-item>
         </a-form>
       </div>
@@ -255,6 +276,8 @@
         edgeCondition:'',
         edgeConditionValue:'',
         edgeConditionValue1:'',
+        preData:[],
+        judgePreData:[],
       }
     },
     mounted() {
@@ -263,8 +286,6 @@
       this.getCoreFactAllStart();
     },
     methods: {
-      textChange(){
-      },
       sourceName(value, option){
         this.selectNode.sourcename = option.componentOptions.propsData.title;
       },
@@ -322,9 +343,6 @@
         this.dicBaseTreeData = treeData;
       },
       coreFactTreeChange(value, node, extra){
-        console.log(value,'value');
-         console.log(node,'node');
-         console.log(extra,'extra')
         let params = extra.selectedNodes[0].data.props;
         let _this = this;
         _this.selectNode.itemId = params.id;
@@ -364,6 +382,15 @@
         this.condition = '';
         this.conditionValue = '';
         this.conditionValue1 = '';
+
+
+        this.judgePreData=[];
+        this.preData = [];
+        for (let key in this.CoreFactAllTree){
+          if (params.pid ==this.CoreFactAllTree[key].id){
+            this.judgePreData.push(this.CoreFactAllTree[key])
+          }
+        }
       },
       //判断节点条件选择事件
       selectNodeRo(value,option){
@@ -371,7 +398,6 @@
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
         }
-        console.log(option)
         this.selectNode.ro = value
         this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
       },
@@ -482,6 +508,13 @@
         }else if (params.colDbType == 3){
           _this.edgeInitialized.inValueEdge = 'text'
         }
+        this.preData = [];
+        for (let key in this.CoreFactAllTree){
+          if (params.pid ==this.CoreFactAllTree[key].id){
+            this.preData.push(this.CoreFactAllTree[key])
+          }
+        }
+        console.log( this.preData,' this.preData');
       },
 
       //线段输入框input事件
@@ -491,7 +524,6 @@
       },
       //线中下拉事件
       assertValEdge(value,option){
-        console.log(this.selectEdge)
         this.selectEdge.lo =3;
         if ($.trim(this.edgeCondition).length==0){
           this.edgeCondition = this.selectEdge.roSymbol;
@@ -553,14 +585,15 @@
         coreFactColAll({}).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows);
+            console.log(this.selectNode,'222')
             this.CoreFactAllTree = this.recursiveNodeTree(indexData, 'undefined');
+            // this.preData = this.getPreData(this.CoreFactAllTree)
           } else {
             this.warn(res.msg)
           }
         }).catch(err => {
           this.error(err)
         })
-
       },
       //处理模型字段
       dealAllStartTree(list){

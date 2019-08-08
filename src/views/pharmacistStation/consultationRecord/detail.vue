@@ -1,15 +1,15 @@
 <template>
-  <div class="detailCont">
+  <div class="consultation">
     <a-row>
-      <a-col :span="5" class="timeListCard">
+      <a-col v-if="!isNew" :span="5" class="timeListCard">
         <a-card>
           <a-input-search placeholder="输入要查询日期" @search="onSearch"/>
           <a-list size="large" bordered :dataSource="data">
-            <a-list-item slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
+            <a-list-item slot="renderItem" slot-scope="item, index" @click="clickList(item)">{{item}}</a-list-item>
           </a-list>
         </a-card>
       </a-col>
-      <a-col :span="19" class="padding-left-5">
+      <a-col :span="isNew ? 24:19" class="padding-left-5">
         <a-card>
           <header>
             <span>梁汉文</span>
@@ -30,7 +30,7 @@
             <span>入院日期：2017-4-8</span>
           </aside>
         </a-card>
-        <a-card class="margin-top-10">
+        <a-card class="margin-top-5">
           <header class="record">
             <a-icon type="book"/>
             <span class="font-bold fontSize16">会诊记录</span>
@@ -40,7 +40,7 @@
             <a-form-item
               class="margin-top-10"
               style="width: 350px;"
-              v-bind="formItemLayout"
+              v-bind="consultationItemLayout"
               label="会诊时间"
             >
               <a-date-picker/>
@@ -84,6 +84,7 @@
       </a-button>
       <a-button
         @click="adds"
+        type="primary"
         style="margin-left: 5px"
         :loading="loading"
       >新增
@@ -112,7 +113,10 @@
     name: 'index',
     data() {
       return {
-        formItemLayout: {
+        api:{
+          updateUrl:'sys/update',
+        },
+        consultationItemLayout: {
           labelCol: {
             xs: { span: 6 },
             sm: { span: 5 },
@@ -125,40 +129,59 @@
         form: this.$form.createForm(this),
         data: ['2014-5-6', '2014-5-7', '2014-5-7', '2014-5-7', '2014-5-7'],
         loading: false,
+        isNew:false,
       }
     },
     computed: {},
 
-    created() {
-    },
-
     mounted() {
-    },
-    destroyed() {
     },
     methods: {
       moment,
       onSearch() {
 
       },
+      clickList(data){
+        console.log(data,'data')
+      },
       //新增
       adds() {
-        this.$router.push({
-          name: 'checkRecordDetail'
+        this.isNew = true;
+
+      },
+      submit(e) {
+        e.preventDefault();
+        this.form.validateFields((err, values) => {
+          if (!err) {
+              this.$axios({
+                url: this.api.updateUrl,
+                method: 'post',
+                data: values
+              }).then(res => {
+                if (res.code == '200') {
+                  this.success(res.msg)
+                  this.backTo()
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+                .catch(err => {
+                  this.error(err)
+                })
+          }
         })
       },
-      submit() {
-
-      },
       backTo() {
-
+        this.$router.push({
+          name: 'consultationRecordIndex'
+        })
       }
     }
   }
 </script>
 
 <style lang='less'>
-  .detailCont {
+  .consultation {
     .ant-list {
       margin-top: 10px;
     }

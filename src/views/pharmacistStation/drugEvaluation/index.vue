@@ -42,7 +42,7 @@
                 </a-radio-group>
               </a-form-item>
               <a-row :gutter="24">
-                <a-col v-for="item in formBase" :key="item.title" :span="10">
+                <a-col v-for="item in formBase" :key="item.title" :span="12">
                   <a-form-item :label="`${item.title}`">
                     <a-input
                       v-decorator="[
@@ -113,8 +113,107 @@
                   >{{op.text}}</a-checkbox>
                 </a-checkbox-group>
               </a-form-item>
+               <a-form-item label="入院诊断" class="texts range">
+            <a-input
+              v-decorator="['username',{rules:[{message:'请输入入院诊断',required:true},{ max:50,message:'最多50个字符' }]}]"
+            />
+          </a-form-item>
+          <a-form-item label="主诉" class="texts range">
+            <a-input
+              v-decorator="['username',{rules:[{message:'请输入主诉',required:true},{ max:50,message:'最多50个字符' }]}]"
+            />
+          </a-form-item>
+          <a-form-item label="既往病史" class="texts range">
+            <a-textarea
+              v-decorator="['username',{rules:[{message:'请输入既往病史',required:true},{ max:50,message:'最多50个字符' }]}]"
+            />
+          </a-form-item>
+          <a-form-item label="家族史" class="texts range">
+            <a-textarea
+              v-decorator="['username',{rules:[{message:'请输入家族史',required:true},{ max:50,message:'最多50个字符' }]}]"
+            />
+          </a-form-item>
+           <a-form-item label="过敏史" class="texts">
+                <a-radio-group v-decorator="[ 'allergyHistory']">
+                  <a-radio
+                    v-for="(op,index) in this.enum.allergyHistory"
+                    :value="op.id"
+                    :key="index"
+                  >{{op.text}}</a-radio>
+                </a-radio-group>
+                <a-button type="primary">新增过敏情况</a-button>
+              </a-form-item>
+               <a-form-item label=" " class="texts range">
+            <a-textarea
+              v-decorator="['username',{rules:[{message:'请输入家族史',required:true},{ max:50,message:'最多50个字符' }]}]"
+            />
+          </a-form-item>
             </a-form>
           </div>
+          <!-- 第二个表单 -->
+          <h3 class="record">入院状况评估</h3>
+         <a-divider />
+          <div id="components-form-demo-advanced-search">
+            <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
+             
+              <a-form-item label="入院方式" class="texts">
+                <a-radio-group v-decorator="[ 'marriageAct']" buttonStyle="solid">
+                  <a-radio-button
+                    v-for="(op,index) in this.enum.marriageAct"
+                    :value="op.id"
+                    :key="index"
+                  >{{op.text}}</a-radio-button>
+                </a-radio-group>
+              </a-form-item>
+               <a-form-item label="入院方式" class="texts">
+                <a-radio-group v-decorator="[ 'marriageAct']" buttonStyle="solid">
+                  <a-radio-button
+                    v-for="(op,index) in this.enum.marriageAct"
+                    :value="op.id"
+                    :key="index"
+                  >{{op.text}}</a-radio-button>
+                </a-radio-group>
+              </a-form-item>
+               <a-form-item label="入院方式" class="texts">
+                <a-radio-group v-decorator="[ 'marriageAct']" buttonStyle="solid">
+                  <a-radio-button
+                    v-for="(op,index) in this.enum.marriageAct"
+                    :value="op.id"
+                    :key="index"
+                  >{{op.text}}</a-radio-button>
+                </a-radio-group>
+              </a-form-item>
+               <a-form-item label="入院方式" class="texts">
+                <a-radio-group v-decorator="[ 'marriageAct']" buttonStyle="solid">
+                  <a-radio-button
+                    v-for="(op,index) in this.enum.marriageAct"
+                    :value="op.id"
+                    :key="index"
+                  >{{op.text}}</a-radio-button>
+                </a-radio-group>
+              </a-form-item>
+               <a-form-item label="入院方式" class="texts">
+                <a-radio-group v-decorator="[ 'marriageAct']" buttonStyle="solid">
+                  <a-radio-button
+                    v-for="(op,index) in this.enum.marriageAct"
+                    :value="op.id"
+                    :key="index"
+                  >{{op.text}}</a-radio-button>
+                </a-radio-group>
+              </a-form-item>
+               <a-form-item label="入院方式" class="texts">
+                <a-radio-group v-decorator="[ 'marriageAct']" buttonStyle="solid">
+                  <a-radio-button
+                    v-for="(op,index) in this.enum.marriageAct"
+                    :value="op.id"
+                    :key="index"
+                  >{{op.text}}</a-radio-button>
+                </a-radio-group>
+              </a-form-item>
+          </a-form-item>
+            </a-form>
+          </div>
+          <!-- 第三个表单 -->
         </a-card>
       </a-col>
     </a-row>
@@ -230,12 +329,13 @@ export default {
     }
   }
   .ant-form-item-label {
-    width: 19.5%;
+    width: 18%;
   }
   .texts {
     .ant-form-item-label {
-      width: 8%;
+      width: 9%;
     }
   }
+  
 }
 </style>

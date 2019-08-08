@@ -140,6 +140,7 @@ export default {
         dicDrugSelectList: 'sys/dicBase/selectClassList',
         drugCategoryUpdate: 'sys/dicDrugcategory/update',
         updateStatus: 'sys/dicDrugcategory/updateStatus',
+        selectOne:'sys/dicDrugcategory/selectOne',
       },
       columns: [],
       baseData: [],
@@ -303,15 +304,30 @@ export default {
     updateTreeNode() {
       this.Modal.visible = true
       this.Modal.title = '编辑分类'
-      console.log(this.nodeData,'2233')
-      setTimeout(() => {
-        this.form.setFieldsValue({
-          categoryName: this.nodeData.title,
-          spellCode: this.nodeData.spellCode,
-          categoryProperty: this.nodeData.categoryProperty,
-          status: this.nodeData.status
+      let params = {};
+      this.$axios({
+        url: this.api.selectOne,
+        method: 'put',
+        data: {categoryId:this.nodeData.key}
+      })
+        .then(res => {
+          if (res.code == '200') {
+            params = res.data;
+            setTimeout(() => {
+              this.form.setFieldsValue({
+                categoryName: params.categoryName,
+                spellCode: params.spellCode,
+                categoryProperty: params.categoryProperty,
+                status: params.status
+              })
+            }, 0)
+          } else {
+            this.warn(res.msg)
+          }
         })
-      }, 0)
+        .catch(err => {
+          this.error(err)
+        })
     },
     enableTreeNode() {
       let params = {}
