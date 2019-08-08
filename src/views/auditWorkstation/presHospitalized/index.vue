@@ -79,18 +79,14 @@
                   </template>
                   <a href>
                     {{props.row[item.prop]}}&nbsp;
-                    <a-icon type="message"/>
+                    <a-icon type="message" />
                   </a>
                 </a-tooltip>
               </span>
               <span v-else>{{props.row[item.prop]}}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="problem"
-            label="问题"
-            min-width="500"
-          >
+          <el-table-column prop="problem" label="问题" min-width="500">
             <template slot-scope="props">
               <a-row v-for="(op,index) in props.row.orderissueVOS" class="problemRow" :key="index">
                 <a-col :span="2">
@@ -100,7 +96,7 @@
                   <a-tooltip placement="top" :key="index">
                     <template slot="title" style="width: 300px">
                       {{op.auditClass}}：{{op.auditDescription}}
-                      <br>
+                      <br />
                       建议：{{op.auditSuggest}}
                     </template>
                     <div class="multiLineText">
@@ -111,14 +107,14 @@
                     </div>
                   </a-tooltip>
                 </a-col>
-                <a-divider v-if="index<props.row.orderissueVOS.length-1" type="horizontal"/>
+                <a-divider v-if="index<props.row.orderissueVOS.length-1" type="horizontal" />
               </a-row>
             </template>
           </el-table-column>
           <el-table-column prop="action" label="操作" width="140" align="center">
             <template slot-scope="props">
               <a @click="looks(props.row)">查看</a>
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
               <a-popconfirm
                 title="确定通过?"
                 @confirm="passSingle(props.row)"
@@ -128,7 +124,7 @@
               >
                 <a>通过</a>
               </a-popconfirm>
-              <a-divider type="vertical"/>
+              <a-divider type="vertical" />
               <a @click="rejectedSingle(props)">驳回</a>
             </template>
           </el-table-column>
@@ -243,7 +239,7 @@ export default {
       templateText: '',
       tempRowData: {},
       EasonData: [],
-      reviewId:''
+      reviewId: ''
     }
   },
   computed: {
@@ -273,7 +269,6 @@ export default {
     //this.fetchYJSMapData()
     this.getTreeseldata()
     this.selectEasonData()
-  
   },
   methods: {
     // 获取医生
@@ -286,7 +281,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.EasonData = res.rows
-           
           } else {
             this.loading = false
             this.warn(res.msg)
@@ -382,7 +376,18 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.treeDatas = this.getDataChildren(res.rows, undefined)
+            // let datas = res.rows.map(item => {
+            //   if (item.parentId) {
+            //     item.disabled = false
+            //   } else {
+            //     item.disabled = true
+            //   }
+            //   return item
+            // })
+            let datas = res.rows
+            this.treeDatas = this.getDataChildren(datas, undefined)
+            //this.getnewData(this.treeDatas);
+           
           } else {
             this.warn(res.msg)
           }
@@ -391,7 +396,22 @@ export default {
           this.error(err)
         })
     },
-
+    // 递归处理数据
+    getDataChildren(bdata, pid) {
+      var items = []
+      for (var key in bdata) {
+        var item = bdata[key]
+        if (pid == item.parentId) {
+          items.push({
+            title: item.title,
+            value: item.deptId,
+            key: item.deptId,
+            children: this.getDataChildren(bdata, item.deptId)
+          })
+        }
+      }
+      return items
+    },
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
@@ -403,7 +423,7 @@ export default {
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
       //this.fetchYJSMapData(params)
-       this.fetchYJSMapData({ pageSize: 10, offset: 0 })
+      this.fetchYJSMapData({ pageSize: 10, offset: 0 })
     },
     //翻页事件
     customerPageChange(page, pageSize) {
@@ -665,7 +685,7 @@ export default {
     //单个驳回
     rejectedSingle(data) {
       Object.assign(this.visDatas, { visId: data.row.visId, submitNo: data.row.maxSubmitNo })
-     
+
       this.Modal.visible = true
       //this.problemsData = data.row.problemList
       this.tempRowData = data.row
@@ -714,7 +734,7 @@ export default {
       console.log(data)
       this.$router.push({
         name: 'presHospitalizedDetail',
-        params: { visId: data.visId, maxSubmitNo: data.maxSubmitNo,reviewId:data.reviewId,isNew:1, }
+        params: { visId: data.visId, maxSubmitNo: data.maxSubmitNo, reviewId: data.reviewId, isNew: 1 }
       })
     },
     //处方单网格样式
@@ -734,22 +754,6 @@ export default {
       if (time) {
         return time.slice(0, time.lastIndexOf(':'))
       }
-    },
-    // 递归处理数据
-    getDataChildren(bdata, pid) {
-      var items = []
-      for (var key in bdata) {
-        var item = bdata[key]
-        if (pid == item.parentId) {
-          items.push({
-            title: item.title,
-            value: item.deptId,
-            key: item.deptId,
-            children: this.getDataChildren(bdata, item.deptId)
-          })
-        }
-      }
-      return items
     }
   }
 }

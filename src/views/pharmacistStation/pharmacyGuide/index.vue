@@ -6,7 +6,7 @@
           <a-col :span="2">9110267</a-col>
           <a-col :span="2"> 女</a-col>
           <a-col :span="2">23</a-col>
-          <a-col :span="2">15区/1病床</a-col>p
+          <a-col :span="2">15区/1病床</a-col>
           <a-col :span="4">入院日期：2019-06-06</a-col>
           <a-col :span="8">
             <div>
@@ -40,9 +40,9 @@
             <span slot="customRender" slot-scope="item">
               <a-dropdown>
                 <a-menu slot="overlay"  @click="handleMenuClick">
-                  <a-menu-item  v-for="(item,index) in menuItem" :key="index">{{item[key]}}</a-menu-item>
+                  <a-menu-item  v-for="(item,index) in clinicalItem" :key="item.value">{{item.tab}}</a-menu-item>
                 </a-menu>
-                <span style="margin-left: 8px">
+                <span class="marginLeft8">
                 {{item.name}} <a-icon type="caret-down" />
               </span>
               </a-dropdown>
@@ -51,9 +51,9 @@
             <span slot="pharmacyService" slot-scope="item">
               <a-dropdown>
                 <a-menu slot="overlay"  @click="handleMenuClick">
-                  <a-menu-item  v-for="(item,index) in customRender" :key="index">{{item[key]}}</a-menu-item>
+                  <a-menu-item  v-for="(item,index) in pharmacyServiceItem" :key="item.value">{{item.tab}}</a-menu-item>
                 </a-menu>
-                <span style="margin-left: 8px">
+                <span class="marginLeft8">
                 {{item.name}} <a-icon type="caret-down" />
               </span>
               </a-dropdown>
@@ -62,9 +62,9 @@
             <span slot="studentWork" slot-scope="item">
               <a-dropdown>
                 <a-menu slot="overlay"  @click="handleMenuClick">
-                  <a-menu-item  v-for="(item,index) in customRender" :key="index">{{item[key]}}</a-menu-item>
+                  <a-menu-item  v-for="(item,index) in studentWorkItem" :key="item.value">{{item.tab}}</a-menu-item>
                 </a-menu>
-                <span style="margin-left: 8px">
+                <span class="marginLeft8">
                 {{item.name}} <a-icon type="caret-down" />
               </span>
               </a-dropdown>
@@ -100,7 +100,7 @@
                     :align="item.align"
                   >
                     <template  slot-scope="scope">
-                      <span class="updateBtn" style="padding: 0 8px" v-if="item.value==='no'">123</span>
+                      <span class="updateBtn inHospitalNo" v-if="item.value==='no'">123</span>
                       <span v-else>{{scope.row[item.value]}}</span>
                     </template>
                   </el-table-column>
@@ -158,16 +158,17 @@
             key: 'tab4',
             scopedSlots: { tab: 'studentWork'}
           }],
-        menuItem:[{
-          tab1: 'content1',
-          tab2: 'content2',
-        },{
-          tab1: 'content3',
-          tab2: 'content4',
+        pharmacyServiceItem:[{
+          tab: '药学服务1',value:'药学服务1'},
+          {tab: '药学服务2',value:'药学服务2',
         }],
-        customRender:[{
-          tab1: 'content12222',
-          tab2: 'content233333',
+        clinicalItem:[{
+          tab: '临床信息1',value:'临床信息1'},
+          {tab: '临床信息2',value:'临床信息2',
+        }],
+        studentWorkItem:[{
+          tab: '学员工作1',value:'学员工作1'},{
+          tab: '学员工作2',value:'学员工作2',
         }],
         loading:false,
         columns: [
@@ -205,14 +206,15 @@
         // this.loading=true;
         this.$router.push({
           name: 'pharmacyGuideDetail',
-          params:{btn:'look'}
         })
+        window.localStorage.setItem('childPage', JSON.stringify('look'))
       },
       addGuide(){
         this.$router.push({
           name: 'pharmacyGuideDetail',
-          params:{btn:'add'}
         })
+        window.localStorage.setItem('childPage', JSON.stringify('add'));
+        // this.$store.commit('SET_CHILD_PAGE','add')
       },
       handleTableChange(pagination, filters, sorter) {
         // let values = this.getFields();
@@ -242,6 +244,9 @@
 
 <style scoped  lang="less">
   .pharmacyGuideIndex {
+    .inHospitalNo{
+      padding: 0 8px
+    }
     .medicineGuide{
       display: flex;
       justify-content: space-between;

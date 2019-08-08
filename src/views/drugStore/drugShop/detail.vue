@@ -4,7 +4,7 @@
       <header>
         <h3 class="returns" @click="backTo"><返回</h3>
         <div class="does">
-          <a-button type="primary">保存</a-button>
+          <a-button type="primary" @click="save">保存</a-button>
           <a-button>取消</a-button>
         </div>
       </header>
@@ -325,7 +325,6 @@ export default {
   created() {},
   mounted() {
     if (this.$route.params.id == 1) {
-      console.log('ddd')
       this.giveFormData()
     }
   },
@@ -516,6 +515,12 @@ export default {
         name: 'drugShopIndex'
       })
     },
+    save(){
+       this.$message.info('保存成功!')
+     this.$router.push({
+        name: 'drugShopIndex'
+      })
+    },
     confirm(e) {},
     // 表单操作
     handlesColor(data) {
@@ -526,8 +531,7 @@ export default {
     handleSearch(e) {
       e.preventDefault()
       this.form.validateFields((error, values) => {
-        console.log('error', error)
-        console.log('Received values of form: ', values)
+      
       })
     }
   }

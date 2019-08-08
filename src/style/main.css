@@ -1,3 +1,27 @@
+.primary{
+  color: #1890FF
+}
+.danger{
+  color: red
+}
+.greenBg{
+  background-color: #32C5D2;
+  color: #fff
+}
+.orangeBg{
+  background-color:#C49F47;
+  color:#fff 
+}
+.userName{
+  font-size: 22px;
+  color: #1890ff
+}
+.borderNone{
+  border-bottom: none
+}
+.marginLeft8{
+  margin-left: 8px
+}
 .fontSize16{
   font-size: 16px;
 }
@@ -32,6 +56,7 @@ ant-card-wider-padding .ant-card-body{
 .margin-left-5{
   margin-left: 5px;
 }
+
 .margin-left-20{
   margin-left: 20px;
 }

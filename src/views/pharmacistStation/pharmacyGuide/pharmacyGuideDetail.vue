@@ -1,21 +1,21 @@
 <template>
     <div class="pharmacyGuideDetail">
         <a-row :gutter="10">
-          <a-col :xl="8" :xxl="5" v-if="$route.params.btn==='look'">
+          <a-col :xl="8" :xxl="5" v-if="page===JSON.stringify('look')">
             <div class="ruleCow">
               <a-card>
                 <a-input-search class="txtCenter" placeholder="输入要查询日期" @search="" />
                 <a-list size="large" class="margin-top-10" bordered :dataSource="date">
-                  <a-list-item style="padding-left: 34%;" slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
+                  <a-list-item :style="{ 'padding-left': '34%'}"  slot="renderItem" slot-scope="item">{{item}}</a-list-item>
                 </a-list>
               </a-card>
             </div>
           </a-col>
-          <a-col  :xxl="$route.params.btn==='look'?19:24" :xl="$route.params.btn==='look'?16:24">
+          <a-col  :xxl="page===JSON.stringify('look')?19:24" :xl="page===JSON.stringify('look')?16:24">
             <a-card>
                <a-icon type="star" class="star" theme="filled" :style="{ color: '#1890ff' }" />
               <a-row>
-                <span class="titleText font-bold" style="font-size: 22px;color: #1890ff">梁汉文</span>
+                <span class="titleText font-bold userName">梁汉文</span>
                 <span class="titleText margin-left-20">
                   <a-tag
                     class="tagStyle"
@@ -52,12 +52,12 @@
               </a-row>
               <p class="margin-top-10">诊断：过敏性皮炎</p>
             </a-card>
-            <a-card class="margin-top-5" style="border-bottom: none;">
+            <a-card class="margin-top-5 borderNone">
               <div class="medicineGuide">
                 <span class="font-bold fontSize16"><a-icon type="medicine-box" /> 指导信息</span>
                 <span>
                   <a-button @click="backTo"><a-icon type="arrow-left" />返回</a-button>
-                  <a-button type="primary" v-if="$route.params.btn==='look'">新增</a-button>
+                  <a-button type="primary" v-if="page===JSON.stringify('look')">新增</a-button>
                   <a-button type="primary">保存</a-button>
               </span>
               </div>
@@ -66,16 +66,16 @@
             <a-card title="基本信息">
               <a-row>
                 <a-col :span="2">指导对象：</a-col>
-                <a-col :span="4">
+                <a-col :span="3">
                   <a-radio-group name="radioGroup" :defaultValue="1">
                     <a-radio :value="1">医生</a-radio>
                     <a-radio :value="2">护士</a-radio>
                   </a-radio-group>
                 </a-col>
 
-                <a-col :span="18">
-                  <a-input placeholder="范华" style="width: 200px;margin-left: 12px"/>
-                  <a-input placeholder="15245647896" style="width: 200px;margin-left: 12px" />
+                <a-col :span="19">
+                  <a-input placeholder="范华" class="inputStyle "/>
+                  <a-input placeholder="15245647896" class=inputStyle />
                 </a-col>
               </a-row>
 
@@ -93,11 +93,11 @@
               <a-row class="margin-top-10">
                 <a-col :span="8">
                   记录时间：
-                  <a-input placeholder="2019-06-30" style="width: 200px;margin-left: 18px" />
+                  <a-input placeholder="2019-06-30" class="inputStyle"/>
                 </a-col>
                 <a-col :span="16">
                   有效时间：
-                  <a-input placeholder="2019-07-30" style="width: 200px;margin-left: 18px" />
+                  <a-input placeholder="2019-07-30" class="inputStyle" />
                 </a-col>
               </a-row>
 
@@ -170,10 +170,10 @@
               <div class="disFlex margin-top-10">
                 <span class="font-bold fontSize16">用药建议内容：</span>
                 <span class="btnGroup">
-                  <a-button style="background-color: #32C5D2;color: #fff"><a-icon type="plus" />另存为模板</a-button>
+                  <a-button class="greenBg"><a-icon type="plus" />另存为模板</a-button>
                   <a-button type="primary"><a-icon type="plus" />模板引用</a-button>
-                  <a-button  style="background-color:#C49F47;color:#fff "><a-icon type="file-text" />查房便签</a-button>
-                  <a-button  style="background-color: #32C5D2;color: #fff"><a-icon type="experiment" />化验信息</a-button>
+                  <a-button  class=orangeBg><a-icon type="file-text" />查房便签</a-button>
+                  <a-button  class="greenBg"><a-icon type="experiment" />化验信息</a-button>
                 </span>
               </div>
 
@@ -227,7 +227,11 @@
 
     },
     mounted(){
-      console.log(this.$route)
+    },
+    computed:{
+      page(){
+        return localStorage.childPage
+      }
     },
     methods:{
       onChange (checkedValues) {
@@ -248,7 +252,7 @@
 </script>
 
 <style scoped lang="less">
-
+  
   .star{
     float: right;
     font-size: 20px;
@@ -258,6 +262,11 @@
     top: -25px;
   }
  .pharmacyGuideDetail {
+   
+    .inputStyle{
+      width: 200px;
+      margin-left: 18px;
+    }
    .btnGroup button:not(:last-child){
      margin-right: 8px;
    }
