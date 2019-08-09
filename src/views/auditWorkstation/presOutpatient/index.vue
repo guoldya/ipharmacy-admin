@@ -72,7 +72,6 @@
                     style="width: 100%"
                     @select="selectBox"
                     @select-all="selectAll"
-                    highlight-current-row
                 >
                     <!--多选框checkbox-->
                     <el-table-column
@@ -864,7 +863,6 @@ export default {
         },
         //单个驳回
         rejectedSingle(data) {
-            this.templateText = '驳回'
             this.Modal.visible = true
             this.tempRowData = data.row
             this.problemsData = data.row.orderissueVOS

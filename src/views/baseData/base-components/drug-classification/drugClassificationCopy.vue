@@ -2,7 +2,7 @@
   <div>
     <a-row>
       <a-col :span="16">
-        <a-input-search placeholder="请输入" />
+        <a-input-search placeholder="请输入" @search="onChange" />
       </a-col>
       <a-col :span="8" class="treeCol">
         <a-dropdown :trigger="['click']">
@@ -490,7 +490,12 @@ export default {
     confirm() {
       this.enableTreeNode()
       this.visible = false
-    }
+    },
+
+    onChange(e){
+      // let value = e.target.value
+      // console.log(value,'value')
+    },
   }
 }
 </script>

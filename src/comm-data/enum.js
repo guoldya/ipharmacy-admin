@@ -167,18 +167,96 @@ const Enum = {
   sexLIST: ['未知', '男', '女'],
   Statuslist: [{ id: 1, text: '新建' }, { id: 2, text: '合理' }, { id: 3, text: '不合理' }],
   // 药学评估部分
-  dataSourec:[{ id: 1, text: '患者' }, { id: 2, text: '家属' }, { id: 3, text: '其他' }],
-  marriageAct:[{ id: 1, text: '未婚' }, { id: 2, text: '已婚' }, { id: 3, text: '离异' }],
-  insurance:[{ id: 1, text: '自费' }, { id: 2, text: '医保' }, { id: 3, text: '公费' },{ id: 4, text: '其他' }],
-  normalPeople:[{ id: 1, text: '儿童' }, { id: 2, text: '老年人' }, { id: 3, text: '妊娠' },{ id: 4, text: '哺乳期' },{ id: 4, text: '育龄妇女' },{ id: 5, text: '其他' },{ id: 6, text: '无' },],
-  jobs:[{ id: 1, text: '学生' }, { id: 2, text: '全职' }, { id: 3, text: '兼职' },{ id: 4, text: '失业' },{ id: 4, text: '家庭主妇' },{ id: 5, text: '其他' }],
-  education:[{ id: 1, text: '小学' }, { id: 2, text: '初中' }, { id: 3, text: '高中' },{ id: 4, text: '本科(大专)' },{ id: 5, text: '硕士及以上' },{ id: 6, text: '未受教育' }],
-  baseDisease:[{ id: 1, text: '高血压' }, { id: 2, text: '冠心病' }, { id: 3, text: '心率失常' },{ id: 4, text: '心功能不全' },{ id: 5, text: '糖尿病' },{ id: 6, text: '甲状腺疾病' },{ id: 7, text: 'CKD' },{ id: 8, text: '其他' }],
-  allergyHistory:[{ id: 1, text: '无' }, { id: 2, text: '皮试过敏' }, { id: 3, text: '一种药物/食物过敏一般过敏' },{ id: 4, text: '两种或两种以上药品/食物过敏或严重过敏' }],
-  enterHospital:[{ id: 1, text: '步行' }, { id: 2, text: '扶行' }, { id: 3, text:'轮椅' },{ id: 4, text: '平车' },{ id: 5, text: '其他' }],
-  ProvideLevel:[{ id: 1, text: '完全自理' }, { id: 2, text: '部分自理' }, { id: 3, text:'完全依赖' }],
-  listenLevel:[{ id: 1, text: '清晰' }, { id: 2, text: '重听' }, { id: 3, text:'失聪' },{ id: 4, text: '助听器' },{ id: 5, text: '其他' }],
-  foodDay:[{ id: 1, text: '普食' }, { id: 2, text: '半流' }, { id: 3, text:'留质' },{ id: 4, text: '禁食' },{ id: 5, text: '其他' }],
-  consciousness:[{ id: 1, text: '清醒' }, { id: 2, text: '嗜睡' }, { id: 3, text:'留质' },{ id: 4, text: '禁食' },{ id: 5, text: '其他' }],
+  dataSourec: [{ id: 1, text: '患者' }, { id: 2, text: '家属' }, { id: 3, text: '其他' }],
+  marriageAct: [{ id: 1, text: '未婚' }, { id: 2, text: '已婚' }, { id: 3, text: '离异' }],
+  insurance: [{ id: 1, text: '自费' }, { id: 2, text: '医保' }, { id: 3, text: '公费' }, { id: 4, text: '其他' }],
+  normalPeople: [
+    { id: 1, text: '儿童' },
+    { id: 2, text: '老年人' },
+    { id: 3, text: '妊娠' },
+    { id: 4, text: '哺乳期' },
+    { id: 4, text: '育龄妇女' },
+    { id: 5, text: '其他' },
+    { id: 6, text: '无' }
+  ],
+  jobs: [
+    { id: 1, text: '学生' },
+    { id: 2, text: '全职' },
+    { id: 3, text: '兼职' },
+    { id: 4, text: '失业' },
+    { id: 4, text: '家庭主妇' },
+    { id: 5, text: '其他' }
+  ],
+  education: [
+    { id: 1, text: '小学' },
+    { id: 2, text: '初中' },
+    { id: 3, text: '高中' },
+    { id: 4, text: '本科(大专)' },
+    { id: 5, text: '硕士及以上' },
+    { id: 6, text: '未受教育' }
+  ],
+  baseDisease: [
+    { id: 1, text: '高血压' },
+    { id: 2, text: '冠心病' },
+    { id: 3, text: '心率失常' },
+    { id: 4, text: '心功能不全' },
+    { id: 5, text: '糖尿病' },
+    { id: 6, text: '甲状腺疾病' },
+    { id: 7, text: 'CKD' },
+    { id: 8, text: '其他' }
+  ],
+  allergyHistory: [
+    { id: 1, text: '无' },
+    { id: 2, text: '皮试过敏' },
+    { id: 3, text: '一种药物/食物过敏一般过敏' },
+    { id: 4, text: '两种或两种以上药品/食物过敏或严重过敏' }
+  ],
+  enterHospital: [
+    { id: 1, text: '步行' },
+    { id: 2, text: '扶行' },
+    { id: 3, text: '轮椅' },
+    { id: 4, text: '平车' },
+    { id: 5, text: '其他' }
+  ],
+  ProvideLevel: [{ id: 1, text: '完全自理' }, { id: 2, text: '部分自理' }, { id: 3, text: '完全依赖' }],
+  listenLevel: [
+    { id: 1, text: '清晰' },
+    { id: 2, text: '重听' },
+    { id: 3, text: '失聪' },
+    { id: 4, text: '助听器' },
+    { id: 5, text: '其他' }
+  ],
+  language: [{ id: 1, text: '正常' }, { id: 2, text: '失语' }, { id: 3, text: '含糊不清' }, { id: 4, text: '手势语' }],
+  foodDay: [
+    { id: 1, text: '普食' },
+    { id: 2, text: '半流' },
+    { id: 3, text: '留质' },
+    { id: 4, text: '禁食' },
+    { id: 5, text: '其他' }
+  ],
+  consciousness: [
+    { id: 1, text: '清醒' },
+    { id: 2, text: '嗜睡' },
+    { id: 3, text: '恍惚' },
+    { id: 4, text: '昏迷' },
+    { id: 5, text: '其他' }
+  ],
+  badLike: [{ id: 1, text: '无' }, { id: 2, text: '酒' }, { id: 3, text: '烟' }, { id: 4, text: '烟与酒' }],
+  injection: [{ id: 1, text: '有' }, { id: 2, text: '无' }],
+  NasalFeeding: [{ id: 1, text: '有' }, { id: 2, text: '无' }],
+  specialPhyscial: [
+    { id: 1, text: '过敏体质' },
+    { id: 2, text: '药物代谢类型' },
+    { id: 3, text: '其他' },
+    { id: 4, text: '无' }
+  ],
+  require: [{ id: 1, text: '好 8分' }, { id: 2, text: '皮试过敏' }, { id: 3, text: '较差六分一下' }],
+  delay: [{ id: 1, text: '无' }, { id: 2, text: '酒' }, { id: 3, text: '较差六分一下' }],
+  treatment:[{ id: 1, text: '好' }, { id: 2, text: '一般' }, { id: 3, text: '较差' }],
+  liver:[{ id: 1, text: '正常' }, { id: 2, text: 'child-pugh A级' }, { id: 3, text: 'child-pugh B级' }, { id: 4, text: 'child-pugh C级' }],
+  renal:[{ id: 1, text: '正常' }, { id: 2, text: '轻度不全' }, { id: 3, text: '中度不全' }, { id: 4, text: '重度不全' },{ id: 5, text: '肾衰竭' }],
+  heart:[{ id: 1, text: 'Ⅰ级' }, { id: 2, text: 'Ⅱ级(轻度心衰)' }, { id: 3, text: 'Ⅲ级(中度心衰)' }, { id: 4, text: 'Ⅳ级(重度心衰)' }],
+  dvt:[{ id: 1, text: '无危险' }, { id: 2, text: '低危(<10%)' }, { id: 3, text: '中危(11-40%)' }, { id: 4, text: '高危(>41%)' }],
+  druglevel:[{ id: 1, text: '好' }, { id: 2, text: '较好' }, { id: 3, text: '一般' }, { id: 4, text: '较差' }, { id: 4, text: '不理解' }]
 }
 export default Enum

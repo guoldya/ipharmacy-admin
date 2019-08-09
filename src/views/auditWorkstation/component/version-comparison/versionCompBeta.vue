@@ -30,8 +30,8 @@
                         :data="dataSource"
                         :cell-style="cellStyle"
                         @row-click="rowClickCurrent"
-
                     >
+                      <el-table-column label="当前版本">
                         <el-table-column
                             :prop="item.value"
                             :label="item.title"
@@ -57,9 +57,40 @@
                                         class="iconfont action action-shuxian1"
                                     />
                                 </span>
-                                <span v-else>{{props.row[item.value]}}</span>
+                              <span v-else-if="item.value=='amountStr'">{{props.row[item.value]}}</span>
+                              <span v-else-if="item.value=='frequency'">{{props.row[item.value]}}</span>
+                              <span v-else-if="item.value=='useType'">{{props.row[item.value]}}</span>
+                              <span v-else-if="item.value=='spec'">{{props.row[item.value]}}</span>
                             </template>
                         </el-table-column>
+                      </el-table-column>
+                      <el-table-column
+                        label="药品名称"
+                        show-overflow-tooltip
+                      > <template slot-scope="props">
+                        <span>{{props.row['drugName']}}</span>
+                      </template>
+                      </el-table-column>
+                      <el-table-column label="其他版本">
+                        <el-table-column
+                          :prop="item.value"
+                          :label="item.title"
+                          :key="index"
+                          v-for="(item,index) in columns1"
+                          :width="item.width"
+                          :align="item.align"
+                          :formatter="item.formatter"
+                          show-overflow-tooltip
+                        >
+                          <template slot-scope="props">
+                            <span v-if="item.value=='otSpec'">{{props.row[item.value]}}</span>
+                            <span v-else-if="item.value=='otUseType'">{{props.row[item.value]}}</span>
+                            <span v-else-if="item.value=='otFrequency'">{{props.row[item.value]}}</span>
+                            <span v-else-if="item.value=='otAmountStr'">{{props.row[item.value]}}</span>
+                          </template>
+                        </el-table-column>
+                      </el-table-column>
+
                     </el-table>
                 </a-spin>
             </a-card>
@@ -103,12 +134,16 @@ export default {
                 { title: '用量', value: 'frequency', width: 80 },
                 { title: '用法', value: 'useType', width: 80 },
                 { title: '规格', value: 'spec', width: 80 },
-                { title: '药品', value: 'drugName' },
-                { title: '规格', value: 'otSpec', width: 80 },
-                { title: '用法', value: 'otUseType', width: 80 },
-                { title: '用量', value: 'otFrequency', width: 80 },
-                { title: '总量', value: 'otAmountStr', width: 60 }
             ],
+          columns1:[
+            { title: '规格', value: 'otSpec', width: 80 },
+            { title: '用法', value: 'otUseType', width: 80 },
+            { title: '用量', value: 'otFrequency', width: 80 },
+            { title: '总量', value: 'otAmountStr', width: 60 }
+          ],
+          columns2:[
+            { title: '药品名称', value: 'drugName' },
+          ],
             dataSource: []
         }
     },

@@ -73,7 +73,7 @@
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
               :treeData="judgePreData"
-              v-model="selectNode.itemId"
+              v-model="selectNode.precondition"
               treeDefaultExpandAll
               class="nodeSelect">
             </a-tree-select>
@@ -147,7 +147,7 @@
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
               :treeData="preData"
-              v-model="selectNode.itemId"
+              v-model="selectNode.precondition"
               treeDefaultExpandAll>
             </a-tree-select>
           </a-form-item>
@@ -252,7 +252,7 @@
   import { reviewAuditlevelSelect, dicBaseSelectClassList,coreFactColAll ,coreRuleNodeSelectColId} from '@/api/login'
   import debounce from 'lodash/debounce'
   export default {
-    props: ['graphAPI', 'selectNode', 'selectEdge','boxInitialized','edgeInitialized'],
+    props: ['graphAPI', 'selectNode', 'selectEdge','boxInitialized','edgeInitialized','preData','judgePreData'],
     data() {
       this.searchSelect = debounce(this.searchSelect, 500)
       this.searchEdge = debounce(this.searchEdge, 500)
@@ -276,8 +276,6 @@
         edgeCondition:'',
         edgeConditionValue:'',
         edgeConditionValue1:'',
-        preData:[],
-        judgePreData:[],
       }
     },
     mounted() {
@@ -305,7 +303,7 @@
          this.selectNode.levels = ''+option.componentOptions.propsData.value;
       },
       getSelectClassList() {
-        dicBaseSelectClassList({ 'codeClass': '7' }).then(res => {
+        dicBaseSelectClassList({ codeClass: '7',status:'1'}).then(res => {
           if (res.code == '200') {
             this.dealClassTree(res.rows)
           } else {
@@ -587,7 +585,6 @@
             let indexData = this.dealAllStartTree(res.rows);
             console.log(this.selectNode,'222')
             this.CoreFactAllTree = this.recursiveNodeTree(indexData, 'undefined');
-            // this.preData = this.getPreData(this.CoreFactAllTree)
           } else {
             this.warn(res.msg)
           }
