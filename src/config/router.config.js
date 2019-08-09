@@ -924,11 +924,12 @@ export const asyncRouterMap = [
         ]
       },
       // 药学日常工作
+
       {
         path: '/pharmacistStation',
         name: 'pharmacistStation',
         component: RouteView,
-        meta: { title: '药学日常工作', keepAlive: false, icon: 'bar-chart' },
+        meta: { title: '药师工作站', keepAlive: false, icon: 'bar-chart' },
         children: [
           {
             path: '/pharmacistStation/wardMaintain',
@@ -952,69 +953,6 @@ export const asyncRouterMap = [
             ]
           },
           {
-            path: '/pharmacistStation/checkRecord',
-            name: 'checkRecord',
-            component: RouteView,
-            meta: { title: '查房记录', multistage: true },
-            children: [
-              {
-                path: '/pharmacistStation/checkRecord/index',
-                name: 'checkRecordIndex',
-                component: () => import('@/views/pharmacistStation/checkRecord/index.vue'),
-                meta: { title: '查房记录', hiddenHeaderContent: true, index: true }
-              },
-              {
-                path: '/pharmacistStation/checkRecord/detail',
-                name: 'checkRecordDetail',
-                hidden: true,
-                component: () => import('@/views/pharmacistStation/checkRecord/detail.vue'),
-                meta: { title: '查房记录详情', detail: true, description: '查房记录设置' }
-              }
-            ]
-          },
-          {
-            path: '/pharmacyStation/pharmacyGuide',
-            name: 'pharmacyGuide',
-            component: RouteView,
-            meta: { title: '用药指导', multistage: true },
-            children: [
-              {
-                path: '/pharmacistStation/pharmacyGuide/index',
-                name: 'index',
-                component: () => import('@/views/pharmacistStation/pharmacyGuide/index.vue'),
-                meta: { title: '用药指导', hiddenHeaderContent: true, index: true }
-              },
-              {
-                path: '/pharmacistStation/pharmacyGuide/pharmacyGuideDetail',
-                name: 'pharmacyGuideDetail',
-                hidden: true,
-                component: () => import('@/views/pharmacistStation/pharmacyGuide/pharmacyGuideDetail.vue'),
-                meta: { title: '用药指导详情', detail: true}
-              }
-            ]
-          },
-          {
-            path: '/pharmacistStation/consultationRecord',
-            name: 'consultationRecord',
-            component: RouteView,
-            meta: { title: '会诊记录', multistage: true },
-            children: [
-              {
-                path: '/pharmacistStation/consultationRecord/index',
-                name: 'consultationRecordIndex',
-                component: () => import('@/views/pharmacistStation/consultationRecord/index.vue'),
-                meta: { title: '会诊记录', hiddenHeaderContent: true, index: true }
-              },
-              {
-                path: '/pharmacistStation/consultationRecord/detail',
-                name: 'consultationRecordDetail',
-                hidden: true,
-                component: () => import('@/views/pharmacistStation/consultationRecord/detail.vue'),
-                meta: { title: '会诊记录详情', detail: true,}
-              }
-            ]
-          },
-          {
             path: '/pharmacistStation/patientsHome',
             name: 'patientsHome',
             component: RouteView,
@@ -1029,44 +967,136 @@ export const asyncRouterMap = [
             ]
           },
           {
-            path: '/pharmacistStation/medicalEducation',
-            name: 'medicalEducation',
+            path: '/medicineEveryday',
+            name: 'medicineEveryday',
             component: RouteView,
-            meta: { title: '用药教育', multistage: true },
+            meta: { title: '药学日常工作', keepAlive: false, },
             children: [
               {
-                path: '/pharmacistStation/medicalEducation/medicalEducationIndex',
-                name: 'medicalEducationIndex',
-                component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationIndex.vue'),
-                meta: { title: '用药教育', hiddenHeaderContent: true, index: true }
+                path: '/pharmacistStation/checkRecord',
+                name: 'checkRecord',
+                component: RouteView,
+                meta: { title: '查房记录', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/checkRecord/index',
+                    name: 'checkRecordIndex',
+                    component: () => import('@/views/pharmacistStation/checkRecord/index.vue'),
+                    meta: { title: '查房记录', hiddenHeaderContent: true, index: true }
+                  },
+                  {
+                    path: '/pharmacistStation/checkRecord/detail',
+                    name: 'checkRecordDetail',
+                    hidden: true,
+                    component: () => import('@/views/pharmacistStation/checkRecord/detail.vue'),
+                    meta: { title: '查房记录详情', detail: true, description: '查房记录设置' }
+                  }
+                ]
               },
               {
-                path: '/pharmacistStation/medicalEducation/medicalEducationAdd',
-                name: 'medicalEducationAdd',
-                hidden: true,
-                component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationAdd.vue'),
-                meta: { title: '用药教育新增', detail: true,}
-              }
+                path: '/pharmacyStation/pharmacyGuide',
+                name: 'pharmacyGuide',
+                component: RouteView,
+                meta: { title: '用药指导', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/pharmacyGuide/index',
+                    name: 'index',
+                    component: () => import('@/views/pharmacistStation/pharmacyGuide/index.vue'),
+                    meta: { title: '用药指导', hiddenHeaderContent: true, index: true }
+                  },
+                  {
+                    path: '/pharmacistStation/pharmacyGuide/pharmacyGuideDetail',
+                    name: 'pharmacyGuideDetail',
+                    hidden: true,
+                    component: () => import('@/views/pharmacistStation/pharmacyGuide/pharmacyGuideDetail.vue'),
+                    meta: { title: '用药指导详情', detail: true}
+                  }
+                ]
+              },
+              {
+                path: '/pharmacistStation/consultationRecord',
+                name: 'consultationRecord',
+                component: RouteView,
+                meta: { title: '会诊记录', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/consultationRecord/index',
+                    name: 'consultationRecordIndex',
+                    component: () => import('@/views/pharmacistStation/consultationRecord/index.vue'),
+                    meta: { title: '会诊记录', hiddenHeaderContent: true, index: true }
+                  },
+                  {
+                    path: '/pharmacistStation/consultationRecord/detail',
+                    name: 'consultationRecordDetail',
+                    hidden: true,
+                    component: () => import('@/views/pharmacistStation/consultationRecord/detail.vue'),
+                    meta: { title: '会诊记录详情', detail: true,}
+                  }
+                ]
+              },
+              {
+                path: '/pharmacistStation/medicalEducation',
+                name: 'medicalEducation',
+                component: RouteView,
+                meta: { title: '用药教育', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/medicalEducation/medicalEducationIndex',
+                    name: 'medicalEducationIndex',
+                    component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationIndex.vue'),
+                    meta: { title: '用药教育', hiddenHeaderContent: true, index: true }
+                  },
+                  {
+                    path: '/pharmacistStation/medicalEducation/medicalEducationAdd',
+                    name: 'medicalEducationAdd',
+                    hidden: true,
+                    component: () => import('@/views/pharmacistStation/medicalEducation/medicalEducationAdd.vue'),
+                    meta: { title: '用药教育新增', detail: true,}
+                  }
+                ]
+              },
+              {
+                path: '/pharmacistStation/drugEvaluation',
+                name: 'drugEvaluation',
+                component: RouteView,
+                meta: { title: '药学评估', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/drugEvaluation/index',
+                    name: 'drugEvaluationIndex',
+                    component: () => import('@/views/pharmacistStation/drugEvaluation/index.vue'),
+                    meta: { title: '药学评估', hiddenHeaderContent: true, index: true }
+                  },
+                  {
+                    path: '/pharmacistStation/drugEvaluation/detail',
+                    name: 'drugEvaluationDetail',
+                    hidden: true,
+                    component: () => import('@/views/pharmacistStation/drugEvaluation/detail.vue'),
+                    meta: { title: '药学评估详情', detail: true,}
+                  }
+                ]
+              },
             ]
           },
           {
-            path: '/pharmacistStation/drugEvaluation',
-            name: 'drugEvaluation',
+            path: '/pharmacistStation/effectMonitorReport',
+            name: 'effectMonitorReport',
             component: RouteView,
-            meta: { title: '药学评估', multistage: true },
+            meta: { title: '不良反应监测及上报', multistage: true },
             children: [
               {
-                path: '/pharmacistStation/drugEvaluation/index',
-                name: 'drugEvaluationIndex',
-                component: () => import('@/views/pharmacistStation/drugEvaluation/index.vue'),
-                meta: { title: '药学评估', hiddenHeaderContent: true, index: true }
+                path: '/pharmacistStation/effectMonitorReport/effectMonitorReportIndex',
+                name: 'effectMonitorReportIndex',
+                component: () => import('@/views/pharmacistStation/effectMonitorReport/effectMonitorReportIndex.vue'),
+                meta: { title: '不良反应监测及上报', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/pharmacistStation/drugEvaluation/detail',
-                name: 'drugEvaluationDetail',
+                path: '/pharmacistStation/effectMonitorReport/effectMonitorReportAdd',
+                name: 'effectMonitorReportAdd',
                 hidden: true,
-                component: () => import('@/views/pharmacistStation/drugEvaluation/detail.vue'),
-                meta: { title: '药学评估详情', detail: true,}
+                component: () => import('@/views/pharmacistStation/effectMonitorReport/effectMonitorReportAdd.vue'),
+                meta: { title: '不良反应监测及上报新增', detail: true,}
               }
             ]
           },

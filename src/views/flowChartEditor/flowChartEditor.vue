@@ -119,7 +119,8 @@
           restrictionType: null,
           verdictType: null,
           itemId: null,
-          precondition:null,
+          precondition:'',
+          dataDrilling:null,
           itemName: null,
           ro: null,
           lo: null,
@@ -147,6 +148,7 @@
           assertVal: null,
           assertValList: null,
           assertVal1: null,
+          dataDrilling:null,
           ro: null,
           lo: null,
           roSymbol: null,
@@ -244,6 +246,9 @@
       selectNodePrecondition() {
         return this.selectNode.precondition
       },
+      selectNodeDataDrilling(){
+        return this.selectNode.dataDrilling
+      },
       selectNodeItemName() {
         return this.selectNode.itemName
       },
@@ -285,6 +290,9 @@
       },
       selectEdgeAssertValList() {
         return this.selectEdge.assertValList
+      },
+      selectEdgeDataDrilling() {
+        return this.selectEdge.precondition
       },
       selectEdgeAssertVal1() {
         return this.selectEdge.assertVal1
@@ -378,6 +386,11 @@
           this.flow.update(this.selectNode.id, { precondition: newValue })
         }
       },
+      selectNodeDataDrilling(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { dataDrilling: newValue })
+        }
+      },
       selectNodeItemName(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { itemName: newValue })
@@ -446,6 +459,11 @@
       selectEdgeAssertValList(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { assertValList: newValue })
+        }
+      },
+      selectEdgeDataDrilling(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { dataDrilling: newValue })
         }
       },
       selectEdgeAssertVal1(newValue, oldValue) {
@@ -586,9 +604,9 @@
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
-                    _this.getPrePidData(_this.selectNode.itemId,this.CoreFactAllTree);
+                    _this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
                     _this.preData = [];
-                    _this.preData.push( _this.getPreData(_this.prePid,this.CoreFactAllTree));
+                    _this.preData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
@@ -601,7 +619,7 @@
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
                       let paramsNodeData = {id: params.itemId};
-                      if (ev.item.model.assertValList.length>0){
+                      if (ev.item.model.assertValList){
                         paramsNodeData.valueList = params.assertValList
                       }
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
@@ -626,6 +644,8 @@
                     _this.selectNode.colDbType = params.colDbType
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
+                    _this.selectNode.dataDrilling = model.dataDrilling != null ? model.dataDrilling : shape.dataDrilling
+
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
@@ -637,9 +657,9 @@
               } else {
                 _this.multiId.push(ev.item.model.id)
               }
-              _this.getPrePidData(_this.selectNode.itemId,this.CoreFactAllTree);
+              this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
               _this.judgePreData = [];
-              _this.judgePreData.push( _this.getPreData(_this.prePid,this.CoreFactAllTree));
+              _this.judgePreData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
               break
             case 'edge':
               //选中后设置颜色 和连接线的宽度
@@ -654,7 +674,7 @@
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId;
                     let paramsData = {id: sourceP.itemId};
-                    if (ev.item.model.assertValList.length>0){
+                    if (ev.item.model.assertValList){
                       paramsData.valueList = ev.item.model.assertValList;
                     }
                     coreRuleNodeSelectColId(paramsData).then(res => {
@@ -684,6 +704,7 @@
                 _this.selectEdge.sourceId = ev.item.source.id
                 _this.selectEdge.assertVal = ev.item.model.assertVal
                 _this.selectEdge.assertValList = ev.item.model.assertValList
+                _this.selectEdge.dataDrilling = ev.item.model.dataDrilling
                 _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                 _this.selectEdge.ro = ev.item.model.ro
                 _this.selectEdge.roSymbol = ev.item.model.roSymbol
@@ -972,6 +993,7 @@
           list[key].disOrder = list[key].index
           list[key].ruleId = this.$route.params.id;
           list[key].verdictType = Number(list[key].verdictType)
+          list[key].precondition = Number(list[key].precondition)
           delete  list[key].index
         }
         coreRuleNodeUpdate({ ruleNodeVOS: list,status:'0',ruleId:this.$route.params.id  }).then(res => {
@@ -1193,7 +1215,8 @@
                 handleType: nodeData[key].handleType,
                 itemName: nodeData[key].itemName,
                 itemId: nodeData[key].itemId,
-                precondition:nodeData[key].precondition,
+                precondition:''+nodeData[key].precondition,
+                dataDrilling:nodeData[key].dataDrilling,
                 assertVal: nodeData[key].assertVal,
                 assertValList: nodeData[key].assertValList,
                 assertVal1: nodeData[key].assertVal1,
@@ -1222,6 +1245,7 @@
                 roSymbol: edgesData[key].roSymbol,
                 assertVal: edgesData[key].assertVal,
                 assertValList: edgesData[key].assertValList,
+                dataDrilling:edgesData[key].dataDrilling,
                 assertVal1: edgesData[key].assertVal1,
                 targetAnchor: 0,
                 type: 'edge'
@@ -1480,16 +1504,22 @@
         for(let key in data){
           if (id == data[key].id){
             this.prePid = data[key].pid;
+            return;
           }else{
             this.getPrePidData(id,data[key].children)
           }
         }
       },
       getPreData(pid,data){
-        for(let key in data){
-          if (pid == data[key].id){
-            return data[key]
+
+        if ($.trim(pid).length>0){
+          for(let key in data){
+            if (pid == data[key].id){
+              return data[key]
+            }
           }
+        } else{
+          return []
         }
       }
     }

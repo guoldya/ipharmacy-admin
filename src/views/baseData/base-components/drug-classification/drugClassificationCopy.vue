@@ -28,7 +28,7 @@
     </a-row>
     <a-row>
       <a-spin tip="加载中..." :spinning="loading">
-        <a-tree class="draggable-tree" :treeData="gData" :loadData="onLoadData" @select="onSelect"></a-tree>
+        <a-tree class="draggable-tree" :treeData="gData" :loadedKeys="loadedKeys" :loadData="onLoadData" @select="onSelect"></a-tree>
       </a-spin>
     </a-row>
     <a-modal
@@ -147,6 +147,7 @@ export default {
       items: [],
       isOpcol: true,
       loading: false,
+      loadedKeys:[],
       gData: [],
       codeClassData: [],
       visible: false,
@@ -168,7 +169,8 @@ export default {
     this.getDicBase()
   },
   methods: {
-    getData(params = { pid: -1 }) {
+    getData(params = {}) {
+      params.pid = -1;
       this.loading = true
       this.$axios({
         url: this.api.drugCategoryList,
@@ -491,11 +493,13 @@ export default {
       this.enableTreeNode()
       this.visible = false
     },
-
-    onChange(e){
-      // let value = e.target.value
-      // console.log(value,'value')
+    onChange(value){
+      console.log(this.loadedKeys,'loadedKeys');
+      this.gData = [];
+      let params={keyword:value}
+      this.getData(params)
     },
+
   }
 }
 </script>

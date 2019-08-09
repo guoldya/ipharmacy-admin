@@ -72,7 +72,7 @@
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="judgePreData"
+              :treeData="judgePreDetailData"
               v-model="selectNode.precondition"
               treeDefaultExpandAll
               class="nodeSelect">
@@ -124,6 +124,9 @@
             <a-date-picker v-else-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType=='time'" @change="onChange" />
             <a-range-picker v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType=='time'" @change="onChange" />
           </a-form-item>
+          <a-form-item v-if="boxInitialized.inputType =='select'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-checkbox @change="containsChange" value="node" key="1" :checked="selectNode.dataDrilling=='1'? true:false"></a-checkbox>
+          </a-form-item>
         </a-form>
       </div>
     </div>
@@ -146,7 +149,7 @@
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="preData"
+              :treeData="preDetailData"
               v-model="selectNode.precondition"
               treeDefaultExpandAll>
             </a-tree-select>
@@ -228,6 +231,10 @@
             <a-range-picker v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
           </a-form-item>
 
+          <a-form-item v-if="edgeInitialized.inputEdge =='select'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-checkbox  @change="edgeContainsChange" value="edge" key="2" :checked="selectEdge.dataDrilling=='1'? true:false"></a-checkbox>
+          </a-form-item>
+
         </a-form>
       </div>
     </div>
@@ -276,7 +283,28 @@
         edgeCondition:'',
         edgeConditionValue:'',
         edgeConditionValue1:'',
+        preDetailData:[],
+        judgePreDetailData:[],
       }
+    },
+    watch:{
+      preData(newValue, oldValue) {
+        if (newValue.length>0){
+          this.preDetailData = this.preData;
+        }else{
+          this.preDetailData =[]
+        }
+      },
+      judgePreData(newValue, oldValue) {
+        console.log(newValue,'new');
+        console.log(oldValue,'old')
+        if (newValue.length>0){
+          this.judgePreDetailData = this.judgePreData;
+        }else{
+          this.judgePreDetailData =[]
+        }
+        console.log( this.judgePreDetailData)
+      },
     },
     mounted() {
       this.getReviewLevel()
@@ -380,13 +408,11 @@
         this.condition = '';
         this.conditionValue = '';
         this.conditionValue1 = '';
-
-
-        this.judgePreData=[];
-        this.preData = [];
+        this.judgePreDetailData=[];
+        this.preDetailData = [];
         for (let key in this.CoreFactAllTree){
           if (params.pid ==this.CoreFactAllTree[key].id){
-            this.judgePreData.push(this.CoreFactAllTree[key])
+            this.judgePreDetailData.push(this.CoreFactAllTree[key])
           }
         }
       },
@@ -506,13 +532,12 @@
         }else if (params.colDbType == 3){
           _this.edgeInitialized.inValueEdge = 'text'
         }
-        this.preData = [];
+        this.preDetailData = [];
         for (let key in this.CoreFactAllTree){
           if (params.pid ==this.CoreFactAllTree[key].id){
-            this.preData.push(this.CoreFactAllTree[key])
+            this.preDetailData.push(this.CoreFactAllTree[key])
           }
         }
-        console.log( this.preData,' this.preData');
       },
 
       //线段输入框input事件
@@ -583,7 +608,6 @@
         coreFactColAll({}).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows);
-            console.log(this.selectNode,'222')
             this.CoreFactAllTree = this.recursiveNodeTree(indexData, 'undefined');
           } else {
             this.warn(res.msg)
@@ -635,6 +659,23 @@
         }
         return children
       },
+
+      containsChange(e){
+        console.log(e.target.checked)
+        if (e.target.checked){
+          this.selectNode.dataDrilling = '1';
+        }else{
+          this.selectNode.dataDrilling ='0';
+        }
+      },
+      edgeContainsChange(e){
+        console.log(e.target.checked)
+        if (e.target.checked){
+          this.selectEdge.dataDrilling = '1';
+        }else{
+          this.selectEdge.dataDrilling ='0';
+        }
+      }
     }
   }
 </script>

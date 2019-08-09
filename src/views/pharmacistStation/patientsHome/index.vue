@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="patientsHome">
     <a-card>
       <a-row>
         <span class="titleText font-bold fontSize36">刘港</span>
@@ -41,7 +41,7 @@
         <a-divider type="vertical"/>
       </a-row>
     </a-card>
-    <a-row :gutter="5" class="margin-top-5">
+    <a-row :gutter="6" class="margin-top-5">
       <a-col :span="12">
         <el-collapse value="1">
           <el-collapse-item style="background-color: #fafafafa"   name="1">
@@ -56,7 +56,6 @@
                 <el-table
                   highlight-current-row
                   :data="dataSource"
-                  border
                   style="width: 100%;height: 390px"
                 >
                   <el-table-column
@@ -70,7 +69,7 @@
                   >
                     <template slot-scope="scope">
                       <span v-if="item.format !=null" v-html="item.format(scope.row)"></span>
-                      <span v-else>{{scope.row[item.value]}}</span>
+                      <span v-else class="opacity8">{{scope.row[item.value]}}</span>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -103,7 +102,6 @@
             <el-table
               highlight-current-row
               :data="issueDataSource"
-              border
               style="width: 100%;height: 390px"
             >
               <el-table-column
@@ -153,7 +151,6 @@
             <el-table
               highlight-current-row
               :data="guideDataSource"
-              border
               style="width: 100%;height: 390px"
             >
               <el-table-column
@@ -197,7 +194,9 @@
     data() {
       return {
         spinning: false,
-        dataSource: [],
+        dataSource: [
+          {updateTime:'2018:12:11',enter:'张三',user:'刘港吃鸡'}
+        ],
         current: 1,
         total: 1,
         columns: [
@@ -288,11 +287,17 @@
       padding: 0px;
     }
   }
-  .el-collapse-item__header.is-active{
-    background: #fafafafa;
-  }
-  .el-collapse-item__header{
-    background: #fafafafa;
+  /*.el-collapse-item__header.is-active{*/
+  /*  background: #fafafafa;*/
+  /*}*/
+  /*.el-collapse-item__header{*/
+  /*  background: #fafafafa;*/
+  /*}*/
+  .patientsHome{
+    .el-table th{
+      background-color: #ffffff!important;
+      opacity: 0.8;
+    }
   }
   .el-collapse-item__arrow{
     font-size: 20px;
