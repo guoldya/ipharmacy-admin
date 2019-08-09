@@ -2,13 +2,6 @@
   <a-card>
     <a-row>
       <a-col :span="4">
-        <!--<Searchpanel ref="searchPanel" :list="list">-->
-          <!--<div slot="control">-->
-            <!--<a-button type="primary" @click="search">查询</a-button>-->
-            <!--<a-button style="margin-left: 5px" @click="resetForm">重置</a-button>-->
-          <!--</div>-->
-        <!--</Searchpanel>-->
-        <!--<a-button class="margin-top-10" type="primary" @click="classCode">添加分类</a-button>-->
         <a-spin tip="加载中..." :spinning="loading">
           <el-table
             ref="table"
@@ -32,8 +25,6 @@
             </el-table-column>
           </el-table>
           <a-pagination
-            showSizeChanger
-            showQuickJumper
             :total="total"
             class="pnstyle"
             :defaultPageSize="pageSize"
@@ -132,7 +123,7 @@
       list() {
         return [
           {
-            name: '名称 | 简码',
+            name: '名称 | 拼音码',
             dataField: 'keyword',
             type: 'text'
           },
@@ -157,10 +148,15 @@
       },
       //重置
       resetForm() {
-        this.$refs.searchPanel.form.resetFields();
-        let params = {};
-        params.codeClass =  this.baseId;
-        this.getTreeData(params);
+        if (this.baseId) {
+          this.$refs.searchPanel.form.resetFields();
+          let params = {};
+          params.codeClass = this.baseId;
+          this.getTreeData(params);
+        }else{
+          this.warn("请选择分类");
+          return
+        }
       },
       getData(params = {offset:1,pageSize:20}) {
         this.loading = true;
@@ -272,8 +268,9 @@
         })
           .then(res => {
             if (res.code == '200') {
-              params.codeClass =  this.baseId;
-              this.getTreeData(params);
+              let list = {};
+              list.codeClass =  this.baseId;
+              this.getTreeData(list);
             } else {
               this.warn(res.msg);
             }
