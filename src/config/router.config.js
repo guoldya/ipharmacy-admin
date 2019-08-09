@@ -1077,29 +1077,30 @@ export const asyncRouterMap = [
                   }
                 ]
               },
-            ]
-          },
-          {
-            path: '/pharmacistStation/effectMonitorReport',
-            name: 'effectMonitorReport',
-            component: RouteView,
-            meta: { title: '不良反应监测及上报', multistage: true },
-            children: [
               {
-                path: '/pharmacistStation/effectMonitorReport/effectMonitorReportIndex',
-                name: 'effectMonitorReportIndex',
-                component: () => import('@/views/pharmacistStation/effectMonitorReport/effectMonitorReportIndex.vue'),
-                meta: { title: '不良反应监测及上报', hiddenHeaderContent: true, index: true }
+                path: '/pharmacistStation/effectMonitorReport',
+                name: 'effectMonitorReport',
+                component: RouteView,
+                meta: { title: '不良反应监测及上报', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/effectMonitorReport/effectMonitorReportIndex',
+                    name: 'effectMonitorReportIndex',
+                    component: () => import('@/views/pharmacistStation/effectMonitorReport/effectMonitorReportIndex.vue'),
+                    meta: { title: '不良反应监测及上报', hiddenHeaderContent: true, index: true }
+                  },
+                  {
+                    path: '/pharmacistStation/effectMonitorReport/effectMonitorReportAdd',
+                    name: 'effectMonitorReportAdd',
+                    hidden: true,
+                    component: () => import('@/views/pharmacistStation/effectMonitorReport/effectMonitorReportAdd.vue'),
+                    meta: { title: '不良反应监测及上报新增', detail: true,}
+                  }
+                ]
               },
-              {
-                path: '/pharmacistStation/effectMonitorReport/effectMonitorReportAdd',
-                name: 'effectMonitorReportAdd',
-                hidden: true,
-                component: () => import('@/views/pharmacistStation/effectMonitorReport/effectMonitorReportAdd.vue'),
-                meta: { title: '不良反应监测及上报新增', detail: true,}
-              }
             ]
           },
+          
         ]
       },
     ]
