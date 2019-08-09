@@ -215,7 +215,6 @@
           name: 'pharmacyGuideDetail',
         })
         window.localStorage.setItem('childPage', JSON.stringify('add'));
-        // this.$store.commit('SET_CHILD_PAGE','add')
       },
       handleTableChange(pagination, filters, sorter) {
         // let values = this.getFields();

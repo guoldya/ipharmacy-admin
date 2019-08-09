@@ -227,9 +227,15 @@
 
     },
     mounted(){
+       if(localStorage.childPage===JSON.stringify('look')){
+         document.title=document.title+'用药指导详情';
+        }else if(localStorage.childPage===JSON.stringify('add')){
+          document.title=document.title.split('用')[0]+'用药指导新增';
+        }
     },
     computed:{
       page(){
+       
         return localStorage.childPage
       }
     },
