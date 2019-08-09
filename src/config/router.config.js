@@ -924,11 +924,12 @@ export const asyncRouterMap = [
         ]
       },
       // 药学日常工作
+
       {
         path: '/pharmacistStation',
         name: 'pharmacistStation',
         component: RouteView,
-        meta: { title: '药学日常工作', keepAlive: false, icon: 'bar-chart' },
+        meta: { title: '药师工作站', keepAlive: false, icon: 'bar-chart' },
         children: [
           {
             path: '/pharmacistStation/wardMaintain',
@@ -949,6 +950,28 @@ export const asyncRouterMap = [
                 component: () => import('@/views/pharmacistStation/wardMaintain/patients-statistics.vue'),
                 meta: { title: '病区管理详情', detail: true, description: '病区管理设置' }
               }
+            ]
+          },
+          {
+            path: '/medicineEveryday',
+            name: 'medicineEveryday',
+            component: RouteView,
+            meta: { title: '药学日常工作', keepAlive: false, },
+            children: [
+            ]
+          },
+          {
+            path: '/pharmacistStation/patientsHome',
+            name: 'patientsHome',
+            component: RouteView,
+            meta: { title: '患者主页', multistage: true },
+            children: [
+              {
+                path: '/pharmacistStation/patientsHome/index',
+                name: 'patientsHomeIndex',
+                component: () => import('@/views/pharmacistStation/patientsHome/index.vue'),
+                meta: { title: '患者主页', hiddenHeaderContent: true, index: true }
+              },
             ]
           },
           {
@@ -1014,20 +1037,7 @@ export const asyncRouterMap = [
               }
             ]
           },
-          {
-            path: '/pharmacistStation/patientsHome',
-            name: 'patientsHome',
-            component: RouteView,
-            meta: { title: '患者主页', multistage: true },
-            children: [
-              {
-                path: '/pharmacistStation/patientsHome/index',
-                name: 'patientsHomeIndex',
-                component: () => import('@/views/pharmacistStation/patientsHome/index.vue'),
-                meta: { title: '患者主页', hiddenHeaderContent: true, index: true }
-              },
-            ]
-          },
+
           {
             path: '/pharmacistStation/medicalEducation',
             name: 'medicalEducation',

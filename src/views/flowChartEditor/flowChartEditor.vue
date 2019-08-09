@@ -586,9 +586,9 @@
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
-                    _this.getPrePidData(_this.selectNode.itemId,this.CoreFactAllTree);
+                    _this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
                     _this.preData = [];
-                    _this.preData.push( _this.getPreData(_this.prePid,this.CoreFactAllTree));
+                    _this.preData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
@@ -601,7 +601,7 @@
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
                       let paramsNodeData = {id: params.itemId};
-                      if (ev.item.model.assertValList.length>0){
+                      if (ev.item.model.assertValList){
                         paramsNodeData.valueList = params.assertValList
                       }
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
@@ -637,9 +637,9 @@
               } else {
                 _this.multiId.push(ev.item.model.id)
               }
-              _this.getPrePidData(_this.selectNode.itemId,this.CoreFactAllTree);
+              this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
               _this.judgePreData = [];
-              _this.judgePreData.push( _this.getPreData(_this.prePid,this.CoreFactAllTree));
+              _this.judgePreData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
               break
             case 'edge':
               //选中后设置颜色 和连接线的宽度
@@ -654,7 +654,7 @@
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId;
                     let paramsData = {id: sourceP.itemId};
-                    if (ev.item.model.assertValList.length>0){
+                    if (ev.item.model.assertValList){
                       paramsData.valueList = ev.item.model.assertValList;
                     }
                     coreRuleNodeSelectColId(paramsData).then(res => {
@@ -1480,12 +1480,14 @@
         for(let key in data){
           if (id == data[key].id){
             this.prePid = data[key].pid;
+            return;
           }else{
             this.getPrePidData(id,data[key].children)
           }
         }
       },
       getPreData(pid,data){
+
         for(let key in data){
           if (pid == data[key].id){
             return data[key]

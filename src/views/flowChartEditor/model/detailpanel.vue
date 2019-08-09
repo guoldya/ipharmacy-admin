@@ -72,7 +72,7 @@
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="judgePreData"
+              :treeData="judgePreDetailData"
               v-model="selectNode.precondition"
               treeDefaultExpandAll
               class="nodeSelect">
@@ -146,7 +146,7 @@
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="preData"
+              :treeData="preDetailData"
               v-model="selectNode.precondition"
               treeDefaultExpandAll>
             </a-tree-select>
@@ -276,7 +276,27 @@
         edgeCondition:'',
         edgeConditionValue:'',
         edgeConditionValue1:'',
+        preDetailData:this.preData,
+        judgePreDetailData:this.judgePreData,
       }
+    },
+    created(){
+      console.log( this.preData)
+      this.preDetailData = this.preData;
+      console.log(this.preDetailData);
+      this.judgePreDetailData=this.judgePreData;
+    },
+    watch:{
+      preData(newValue, oldValue) {
+        if (newValue.length>0){
+          this.preDetailData = this.preData;
+        }
+      },
+      judgePreData(newValue, oldValue) {
+        if (newValue.length>0){
+          this.judgePreDetailData = this.judgePreData;
+        }
+      },
     },
     mounted() {
       this.getReviewLevel()
@@ -380,13 +400,11 @@
         this.condition = '';
         this.conditionValue = '';
         this.conditionValue1 = '';
-
-
-        this.judgePreData=[];
-        this.preData = [];
+        this.judgePreDetailData=[];
+        this.preDetailData = [];
         for (let key in this.CoreFactAllTree){
           if (params.pid ==this.CoreFactAllTree[key].id){
-            this.judgePreData.push(this.CoreFactAllTree[key])
+            this.judgePreDetailData.push(this.CoreFactAllTree[key])
           }
         }
       },
@@ -506,13 +524,12 @@
         }else if (params.colDbType == 3){
           _this.edgeInitialized.inValueEdge = 'text'
         }
-        this.preData = [];
+        this.preDetailData = [];
         for (let key in this.CoreFactAllTree){
           if (params.pid ==this.CoreFactAllTree[key].id){
-            this.preData.push(this.CoreFactAllTree[key])
+            this.preDetailData.push(this.CoreFactAllTree[key])
           }
         }
-        console.log( this.preData,' this.preData');
       },
 
       //线段输入框input事件
@@ -583,7 +600,6 @@
         coreFactColAll({}).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows);
-            console.log(this.selectNode,'222')
             this.CoreFactAllTree = this.recursiveNodeTree(indexData, 'undefined');
           } else {
             this.warn(res.msg)

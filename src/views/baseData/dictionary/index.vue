@@ -259,6 +259,7 @@
       changeStatus(data){
         let params = {};
         params.id = data.id;
+        params.codeClass = data.codeClass;
         if (data.status == '1'){
           params.status = 0;
         } else{
