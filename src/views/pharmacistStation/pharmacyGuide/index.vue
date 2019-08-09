@@ -40,7 +40,7 @@
             <span slot="customRender" slot-scope="item">
               <a-dropdown>
                 <a-menu slot="overlay"  @click="handleMenuClick">
-                  <a-menu-item  v-for="(item,index) in clinicalItem" :key="item.value">{{item.tab}}</a-menu-item>
+                  <a-menu-item :class="key===item.value?'selectItemBg':''" v-for="(item,index) in pharmacyServiceItem" :key="item.value">{{item.tab}}</a-menu-item>
                 </a-menu>
                 <span class="marginLeft8">
                 {{item.name}} <a-icon type="caret-down" />
@@ -51,7 +51,7 @@
             <span slot="pharmacyService" slot-scope="item">
               <a-dropdown>
                 <a-menu slot="overlay"  @click="handleMenuClick">
-                  <a-menu-item  v-for="(item,index) in pharmacyServiceItem" :key="item.value">{{item.tab}}</a-menu-item>
+                  <a-menu-item :class="key===item.value?'selectItemBg':''" v-for="(item,index) in clinicalItem" :key="item.value">{{item.tab}}</a-menu-item>
                 </a-menu>
                 <span class="marginLeft8">
                 {{item.name}} <a-icon type="caret-down" />
@@ -62,7 +62,7 @@
             <span slot="studentWork" slot-scope="item">
               <a-dropdown>
                 <a-menu slot="overlay"  @click="handleMenuClick">
-                  <a-menu-item  v-for="(item,index) in studentWorkItem" :key="item.value">{{item.tab}}</a-menu-item>
+                  <a-menu-item :class="key+index===item.value?'selectItemBg':''" v-for="(item,index) in studentWorkItem" :key="item.value">{{item.tab}}</a-menu-item>
                 </a-menu>
                 <span class="marginLeft8">
                 {{item.name}} <a-icon type="caret-down" />
@@ -159,16 +159,16 @@
             scopedSlots: { tab: 'studentWork'}
           }],
         pharmacyServiceItem:[{
-          tab: '药学服务1',value:'药学服务1'},
+          tab: '药学服务1',value:'tab2'},
           {tab: '药学服务2',value:'药学服务2',
         }],
         clinicalItem:[{
-          tab: '临床信息1',value:'临床信息1'},
+          tab: '临床信息1',value:'tab3'},
           {tab: '临床信息2',value:'临床信息2',
         }],
         studentWorkItem:[{
-          tab: '学员工作1',value:'学员工作1'},{
-          tab: '学员工作2',value:'学员工作2',
+          tab: '学员工作1',value:'tab4'},{
+          tab: '学员工作2',value:'tab41',
         }],
         loading:false,
         columns: [
@@ -196,7 +196,8 @@
     },
     methods:{
       handleMenuClick(e) {
-        console.log('click', e);
+        console.log('click', e.key.substring(0, e.key.length - 1));
+        this.onTabChange(e.key,'key')
       },
       onTabChange (key, type) {
         console.log(key, type)
@@ -243,7 +244,12 @@
 </script>
 
 <style scoped  lang="less">
+.selectItemBg{
+      color: #1890ff;
+      opacity: .8;
+    }
   .pharmacyGuideIndex {
+    
     .inHospitalNo{
       padding: 0 8px
     }
