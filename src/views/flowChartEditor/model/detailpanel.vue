@@ -124,6 +124,9 @@
             <a-date-picker v-else-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType=='time'" @change="onChange" />
             <a-range-picker v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType=='time'" @change="onChange" />
           </a-form-item>
+          <a-form-item v-if="boxInitialized.inputType =='select'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-checkbox @change="containsChange" value="node" key="1" :checked="selectNode.dataDrilling=='1'? true:false"></a-checkbox>
+          </a-form-item>
         </a-form>
       </div>
     </div>
@@ -228,6 +231,10 @@
             <a-range-picker v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
           </a-form-item>
 
+          <a-form-item v-if="edgeInitialized.inputEdge =='select'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-checkbox  @change="edgeContainsChange" value="edge" key="2" :checked="selectEdge.dataDrilling=='1'? true:false"></a-checkbox>
+          </a-form-item>
+
         </a-form>
       </div>
     </div>
@@ -276,26 +283,27 @@
         edgeCondition:'',
         edgeConditionValue:'',
         edgeConditionValue1:'',
-        preDetailData:this.preData,
-        judgePreDetailData:this.judgePreData,
+        preDetailData:[],
+        judgePreDetailData:[],
       }
-    },
-    created(){
-      console.log( this.preData)
-      this.preDetailData = this.preData;
-      console.log(this.preDetailData);
-      this.judgePreDetailData=this.judgePreData;
     },
     watch:{
       preData(newValue, oldValue) {
         if (newValue.length>0){
           this.preDetailData = this.preData;
+        }else{
+          this.preDetailData =[]
         }
       },
       judgePreData(newValue, oldValue) {
+        console.log(newValue,'new');
+        console.log(oldValue,'old')
         if (newValue.length>0){
           this.judgePreDetailData = this.judgePreData;
+        }else{
+          this.judgePreDetailData =[]
         }
+        console.log( this.judgePreDetailData)
       },
     },
     mounted() {
@@ -651,6 +659,23 @@
         }
         return children
       },
+
+      containsChange(e){
+        console.log(e.target.checked)
+        if (e.target.checked){
+          this.selectNode.dataDrilling = '1';
+        }else{
+          this.selectNode.dataDrilling ='0';
+        }
+      },
+      edgeContainsChange(e){
+        console.log(e.target.checked)
+        if (e.target.checked){
+          this.selectEdge.dataDrilling = '1';
+        }else{
+          this.selectEdge.dataDrilling ='0';
+        }
+      }
     }
   }
 </script>
