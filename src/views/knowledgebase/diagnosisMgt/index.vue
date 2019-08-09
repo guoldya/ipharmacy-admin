@@ -22,6 +22,7 @@
                   :treeData="gData"
                   :loadData="onLoadData"
                   @select="onSelect"
+                  :loadedKeys="loadedKeys"
                 ></a-tree>
               </a-spin>
             </a-row>
@@ -148,6 +149,7 @@ export default {
       value:'',
       current:1,
       searchData:{},
+      loadedKeys:[]
     }
   },
   mounted() {

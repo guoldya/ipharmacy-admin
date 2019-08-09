@@ -76,7 +76,7 @@ export default {
       pageSize: 10,
       columns: [
         { title: '编号', value: 'id', width: 60, align: 'right' },
-        //   { title: '数据源名称', value: 'dsName', align: 'center', width: 100 , format:this.levelFormatter  },
+           { title: '事实原型名称', value: 'colName', align: 'center', width: 100 , format:this.levelFormatter  },
         { title: '名称', value: 'dsName', align: 'left', width: 100 },
         { title: '显示名称', value: 'display', align: 'left', width: 100 },
         { title: '数据库文本', value: 'sqlText', align: 'left' },

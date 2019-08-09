@@ -1,17 +1,19 @@
 <template>
-  <a-card>
-    <div class="cardHead">
-      <a href="#" @click.prevent="backTo">
-        <a-icon type="left"></a-icon>返回
-      </a>
-    </div>
-    <a-spin tip="加载中..." :spinning="spinning">
-      <a-form :form="form" @submit="handleSubmit">
-        <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-tree-select
-            :treeData="treedata"
-            placeholder="请选择"
-            v-decorator="[
+  <div class="ruleContent">
+    <a-card>
+      <div class="cardHead">
+        <a href="#" @click.prevent="backTo">
+          <a-icon type="left"></a-icon>返回
+        </a>
+      </div>
+      <a-spin tip="加载中..." :spinning="spinning">
+        <a-form :form="form" @submit="handleSubmit">
+          <a-form-item label="编码" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-tree-select
+               :disabled='isedit'
+              :treeData="treedata"
+              placeholder="请选择"
+              v-decorator="[
                 'id',
                 {
                   rules: [{
@@ -20,38 +22,51 @@
                   }],
                 }
               ]"
-          ></a-tree-select>
-        </a-form-item>
-        <a-form-item label="数据源" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-select v-decorator="[ 'dsId']">
-            <a-select-option v-for="(op,index) in lists" :value="op.id" :key="index">{{op.dsName}}</a-select-option>
-          </a-select>
-        </a-form-item>
+            ></a-tree-select>
+          </a-form-item>
+          <a-form-item label="数据源" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-select v-decorator="[ 'dsId']">
+              <a-select-option v-for="(op,index) in lists" :value="op.id" :key="index">{{op.dsName}}</a-select-option>
+            </a-select>
+          </a-form-item>
 
-        <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input  :read-only="readOnly" v-decorator="['dsName',{rules:[{ max:10,message:'最多10个字符' }]}]" />
-        </a-form-item>
-        <a-form-item label="sql文本" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-textarea  :read-only="readOnly" v-decorator="['sqlText',{rules:[{ required: true,message:'请输入sql文本'},{ max:2000,message:'最多2000个字符' }]}]" />
-        </a-form-item>
-        <a-form-item label="值" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input  :read-only="readOnly" v-decorator="['val',{rules:[{ max:10,message:'最多10个字符' }]}]" />
-        </a-form-item>
-        <a-form-item label="显示名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input  :read-only="readOnly" v-decorator="['display',{rules:[{ max:10,message:'最多10个字符' }]}]" />
-        </a-form-item>
-        <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-radio-group v-decorator="['status']">
-            <a-radio v-for="(op,index) in status" :value="op.id" :key="index">{{op.text}}</a-radio>
-          </a-radio-group>
-        </a-form-item>
-        <a-form-item :wrapper-col="{ span: 24, offset: 10 }">
-          <a-button type="primary" @click="handleSubmit">保存</a-button>
-          <a-button class="margin-left-20" @click="backTo">取消</a-button>
-        </a-form-item>
-      </a-form>
-    </a-spin>
-  </a-card>
+          <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-input
+              :read-only="readOnly"
+              v-decorator="['dsName',{rules:[{ max:10,message:'最多10个字符' }]}]"
+            />
+          </a-form-item>
+          <a-form-item label="sql文本" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-textarea
+              :read-only="readOnly"
+              v-decorator="['sqlText',{rules:[{ required: true,message:'请输入sql文本'},{ max:2000,message:'最多2000个字符' }]}]"
+            />
+          </a-form-item>
+          <a-form-item label="值" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-input
+              :read-only="readOnly"
+              v-decorator="['val',{rules:[{ max:10,message:'最多10个字符' }]}]"
+            />
+          </a-form-item>
+          <a-form-item label="显示名称" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-input
+              :read-only="readOnly"
+              v-decorator="['display',{rules:[{ max:10,message:'最多10个字符' }]}]"
+            />
+          </a-form-item>
+          <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-radio-group v-decorator="['status']">
+              <a-radio v-for="(op,index) in status" :value="op.id" :key="index">{{op.text}}</a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item :wrapper-col="{ span: 24, offset: 10 }">
+            <a-button type="primary" @click="handleSubmit">保存</a-button>
+            <a-button class="margin-left-20" @click="backTo">取消</a-button>
+          </a-form-item>
+        </a-form>
+      </a-spin>
+    </a-card>
+  </div>
 </template>
 <script>
 import { reviewAuditlevelUpdate } from '@/api/login'
@@ -66,7 +81,7 @@ export default {
         updt: 'sys/coreRuleDatasource/update',
         dataFrom: 'sys/coreDbDatasource/selectList',
         selectTitlesList: 'sys/coreFactCol/selectListNonHaveRuleDb',
-        insert:'sys/coreRuleDatasource/insert'
+        insert: 'sys/coreRuleDatasource/insert'
       },
       spinning: false,
       labelCol: {
@@ -86,14 +101,18 @@ export default {
       readOnly: false,
       isNew: true,
       lists: [],
-      treedata: []
+      treedata: [],
+      isedit:true
     }
   },
   computed: {},
-  created(){
- setTimeout(() => {
-            this.form.setFieldsValue({ status: 1 })
-          })
+  created() {
+    if(this.$route.params.id=='new'){
+       this.isedit=false
+    }
+    setTimeout(() => {
+      this.form.setFieldsValue({ status: 1 })
+    })
   },
   mounted() {
     this.getTreeList()
@@ -139,11 +158,11 @@ export default {
       }
       return items
     },
-     // 二次递归
+    // 二次递归
     getnewData(data) {
       for (var key in data) {
         var item = data[key]
-        if (data[key].children.length>0) {
+        if (data[key].children.length > 0) {
           data[key].disabled = true
           this.getnewData(data[key].children)
         } else {
@@ -153,7 +172,7 @@ export default {
     },
     // 数据源的查询
     getDatas() {
-       let params={};
+      let params = {}
       //  params.id=this.$route.params.id=='new'?'':this.$route.params.id
       this.$axios({
         url: this.api.dataFrom,
@@ -184,8 +203,8 @@ export default {
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
-              let id = ''+reqArr.id;
-              let {  dsId, dsName, sqlText, val, display, status } = reqArr,
+              let id = '' + reqArr.id
+              let { dsId, dsName, sqlText, val, display, status } = reqArr,
                 formData = {
                   id,
                   dsId,
@@ -213,7 +232,7 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           let urls
-          urls=this.$route.params.id=='new'?'insert':'updt'
+          urls = this.$route.params.id == 'new' ? 'insert' : 'updt'
           this.$axios({
             url: this.api[urls],
             method: 'post',
@@ -247,23 +266,28 @@ export default {
   }
 }
 </script>
-<style>
-.btn {
-  margin: 0 5px;
-}
+<style lang='less'>
+.ruleContent {
+  
 
-.spanBtn {
-  color: #1694fb;
-}
+  .btn {
+    margin: 0 5px;
+  }
+  .spanBtn {
+    color: #1694fb;
+  }
+  .m-colorPicker .colorBtn[data-v-11842410] {
+    width: 38px;
+    height: 38px;
+    border-radius: 10%;
+  }
 
-.m-colorPicker .colorBtn[data-v-11842410] {
-  width: 38px;
-  height: 38px;
-  border-radius: 10%;
-}
-
-.colorPick {
-  margin-left: 15px;
-  z-index: 3;
+  .colorPick {
+    margin-left: 15px;
+    z-index: 3;
+  }
+  .ant-select-tree-treenode-disabled {
+    color: black;
+  }
 }
 </style>
