@@ -1098,6 +1098,20 @@ export const asyncRouterMap = [
                   }
                 ]
               },
+              {
+                path: '/pharmacistStation/medicationConsultation',
+                name: 'medicationConsultation',
+                component: RouteView,
+                meta: { title: '用药咨询', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/medicationConsultation/medicationConsultationIndex',
+                    name: 'medicationConsultationIndex',
+                    component: () => import('@/views/pharmacistStation/medicationConsultation/medicationConsultationIndex.vue'),
+                    meta: { title: '用药咨询', hiddenHeaderContent: true, index: true }
+                  },
+                ]
+              },
             ]
           },
           
