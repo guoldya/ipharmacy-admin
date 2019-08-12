@@ -17,6 +17,7 @@
         :opColWidth="110"
         :moreOp="false"
         :currentChange="currentChange"
+        :isoperate="true"
       ></a-treeTable>
     </a-spin>
   </a-card>
@@ -57,7 +58,8 @@ export default {
       colors: '#ffffff',
       dataSource: [],
       parentId: '',
-      searchData:{}
+      searchData:{},
+      // isoperate:true
     }
   },
   computed: {

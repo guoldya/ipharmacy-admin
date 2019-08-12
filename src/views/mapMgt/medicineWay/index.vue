@@ -395,7 +395,7 @@ export default {
                 this.name = ''
                let param = {
                   pageSize: this.pageSize,
-                  offset: (this.current - 1) * 10
+                  offset: (this.current - 1) * this.pageSize
                 }
                 Object.assign(param, this.$refs.searchPanel.form.getFieldsValue())
                 this.getData(

@@ -14,20 +14,20 @@
           <a-input :read-only="readOnly" v-decorator="['cTypeContent']" />
         </a-form-item> -->
          <a-form-item label="结论类型" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-select v-decorator="[ 'cType']" @change="handleChange" >
+          <a-select v-decorator="[ 'cType',{rules:[{message:'强选择结论类型',required:true}]}]" @change="handleChange" >
             <a-select-option v-for="(op,index) in typeList" :value="op.id" :key="index">{{op.name}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="结论" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-textarea :read-only="readOnly" v-decorator="['completion']" />
+          <a-textarea :read-only="readOnly" v-decorator="['completion',{rules:[{message:'请输入结论',required:true},{ max:100,message:'最多100个字符' }]}]" />
         </a-form-item>
         <a-form-item label="违反规则" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-select v-decorator="[ 'id']" @change="handleChange" mode="multiple" :filterOption='false'>
+          <a-select v-decorator="[ 'id',{rules:[{message:'请选择违反规则',required:true}]}]" @change="handleChange" mode="multiple" :filterOption='false'>
             <a-select-option v-for="(op,index) in ruleList" :value="op.id" :key="index">{{op.name}}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-select v-decorator="[ 'status']">
+          <a-select v-decorator="[ 'status',{rules:[{message:'请选择状态',required:true}]}]">
             <a-select-option
               v-for="(op,index) in this.enum.status"
               :value="op.id"

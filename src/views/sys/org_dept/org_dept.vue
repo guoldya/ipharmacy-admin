@@ -9,6 +9,7 @@
                             ref="orgTable"
                             :isOpcol="false"
                             :currentChange="orgCurrentChange"
+                            :isoperate="false"
                     >
                     </a-treeTable>
                 </a-spin>
@@ -25,6 +26,7 @@
                             :filterItem="['status']"
                             :items="items"
                             :currentChange="deptCurrentChange"
+                            :isoperate="false"
                     ></a-treeTable>
                 </a-spin>
             </a-col>

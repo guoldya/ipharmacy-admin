@@ -100,12 +100,12 @@ export default {
       return [
         {
           name: '结论',
-          dataField: 'cId',
+          dataField: 'completion',
           type: 'text'
         },
          {
-          name: '名称',
-          dataField: 'code',
+          name: '编码',
+          dataField: 'cId',
           type: 'text'
         },
         {
@@ -114,7 +114,7 @@ export default {
           type: 'select',
           keyExpr: 'id',
           valueExpr: 'text',
-          dataSource: this.enum.statu
+          dataSource: this.enum.status
         }
       ]
     }
@@ -173,10 +173,10 @@ export default {
     },
     //启用停用
     user(data) {
-       if (data.status == '1') {
-        data.status = 0
+       if (data.status =='1') {
+        data.status ='0'
       } else {
-        data.status = 1
+        data.status ='1'
       }
       let params = { cId: data.cId, status: data.status }
       this.$axios({
@@ -186,7 +186,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-             this.getData({offset:(this.current-1)*10,pageSize:this.pageSize})
+             this.getData({offset:(this.current-1)*this.pageSize,pageSize:this.pageSize})
             this.success(res.msg)
           } else {
             this.warn(res.msg)

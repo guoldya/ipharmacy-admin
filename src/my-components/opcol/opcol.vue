@@ -1,6 +1,5 @@
 <template>
   <div>
-
         <template v-if="!more">
             <div style="display: inline-block" v-for="(op,index) in newItem" :key="index">
                 <a v-if="(op.showtip==false)" @click="op.click(data)" :style="{'color':op.color?op.color:'#2D8cF0'}">{{op.text}}</a>

@@ -17,6 +17,7 @@
         :opColWidth="110"
         :moreOp="false"
         :currentChange="currentChange"
+        :isoperate="false"
       ></a-treeTable>
     </a-spin>
   </a-card>
