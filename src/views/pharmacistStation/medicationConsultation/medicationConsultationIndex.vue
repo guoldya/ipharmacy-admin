@@ -6,7 +6,7 @@
         <a-button class="margin-left-5" @click="resetForm">重置</a-button>
       </div>
     </Searchpanel>
-     <a-button class="margin-top-10" type="primary" @click="effectMonitorReportAdd">新增</a-button>
+     <a-button class="margin-top-10" type="primary" @click="medicationConsultationAdd">新增</a-button>
     <a-spin :spinning="loading" tip="加载中...">
       <el-table
         class="margin-top-10"
@@ -33,17 +33,7 @@
           v-if="true"
         >
           <template slot-scope="scope">
-             <a @click="">查看</a>
-            <a-divider type="vertical"/>
-            <a-popconfirm
-              title="确定删除?"
-              @confirm="del(scope.row)"
-              okText="删除"
-              cancelText="取消"
-              
-            >
-              <a href="javascript:;" >删除</a>
-            </a-popconfirm>
+             <a @click="look">详情</a>
           </template>
         </el-table-column>
       </el-table>
@@ -66,29 +56,28 @@
 
 <script>
   export default {
-    name: 'effectMonitorReportIndex',
+    name: 'medicationConsultationIndex',
     data(){
       return{
         loading: false,
         total: 2,
         pageSize: 10,
         columns: [
-          { title: '患者类型', dataIndex: 'indexId', width: 80, align: 'left' },
+          { title: '咨询者', dataIndex: 'indexId', width: 80, align: 'left' },
           { title: '患者姓名', dataIndex: 'name', align: 'left', width: 100 },
-          { title: '住院号/就诊卡号', dataIndex: 'englishName', align: 'right', width: 140 },
-          { title: '不良反应名称', dataIndex: 'testItemName', align: 'left' },
-          { title: '药品名称', dataIndex: 'testItemClass', width: 120, align: 'left' },
-          { title: '批号', dataIndex: 'testItemType', width: 80, align: 'left' },
-          { title: '发生时间', width: 100, dataIndex: 'resultType', align: 'left' },
-          { title: '不良反应结果', dataIndex: 'resultType1', align: 'left' },
-          { title: '报告药师', width: 100, dataIndex: 'resultType2', align: 'left' },
-          { title: '报告编号', width: 100, dataIndex: 'resultType3', align: 'left' },
+          { title: '患者科室', dataIndex: 'englishName', align: 'right', width: 140 },
+          { title: '住院号', dataIndex: 'testItemName', align: 'left' },
+          { title: '处理药师', dataIndex: 'testItemClass', width: 120, align: 'left' },
+          { title: '咨询内容', dataIndex: 'testItemType', width: 80, align: 'left' },
+          { title: '咨询类别', width: 100, dataIndex: 'resultType', align: 'left' },
+          { title: '紧急程度', dataIndex: 'resultType1', align: 'left' },
+          { title: '咨询状态', width: 100, dataIndex: 'resultType2', align: 'left' },
+          { title: '咨询时间', width: 100, dataIndex: 'resultType3', align: 'left' },
         ],
         items: [
-          { text: '编辑',  showtip: false, click: this.edits, status: '' },
-          { text: '删除', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
+          { text: '详情',  showtip: false, click: this.edits, status: '' },
         ],
-        dataSource: [{name:'张三'}],
+        dataSource: [{name:'张三123'}],
         current:1,
         searchData:{},
       }
@@ -97,17 +86,20 @@
       list() {
         return [
           {
-            name: '患者类型',
-            dataField: 'indexId',
+            name: '患者位置',
+            dataField: 'testItemType9',
+            type: 'select',
+            dataSource: this.enum.status,
+            keyExpr: 'id',
+            valueExpr: 'text'
+          },
+          {
+            name: '患者姓名',
+            dataField: 'admitNum',
             type: 'text'
           },
           {
-            name: '患者信息',
-            dataField: 'testItemCode',
-            type: 'text'
-          },
-          {
-            name: '不良反应结果',
+            name: '处理药师',
             dataField: 'testItemType1',
             type: 'select',
             dataSource: this.enum.status,
@@ -115,17 +107,28 @@
             valueExpr: 'text'
           },
           {
-            name: '报告药师',
+            name: '咨询状态',
             dataField: 'testItemType2',
             type: 'select',
             dataSource: this.enum.patientProblem,
             keyExpr: 'id',
             valueExpr: 'text'
           },
-          {
-            name: '报告编号',
-             dataField: 'indexId12',
-            type: 'text'
+           {
+            name: '咨询类别',
+            dataField: 'testItemType21',
+            type: 'select',
+            dataSource: this.enum.patientProblem,
+            keyExpr: 'id',
+            valueExpr: 'text'
+          },
+           {
+            name: '紧急程度',
+            dataField: 'testItemType22',
+            type: 'select',
+            dataSource: this.enum.patientProblem,
+            keyExpr: 'id',
+            valueExpr: 'text'
           },
           {
             name: '发生时间',
@@ -136,12 +139,10 @@
       }
     },
     methods:{
-      effectMonitorReportAdd(){
-        this.$router.push({
-          name: 'effectMonitorReportAdd',
-        })
-        window.localStorage.setItem('childPage', JSON.stringify('add'))
+      look(){
+       
       },
+      medicationConsultationAdd(){},
       //搜索
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue();
