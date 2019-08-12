@@ -448,7 +448,7 @@ export default {
       params.hisProducedBy = this.NData.producedBy
       params.hisDosageForms = this.NData.dosageForms
       params.drugCode = this.MData.drugCode
-      params.drugName = this.MData.drugName
+      params.drugName = this.drugName
       params.producedBy = this.MData.producedBy
       params.dosageForms = this.MData.dosageForms
       params.doseUnit = this.MData.doseUnit

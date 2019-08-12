@@ -65,7 +65,8 @@ export default {
     return {
       api: {
         diagnosisMgtupdate: '/sys/dicIcd/update',
-        diagnosisMgtselectPage: '/sys/dicIcd/selectOne'
+        diagnosisMgtselectPage: '/sys/dicIcd/selectOne',
+         selectPage: '/sys/dicIcd/selectPage',
       },
       labelCol: {
         xs: { span: 8 },
@@ -80,7 +81,11 @@ export default {
       patientid: '',
       formData: [],
       loadingTable:false,
+      patientid:''
     }
+  },
+  created(){
+  this.patientid=this.$route.params.patientid
   },
   computed: {},
   mounted() {
@@ -109,7 +114,8 @@ export default {
               .then(res => {
                 if (res.code == '200') {
                   this.$message.info('保存成功!')
-                  this.backTo();
+                  sessionStorage.setItem("patientid", this.patientid);
+                  this.backTo();     
                   this.loadingTable = false
                 }else{
                   this.loadingTable = false
@@ -156,6 +162,35 @@ export default {
         name: 'diagnosisIndex'
       })
     },
+    //获取网格分页
+    getPageData(params = {}) {
+      
+      if (params.offset ==0){
+        this.current = 1;
+      }
+      Object.assign(params,{offset:0,pageSize: 10,patientid:this.patientid})
+      this.$axios({
+        url: this.api.selectPage,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.loadData = res.rows
+            this.total = res.total
+          
+            this.disable = false
+          } else {
+          
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+        
+          this.error(err)
+        })
+    },
+
   }
 }
 </script>

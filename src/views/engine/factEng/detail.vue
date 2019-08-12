@@ -1,4 +1,5 @@
 <template>
+<div class="factContent">
   <a-card>
     <div class="cardHead">
       <a href="#" @click.prevent="backTo">
@@ -118,6 +119,7 @@
       </a-form>
     </a-spin>
   </a-card>
+  </div>
 </template>
 <script>
 import { reviewAuditlevelUpdate } from '@/api/login'
@@ -222,7 +224,7 @@ export default {
       var items = []
       for (var key in bdata) {
         var item = bdata[key]
-        if (pid == item.parentId) {
+        if (pid == item.pid) {
           items.push({
             title: item.colName,
             value: item.id,
@@ -311,15 +313,18 @@ export default {
   }
 }
 </script>
-<style>
+<style lang='less'>
+.factContent{
+  .ant-select-tree{
+    height: 500px;
+   
+  }
 .btn {
   margin: 0 5px;
 }
-
 .spanBtn {
   color: #1694fb;
 }
-
 .m-colorPicker .colorBtn[data-v-11842410] {
   width: 38px;
   height: 38px;
@@ -330,4 +335,6 @@ export default {
   margin-left: 15px;
   z-index: 3;
 }
+}
+
 </style>

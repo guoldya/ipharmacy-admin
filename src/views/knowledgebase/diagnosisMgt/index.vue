@@ -6,7 +6,7 @@
           <a-card>
             <a-row>
               <a-col :span="13">
-                <a-input @pressEnter="pressEnterChange" placeholder="请输入" @change='searchchange'/>
+                <a-input @pressEnter="pressEnterChange" placeholder="请输入" @change="searchchange" />
               </a-col>
               <a-col class="treeCol" :span="5">
                 <a-button size="small" type="primary" @click="searchRule">查询</a-button>
@@ -38,7 +38,7 @@
             </div>
           </Searchpanel>
 
-          <a-button class="margin-top-10"  type="primary" @click="addMdc">新增</a-button>
+          <a-button class="margin-top-10" type="primary" @click="addMdc" :disabled="shows">新增</a-button>
           <a-spin tip="加载中..." :spinning="loadingTable">
             <el-table
               ref="table"
@@ -67,7 +67,7 @@
 
                   <span v-else-if="item.prop == 'action'">
                     <a @click="edit(props)">编辑</a>
-                    <a-divider type="vertical"/>
+                    <a-divider type="vertical" />
                     <a-popconfirm
                       title="确认启用吗？"
                       placement="topLeft"
@@ -84,15 +84,15 @@
                     >
                       <a style="color:#ff9900">停用</a>
                     </a-popconfirm>
-                    <a-divider type="vertical" v-if="props.row.type == 2"/>
+                    <a-divider type="vertical" v-if="props.row.type == 2" />
                   </span>
-                   <span v-else-if="item.prop == 'updateTime'" >{{changTime(props.row.updateTime)}}</span>
+                  <span v-else-if="item.prop == 'updateTime'">{{changTime(props.row.updateTime)}}</span>
                   <span v-else>{{props.row[item.prop]}}</span>
                 </template>
               </el-table-column>
             </el-table>
             <a-pagination
-             v-model="current"
+              v-model="current"
               showSizeChanger
               showQuickJumper
               :total="total"
@@ -125,7 +125,7 @@ export default {
       },
       columns: [
         { title: '编码', prop: 'id', width: 80, align: 'right' },
-        { title: 'ICD编码', prop: 'icdcode', width: 80, align: 'left' }, 
+        { title: 'ICD编码', prop: 'icdcode', width: 80, align: 'left' },
         { title: '诊断名称', prop: 'icdname', align: 'left', width: 300 },
         { title: '备注', prop: 'remark', align: 'left' },
         { title: '类型', prop: 'icdtype', width: 90, align: 'center' },
@@ -146,11 +146,27 @@ export default {
       form: this.$form.createForm(this),
       // key值也就是id值
       id: 'n',
-      value:'',
-      current:1,
-      searchData:{},
-      loadedKeys:[]
+      value: '',
+      current: 1,
+      searchData: {},
+      loadedKeys: [],
+      shows: true
     }
+  },
+  created() {
+    let patientid = sessionStorage.getItem('patientid')
+    if (patientid) {
+      this.shows = false
+      let param = {
+        offset: 0,
+        pageSize: 10,
+        patientid: patientid
+      }
+      this.getPageData(param)
+    }
+  },
+  destroyed() {
+    sessionStorage.clear()
   },
   mounted() {
     this.getTreeData({})
@@ -206,7 +222,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.dealData(res.rows)
-
             this.loading = false
           } else {
             this.loading = false
@@ -239,26 +254,26 @@ export default {
 
     //搜索
     search() {
-      if($.trim(this.id).length>0) {
-        let params = this.$refs.searchPanel.form.getFieldsValue();
-        this.searchData =  this.$refs.searchPanel.form.getFieldsValue();
+      if ($.trim(this.id).length > 0) {
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = this.pageSize
-        params.offset = 0;
-        this.current = 1;
+        params.offset = 0
+        this.current = 1
         params.patientid = this.id
         this.getPageData(params)
       }
     },
     //重置
     resetForm() {
-      if($.trim(this.id).length>0){
+      if ($.trim(this.id).length > 0) {
         this.searchData = {}
-        this.$refs.searchPanel.form.resetFields();
+        this.$refs.searchPanel.form.resetFields()
         let params = { patientid: this.id }
         params.pageSize = this.pageSize
-        params.offset = 0;
+        params.offset = 0
         this.getPageData(params)
-        this.current=1
+        this.current = 1
       }
     },
     //查询按下回车的回调
@@ -281,35 +296,35 @@ export default {
       //   expandedKeys,
       //   searchValue: this.values
       // })
-       let params={keyword:this.value}
-       this.getTreeData(params)
+      let params = { keyword: this.value }
+      this.getTreeData(params)
     },
     // 查找事件
-    searchchange(e){
-    // console.log(e.target.value)
-     this.value=e.target.value
+    searchchange(e) {
+      this.value = e.target.value
     },
     //新增事件
     addMdc() {
       this.$router.push({
         name: 'diagnosisMgtDetail',
-        params: {id:'n' ,patientid:this.id }
+        params: { id: 'n', patientid: sessionStorage.getItem('patientid') }
       })
     },
     // 编辑事件
     edit(data) {
-      console.log(data)
       this.$router.push({
         name: 'diagnosisMgtDetail',
-     params:{ id:data.row.id ,patientid:data.row.patientid}
+        params: { id: data.row.id, patientid: sessionStorage.getItem('patientid') }
       })
     },
     //树形节点点击事件
     onSelect(selectedKeys, e) {
+      this.shows = false
+      sessionStorage.setItem('patientid', e.node.dataRef.key)
       this.id = e.node.dataRef.key
-      let params={patientid:this.id}
-      this.current = 1;
-      params.offset = 0;
+      let params = { patientid: e.node.dataRef.key }
+      this.current = 1
+      params.offset = 0
       params.pageSize = this.pageSize
       this.getPageData(params)
     },
@@ -362,10 +377,11 @@ export default {
 
     //获取网格分页
     getPageData(params = {}) {
-      if (params.offset ==0){
-        this.current = 1;
+      if (params.offset == 0) {
+        this.current = 1
       }
-      params.patientid = this.id
+      let pid = sessionStorage.getItem('patientid')
+      params.patientid = pid != null ? pid : this.id
       this.loadingTable = true
       this.$axios({
         url: this.api.diagnosisMgtselectPage,
@@ -389,18 +405,17 @@ export default {
         })
     },
 
-
     //页面数change事件
     pageChangeSize(page, pageSize) {
       let params = this.searchData
-      this.pageSize = pageSize;
+      this.pageSize = pageSize
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getPageData(params)
     },
     //页面跳转事件
     pageChange(page, pageSize) {
-      this.pageSize = pageSize;
+      this.pageSize = pageSize
       let params = this.searchData
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
@@ -424,7 +439,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
-              let params = this.searchData;
+              let params = this.searchData
               params.offset = (this.current - 1) * this.pageSize
               params.pageSize = this.pageSize
               this.getPageData(params)
@@ -447,11 +462,10 @@ export default {
         return 'icd9'
       }
     },
-    changTime(time){
-      if(time){
-return time.replace(/:\d{2}$/,'')
+    changTime(time) {
+      if (time) {
+        return time.replace(/:\d{2}$/, '')
       }
-      
     }
   }
 }
@@ -467,11 +481,10 @@ return time.replace(/:\d{2}$/,'')
   line-height: 32px;
 }
 
-
-.ant-tree li{
-max-width: 100%;
-overflow: hidden;
- text-overflow: ellipsis;
+.ant-tree li {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 </style>
