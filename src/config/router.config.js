@@ -1112,6 +1112,20 @@ export const asyncRouterMap = [
                   },
                 ]
               },
+              {
+                path: '/pharmacistStation/medicationConsultationResult',
+                name: 'medicationConsultationResult',
+                component: RouteView,
+                meta: { title: '用药咨询记录', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/medicationConsultationResult/medicationConsultationResultIndex',
+                    name: 'medicationConsultationResultIndex',
+                    component: () => import('@/views/pharmacistStation/medicationConsultationResult/medicationConsultationResultIndex.vue'),
+                    meta: { title: '用药咨询记录', hiddenHeaderContent: true, index: true }
+                  },
+                ]
+              },
             ]
           },
           

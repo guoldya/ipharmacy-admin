@@ -33,7 +33,7 @@
           v-if="true"
         >
           <template slot-scope="scope">
-             <a @click="look">详情</a>
+             <a @click="look">查看</a>
           </template>
         </el-table-column>
       </el-table>
@@ -56,26 +56,25 @@
 
 <script>
   export default {
-    name: 'medicationConsultationIndex',
+    name: 'medicationConsultationResultIndex',
     data(){
       return{
         loading: false,
         total: 2,
         pageSize: 10,
         columns: [
-          { title: '咨询者', dataIndex: 'indexId', width: 80, align: 'left' },
-          { title: '患者姓名', dataIndex: 'name', align: 'left', width: 100 },
-          { title: '患者科室', dataIndex: 'englishName', align: 'right', width: 140 },
-          { title: '住院号', dataIndex: 'testItemName', align: 'left' },
-          { title: '处理药师', dataIndex: 'testItemClass', width: 120, align: 'left' },
-          { title: '咨询内容', dataIndex: 'testItemType', width: 80, align: 'left' },
-          { title: '咨询类别', width: 100, dataIndex: 'resultType', align: 'left' },
-          { title: '紧急程度', dataIndex: 'resultType1', align: 'left' },
-          { title: '咨询状态', width: 100, dataIndex: 'resultType2', align: 'left' },
+          { title: '咨询者姓名', dataIndex: 'indexId', width: 120, align: 'left' },
+          { title: '性别', dataIndex: 'name', align: 'left', width: 100 },
+          { title: '咨询者分类', dataIndex: 'englishName', align: 'left', width: 140 },
+          { title: '处理药师', dataIndex: 'testItemName', align: 'left' , width: 120},
+          { title: '问题摘要', dataIndex: 'testItemClass', width: 140,align: 'left' },
+          { title: '咨询方式', dataIndex: 'testItemType', width: 80, align: 'left' },
+          { title: '问题归类', width: 100, dataIndex: 'resultType', align: 'left' },
+          { title: '备注', dataIndex: 'resultType1', align: 'left' },
           { title: '咨询时间', width: 100, dataIndex: 'resultType3', align: 'left' },
         ],
         items: [
-          { text: '详情',  showtip: false, click: this.edits, status: '' },
+          { text: '查看',  showtip: false, click: this.edits, status: '' },
         ],
         dataSource: [{name:'张三123'}],
         current:1,
@@ -86,17 +85,17 @@
       list() {
         return [
           {
-            name: '患者位置',
-            dataField: 'testItemType9',
+            name: '咨询者姓名',
+            dataField: 'admitNum',
+            type: 'text'
+          },
+          {
+            name: '咨询者分类',
+            dataField: 'testItemType8',
             type: 'select',
             dataSource: this.enum.status,
             keyExpr: 'id',
             valueExpr: 'text'
-          },
-          {
-            name: '患者姓名',
-            dataField: 'admitNum',
-            type: 'text'
           },
           {
             name: '处理药师',
@@ -107,7 +106,7 @@
             valueExpr: 'text'
           },
           {
-            name: '咨询状态',
+            name: '咨询方式',
             dataField: 'testItemType2',
             type: 'select',
             dataSource: this.enum.patientProblem,
@@ -115,16 +114,8 @@
             valueExpr: 'text'
           },
            {
-            name: '咨询类别',
+            name: '问题归类',
             dataField: 'testItemType21',
-            type: 'select',
-            dataSource: this.enum.patientProblem,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-           {
-            name: '紧急程度',
-            dataField: 'testItemType22',
             type: 'select',
             dataSource: this.enum.patientProblem,
             keyExpr: 'id',
