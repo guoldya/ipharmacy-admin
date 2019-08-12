@@ -380,15 +380,18 @@
       search() {
         let params =this.getFormData();
         this.pageChangeFilter =this.getFormData();
-        params.pageSize = 10
+        params.pageSize = this.pageSize
         params.offset = 0
         this.getPageData(params)
       },
       //重置
       resetForm() {
+        let params = {}
         this.current = 1
         this.$refs.searchPanel.form.resetFields()
-        this.getPageData()
+        params.pageSize = this.pageSize
+        params.offset = 0
+        this.getPageData(params)
         this.pageChangeFilter = {}
       },
 
@@ -554,7 +557,6 @@
             params.updateTime=  [this.paramsData.startDate,this.paramsData.endDate];
           }
         }
-        console.log(params,'11111')
         coreRuleTypePage(params)
           .then(res => {
             if (res.code == '200') {

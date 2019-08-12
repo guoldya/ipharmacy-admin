@@ -174,8 +174,8 @@
         gridCheck: false,
         titleData: { status: null, type2: null, type: null, name: null, updateTime: null, visible: null },
         //属性框初始化
-        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', itemId: null },
-        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', itemId: null },
+        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', itemId: null},
+        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', itemId: null},
         pieChartData: {},
         getEdgesData: [],
         //modal属性
@@ -615,16 +615,48 @@
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
                       this.boxInitialized.inputType = 'scopeInput'
-                    } else if (params.lo == 3) {
+                    } else if (params.lo == 3 && $.trim(params.parentId).length == 0) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
                       let paramsNodeData = {id: params.itemId};
                       if (ev.item.model.assertValList){
                         paramsNodeData.valueList = params.assertValList
+                        paramsNodeData.val = params.val;
+                        paramsNodeData.display = params.display;
+                        paramsNodeData.parentId = params.parentId;
                       }
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
                         if (res.code == '200') {
-                          this.boxInitialized.inputSelectData = res.rows
+                          this.boxInitialized.inputSelectData=[]
+                          for (let key in res.rows){
+                            this.boxInitialized.inputSelectData.push({ID:res.rows[key][params.val],NAME:res.rows[key][params.display]})
+                          }
+                        } else {
+                          this.warn(res.msg)
+                          this.boxInitialized.inputSelectData = []
+                        }
+                      }).catch(err => {
+                        this.error(err)
+                      })
+                    }else if (params.lo == 3 && $.trim(params.parentId).length>0){
+                      this.boxInitialized.inputType = 'treeSelect'
+                      this.boxInitialized.itemId = params.itemId
+                      let paramsNodeData = {id: params.itemId};
+                      if (ev.item.model.assertValList){
+                        paramsNodeData.valueList = params.assertValList
+                        paramsNodeData.val = params.val;
+                        paramsNodeData.display = params.display;
+                        paramsNodeData.parentId = params.parentId;
+                      }
+                      coreRuleNodeSelectColId(paramsNodeData).then(res => {
+                        if (res.code == '200') {
+                          let listData = [];
+                          this.boxInitialized.inputSelectData=[]
+                          for (let key in res.rows){
+                            listData.push({ID:res.rows[key][params.val],NAME:res.rows[key][params.display],PID:res.rows[key][params.parentId]})
+                          }
+
+                          this.boxInitialized.inputSelectData = this.dealValTree(listData,undefined);
                         } else {
                           this.warn(res.msg)
                           this.boxInitialized.inputSelectData = []
@@ -645,7 +677,6 @@
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
                     _this.selectNode.dataDrilling = model.dataDrilling != null ? model.dataDrilling : shape.dataDrilling
-
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
@@ -670,23 +701,58 @@
                     this.edgeInitialized.inputEdge = 'input'
                   } else if (sourceP.lo == 2) {
                     this.edgeInitialized.inputEdge = 'scopeInput'
-                  } else if (sourceP.lo == 3) {
+                  } else if (sourceP.lo == 3 && $.trim(sourceP.parentId).length == 0 ) {
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId;
                     let paramsData = {id: sourceP.itemId};
                     if (ev.item.model.assertValList){
                       paramsData.valueList = ev.item.model.assertValList;
+                      paramsData.val = sourceP.val;
+                      paramsData.display = sourceP.display;
+                      paramsData.parentId = sourceP.parentId;
                     }
-                    coreRuleNodeSelectColId(paramsData).then(res => {
-                      if (res.code == '200') {
-                        this.edgeInitialized.inputEdgeSelect = res.rows
-                      } else {
-                        this.warn(res.msg)
-                        this.edgeInitialized.inputEdgeSelect = []
-                      }
-                    }).catch(err => {
-                      this.error(err)
-                    })
+                    if ( this.edgeInitialized.inputEdgeSelect.length==0) {
+                      coreRuleNodeSelectColId(paramsData).then(res => {
+                        if (res.code == '200') {
+                            this.edgeInitialized.inputEdgeSelect=[]
+                            for (let key in res.rows){
+                              this.edgeInitialized.inputEdgeSelect.push({ID:res.rows[key][sourceP.val],NAME:res.rows[key][sourceP.display]})
+                            }
+                        } else {
+                          this.warn(res.msg)
+                          this.edgeInitialized.inputEdgeSelect = []
+                        }
+                      }).catch(err => {
+                        this.error(err)
+                      })
+                    }
+                  }else if(sourceP.lo == 3 && $.trim(sourceP.parentId).length >0 ){
+                    this.edgeInitialized.inputEdge = 'treeSelect'
+                    this.edgeInitialized.itemId = sourceP.itemId;
+                    let paramsData = {id: sourceP.itemId};
+                    if (ev.item.model.assertValList){
+                      paramsData.valueList = ev.item.model.assertValList;
+                      paramsData.val = sourceP.val;
+                      paramsData.display = sourceP.display;
+                      paramsData.parentId = sourceP.parentId;
+                    }
+                    if ( this.edgeInitialized.inputEdgeSelect.length==0) {
+                      coreRuleNodeSelectColId(paramsData).then(res => {
+                        if (res.code == '200') {
+                          let list = []
+                          this.edgeInitialized.inputEdgeSelect=[]
+                          for (let key in res.rows){
+                            list.push({ID:res.rows[key][sourceP.val],NAME:res.rows[key][sourceP.display],PID:res.rows[key][sourceP.parentId]})
+                          }
+                          this.edgeInitialized.inputEdgeSelect = this.dealValTree(list,undefined);
+                        } else {
+                          this.warn(res.msg)
+                          this.edgeInitialized.inputEdgeSelect = []
+                        }
+                      }).catch(err => {
+                        this.error(err)
+                      })
+                    }
                   }
                   if (sourceP.colDbType == 1) {
                     this.edgeInitialized.inValueEdge = 'number'
@@ -1221,6 +1287,9 @@
                 assertValList: nodeData[key].assertValList,
                 assertVal1: nodeData[key].assertVal1,
                 size: nodeSize,
+                val:nodeData[key].ruleDatasourceVal,
+                display:nodeData[key].ruleDatasourceDisplay,
+                parentId:nodeData[key].ruleDatasourceParentId,
                 y: y,
                 x: x
               })
@@ -1248,6 +1317,9 @@
                 dataDrilling:edgesData[key].dataDrilling,
                 assertVal1: edgesData[key].assertVal1,
                 targetAnchor: 0,
+                val:edgesData[key].ruleDatasourceVal,
+                display:edgesData[key].ruleDatasourceDisplay,
+                parentId:edgesData[key].ruleDatasourceParentId,
                 type: 'edge'
               })
             }
@@ -1443,8 +1515,6 @@
       addRuleCancel(){
         this.addVisible = false;
       },
-
-
       getCoreFactAllStart(){
         coreFactColAll({}).then(res => {
           if (res.code == '200') {
@@ -1511,7 +1581,6 @@
         }
       },
       getPreData(pid,data){
-
         if ($.trim(pid).length>0){
           for(let key in data){
             if (pid == data[key].id){
@@ -1521,7 +1590,23 @@
         } else{
           return []
         }
-      }
+      },
+
+      dealValTree(data, pid) {
+        var items = []
+        for (var key in data) {
+          var item = data[key]
+          if (pid == item.PID) {
+            items.push({
+              title: item.NAME,
+              value: item.ID,
+              key: item.ID,
+              children: this.dealValTree(data, item.ID)
+            })
+          }
+        }
+        return items
+      },
     }
   }
 </script>

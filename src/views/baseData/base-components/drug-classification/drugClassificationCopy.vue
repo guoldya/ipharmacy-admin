@@ -165,12 +165,11 @@ export default {
     }
   },
   mounted() {
-    this.getData()
+    this.getData({pid:-1})
     this.getDicBase()
   },
   methods: {
     getData(params = {}) {
-      params.pid = -1;
       this.loading = true
       this.$axios({
         url: this.api.drugCategoryList,
@@ -211,6 +210,7 @@ export default {
         })
     },
     dealData(data) {
+      this.gData = [];
       for (let i in data) {
         let isleaf = false
         if (data[i].isleaf == 1) {
@@ -441,7 +441,6 @@ export default {
       }
     },
     addFatherData(params, gdata) {
-      console.log(params, 'params')
       let obj = {}
       obj.key = params.categoryId
       obj.categoryProperty = params.categoryProperty
@@ -450,7 +449,6 @@ export default {
       obj.categoryType = params.categoryType
       obj.status = params.status
       obj.isLeaf = true
-      console.log(obj, 'obj')
       gdata.push(obj)
     },
     //modal 取消
@@ -494,10 +492,16 @@ export default {
       this.visible = false
     },
     onChange(value){
-      console.log(this.loadedKeys,'loadedKeys');
-      this.gData = [];
-      let params={keyword:value}
-      this.getData(params)
+      if ($.trim(value).length>0){
+        this.gData = [];
+        let params={keyword:value}
+        this.getData(params)
+      } else{
+        this.gData = [];
+        let data={pid:-1}
+        this.getData(data)
+      }
+
     },
 
   }

@@ -9,10 +9,6 @@
                      :disabled="true"/>
             <a-input size="small" :read-only="true" v-else v-model="selectNode.label"/>
           </a-form-item>
-
-          <!-- <a-form-item label="颜色" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <colorPicker v-model="selectNode.colorLevel"/>
-          </a-form-item> -->
         </a-form>
       </div>
     </div>
@@ -26,7 +22,6 @@
               <a-select-option :value=2 title="医院规定">医院规定</a-select-option>
             </a-select>
           </a-form-item>
-
           <a-form-item label="级别" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select size="small" v-model="selectNode.levels"  @change="levelChange">
               <a-select-option v-for="(op,index) in levelData" :value=op.auditLevel :key="index"
@@ -74,7 +69,6 @@
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
               :treeData="judgePreDetailData"
               v-model="selectNode.precondition"
-              treeDefaultExpandAll
               class="nodeSelect">
             </a-tree-select>
           </a-form-item>
@@ -121,10 +115,23 @@
                 </a-select-option>
               </a-select>
             </div>
+            <div v-else-if="boxInitialized.inputType =='treeSelect'&&boxInitialized.inValueType!='time'">
+              <a-tree-select
+                size="small"
+                showSearch
+                allowClear
+                multiple
+                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+                :treeData=" boxInitialized.inputSelectData"
+                v-model="selectNode.assertValList"
+                @change="selectNodeTree"
+              >
+              </a-tree-select>
+            </div>
             <a-date-picker v-else-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType=='time'" @change="onChange" />
             <a-range-picker v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType=='time'" @change="onChange" />
           </a-form-item>
-          <a-form-item v-if="boxInitialized.inputType =='select'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="boxInitialized.inputType =='treeSelect' " label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox @change="containsChange" value="node" key="1" :checked="selectNode.dataDrilling=='1'? true:false"></a-checkbox>
           </a-form-item>
         </a-form>
@@ -227,11 +234,24 @@
                 </a-select-option>
               </a-select>
             </div>
+            <div v-else-if="edgeInitialized.inputEdge =='treeSelect'&&edgeInitialized.inValueEdge!='time'">
+              <a-tree-select
+                size="small"
+                showSearch
+                allowClear
+                multiple
+                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+                :treeData=" edgeInitialized.inputEdgeSelect"
+                v-model="selectEdge.assertValList"
+                @change="selectEdgeTree"
+              >
+              </a-tree-select>
+            </div>
             <a-date-picker v-else-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
             <a-range-picker v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
           </a-form-item>
 
-          <a-form-item v-if="edgeInitialized.inputEdge =='select'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox  @change="edgeContainsChange" value="edge" key="2" :checked="selectEdge.dataDrilling=='1'? true:false"></a-checkbox>
           </a-form-item>
 
@@ -296,14 +316,11 @@
         }
       },
       judgePreData(newValue, oldValue) {
-        console.log(newValue,'new');
-        console.log(oldValue,'old')
         if (newValue.length>0){
           this.judgePreDetailData = this.judgePreData;
         }else{
           this.judgePreDetailData =[]
         }
-        console.log( this.judgePreDetailData)
       },
     },
     mounted() {
@@ -370,18 +387,22 @@
       },
       coreFactTreeChange(value, node, extra){
         let params = extra.selectedNodes[0].data.props;
+        console.log(params,'params')
         let _this = this;
         _this.selectNode.itemId = params.id;
         if (params.lo == 1){
           this.boxInitialized.inputType = 'input'
         }else if (params.lo == 2){
           this.boxInitialized.inputType = 'scopeInput'
-        }else if (params.lo == 3){
+        }else if (params.lo == 3 && $.trim(params.parentId).length == 0){
           this.boxInitialized.inputType = 'select';
           this.boxInitialized.itemId = params.id;
           coreRuleNodeSelectColId({id:params.id}).then(res => {
             if (res.code == '200') {
-              this.boxInitialized.inputSelectData = res.rows;
+              this.boxInitialized.inputSelectData=[]
+              for (let key in res.rows){
+                this.boxInitialized.inputSelectData.push({ID:res.rows[key][params.val],NAME:res.rows[key][params.display]})
+              }
             } else {
               this.warn(res.msg)
               this.boxInitialized.inputSelectData = [];
@@ -389,7 +410,28 @@
           }).catch(err => {
             this.error(err)
           })
+        }else if (params.lo == 3 && $.trim(params.parentId).length > 0){
+          this.boxInitialized.inputType = 'treeSelect'
+          this.boxInitialized.itemId = params.id
+          let paramsNodeData = {id: params.id};
+          coreRuleNodeSelectColId(paramsNodeData).then(res => {
+            if (res.code == '200') {
+              let listData = [];
+              this.boxInitialized.inputSelectData=[]
+              for (let key in res.rows){
+                listData.push({ID:res.rows[key][params.val],NAME:res.rows[key][params.display],PID:res.rows[key][params.parentId]})
+              }
+              this.boxInitialized.inputSelectData = this.dealValTree(listData,undefined);
+            } else {
+              this.warn(res.msg)
+              this.boxInitialized.inputSelectData = []
+            }
+          }).catch(err => {
+            this.error(err)
+          })
         }
+
+
         if (params.colDbType == 1){
           this.boxInitialized.inValueType = 'number'
         }else if (params.colDbType == 2){
@@ -511,13 +553,35 @@
           _this.edgeInitialized.inputEdge = 'input'
         }else if (params.lo == 2){
           _this.edgeInitialized.inputEdge = 'scopeInput'
-        }else if (params.lo == 3){
+        }else if (params.lo == 3 && $.trim(params.parentId).length == 0 ){
           _this.edgeInitialized.inputEdge = 'select';
           _this.edgeId = params.id;
           _this.edgeInitialized.itemId = params.id;
           coreRuleNodeSelectColId({id:this.edgeId}).then(res => {
             if (res.code == '200') {
-              _this.edgeInitialized.inputEdgeSelect = res.rows;
+              _this.edgeInitialized.inputEdgeSelect=[]
+              for (let key in res.rows){
+                _this.edgeInitialized.inputEdgeSelect.push({ID:res.rows[key][params.val],NAME:res.rows[key][params.display]})
+              }
+              console.log(_this.edgeInitialized.inputEdgeSelect)
+            } else {
+              this.warn(res.msg)
+            }
+          }).catch(err => {
+            this.error(err)
+          })
+        }else if (params.lo == 3 && $.trim(params.parentId).length > 0) {
+          _this.edgeInitialized.inputEdge = 'treeSelect'
+          _this.edgeId = params.id;
+          _this.edgeInitialized.itemId = params.id;
+          coreRuleNodeSelectColId({id:this.edgeId}).then(res => {
+            if (res.code == '200') {
+              let list = []
+              _this.edgeInitialized.inputEdgeSelect=[]
+              for (let key in res.rows){
+                list.push({ID:res.rows[key][params.val],NAME:res.rows[key][params.display],PID:res.rows[key][params.parentId]})
+              }
+              _this.edgeInitialized.inputEdgeSelect = this.dealValTree(list,undefined);
             } else {
               this.warn(res.msg)
             }
@@ -589,8 +653,6 @@
       },
       //多个条件值输入第一个事件
       edgeAssertVal(e){
-        // edgeCondition:'',
-        //   edgeConditionValue:'',
         this.edgeConditionValue = ''+ e;
         if ($.trim(this.edgeConditionValue1).length==0){
           this.edgeConditionValue1 = ''+ this.selectNode.assertVal1;
@@ -630,6 +692,9 @@
               id:list[key].id,
               pid:list[key].pid,
               lo:list[key].lo,
+              val:list[key].val,
+              display:list[key].display,
+              parentId:list[key].parentId,
               colDbType:list[key].colDbType,
 
             })
@@ -642,6 +707,9 @@
               id:list[key].id,
               pid:list[key].pid,
               lo:list[key].lo,
+              val:list[key].val,
+              display:list[key].display,
+              parentId:list[key].parentId,
               colDbType:list[key].colDbType,
             }]
           }
@@ -661,7 +729,6 @@
       },
 
       containsChange(e){
-        console.log(e.target.checked)
         if (e.target.checked){
           this.selectNode.dataDrilling = '1';
         }else{
@@ -675,7 +742,58 @@
         }else{
           this.selectEdge.dataDrilling ='0';
         }
-      }
+      },
+
+      selectNodeTree(value,option){
+        if ($.trim(this.modelValue).length==0){
+          this.modelValue = this.selectNode.itemName;
+        }
+        if ($.trim(this.condition).length==0){
+          this.condition = this.selectNode.roSymbol;
+        }
+        this.conditionValue = '';
+        for (let key in option){
+          if (key < 1){
+            this.conditionValue = option[0];
+          } else{
+            this.conditionValue = option[0]+'...';
+          }
+        }
+
+        this.selectNode.label =this.modelValue+this.condition+this.conditionValue;
+      },
+      selectEdgeTree(value,option){
+        this.selectEdge.lo =3;
+        if ($.trim(this.edgeCondition).length==0){
+          this.edgeCondition = this.selectEdge.roSymbol;
+        }
+        this.edgeConditionValue = '';
+        for (let key in option){
+          if (key < 1){
+            this.edgeConditionValue = option[0];
+          } else{
+            this.edgeConditionValue = option[0]+'...';
+          }
+        }
+        this.selectEdge.label =this.edgeCondition+this.edgeConditionValue;
+      },
+
+
+      dealValTree(data, pid) {
+        var items = []
+        for (var key in data) {
+          var item = data[key]
+          if (pid == item.PID) {
+            items.push({
+              title: item.NAME,
+              value: item.ID,
+              key: item.ID,
+              children: this.dealValTree(data, item.ID)
+            })
+          }
+        }
+        return items
+      },
     }
   }
 </script>
