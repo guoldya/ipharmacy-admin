@@ -24,7 +24,7 @@
             </a-radio-group>
         </a-row>
         <a-row class="margin-top-10 versionTable">
-            <a-card title="当前版本" :extra="currentTime">
+<!--            <a-card>-->
                 <a-spin tip="加载中..." :spinning="currentSpinning">
                     <el-table
                         :data="dataSource"
@@ -71,7 +71,7 @@
                         <span>{{props.row['drugName']}}</span>
                       </template>
                       </el-table-column>
-                      <el-table-column label="其他版本">
+                      <el-table-column :label="submitEdition">
                         <el-table-column
                           :prop="item.value"
                           :label="item.title"
@@ -93,7 +93,7 @@
 
                     </el-table>
                 </a-spin>
-            </a-card>
+<!--            </a-card>-->
         </a-row>
     </div>
 </template>
@@ -144,7 +144,7 @@ export default {
           columns2:[
             { title: '药品名称', value: 'drugName' },
           ],
-            dataSource: []
+            dataSource: [],
         }
     },
     mounted() {
@@ -269,6 +269,7 @@ export default {
                     this.submitValue = this.reviewList[key].submitNo
                     this.submitEdition = this.reviewList[key].edition
                     this.otherTime = this.reviewList[key].submitTime
+                  console.log(this.reviewList[key],'2233')
                     this.getOtherData(this.submitValue)
                 }
             }

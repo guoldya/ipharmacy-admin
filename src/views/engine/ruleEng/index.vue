@@ -76,9 +76,10 @@ export default {
       pageSize: 10,
       columns: [
         { title: '编号', value: 'id', width: 60, align: 'right' },
-           { title: '事实原型名称', value: 'colName', align: 'center', width: 100 , format:this.levelFormatter  },
+           { title: '事实原型名称', value: 'colName', align: 'center', width: 130 , format:this.levelFormatter  },
         { title: '名称', value: 'dsName', align: 'left', width: 100 },
         { title: '显示名称', value: 'display', align: 'left', width: 100 },
+        { title: '父级值', value: 'parentId', align: 'left', width: 100 },
         { title: '数据库文本', value: 'sqlText', align: 'left' },
         { title: '更新人', value: 'updatorName', width: 120 },
         { title: '更新时间', value: 'updateTime', width: 140, },
