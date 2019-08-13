@@ -62,44 +62,37 @@
               @select="coreFactTreeChange">
             </a-tree-select>
           </a-form-item>
-          <a-form-item label="前置条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-tree-select
-              size="small"
-              :allowClear="true"
-              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="judgePreDetailData"
-              v-model="selectNode.precondition"
-              class="nodeSelect">
-            </a-tree-select>
+          <a-form-item label="逻辑运算" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select size="small" class="nodeSelect" v-model="selectNode.lo" @change="logicalChange">
+              <a-select-option v-for="item in this.enum.logical" :value=item.id :title=item.text  :key="item.id">
+                {{item.text}}
+              </a-select-option>
+            </a-select>
           </a-form-item>
-          <a-form-item v-if="boxInitialized.inputType !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select v-if="boxInitialized.inputType !='select' && boxInitialized.inValueType =='number'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
+          <a-form-item v-if="selectNode.lo !=3" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select v-if="selectNode.lo==1" size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
               <a-select-option :value=3 title="<">小于</a-select-option>
               <a-select-option :value=4 title="≤">小于等于</a-select-option>
               <a-select-option :value=5 title=">">大于</a-select-option>
               <a-select-option :value=6 title="≥">大于等于</a-select-option>
-              <a-select-option :value=7 title="包含">包含</a-select-option>
-              <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
-             <a-select v-else-if="boxInitialized.inputType !='select' && boxInitialized.inValueType =='text'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
+             <a-select v-else-if="selectNode.lo==2" size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=7 title="包含">包含</a-select-option>
             </a-select>
-            <a-select v-else size="small" v-model="selectNode.ro" @select="selectNodeRo">
-              <a-select-option :value=7 title="包含">包含</a-select-option>
-              <a-select-option :value=8 title="不包含">不包含</a-select-option>
+            <a-select v-else size="small" >
             </a-select>
           </a-form-item>
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-input :type="boxInitialized.inValueType" v-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType!='time'" @change="inputChange" size="small" v-model="selectNode.assertVal"></a-input>
-            <div v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType!='time'">
+            <a-input :type="boxInitialized.inValueType" v-if="selectNode.lo==1" @change="inputChange" size="small" v-model="selectNode.assertVal"></a-input>
+            <div v-else-if="selectNode.lo==2">
               <a-input :type="boxInitialized.inValueType" class="inputLeft" size="small" placeholder="最小值" @change="scopeAssertVal"  v-model="selectNode.assertVal"/>
-              <a-input :type="boxInitialized.inValueType" class="inputCenter" size="small" placeholder="~" disabled/>
+              <a-input  class="inputCenter" size="small" placeholder="~" disabled/>
               <a-input :type="boxInitialized.inValueType" class="inputRight" size="small" placeholder="最大值" @change="scopeAssertVal1" v-model="selectNode.assertVal1"/>
             </div>
-            <div v-else-if="boxInitialized.inputType =='select'&&boxInitialized.inValueType!='time'">
+            <div v-else-if="boxInitialized.inputType =='select' && selectNode.lo==3">
               <a-select
                 size="small"
                 v-model="selectNode.assertValList"
@@ -115,7 +108,7 @@
                 </a-select-option>
               </a-select>
             </div>
-            <div v-else-if="boxInitialized.inputType =='treeSelect'&&boxInitialized.inValueType!='time'">
+            <div v-else-if="boxInitialized.inputType =='treeSelect' && selectNode.lo==3">
               <a-tree-select
                 size="small"
                 showSearch
@@ -128,11 +121,57 @@
               >
               </a-tree-select>
             </div>
-            <a-date-picker v-else-if="boxInitialized.inputType =='input'&&boxInitialized.inValueType=='time'" @change="onChange" />
-            <a-range-picker v-else-if="boxInitialized.inputType =='scopeInput'&&boxInitialized.inValueType=='time'" @change="onChange" />
+            <div v-else>
+              <a-input  size="small" ></a-input>
+            </div>
           </a-form-item>
-          <a-form-item v-if="boxInitialized.inputType =='treeSelect' " label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="boxInitialized.inputType =='treeSelect' && selectNode.lo==3 " label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox @change="containsChange" value="node" key="1" :checked="selectNode.dataDrilling=='1'? true:false"></a-checkbox>
+          </a-form-item>
+        </a-form>
+      </div>
+
+      <div class="panel-title" v-if="selectNode.shape == 'flow-rhombus-if'">前置条件</div>
+      <div class="block-container" v-if="selectNode.shape == 'flow-rhombus-if'">
+        <a-form>
+          <a-form-item label="范围" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+              <a-tree-select
+                size="small"
+                :allowClear="true"
+                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+                :treeData="judgePreDetailData"
+                v-model="selectNode.precondition"
+                class="nodeSelect">
+              </a-tree-select>
+            </a-form-item>
+          <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select
+              size="small"
+              allowClear
+              v-model="selectNode.calculation"
+              @change="selectIfCalculation">
+              <a-select-option v-for="item in this.enum.calculation" :value=item.id :title=item.text :key="item.id" >{{item.text}}</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="公式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select size="small" v-if="selectNode.calculation =='1'"   v-model="selectNode.formula">
+              <a-select-option v-for="item in this.enum.conOperation" :value=item.id :title=item.text :key="item.id">
+                {{item.text}}
+              </a-select-option>
+            </a-select>
+            <a-select size="small" v-else-if="selectNode.calculation==2" v-model="selectNode.formula">
+              <a-select-option v-for="item in this.enum.aggregation" :value=item.id :title=item.text >
+                {{item.text}}
+              </a-select-option>
+            </a-select>
+            <a-select size="small" v-else>
+            </a-select>
+          </a-form-item>
+          <a-form-item v-if="selectNode.calculation==1" label="值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-input   v-model="selectNode.calculated" size="small"/>
+          </a-form-item>
+          <a-form-item v-if="selectNode.calculation==2" label="去重" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-checkbox    @change="nodeIsRepeat" value="node" key="2" :checked="selectNode.isRepeat=='1'? true:false"></a-checkbox>
           </a-form-item>
         </a-form>
       </div>
@@ -151,7 +190,12 @@
                 treeDefaultExpandAll>
               </a-tree-select>
           </a-form-item>
-          <a-form-item label="前置条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+        </a-form>
+      </div>
+      <div class="panel-title" v-if="selectNode.shape == 'model-rect-attribute'">前置条件</div>
+      <div class="block-container" v-if="selectNode.shape == 'model-rect-attribute'">
+        <a-form>
+          <a-form-item label="范围" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-tree-select
               size="small"
               :allowClear="true"
@@ -161,9 +205,40 @@
               treeDefaultExpandAll>
             </a-tree-select>
           </a-form-item>
+          <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select
+              size="small"
+              allowClear
+              @change="selectCalculation"
+              v-model="selectNode.calculation"
+            >
+              <a-select-option v-for="item in this.enum.calculation" :value=item.id :title=item.text :key="item.id" >{{item.text}}</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="公式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select size="small" v-if="selectNode.calculation=='1'" v-model="selectNode.formula">
+              <a-select-option v-for="(item,index) in this.enum.conOperation"   :value=item.id :title=item.text :key="index">
+                {{item.text}}
+              </a-select-option>
+            </a-select>
+            <a-select size="small" v-else-if="selectNode.calculation =='2'" v-model="selectNode.formula">
+              <a-select-option v-for="(item,index)  in this.enum.aggregation" :value=item.id :title=item.text :key="index">
+                {{item.text}}
+              </a-select-option>
+            </a-select>
+            <a-select size="small" v-else>
+            </a-select>
+          </a-form-item>
+          <a-form-item v-if="selectNode.calculation=='1'" label="值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-input  v-model="selectNode.calculated"  size="small"/>
+          </a-form-item>
+          <a-form-item v-if="selectNode.calculation=='2'" label="去重" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-checkbox @change="nodeIsRepeat" value="node" key="2" :checked="selectNode.isRepeat=='1'? true:false"></a-checkbox>
+          </a-form-item>
         </a-form>
       </div>
     </div>
+
     <div data-status="edge-selected" class="pannel" id="edge_detailpannel" style="display: none;">
       <div class="panel-title">线属性</div>
       <div class="block-container">
@@ -190,35 +265,38 @@
       <div class="panel-title" v-if="selectEdge.sourceType=='model-rect-attribute'">规则属性</div>
       <div class="block-container" v-if="selectEdge.sourceType=='model-rect-attribute'">
         <a-form>
-          <a-form-item v-if="edgeInitialized.inputEdge !='scopeInput'" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select v-if="edgeInitialized.inputEdge !='select' " size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
+          <a-form-item label="逻辑运算" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select size="small" class="nodeSelect" @change="logicalEdge" v-model="selectEdge.lo">
+              <a-select-option v-for="item in this.enum.logical"  :value=item.id :title=item.text  :key="item.id">
+                {{item.text}}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item v-if="selectEdge.lo != 3" label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-select v-if="selectEdge.lo == 1" size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=2 title="≠">不等于</a-select-option>
               <a-select-option :value=3 title="<">小于</a-select-option>
               <a-select-option :value=4 title="≤">小于等于</a-select-option>
               <a-select-option :value=5 title=">">大于</a-select-option>
               <a-select-option :value=6 title="≥">大于等于</a-select-option>
-              <a-select-option :value=7 title="包含">包含</a-select-option>
-              <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
-            <a-select v-else-if="edgeInitialized.inputEdge !='select' && edgeInitialized.inValueEdge =='text'" size="small" v-model="selectNode.ro" @select="selectNodeRo">
+            <a-select v-else-if="selectEdge.lo == 2" size="small" v-model="selectNode.ro" @select="selectNodeRo">
               <a-select-option :value=1 title="=">等于</a-select-option>
               <a-select-option :value=7 title="包含">包含</a-select-option>
             </a-select>
-            <a-select v-else size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
-              <a-select-option :value=7 title="包含">包含</a-select-option>
-              <a-select-option :value=8 title="不包含">不包含</a-select-option>
+            <a-select v-else size="small" >
             </a-select>
           </a-form-item>
 
           <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-input :type="edgeInitialized.inValueEdge" v-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inputEdge!='time'" @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
-            <div v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge!='time'">
-              <a-input-number  class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal"  v-model="selectEdge.assertVal"/>
+            <a-input :type="edgeInitialized.inValueEdge" v-if="selectEdge.lo ==1 && edgeInitialized.inValueEdge!='time'" @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
+            <div v-else-if="selectEdge.lo ==2">
+              <a-input :type="edgeInitialized.inValueEdge"  class="inputLeft" size="small" placeholder="最小值" @change="edgeAssertVal"  v-model="selectEdge.assertVal"/>
               <a-input-number  class="inputCenter" size="small" placeholder="~" disabled/>
-              <a-input-number  class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
+              <a-input :type="edgeInitialized.inValueEdge"  class="inputRight" size="small" placeholder="最大值" @change="edgeAssertVal1" v-model="selectEdge.assertVal1"/>
             </div>
-            <div v-else-if="edgeInitialized.inputEdge =='select'&&edgeInitialized.inValueEdge!='time'">
+            <div v-else-if="edgeInitialized.inputEdge =='select' && selectEdge.lo ==3">
               <a-select
                 size="small"
                 v-model="selectEdge.assertValList"
@@ -234,7 +312,7 @@
                 </a-select-option>
               </a-select>
             </div>
-            <div v-else-if="edgeInitialized.inputEdge =='treeSelect'&&edgeInitialized.inValueEdge!='time'">
+            <div v-else-if="edgeInitialized.inputEdge =='treeSelect' && selectEdge.lo ==3">
               <a-tree-select
                 size="small"
                 showSearch
@@ -247,11 +325,9 @@
               >
               </a-tree-select>
             </div>
-            <a-date-picker v-else-if="edgeInitialized.inputEdge =='input'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
-            <a-range-picker v-else-if="edgeInitialized.inputEdge =='scopeInput'&&edgeInitialized.inValueEdge=='time'" @change="onChange" />
+            <a-input  v-else  size="small" ></a-input>
           </a-form-item>
-
-          <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect'" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect' && selectEdge.lo ==3" label="包含下级" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox  @change="edgeContainsChange" value="edge" key="2" :checked="selectEdge.dataDrilling=='1'? true:false"></a-checkbox>
           </a-form-item>
 
@@ -305,6 +381,8 @@
         edgeConditionValue1:'',
         preDetailData:[],
         judgePreDetailData:[],
+        calculaStatus:null,
+        calculaFhombus:null,
       }
     },
     watch:{
@@ -386,8 +464,8 @@
         this.dicBaseTreeData = treeData;
       },
       coreFactTreeChange(value, node, extra){
+        this.selectNode.precondition = '';
         let params = extra.selectedNodes[0].data.props;
-        console.log(params,'params')
         let _this = this;
         _this.selectNode.itemId = params.id;
         if (params.lo == 1){
@@ -629,11 +707,6 @@
       searchEdge(value){
         let params = {};
         params.keyword = value;
-        // if ($.trim(this.modelId).length == 0){
-        //   params.id = this.edgeInitialized.itemId;
-        // } else{
-        //   params.id = this.edgeId;
-        // }
         params.id = this.edgeInitialized.itemId;
         coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
@@ -727,7 +800,7 @@
         }
         return children
       },
-
+      //撰取数据
       containsChange(e){
         if (e.target.checked){
           this.selectNode.dataDrilling = '1';
@@ -736,14 +809,27 @@
         }
       },
       edgeContainsChange(e){
-        console.log(e.target.checked)
         if (e.target.checked){
           this.selectEdge.dataDrilling = '1';
         }else{
           this.selectEdge.dataDrilling ='0';
         }
       },
-
+      //去重判断
+      nodeIsRepeat(e){
+        if (e.target.checked){
+          this.selectNode.isRepeat = '1';
+        }else{
+          this.selectNode.isRepeat ='0';
+        }
+      },
+      edgeIsRepeat(e){
+        if (e.target.checked){
+          this.selectEdge.isRepeat = '1';
+        }else{
+          this.selectEdge.isRepeat ='0';
+        }
+      },
       selectNodeTree(value,option){
         if ($.trim(this.modelValue).length==0){
           this.modelValue = this.selectNode.itemName;
@@ -794,6 +880,28 @@
         }
         return items
       },
+
+      //计算方式
+      selectCalculation(value){
+        this.selectNode.formula = null;
+        this.selectNode.calculated = '';
+        this.selectNode.isRepeat = null;
+      },
+      //判断条件计算方式
+      selectIfCalculation(value){
+        this.selectNode.formula = null;
+        this.selectNode.calculated = '';
+        this.selectNode.isRepeat = null;
+      },
+      logicalChange(value){
+        console.log(value,'value');
+        this.selectNode.lo = value;
+        this.selectNode.ro = 7;
+      },
+      logicalEdge(value){
+        this.selectEdge.lo = value;
+        this.selectEdge.ro = 7;
+      }
     }
   }
 </script>
