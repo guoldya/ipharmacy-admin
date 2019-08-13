@@ -121,6 +121,10 @@
           itemId: null,
           precondition:'',
           dataDrilling:null,
+          calculation:'',
+          formula:null,
+          calculated:null,
+          isRepeat:null,
           itemName: null,
           ro: null,
           lo: null,
@@ -149,6 +153,10 @@
           assertValList: null,
           assertVal1: null,
           dataDrilling:null,
+          calculation:'',
+          formula:null,
+          calculated:null,
+          isRepeat:null,
           ro: null,
           lo: null,
           roSymbol: null,
@@ -175,7 +183,7 @@
         titleData: { status: null, type2: null, type: null, name: null, updateTime: null, visible: null },
         //属性框初始化
         boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', itemId: null},
-        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', itemId: null},
+        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', itemId: null,lo:null},
         pieChartData: {},
         getEdgesData: [],
         //modal属性
@@ -249,6 +257,18 @@
       selectNodeDataDrilling(){
         return this.selectNode.dataDrilling
       },
+      selectNodeCalculation(){
+        return this.selectNode.calculation
+      },
+      selectNodeFormula(){
+        return this.selectNode.formula
+      },
+      selectNodeCalculated(){
+        return this.selectNode.calculated
+      },
+      selectNodeIsRepeat(){
+        return this.selectNode.isRepeat
+      },
       selectNodeItemName() {
         return this.selectNode.itemName
       },
@@ -292,7 +312,19 @@
         return this.selectEdge.assertValList
       },
       selectEdgeDataDrilling() {
-        return this.selectEdge.precondition
+        return this.selectEdge.dataDrilling
+      },
+      selectEdgeCalculation(){
+        return this.selectEdge.calculation
+      },
+      selectEdgeFormula(){
+        return this.selectEdge.formula
+      },
+      selectEdgeCalculated(){
+        return this.selectEdge.calculated
+      },
+      selectEdgeIsRepeat(){
+        return this.selectEdge.isRepeat
       },
       selectEdgeAssertVal1() {
         return this.selectEdge.assertVal1
@@ -391,6 +423,28 @@
           this.flow.update(this.selectNode.id, { dataDrilling: newValue })
         }
       },
+      selectNodeCalculation(newValue, oldValue){
+        console.log(newValue,'new')
+        console.log(oldValue,'oldValue')
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { calculation: newValue })
+        }
+      },
+      selectNodeFormula(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { formula: newValue })
+        }
+      },
+      selectNodeCalculated(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { calculated: newValue })
+        }
+      },
+      selectNodeIsRepeat(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { isRepeat: newValue })
+        }
+      },
       selectNodeItemName(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { itemName: newValue })
@@ -464,6 +518,27 @@
       selectEdgeDataDrilling(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { dataDrilling: newValue })
+        }
+      },
+
+      selectEdgeCalculation(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { calculation: newValue })
+        }
+      },
+      selectEdgeFormula(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { formula: newValue })
+        }
+      },
+      selectEdgeCalculated(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { calculated: newValue })
+        }
+      },
+      selectEdgeIsRepeat(newValue, oldValue){
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, { isRepeat: newValue })
         }
       },
       selectEdgeAssertVal1(newValue, oldValue) {
@@ -601,16 +676,24 @@
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
+                    _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
+                    _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
+                    _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
+                    _this.selectNode.isRepeat = model.isRepeat != null ? model.isRepeat : shape.isRepeat
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
                     _this.preData = [];
-                    _this.preData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
+                    if (this.getPreData(this.prePid,this.CoreFactAllTree).length== 0){
+                      _this.preData = []
+                    } else{
+                      _this.preData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
+                    }
+
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
-                    // this.boxInitialized={inputSelectData:[],inputType:'',inValueType:''};
                     if (params.lo == 1) {
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
@@ -664,6 +747,8 @@
                       }).catch(err => {
                         this.error(err)
                       })
+                    }else{
+                      this.boxInitialized.inputType = 'input'
                     }
                     if (params.colDbType == 1) {
                       this.boxInitialized.inValueType = 'number'
@@ -677,6 +762,10 @@
                     _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
                     _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
                     _this.selectNode.dataDrilling = model.dataDrilling != null ? model.dataDrilling : shape.dataDrilling
+                    _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
+                    _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
+                    _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
+                    _this.selectNode.isRepeat = model.isRepeat != null ? model.isRepeat : shape.isRepeat
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
@@ -690,7 +779,11 @@
               }
               this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
               _this.judgePreData = [];
-              _this.judgePreData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
+              if (this.getPreData(this.prePid,this.CoreFactAllTree).length == 0){
+                _this.judgePreData=[]
+              } else{
+                _this.judgePreData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
+              }
               break
             case 'edge':
               //选中后设置颜色 和连接线的宽度
@@ -699,9 +792,12 @@
               if (sourceP.shape == "model-rect-attribute") {
                   if (sourceP.lo == 1) {
                     this.edgeInitialized.inputEdge = 'input'
+                    this.edgeInitialized.lo = 1;
                   } else if (sourceP.lo == 2) {
                     this.edgeInitialized.inputEdge = 'scopeInput'
+                    this.edgeInitialized.lo = 2;
                   } else if (sourceP.lo == 3 && $.trim(sourceP.parentId).length == 0 ) {
+                    this.edgeInitialized.lo = 3;
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId;
                     let paramsData = {id: sourceP.itemId};
@@ -727,6 +823,7 @@
                       })
                     }
                   }else if(sourceP.lo == 3 && $.trim(sourceP.parentId).length >0 ){
+                    this.edgeInitialized.lo = 3;
                     this.edgeInitialized.inputEdge = 'treeSelect'
                     this.edgeInitialized.itemId = sourceP.itemId;
                     let paramsData = {id: sourceP.itemId};
@@ -757,7 +854,7 @@
                   if (sourceP.colDbType == 1) {
                     this.edgeInitialized.inValueEdge = 'number'
                   } else if (sourceP.colDbType == 2) {
-                    this.edgeInitialized.inputEdge == 'time'
+                    this.edgeInitialized.inValueEdge == 'time'
                   } else if (sourceP.colDbType == 3) {
                     this.edgeInitialized.inValueEdge = 'text'
                   }
@@ -771,6 +868,10 @@
                 _this.selectEdge.assertVal = ev.item.model.assertVal
                 _this.selectEdge.assertValList = ev.item.model.assertValList
                 _this.selectEdge.dataDrilling = ev.item.model.dataDrilling
+                _this.selectEdge.calculation = ev.item.model.calculation
+                _this.selectEdge.formula = ev.item.model.formula
+                _this.selectEdge.calculated = ev.item.model.calculated
+                _this.selectEdge.isRepeat = ev.item.model.isRepeat
                 _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                 _this.selectEdge.ro = ev.item.model.ro
                 _this.selectEdge.roSymbol = ev.item.model.roSymbol
@@ -1283,6 +1384,10 @@
                 itemId: nodeData[key].itemId,
                 precondition:''+nodeData[key].precondition,
                 dataDrilling:nodeData[key].dataDrilling,
+                calculation:nodeData[key].calculation,
+                formula:nodeData[key].formula,
+                calculated:nodeData[key].calculated,
+                isRepeat:nodeData[key].isRepeat,
                 assertVal: nodeData[key].assertVal,
                 assertValList: nodeData[key].assertValList,
                 assertVal1: nodeData[key].assertVal1,
@@ -1315,6 +1420,10 @@
                 assertVal: edgesData[key].assertVal,
                 assertValList: edgesData[key].assertValList,
                 dataDrilling:edgesData[key].dataDrilling,
+                calculation:edgesData[key].calculation,
+                formula:edgesData[key].formula,
+                calculated:edgesData[key].calculated,
+                isRepeat:edgesData[key].isRepeat,
                 assertVal1: edgesData[key].assertVal1,
                 targetAnchor: 0,
                 val:edgesData[key].ruleDatasourceVal,

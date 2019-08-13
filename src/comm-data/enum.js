@@ -257,6 +257,9 @@ const Enum = {
   renal:[{ id: 1, text: '正常' }, { id: 2, text: '轻度不全' }, { id: 3, text: '中度不全' }, { id: 4, text: '重度不全' },{ id: 5, text: '肾衰竭' }],
   heart:[{ id: 1, text: 'Ⅰ级' }, { id: 2, text: 'Ⅱ级(轻度心衰)' }, { id: 3, text: 'Ⅲ级(中度心衰)' }, { id: 4, text: 'Ⅳ级(重度心衰)' }],
   dvt:[{ id: 1, text: '无危险' }, { id: 2, text: '低危(<10%)' }, { id: 3, text: '中危(11-40%)' }, { id: 4, text: '高危(>41%)' }],
-  druglevel:[{ id: 1, text: '好' }, { id: 2, text: '较好' }, { id: 3, text: '一般' }, { id: 4, text: '较差' }, { id: 4, text: '不理解' }]
+  druglevel:[{ id: 1, text: '好' }, { id: 2, text: '较好' }, { id: 3, text: '一般' }, { id: 4, text: '较差' }, { id: 4, text: '不理解' }],
+  calculation:[{id:'1',text:'常量'},{id:'2',text:'聚合'}],
+  conOperation:[{id:'+',text:'+'},{id:'-',text:'-'},{id:'*',text:'*'},{id:'/',text:'/'}],
+  aggregation:[{id:'sum',text:'sum'},{id:'count',text:'count'},{id:'max',text:'max'},{id:'min',text:'min'}]
 }
 export default Enum
