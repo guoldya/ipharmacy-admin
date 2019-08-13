@@ -26,7 +26,7 @@
                             :filterItem="['status']"
                             :items="items"
                             :currentChange="deptCurrentChange"
-                            :isoperate="false"
+                            :isoperate="'false'"
                     ></a-treeTable>
                 </a-spin>
             </a-col>

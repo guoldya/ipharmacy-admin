@@ -15,7 +15,7 @@
                 :items="items"
                 :opColWidth="110"
                 :moreOp="false"
-                :isoperate="false"
+                :isoperate="'false'"
             ></a-treeTable>
         </a-spin>
     </a-card>

@@ -62,7 +62,7 @@
             </a-Row>
             <a-Row class="box">
               <a-Col :span="3" class="textRight">计算公式：</a-Col>
-              <a-Col :span="9">{{fromData.formUla}}</a-Col>
+              <a-Col :span="9">{{fromData.formula}}</a-Col>
               <a-Col :span="3" class="textRight">隐私项目：</a-Col>
               <a-Col :span="9">{{this.isPrivacyFormatter(fromData.isPrivacy)}}</a-Col>
             </a-Row>
