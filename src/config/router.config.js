@@ -1126,6 +1126,20 @@ export const asyncRouterMap = [
                   },
                 ]
               },
+              {
+                path: '/pharmacistStation/electronicMedicine',
+                name: 'electronicMedicine',
+                component: RouteView,
+                meta: { title: '电子药历', multistage: true },
+                children: [
+                  {
+                    path: '/pharmacistStation/electronicMedicine/electronicMedicineIndex',
+                    name: 'electronicMedicineIndex',
+                    component: () => import('@/views/pharmacistStation/electronicMedicine/electronicMedicineIndex.vue'),
+                    meta: { title: '电子药历', hiddenHeaderContent: true, index: true }
+                  },
+                ]
+              },
             ]
           },
           
