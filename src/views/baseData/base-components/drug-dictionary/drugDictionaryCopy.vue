@@ -7,6 +7,7 @@
       :data="dictionary.drugDictionaryData"
       border
       class="margin-top-10"
+      style="width:100%"
       :highlight-current-row="true"
     >
       <!-- <el-table-column fixed="right" label="操作" :width="200" align="center" v-if="true">

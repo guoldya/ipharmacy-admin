@@ -14,7 +14,7 @@
     </a-card>
     <a-card class="margin-top-10">
       <a-col :span="4">
-        <a-anchor v-if="drugDetail" style="text-align: justify;">
+        <a-anchor v-if="drugDetail" style="text-align: justify;" :affix="false" @click="handleClick">
           <!--<a-anchor style="text-align: justify;">-->
           <a-anchor-link v-if="drugDetail.drugNames" href="#drugName" class="w4" title="药品名称"/>
           <a-anchor-link v-if="drugDetail.composition" href="#composition" class="w4" title="药品成分"/>
@@ -230,6 +230,10 @@
       this.getgData()
     },
     methods: {
+       handleClick (e, link) {
+      e.preventDefault();
+      console.log(link);
+    },
       getgData() {
         let params = {};
         params.drugCode = this.$route.params.drugCode;

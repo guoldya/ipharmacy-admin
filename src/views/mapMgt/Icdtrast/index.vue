@@ -172,7 +172,7 @@ export default {
       dataSource: [],
       spinning: false,
       columns: [
-        { title: 'icd编码', prop: 'icdid', width: 80 },
+        { title: 'id', prop: 'icdid', width: 80 },
 
         { title: 'icd名称', prop: 'icdname' },
         // { title: 'icd名称', prop: 'editDate' },
@@ -530,7 +530,7 @@ export default {
 <style lang='less'>
 .testchks {
   .ant-card {
-    padding-top: 12px;
+    padding-top: 1px;
   }
   .zhishiku {
     padding-left: 5px;

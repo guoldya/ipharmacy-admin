@@ -6,22 +6,23 @@
           <a-card>
             <a-row>
               <a-col :span="13">
-                <a-input @pressEnter="pressEnterChange" placeholder="请输入" @change="searchchange" />
+               <a-input-search placeholder="请输入" @search="onChange"/>
               </a-col>
-              <a-col class="treeCol" :span="5">
+              <!-- <a-col class="treeCol" :span="5">
                 <a-button size="small" type="primary" @click="searchRule">查询</a-button>
-              </a-col>
+              </a-col> -->
               <a-col :span="6" class="treeCol"></a-col>
             </a-row>
             <a-row>
               <a-spin tip="加载中..." :spinning="loading">
                 <a-tree
-                  dropdownMatchSelectWidth
-                  :dropdownStyle="{ width:'100px',color:'red'}"
                   class="draggable-tree"
                   :treeData="gData"
                   :loadData="onLoadData"
                   @select="onSelect"
+                  :autoExpandParent="false"
+                  @load="expandTree"
+                  :loadedKeys="loadedKeys"
                 ></a-tree>
               </a-spin>
             </a-row>
@@ -120,7 +121,7 @@ export default {
       api: {
         diagnosisMgtTreeList: '/sys/dicIcd/selectIcdTreeList',
         diagnosisMgtselectPage: '/sys/dicIcd/selectPage',
-        diagnosisMgtupdate: '/sys/dicIcd/update'
+        diagnosisMgtupdate: '/sys/dicIcd/updateStatus'
       },
       columns: [
         { title: '编码', prop: 'id', width: 80, align: 'right' },
@@ -167,9 +168,7 @@ export default {
   destroyed() {
     sessionStorage.clear()
   },
-  updated(){
-  
-  },
+  updated() {},
   mounted() {
     this.getTreeData({})
   },
@@ -237,6 +236,7 @@ export default {
     },
     //处理tree初始数据
     dealData(data) {
+       this.gData = []
       for (let i in data) {
         let isleaf = false
         if (data[i].isleaf == 1) {
@@ -248,6 +248,7 @@ export default {
           defcode2: data[i].defcode2,
           icdcode: data[i].icdcode,
           title: data[i].icdname,
+            isLeaf: isleaf,
           icdtype: data[i].icdtype,
           key: data[i].id
         })
@@ -284,27 +285,25 @@ export default {
     },
     //查询
     searchRule() {
-      // const expandedKeys = this.dataList
-      //   .map(item => {
-      //     if (this.values) {
-      //       if (item.title.indexOf(this.values) > -1) {
-      //         return this.getParentKey(item.title, this.gData)
-      //       }
-      //     }
-      //     return null
-      //   })
-      //   .filter((item, i, self) => item && self.indexOf(item) === i)
-      // Object.assign(this, {
-      //   expandedKeys,
-      //   searchValue: this.values
-      // })
       let params = { keyword: this.value }
       this.getTreeData(params)
     },
     // 查找事件
-    searchchange(e) {
-      this.value = e.target.value
+    onChange(value) {
+       this.loadedKeys = []
+        if ($.trim(value).length > 0) {
+          this.gData = []
+          let params = { keyword: value }
+          this.getTreeData(params)
+        } else {
+          this.gData = []
+          let data = {}
+          this.getTreeData(data)
+        }
     },
+      expandTree(loadedKeys, expanded) {
+        this.loadedKeys = loadedKeys
+      },
     //新增事件
     addMdc() {
       this.$router.push({
@@ -361,6 +360,7 @@ export default {
                     title: res.rows[i].icdname,
                     icdtype: res.rows[i].icdtype,
                     key: res.rows[i].id,
+                     isLeaf: isLeaf,
                     patientid: res.rows[i].patientid
                   })
                 }
