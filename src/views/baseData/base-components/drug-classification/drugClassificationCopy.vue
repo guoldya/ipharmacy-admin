@@ -2,7 +2,7 @@
   <div>
     <a-row>
       <a-col :span="16">
-        <a-input-search placeholder="请输入" @search="onChange" />
+        <a-input-search placeholder="请输入" @search="onChange"/>
       </a-col>
       <a-col :span="8" class="treeCol">
         <a-dropdown :trigger="['click']">
@@ -20,15 +20,19 @@
           <a-menu slot="overlay" @click="handleMenuClick">
             <a-menu-item key="new" @click="newTreeNode">新增</a-menu-item>
             <a-menu-item key="update" v-if="classification.disable" @click="updateTreeNode">编辑</a-menu-item>
-            <a-menu-item style="color: #2D8cF0" key="enable" v-if="nodeData.status == 0&&classification.disable">启用</a-menu-item>
-            <a-menu-item style="color: #ff9900" key="disable" v-else-if="nodeData.status == 1&&classification.disable">停用</a-menu-item>
+            <a-menu-item style="color: #2D8cF0" key="enable" v-if="nodeData.status == 0&&classification.disable">启用
+            </a-menu-item>
+            <a-menu-item style="color: #ff9900" key="disable" v-else-if="nodeData.status == 1&&classification.disable">
+              停用
+            </a-menu-item>
           </a-menu>
         </a-dropdown>
       </a-col>
     </a-row>
     <a-row>
       <a-spin tip="加载中..." :spinning="loading">
-        <a-tree class="draggable-tree" :treeData="gData" :loadedKeys="loadedKeys" :loadData="onLoadData" @select="onSelect"></a-tree>
+        <a-tree class="draggable-tree" :treeData="gData"  :autoExpandParent="false" :loadData="onLoadData"
+                :loadedKeys="loadedKeys"  @select="onSelect" @load="expandTree" ></a-tree>
       </a-spin>
     </a-row>
     <a-modal
@@ -98,7 +102,8 @@
               :value="op.id"
               v-for="(op,index) in codeClassData"
               :key="index"
-            >{{op.name}}</a-select-option>
+            >{{op.name}}
+            </a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="状态" :label-col="{ span: 5 }" :wrapper-col="{ span: 15 }">
@@ -112,416 +117,410 @@
 </template>
 
 <script>
-import treeTable from '@/components/tree-table/treeTable.vue'
+  import treeTable from '@/components/tree-table/treeTable.vue'
 
-export default {
-  name: 'drugClassification',
-  components: {
-    'a-treeTable': treeTable
-  },
-  props: {
-    onSelect: {
-      Function
+  export default {
+    name: 'drugClassification',
+    components: {
+      'a-treeTable': treeTable
     },
-    nodeData: {
-      Object
-    },
-    classification: {
-      Object
-    },
-    disable: {
-      Boolean
-    }
-  },
-  data() {
-    return {
-      api: {
-        drugCategoryList: 'sys/dicDrugcategory/selectList',
-        dicDrugSelectList: 'sys/dicBase/selectClassList',
-        drugCategoryUpdate: 'sys/dicDrugcategory/update',
-        updateStatus: 'sys/dicDrugcategory/updateStatus',
-        selectOne:'sys/dicDrugcategory/selectOne',
+    props: {
+      onSelect: {
+        Function
       },
-      columns: [],
-      baseData: [],
-      items: [],
-      isOpcol: true,
-      loading: false,
-      loadedKeys:[],
-      gData: [],
-      codeClassData: [],
-      visible: false,
-      popTitle: '',
-      clickItem: '',
-      newDataId: '',
-      Modal: {
-        title: '',
+      nodeData: {
+        Object
+      },
+      classification: {
+        Object
+      },
+      disable: {
+        Boolean
+      }
+    },
+    data() {
+      return {
+        api: {
+          drugCategoryList: 'sys/dicDrugcategory/selectList',
+          dicDrugSelectList: 'sys/dicBase/selectClassList',
+          drugCategoryUpdate: 'sys/dicDrugcategory/update',
+          updateStatus: 'sys/dicDrugcategory/updateStatus',
+          selectOne: 'sys/dicDrugcategory/selectOne'
+        },
+        columns: [],
+        baseData: [],
+        items: [],
+        isOpcol: true,
+        loading: false,
+        loadedKeys: [],
+        gData: [],
+        codeClassData: [],
         visible: false,
-        confirmLoading: false
+        popTitle: '',
+        clickItem: '',
+        newDataId: '',
+        Modal: {
+          title: '',
+          visible: false,
+          confirmLoading: false
+        },
+        fatherTitle: '',
+        fatherId: null,
+        form: this.$form.createForm(this)
+      }
+    },
+    mounted() {
+      this.getData({ pid: -1 })
+      this.getDicBase()
+    },
+    methods: {
+      getData(params = {}) {
+        this.loading = true
+        this.$axios({
+          url: this.api.drugCategoryList,
+          method: 'put',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.loading = false
+              this.dealData(res.rows)
+            } else {
+              this.loading = false
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+            this.loading = false
+          })
       },
-      fatherTitle: '',
-      fatherId: null,
-      form: this.$form.createForm(this)
-    }
-  },
-  mounted() {
-    this.getData({pid:-1})
-    this.getDicBase()
-  },
-  methods: {
-    getData(params = {}) {
-      this.loading = true
-      this.$axios({
-        url: this.api.drugCategoryList,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.loading = false
-            this.dealData(res.rows)
-          } else {
-            this.loading = false
-            this.warn(res.msg)
-          }
+      getDicBase() {
+        let params = {}
+        params.codeClass = 38
+        this.$axios({
+          url: this.api.dicDrugSelectList,
+          method: 'put',
+          data: params
         })
-        .catch(err => {
-          this.error(err)
-          this.loading = false
-        })
-    },
-    getDicBase() {
-      let params = {}
-      params.codeClass = 38
-      this.$axios({
-        url: this.api.dicDrugSelectList,
-        method: 'put',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.codeClassData = res.rows
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    dealData(data) {
-      this.gData = [];
-      for (let i in data) {
-        let isleaf = false
-        if (data[i].isleaf == 1) {
-          isleaf = false
-        } else {
-          isleaf = true
-        }
-        this.gData.push({
-          key: data[i].categoryId,
-          title: data[i].categoryName,
-          isLeaf: isleaf,
-          status: data[i].status,
-          categoryCode: data[i].categoryCode,
-          spellCode: data[i].spellCode,
-          categoryProperty: data[i].categoryProperty,
-          pid: data[i].pid,
-          categoryType: data[i].categoryType
-        })
-      }
-    },
-    getDataChildren(bdata, pid) {
-      var items = []
-      for (var key in bdata) {
-        var item = bdata[key]
-        if (pid == item.parentId) {
-          item.items = this.getDataChildren(bdata, item.id)
-          items.push(item)
-        }
-      }
-      return items
-    },
-    //延迟加载树
-    onLoadData(treeNode) {
-      return new Promise(resolve => {
-        if (treeNode.dataRef.children) {
-          resolve()
-          return
-        }
-        setTimeout(() => {
-          let params = {}
-          params.pid = treeNode.dataRef.key
-          this.$axios({
-            url: this.api.drugCategoryList,
-            method: 'put',
-            data: params
+          .then(res => {
+            if (res.code == '200') {
+              this.codeClassData = res.rows
+            } else {
+              this.warn(res.msg)
+            }
           })
-            .then(res => {
-              if (res.code == '200') {
-                treeNode.dataRef.children = []
-                for (let i in res.rows) {
-                  let isLeaf = false
-                  if (res.rows[i].isleaf == 1) {
-                    isLeaf = false
-                  } else {
-                    isLeaf = true
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      dealData(data) {
+        this.gData = []
+        for (let i in data) {
+          let isleaf = false
+          if (data[i].isleaf == 1) {
+            isleaf = false
+          } else {
+            isleaf = true
+          }
+          this.gData.push({
+            key: data[i].categoryId,
+            title: data[i].categoryName,
+            isLeaf: isleaf,
+            status: data[i].status,
+            categoryCode: data[i].categoryCode,
+            spellCode: data[i].spellCode,
+            categoryProperty: data[i].categoryProperty,
+            pid: data[i].pid,
+            categoryType: data[i].categoryType
+          })
+
+        }
+      },
+      //延迟加载树
+      onLoadData(treeNode) {
+        return new Promise(resolve => {
+          if (treeNode.dataRef.children) {
+            resolve()
+            return
+          }
+          setTimeout(() => {
+            let params = {}
+            params.pid = treeNode.dataRef.key
+            this.$axios({
+              url: this.api.drugCategoryList,
+              method: 'put',
+              data: params
+            })
+              .then(res => {
+                if (res.code == '200') {
+                  treeNode.dataRef.children = []
+                  for (let i in res.rows) {
+                    let isLeaf = false
+                    if (res.rows[i].isleaf == 1) {
+                      isLeaf = false
+                    } else {
+                      isLeaf = true
+                    }
+                    treeNode.dataRef.children.push({
+                      key: res.rows[i].categoryId,
+                      title: res.rows[i].categoryName,
+                      isLeaf: isLeaf,
+                      status: res.rows[i].status,
+                      categoryCode: res.rows[i].categoryCode,
+                      spellCode: res.rows[i].spellCode,
+                      categoryProperty: res.rows[i].categoryProperty,
+                      pid: res.rows[i].pid,
+                      categoryType: res.rows[i].categoryType
+                    })
                   }
-                  treeNode.dataRef.children.push({
-                    key: res.rows[i].categoryId,
-                    title: res.rows[i].categoryName,
-                    isLeaf: isLeaf,
-                    status: res.rows[i].status,
-                    categoryCode: res.rows[i].categoryCode,
-                    spellCode: res.rows[i].spellCode,
-                    categoryProperty: res.rows[i].categoryProperty,
-                    pid: res.rows[i].pid,
-                    categoryType: res.rows[i].categoryType
-                  })
+                  this.gData = [...this.gData]
+                } else {
+                  this.warn(res.msg)
                 }
-                this.gData = [...this.gData]
-              } else {
-                this.warn(res.msg)
-              }
-            })
-            .catch(err => {
-              this.error(err)
-            })
-          resolve()
-        }, 500)
-      })
-    },
-    newTreeNode() {
-      this.fatherTitle = this.nodeData.title
-      this.fatherId = this.nodeData.key
-      this.Modal.visible = true
-      this.Modal.title = '新增分类'
-      this.form.resetFields()
-      setTimeout(() => {
-        this.form.setFieldsValue({
-          status: '1'
-        })
-      }, 0)
-    },
-    updateTreeNode() {
-      this.Modal.visible = true
-      this.Modal.title = '编辑分类'
-      let params = {};
-      this.$axios({
-        url: this.api.selectOne,
-        method: 'put',
-        data: {categoryId:this.nodeData.key}
-      })
-        .then(res => {
-          if (res.code == '200') {
-            params = res.data;
-            setTimeout(() => {
-              this.form.setFieldsValue({
-                categoryName: params.categoryName,
-                spellCode: params.spellCode,
-                categoryProperty: params.categoryProperty,
-                status: params.status
               })
-            }, 0)
-          } else {
-            this.warn(res.msg)
-          }
+              .catch(err => {
+                this.error(err)
+              })
+            resolve()
+          }, 100)
         })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    enableTreeNode() {
-      let params = {}
-      if (this.nodeData.status == '1') {
-        params.status = '0'
-      } else {
-        params.status = '1'
-      }
-      params.categoryId = this.nodeData.key
-      params.categoryName = this.nodeData.title
-      params.categoryCode = this.nodeData.categoryCode
-      params.spellCode = this.nodeData.spellCode
-      params.categoryType=this.nodeData.categoryType
-      this.$axios({
-        url: this.api.updateStatus,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.updateGdata(params, this.gData)
-            this.Modal.visible = false
-            this.success(res.msg)
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    //modal 提交
-    handleOk(e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log(values,'values')
-          if (this.Modal.title == '编辑分类') {
-            values.categoryCode = this.nodeData.categoryCode
-            values.categoryId = this.nodeData.key
-            values.pid = this.nodeData.pid
-          } else {
-            values.pid = this.fatherId
-          }
-          values.categoryType = 2
-          this.$axios({
-            url: this.api.drugCategoryUpdate,
-            method: 'post',
-            data: values
+      },
+      newTreeNode() {
+        this.fatherTitle = this.nodeData.title
+        this.fatherId = this.nodeData.key
+        this.Modal.visible = true
+        this.Modal.title = '新增分类'
+        this.form.resetFields()
+        setTimeout(() => {
+          this.form.setFieldsValue({
+            status: '1'
           })
-            .then(res => {
-              if (res.code == '200') {
-                if (this.Modal.title == '编辑分类') {
-                  this.updateGdata(values, this.gData)
-                } else if (this.Modal.title == '新增分类' && this.nodeData.children) {
-                  this.newDataId = res.data
-                  values.categoryId = this.newDataId
-                  if (values.pid) {
-                    this.addGdata(values, this.gData)
+        }, 0)
+      },
+      updateTreeNode() {
+        this.Modal.visible = true
+        this.Modal.title = '编辑分类'
+        let params = {}
+        this.$axios({
+          url: this.api.selectOne,
+          method: 'put',
+          data: { categoryId: this.nodeData.key }
+        })
+          .then(res => {
+            if (res.code == '200') {
+              params = res.data
+              setTimeout(() => {
+                this.form.setFieldsValue({
+                  categoryName: params.categoryName,
+                  spellCode: params.spellCode,
+                  categoryProperty: params.categoryProperty,
+                  status: params.status
+                })
+              }, 0)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      enableTreeNode() {
+        let params = {}
+        if (this.nodeData.status == '1') {
+          params.status = '0'
+        } else {
+          params.status = '1'
+        }
+        params.categoryId = this.nodeData.key
+        params.categoryName = this.nodeData.title
+        params.categoryCode = this.nodeData.categoryCode
+        params.spellCode = this.nodeData.spellCode
+        params.categoryType = this.nodeData.categoryType
+        this.$axios({
+          url: this.api.updateStatus,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.updateGdata(params, this.gData)
+              this.Modal.visible = false
+              this.success(res.msg)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      //modal 提交
+      handleOk(e) {
+        e.preventDefault()
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            if (this.Modal.title == '编辑分类') {
+              values.categoryCode = this.nodeData.categoryCode
+              values.categoryId = this.nodeData.key
+              values.pid = this.nodeData.pid
+            } else {
+              values.pid = this.fatherId
+            }
+            values.categoryType = 2
+            this.$axios({
+              url: this.api.drugCategoryUpdate,
+              method: 'post',
+              data: values
+            })
+              .then(res => {
+                if (res.code == '200') {
+                  if (this.Modal.title == '编辑分类') {
+                    this.updateGdata(values, this.gData)
+                  } else if (this.Modal.title == '新增分类' && this.nodeData.children) {
+                    this.newDataId = res.data
+                    values.categoryId = this.newDataId
+                    if (values.pid) {
+                      this.addGdata(values, this.gData)
+                    }
+                  } else if (this.Modal.title == '新增分类' && !this.nodeData.children) {
+                    values.categoryId = res.data
+                    this.addFatherData(values, this.gData)
                   }
-                } else if (this.Modal.title == '新增分类' && !this.nodeData.children) {
-                  values.categoryId = res.data
-                  this.addFatherData(values, this.gData)
+                  this.Modal.visible = false
+                  this.success(res.msg)
+                } else {
+                  this.warn(res.msg)
                 }
-                this.Modal.visible = false
-                this.success(res.msg)
-              } else {
-                this.warn(res.msg)
-              }
-            })
-            .catch(err => {
-              this.error(err)
-            })
+              })
+              .catch(err => {
+                this.error(err)
+              })
+          }
+        })
+      },
+      //本地编辑时修改gdata
+      updateGdata(params, gdata) {
+        for (let i in gdata) {
+          let item = gdata[i]
+          if (item.key == params.categoryId) {
+            item.title = params.categoryName
+            item.status = params.status
+            return
+          } else if (item.children) {
+            this.updateGdata(params, item.children)
+          }
         }
-      })
-    },
-    //本地编辑时修改gdata
-    updateGdata(params, gdata) {
-      for (let i in gdata) {
-        let item = gdata[i]
-        if (item.key == params.categoryId) {
-          item.title = params.categoryName
-          item.status = params.status
-          return
-        } else if (item.children) {
-          this.updateGdata(params, item.children)
+      },
+      addGdata(params, gdata) {
+        let obj = {}
+        obj.key = params.categoryId
+        obj.title = params.categoryName
+        obj.pid = params.pid
+        obj.spellCode = params.spellCode
+        obj.categoryType = params.categoryType
+        obj.categoryProperty = params.categoryProperty
+        obj.status = params.status
+        obj.isLeaf = true
+        for (let i in gdata) {
+          let item = gdata[i]
+          if (item.key == params.pid) {
+            item.children.push(obj)
+            return
+          } else if (item.children) {
+            this.addGdata(params, item.children)
+          }
         }
-      }
-    },
-    addGdata(params, gdata) {
-      let obj = {}
-      console.log(1)
-      obj.key = params.categoryId
-      obj.title = params.categoryName
-      obj.pid = params.pid
-      obj.spellCode = params.spellCode
-      obj.categoryType = params.categoryType
-      obj.categoryProperty = params.categoryProperty
-      obj.status = params.status
-      obj.isLeaf = true
-      for (let i in gdata) {
-        let item = gdata[i]
-        if (item.key == params.pid) {
-          item.children.push(obj)
-          return
-        } else if (item.children) {
-          this.addGdata(params, item.children)
-        }
-      }
-    },
-    addFatherData(params, gdata) {
-      let obj = {}
-      obj.key = params.categoryId
-      obj.categoryProperty = params.categoryProperty
-      obj.title = params.categoryName
-      obj.spellCode = params.spellCode
-      obj.categoryType = params.categoryType
-      obj.status = params.status
-      obj.isLeaf = true
-      gdata.push(obj)
-    },
-    //modal 取消
-    handleCancel() {
-      this.Modal.visible = false
-    },
-    // onSelect(selectedKeys, e) {
-    //   this.nodeData = e.node.dataRef
-    //   this.disable = false
-    // },
+      },
+      addFatherData(params, gdata) {
+        let obj = {}
+        obj.key = params.categoryId
+        obj.categoryProperty = params.categoryProperty
+        obj.title = params.categoryName
+        obj.spellCode = params.spellCode
+        obj.categoryType = params.categoryType
+        obj.status = params.status
+        obj.isLeaf = true
+        gdata.push(obj)
+      },
+      //modal 取消
+      handleCancel() {
+        this.Modal.visible = false
+      },
+      // onSelect(selectedKeys, e) {
+      //   this.nodeData = e.node.dataRef
+      //   this.disable = false
+      // },
 
-    //操作点击事件
-    handleMenuClick(e) {
-      console.log(e)
-      if (e.key == 'new') {
+      //操作点击事件
+      handleMenuClick(e) {
+        if (e.key == 'new') {
+          this.visible = false
+          this.clickItem = 'new'
+        } else if (e.key == 'update') {
+          this.visible = false
+          this.clickItem = 'update'
+        } else if (e.key == 'enable') {
+          this.visible = true
+          this.popTitle = '确认启用？'
+          this.clickItem = 'enable'
+        } else if (e.key == 'disable') {
+          this.visible = true
+          this.popTitle = '确认停用？'
+          this.clickItem = 'disable'
+        }
+      },
+      //删除父级
+      deleteFather() {
+        this.fatherTitle = ''
+        this.fatherId = null
+      },
+      cancel() {
         this.visible = false
-        this.clickItem = 'new'
-      } else if (e.key == 'update') {
+      },
+      confirm() {
+        this.enableTreeNode()
         this.visible = false
-        this.clickItem = 'update'
-      } else if (e.key == 'enable') {
-        this.visible = true
-        this.popTitle = '确认启用？'
-        this.clickItem = 'enable'
-      } else if (e.key == 'disable') {
-        this.visible = true
-        this.popTitle = '确认停用？'
-        this.clickItem = 'disable'
-      }
-    },
-    //删除父级
-    deleteFather() {
-      this.fatherTitle = ''
-      this.fatherId = null
-    },
-    cancel() {
-      this.visible = false
-    },
-    confirm() {
-      this.enableTreeNode()
-      this.visible = false
-    },
-    onChange(value){
-      if ($.trim(value).length>0){
-        this.gData = [];
-        let params={keyword:value}
-        this.getData(params)
-      } else{
-        this.gData = [];
-        let data={pid:-1}
-        this.getData(data)
-      }
+      },
+      onChange(value) {
+        this.loadedKeys = []
+        if ($.trim(value).length > 0) {
+          this.gData = []
+          let params = { keyword: value }
+          this.getData(params)
+        } else {
+          this.gData = []
+          let data = { pid: -1 }
+          this.getData(data)
+        }
+      },
+      expandTree(loadedKeys, expanded) {
+        this.loadedKeys = loadedKeys
+      },
 
-    },
 
+    }
   }
-}
 </script>
 
 <style>
-.disableNode {
-  color: #2d8cf0;
-}
-.ruleCow .ant-tree li {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.icon {
-  cursor: pointer;
-}
-  .treeCol{
+  .disableNode {
+    color: #2d8cf0;
+  }
+
+  .ruleCow .ant-tree li {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .icon {
+    cursor: pointer;
+  }
+
+  .treeCol {
     text-align: right;
   }
 </style>

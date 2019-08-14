@@ -9,9 +9,22 @@
   >
     <el-table-column type="selection" align="center" v-if="checkbox" width="55"></el-table-column>
     <el-table-column fixed="right" label="操作" :width="opColWidth" align="center" v-if="isOpcol">
-      <template slot-scope="scope" >
-          <div v-if="isoperate==true&&scope.row.colType!==1">  <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol></div>
-        <div v-if='isoperate==false'><opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol></div>
+      <template slot-scope="scope">
+        <div v-if="(isoperate=='factEng')&&(scope.row.items&&scope.row.items.length>0)&&(scope.row.colType==1)">
+          <opcol :items="fliterdata(items)" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
+        </div>
+        <div v-if="(isoperate=='factEng')&&(scope.row.colType!==1)">
+          <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
+        </div>
+        <div v-if="(isoperate=='questionMgt')&&(scope.row.dicType==0)">
+          <opcol :items="stopEdit(items)" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
+        </div>
+        <div v-if="(isoperate=='questionMgt')&&(scope.row.dicType!=0)">
+          <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
+        </div>
+        <div v-if="isoperate=='false'">
+          <opcol :items="items" :more="moreOp" :data="scope.row" :filterItem="['status']"></opcol>
+        </div>
       </template>
     </el-table-column>
     <el-table-column v-if="columns.length === 0" width="150">
@@ -89,10 +102,10 @@ import treeToArray from './eval'
 export default {
   name: 'treeTable',
   props: {
-      isoperate:{
-        type:Boolean,
-        required: true
-      },
+    isoperate: {
+      type: String,
+      required: true
+    },
     data: {
       type: [Array, Object],
       required: true
@@ -150,7 +163,8 @@ export default {
   },
   data() {
     return {
-      selectData: []
+      selectData: [],
+      item: [{ text: '编辑', showtip: false, click: this.edits }]
     }
   },
   mounted() {},
@@ -162,6 +176,16 @@ export default {
     }
   },
   methods: {
+    // 过滤要编辑，不要停用启用
+    fliterdata(data) {
+      let newarr = data.slice(0, 1)
+      return newarr
+    },
+    // 要停用启用不要编辑
+     stopEdit(data){
+    let newarr = data.slice(1, 3)
+      return newarr
+     },
     showRow: function(row) {
       const show = row.row.parent ? row.row.parent._expanded && row.row.parent._show : true
       row.row._show = show

@@ -22,7 +22,6 @@
                   :treeData="gData"
                   :loadData="onLoadData"
                   @select="onSelect"
-                  :loadedKeys="loadedKeys"
                 ></a-tree>
               </a-spin>
             </a-row>
@@ -167,6 +166,9 @@ export default {
   },
   destroyed() {
     sessionStorage.clear()
+  },
+  updated(){
+  
   },
   mounted() {
     this.getTreeData({})

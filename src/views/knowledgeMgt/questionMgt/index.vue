@@ -17,7 +17,7 @@
         :opColWidth="110"
         :moreOp="false"
         :currentChange="currentChange"
-        :isoperate="false"
+        :isoperate="'questionMgt'"
       ></a-treeTable>
     </a-spin>
   </a-card>
@@ -58,6 +58,7 @@ export default {
       dataSource: [],
       parentId: '',
       searchData:{},
+     
     }
   },
   computed: {

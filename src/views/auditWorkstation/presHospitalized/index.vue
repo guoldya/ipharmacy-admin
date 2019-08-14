@@ -270,6 +270,10 @@ export default {
     this.getTreeseldata()
     this.selectEasonData()
   },
+   destroyed() {
+    clearInterval(this.timeInitialize)
+    this.timeInitialize = null
+  },
   methods: {
     // 获取医生
     selectEasonData(params = {}) {
@@ -387,7 +391,6 @@ export default {
             let datas = res.rows
             this.treeDatas = this.getDataChildren(datas, undefined)
             //this.getnewData(this.treeDatas);
-           
           } else {
             this.warn(res.msg)
           }

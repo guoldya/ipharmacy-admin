@@ -54,7 +54,7 @@
               :isOpcol="isOpcol"
               class="margin-top-10"
               :currentChange="currentChange"
-              :isoperate="false"
+              :isoperate="'false'"
             >
             </a-treeTable>
           </a-spin>

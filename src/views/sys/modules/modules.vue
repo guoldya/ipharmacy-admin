@@ -7,7 +7,7 @@
                         :data="dataSource"
                         :isOpcol="false"
                         :currentChange="()=>{return null}"
-                        :isoperate="false"
+                        :isoperate="'false'"
                 ></a-treeTable>
             </a-spin>
         </a-card>

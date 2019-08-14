@@ -17,7 +17,7 @@
         :opColWidth="110"
         :moreOp="false"
         :currentChange="currentChange"
-        :isoperate="true"
+        :isoperate="'factEng'"
       ></a-treeTable>
     </a-spin>
   </a-card>
@@ -59,7 +59,6 @@ export default {
       dataSource: [],
       parentId: '',
       searchData:{},
-      // isoperate:true
     }
   },
   computed: {
@@ -161,6 +160,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
            this.dataSource = this.getDataChildren(res.rows, undefined)
+           console.log(this.dataSource)
             this.loading = false
           } else {
             this.loadingTable = false
