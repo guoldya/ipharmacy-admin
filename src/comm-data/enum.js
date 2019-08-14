@@ -162,7 +162,7 @@ const Enum = {
   drugstatus: [{ id: '0', text: '未对码' }, { id: '1', text: '已对码' }],
   coltype: [{ id: 1, text: '系统' }, { id: 2, text: '自定义' }],
   attributeType: [{ id: 1, text: '数字' }, { id: 2, text: '时间' }, { id: 3, text: '字符串' }, { id: 4, text: '数组' }, { id: 5, text: '对象' }],
-  logical: [{ id: 1, text: '常量判断' }, { id: 2, text: '数值区间判断' }, { id: 3, text: '外部数据判断' }],
+  logical: [{ id: 1, text: '常量' }, { id: 2, text: '区间' }, { id: 3, text: '数据源' }],
   completeStatus: ['新建', '合理', '不合理'],
   sexLIST: ['未知', '男', '女'],
   Statuslist: [{ id: 1, text: '新建' }, { id: 2, text: '合理' }, { id: 3, text: '不合理' }],
