@@ -1140,8 +1140,34 @@ export const asyncRouterMap = [
                   },
                 ]
               },
+
+
+              {
+                path: '/pharmacistStation/pharmacyMonitor',
+                name: 'pharmacyMonitor',
+                component: RouteView,
+                meta: { title: '药学监护', keepAlive: false, },
+                children: [
+                  {
+                    path: '/pharmacistStation/pharmacyMonitor/monitorRecords',
+                    name: 'monitorRecords',
+                    component: RouteView,
+                    meta: { title: '监护记录', multistage: true },
+                    children: [
+                      {
+                        path: '/pharmacistStation/pharmacyMonitor/monitorRecords/monitorRecordsIndex',
+                        name: 'monitorRecordsIndex',
+                        component: () => import('@/views/pharmacistStation/pharmacyMonitor/monitorRecords/monitorRecordsIndex.vue'),
+                        meta: { title: '监护记录', hiddenHeaderContent: true, index: true }
+                      },
+                    ]
+                  },
+                ]
+              },
             ]
           },
+          
+
           
         ]
       },

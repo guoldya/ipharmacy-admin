@@ -1,45 +1,7 @@
 <template>
     <div class="electronicMedicineIndex">
-        <a-card>
-            <a-icon type="star" class="star" theme="filled" :style="{ color: '#1890ff' }" />
-            <a-row>
-                <span class="titleText font-bold userName">梁汉文</span>
-                <span class="titleText margin-left-20">
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#40a9ff'"
-                    :key="1"
-                  >91084654</a-tag>
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#40a9ff'"
-                    :key="2"
-                  >肝</a-tag>
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#58C7CF'"
-                    :key="3"
-                  >肾</a-tag>
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#B497EE'"
-                    :key="4"
-                  >心</a-tag>
-                </span>
-            </a-row>
-            <a-row class="fontSize16 margin-top-10">
-                <span>男</span>
-                <a-divider type="vertical"/>
-                <span>35岁</span>
-                <a-divider type="vertical"/>
-                <span>皮肤科 5病区/2床</span>
-                <a-divider type="vertical"/>
-                <span>医护：胡清/黄晶锐</span>
-                <a-divider type="vertical"/>
-                <span>入院日期：2019-08-05</span>
-            </a-row>
-            <p class="margin-top-10">诊断：过敏性皮炎</p>
-        </a-card>
+        <detailHeader :userName="userName" :tagList="tagList" :userInfo="userInfo" :diag="diag"></detailHeader>   
+        
         <a-card class="margin-top-5 borderNone">
             <div class="electronicMedicine">
                 <span class="font-bold fontSize16"><a-icon type="file-text" /> 电子药历</span>
@@ -56,108 +18,7 @@
         :activeTabKey="noTitleKey"
         @tabChange="key => onTabChange(key, 'noTitleKey')"
         >
-        <a-form  v-if="noTitleKey === '1'" class="ant-advanced-search-form" :form="form">
-            <a-row :gutter="24">
-                <a-col
-                v-for="(list,i) in formItem"
-                :key="i"
-                :span="12"
-                >
-                <a-form-item :label="list.label" class="unit"
-                 :label-col="{ span: 4 }"
-                :wrapper-col="{ span: 14 }">
-                    <a-date-picker  @change="onChange" v-if="list.type==='date'"/>
-                    <a-input v-if="list.type==='input'"
-                    v-decorator="[list.val,
-                        {
-                        rules: [list.val==='iphoneNumber'?{min:11,max:11,message:'联系方式长度应等于11',trigger:'blur'}:{}
-                            ],
-                        }
-                    ]" placeholder="请输入..."/>
-                    <span class="marginLeft8">{{list.unit}}</span>
-                </a-form-item>
-                </a-col>
-            </a-row>
-
-            <a-row :gutter="24">
-                <a-col
-                v-for="(list,i) in formItemTwo"
-                :key="i"
-                :span="24"
-                >
-                <a-form-item :label="list.label" class="wordBreakLabel" :class="list.type==='textarea'||list.type==='table'?'':'unit'"
-                 :label-col="{ span: 2 }"
-                :wrapper-col="{ span: 22 }">
-                    <a-radio-group @change="onRadioChange"  v-decorator="[list.val]" name="radioGroup" v-if="list.type==='radio'&&i===0">
-                        <a-radio
-                         v-for="(itemRadio,index) in list.radioItem" :key="index" :value="itemRadio.value">{{itemRadio.name}}
-                        </a-radio>
-                    </a-radio-group>
-                    
-                    <a-radio-group @change="onAllergyChanege"  v-decorator="[list.val]" name="radioGroup" v-if="list.type==='radio'&i===1">
-                        <a-radio
-                         v-for="(itemRadio,index) in list.radioItem" :key="index" :value="itemRadio.value">{{itemRadio.name}}
-                        </a-radio>
-                    </a-radio-group>
-                    <a-input
-                    v-decorator="[list.val]" v-if="list.type==='textarea'" type="textarea"  :autosize="{ minRows: 4}"
-                        :placeholder=list.label
-                    />
-                    <!-- 不良嗜好 -->
-                     <div  v-for="(itemRadio,index) in list.radioItem" :key="index">
-                       <div  v-if="i===0 &&defaultValue!== '1'&&defaultValue===itemRadio.value">
-                            <a-row :gutter="24">
-                                <a-col :span="defaultValue==='4'?'12':'24'" class="unit">
-                                    <a-input /> 
-                                    <span :style="{width:'19%'}" class="marginLeft8">{{itemRadio.unit}}</span>
-                                </a-col>
-                                <a-col :span="12" v-if="defaultValue==='4'"  class="unit">
-                                    <a-input /> 
-                                    <span :style="{width:'19%'}" class="marginLeft8">{{list.radioItem[index-1].unit}}</span>
-                                </a-col>
-                            </a-row>
-                        </div>
-                    </div> 
-
-                    <a-spin :spinning="loading" tip="加载中..." v-if="list.type==='table'">
-                        <el-table
-                            class="margin-top-10"
-                            :data="dataSource"
-                            border
-                            :highlight-current-row="true"
-                            style="width: 100%"
-                        >
-                            <el-table-column
-                            v-for="item in columns"
-                            :show-overflow-tooltip="true"
-                            :key="item.dataIndex"
-                            :label="item.title"
-                            :prop="item.dataIndex"
-                            :width="item.width"
-                            :align="item.align"
-                            >
-                            </el-table-column>
-                        </el-table>
-                    </a-spin>
-                </a-form-item>
-                <!-- 过敏史 -->
-                <a-form-item :label="list.label" v-if="i===1&&defaultValueAllergy!== '1'" class="allergy"
-                 :label-col="{ span: 2 }"
-                :wrapper-col="{ span: 22 }">
-                 
-                    <div>
-                        <a-button type="primary"><a-icon type="plus" />添加过敏药</a-button>
-                        <a-input
-                    v-decorator="[list.allergyMedicine,
-                        ]" type="textarea"  :autosize="{ minRows: 4}"
-                        :placeholder=list.label
-                    />
-                    </div>
-                </a-form-item>
-                
-                </a-col>
-            </a-row>
-        </a-form>
+            <medicineHomePage v-if="noTitleKey === '1'" ref="medicineHomePage"></medicineHomePage>  
             <p v-if="noTitleKey === '2'">app content</p>
             <p v-else-if="noTitleKey === '3'">project content</p>
         </a-card>
@@ -165,10 +26,29 @@
 </template>
 
 <script>
+import medicineHomePage from './medicineHomePage'
+
   export default {
     name: 'electronicMedicineIndex',
     data(){
       return{
+            userName:'梁汉文',
+            tagList:[
+                {tag:'91084654',color:'#40a9ff'},
+                {tag:'肝',color:'#40a9ff'},
+                {tag:'肾',color:'#58C7CF'},
+                {tag:'心',color:'#B497EE'},
+
+            ],
+            userInfo:{
+                sex:'男',
+                age:'35岁'  ,
+                dept:'皮肤科',
+                stage:' 5病区/2床',
+                docNurse:'胡清/黄晶锐',
+                date:'2019-08-05'
+            },
+            diag:'过敏性皮炎',
             defaultValue:'1',
             defaultValueAllergy:'1',
             loading: false,
@@ -225,45 +105,25 @@
             formData : {}
       }
     },
+    components:{
+        medicineHomePage,
+    },
     props:{
 
     },
     mounted(){
-       if(localStorage.childPage===JSON.stringify('look')){
-         document.title=document.title+'用药指导详情';
-        }else if(localStorage.childPage===JSON.stringify('add')){
-          document.title=document.title.split('用')[0]+'用药指导新增';
-        }
         this.form.setFieldsValue(this.formData)
 
     },
     computed:{
       page(){
-       
         return localStorage.childPage
       }
     },
     methods:{
-        //时间change
-        onChange(dates, dateStrings) {
-            console.log('From: ', dates[0], ', to: ', dates[1]);
-            console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-        },
-        onRadioChange ( e) {
-            this.defaultValue=e.target.value;
-            console.log('radio checked', e.target.value)
-        },
-        onAllergyChanege (e) {
-            this.defaultValueAllergy=e.target.value;
-            console.log('radio checked', e.target.value)
-        },
         save(e){
-            e.preventDefault()
-            this.form.validateFields((err, values) => {
-                if (!err) {
-                   console.log(values)
-                }
-            })
+            //medicineHomePage页面调用 保存接口方法
+           this.$refs.medicineHomePage.save(e);
         },
       onTabChange (key, type) {
         console.log(key, type)
@@ -287,30 +147,13 @@
             position: relative;
             top: -25px;
         }
-        /deep/.unit .ant-form-item-children,.unit{
-            display: flex;
-            align-items: center;
-        }
-        /deep/.wordBreakLabel .ant-form-item-label label{
-            white-space: normal;
-            word-break: break-all;
-            overflow: hidden;
-        }
+       
         .electronicMedicine{
             display: flex;
             justify-content: space-between;
             align-items: center;
             span:last-child button:not(:first-child){
                 margin-left: 8px;
-            }
-        }
-        /deep/.allergy {
-            .ant-form-item-label{
-                display:none ;
-            }
-            .ant-form-item-control-wrapper{
-                text-align: right;
-                float: right;
             }
         }
     }

@@ -19,8 +19,8 @@
                     :span="8"
                     >
                         <a-form-item :label="list.label"
-                        :label-col="{ span: 8 }"
-                        :wrapper-col="{ span: 11 }">
+                        :label-col="{ span: 9 }"
+                        :wrapper-col="{ span: 15 }">
                             <a-input v-if="list.type==='input'"/>
                             <a-input v-if="list.type==='textarea'" type="textarea"/>
                             <a-radio-group name="radioGroup" v-if="list.type==='radio'" :defaultValue="1">
@@ -36,9 +36,9 @@
                     :key="i"
                     :span="24"
                     >
-                        <a-form-item :label="list.label" class="textareaFormItem"
-                        :label-col="{ span: 4 }"
-                        :wrapper-col="{ span: 20 }">
+                        <a-form-item :label="list.label" class="textareaFormItem wordBreakLabel"
+                        :label-col="{ span: 3 }"
+                        :wrapper-col="{ span: 21 }">
                             <a-input v-if="list.type==='textarea'" type="textarea" :autosize="{ minRows: 4}"/>
                         </a-form-item>
                     </a-col>
@@ -333,11 +333,9 @@ import moment from 'moment';
     .ant-advanced-search-form .ant-form-item-control-wrapper {
         flex: 1;
     }
-    /deep/.ant-advanced-search-form .ant-form-item-label label {
-        // width: 209px;
-        // display: inline-block;
-    }
-    /deep/.ant-advanced-search-form .textareaFormItem  .ant-form-item-control-wrapper{
-        width: 87%;
-    }
+     /deep/.wordBreakLabel .ant-form-item-label label{
+            white-space: normal;
+            word-break: break-all;
+            overflow: hidden;
+        }
 </style>
