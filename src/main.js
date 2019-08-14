@@ -28,6 +28,8 @@ import vcolorpicker from 'vcolorpicker'
 //业务相关组件
 import msgHandler from '@/comm-msg/msg-handler.js'
 import Searchpanel from '@/components/search-panel'
+import detailHeader from '@/components/detailHeader/header'
+
 
 import util from '@utils/util'
 import { getFormat, dateFormat,checkArray,changeTime } from '@/utils/misc'
@@ -82,6 +84,7 @@ Vue.prototype.$changeTime = changeTime
 Vue.component('Searchpanel', Searchpanel)
 Vue.component('grid-item', GridItem)
 Vue.component('opcol', opcol)
+Vue.component('detailHeader', detailHeader)
 
 
 new Vue({

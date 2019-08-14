@@ -6,7 +6,7 @@
         <a-button class="margin-left-5" @click="resetForm">重置</a-button>
       </div>
     </Searchpanel>
-     <a-button class="margin-top-10" type="primary" @click="medicalEducationAdd">新增</a-button>
+     <a-button class="margin-top-10" type="primary" @click="monitorRecordsAdd">新增</a-button>
     <a-spin :spinning="loading" tip="加载中...">
       <el-table
         class="margin-top-10"
@@ -32,13 +32,9 @@
           align="center"
           v-if="true"
         >
-            <!-- <template slot-scope="scope">
-              <opcol :items="items" :more="false" :data="scope.row"></opcol>
-            </template> -->
           <template slot-scope="scope">
 
-             <a v-if="scope.row.audit === '0'" @click="">审核</a>
-             <a v-if="scope.row.audit === '1'" @click="">查看</a>
+             <a >编辑</a>
             <a-divider type="vertical" v-if="scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " />
             <a-popconfirm
               title="确定删除?"
@@ -49,10 +45,8 @@
             >
               <a href="javascript:;">删除</a>
             </a-popconfirm>
-            <a-divider type="vertical" v-if="scope.row.status == 1"/>
-            <a>打印</a>
           </template>
-        </el-table-column> 
+        </el-table-column>
       </el-table>
       <a-pagination
         showSizeChanger
@@ -73,7 +67,7 @@
 
 <script>
   export default {
-    name: 'medicalEducationIndex',
+    name: 'monitorRecordsIndex',
     data(){
       return{
         loading: false,
@@ -81,27 +75,19 @@
         pageSize: 10,
         columns: [
           { title: '监护等级', dataIndex: 'indexId', width: 80, align: 'right' },
-          { title: '患者姓名', dataIndex: 'name', align: 'left', width: 100 },
-          { title: '位置', dataIndex: 'testItemName', align: 'left' },
-          { title: '住院号', dataIndex: 'englishName', align: 'right' },
-          { title: '年龄', dataIndex: 'testItemClass', width: 120, align: 'right' },
-          { title: '药品', dataIndex: 'testItemType', width: 80, align: 'left' },
-          { title: '教育类型', width: 100, dataIndex: 'resultType', align: 'left' },
-          { title: '教育时间', width: 100, dataIndex: 'resultType1', align: 'left' },
-          { title: '创建人', width: 100, dataIndex: 'resultType2', align: 'left' },
-          { title: '审核状态', width: 100, dataIndex: 'resultType3', align: 'left' },
-          { title: '打印状态', width: 100, dataIndex: 'resultType4', align: 'left' },
+          { title: '类别', dataIndex: 'name', align: 'left', width: 100 },
+          { title: '患者姓名', dataIndex: 'testItemName',width: 80, align: 'left' },
+          { title: '住院号', dataIndex: 'englishName',width: 80, align: 'right' },
+          { title: '年龄', dataIndex: 'testItemClass', width: 80, align: 'right' },
+          { title: '患者位置', dataIndex: 'testItemType', width: 80, align: 'left' },
+          { title: '药学监护结果分析（包括疗效、不良反应和执行情况）', dataIndex: 'resultType', align: 'left' },
+          { title: '药物治疗方案分析', width: 140, dataIndex: 'resultType1', align: 'left' },
+          { title: '备注', width: 100, dataIndex: 'resultType2', align: 'left' },
+          { title: '监护时间', width: 100, dataIndex: 'resultType3', align: 'left' },
         ],
         dataSource: [{name:'张三',status:'1',audit:'0'},{name:'李四',status:'1',audit:'1'}],
         current:1,
         searchData:{},
-        items: [
-          { text: '审核',  showtip: false, click: this.edits, status: '0' },
-          { text: '查看',  showtip: false, click: this.edits, status: '1' },
-          { text: '删除', color: 'red', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
-          { text: '打印',  showtip: false, click: this.edits, status: '' },
-
-        ],
       }
     },
     computed: {
@@ -118,39 +104,7 @@
             type: 'text'
           },
           {
-            name: '审核状态',
-            dataField: 'testItemType1',
-            type: 'select',
-            dataSource: this.enum.status,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-          {
-            name: '教育类型',
-            dataField: 'testItemType2',
-            type: 'select',
-            dataSource: this.enum.patientProblem,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-          {
-            name: '带教学员',
-            dataField: 'resultType3',
-            type: 'select',
-            dataSource: this.enum.levelType,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-          {
-            name: '打印状态',
-            dataField: 'resultType',
-            type: 'select',
-            dataSource: this.enum.resultType,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-          {
-            name: '带教时间',
+            name: '监护时间',
             dataField: 'time',
             type: 'range-picker',
           },
@@ -158,9 +112,8 @@
       }
     },
     methods:{
-      medicalEducationAdd(){
+      monitorRecordsAdd(){
         this.$router.push({
-          name: 'medicalEducationAdd',
         })
       },
       //搜索

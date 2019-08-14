@@ -1,27 +1,7 @@
 <template>
     <div class="medicalEducationAdd">
-      <a-card>
-        <header>
-          <a-icon type="star" class="star" theme="filled" :style="{ color: '#1890ff' }" />
-          <span class="userName">梁汉文</span>
-          <a-tag color="#2db7f5">95279527</a-tag>
-          <a-tag class="tagStyle" :color="'#40a9ff'" :key="2">肝</a-tag>
-          <a-tag class="tagStyle" :color="'#58C7CF'" :key="3">肾</a-tag>
-          <a-tag class="tagStyle" :color="'#B497EE'" :key="4">心</a-tag>
+        <detailHeader :userName="userName" :tagList="tagList" :userInfo="userInfo"></detailHeader>
 
-        </header>
-        <aside class="people margin-top-5">
-          <span>男</span>
-          <a-divider type="vertical"/>
-          <span>35岁</span>
-          <a-divider type="vertical"/>
-          <span>皮肤科 五病区/2床</span>
-          <a-divider type="vertical"/>
-          <span>医护：唐伯虎/秋香</span>
-          <a-divider type="vertical"/>
-          <span>入院日期：2017-4-8</span>
-        </aside>
-      </a-card>
       <a-card class="margin-top-5 borderNone">
         <div class="disFlex">
           <span class="font-bold fontSize16">用药教育</span>
@@ -80,7 +60,7 @@
             align="center"
             v-if="true"
           >
-            <template  slot-scope="scope">
+            <template >
               <a-icon type="close" class=" danger cursor"/>
               <a-icon type="arrow-up" class="margin-left-20 primary cursor"/>
               <a-icon type="arrow-down" class="margin-left-20 primary cursor"/>
@@ -106,6 +86,22 @@
     name: 'medicalEducationAdd',
     data(){
       return{
+        userName:'梁汉文',
+            tagList:[
+                {tag:'91084654',color:'#40a9ff'},
+                {tag:'肝',color:'#40a9ff'},
+                {tag:'肾',color:'#58C7CF'},
+                {tag:'心',color:'#B497EE'},
+
+            ],
+            userInfo:{
+                sex:'男',
+                age:'35岁'  ,
+                dept:'皮肤科',
+                stage:' 5病区/2床',
+                docNurse:'胡清/黄晶锐',
+                date:'2019-08-05'
+            },
         selectText: [
           { value: 1, item: '在院'},
           { value: 2, item: '特级监护'},

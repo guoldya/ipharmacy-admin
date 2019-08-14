@@ -85,9 +85,9 @@
                   :highlight-current-row="true"
                   style="width: 100%"
                 >
-                  <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
+                  <el-table-column fixed="right" label="操作" :width="150" align="center" v-if="true">
                     <template slot-scope="scope">
-                      <opcol :items="items" :more="false" :data="scope.row" :filterItem="['status']"></opcol>
+                        <opcol :items="items" :more="false" :data="scope.row"></opcol>
                     </template>
                   </el-table-column>
                   <el-table-column
@@ -189,7 +189,7 @@
         ],
         items: [
           { text: '编辑',  showtip: false, click: this.edits, status: '' },
-          { text: '删除', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
+          { text: '删除', color: 'red', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
         ],
       pagination: {},
       }
