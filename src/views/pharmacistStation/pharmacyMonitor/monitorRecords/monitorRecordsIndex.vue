@@ -34,7 +34,7 @@
         >
           <template slot-scope="scope">
 
-             <a @click="">编辑</a>
+             <a >编辑</a>
             <a-divider type="vertical" v-if="scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " />
             <a-popconfirm
               title="确定删除?"

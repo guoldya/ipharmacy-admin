@@ -32,6 +32,9 @@
           align="center"
           v-if="true"
         >
+            <!-- <template slot-scope="scope">
+              <opcol :items="items" :more="false" :data="scope.row"></opcol>
+            </template> -->
           <template slot-scope="scope">
 
              <a v-if="scope.row.audit === '0'" @click="">审核</a>
@@ -49,7 +52,7 @@
             <a-divider type="vertical" v-if="scope.row.status == 1"/>
             <a>打印</a>
           </template>
-        </el-table-column>
+        </el-table-column> 
       </el-table>
       <a-pagination
         showSizeChanger
@@ -92,6 +95,13 @@
         dataSource: [{name:'张三',status:'1',audit:'0'},{name:'李四',status:'1',audit:'1'}],
         current:1,
         searchData:{},
+        items: [
+          { text: '审核',  showtip: false, click: this.edits, status: '0' },
+          { text: '查看',  showtip: false, click: this.edits, status: '1' },
+          { text: '删除', color: 'red', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
+          { text: '打印',  showtip: false, click: this.edits, status: '' },
+
+        ],
       }
     },
     computed: {

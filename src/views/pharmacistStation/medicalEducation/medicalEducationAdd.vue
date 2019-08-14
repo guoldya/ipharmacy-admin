@@ -60,7 +60,7 @@
             align="center"
             v-if="true"
           >
-            <template  slot-scope="scope">
+            <template >
               <a-icon type="close" class=" danger cursor"/>
               <a-icon type="arrow-up" class="margin-left-20 primary cursor"/>
               <a-icon type="arrow-down" class="margin-left-20 primary cursor"/>

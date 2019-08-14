@@ -4,7 +4,7 @@
           <a-col :xl="8" :xxl="5" v-if="page===JSON.stringify('look')">
             <div class="ruleCow">
               <a-card>
-                <a-input-search class="txtCenter" placeholder="输入要查询日期" @search="" />
+                <a-input-search class="txtCenter" placeholder="输入要查询日期"  />
                 <a-list size="large" class="margin-top-10" bordered :dataSource="date">
                   <a-list-item :style="{ 'padding-left': '34%'}"  slot="renderItem" slot-scope="item">{{item}}</a-list-item>
                 </a-list>
@@ -94,7 +94,7 @@
                   >
                   </el-table-column>
                   <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-                    <template slot-scope="scope">
+                    <template>
                      <span>删除</span>
                     </template>
                   </el-table-column>
@@ -123,7 +123,7 @@
                     >
                     </el-table-column>
                   <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-                    <template slot-scope="scope">
+                    <template>
                       <span>删除</span>
                     </template>
                   </el-table-column>

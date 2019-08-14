@@ -1162,6 +1162,20 @@ export const asyncRouterMap = [
                       },
                     ]
                   },
+                  {
+                    path: '/pharmacistStation/pharmacyMonitor/pharmacyCare',
+                    name: 'pharmacyCare',
+                    component: RouteView,
+                    meta: { title: '药学监护', multistage: true },
+                    children: [
+                      {
+                        path: '/pharmacistStation/pharmacyMonitor/pharmacyCare/pharmacyCareIndex',
+                        name: 'pharmacyCareIndex',
+                        component: () => import('@/views/pharmacistStation/pharmacyMonitor/pharmacyCare/pharmacyCareIndex.vue'),
+                        meta: { title: '药学监护', hiddenHeaderContent: true, index: true }
+                      },
+                    ]
+                  },
                 ]
               },
             ]
