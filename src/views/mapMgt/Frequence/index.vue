@@ -525,7 +525,7 @@ export default {
     padding-top: 1px;
   }
   .ant-card {
-    padding-top: 12px;
+    padding-top: 1px;
   }
 }
 

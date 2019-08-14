@@ -24,37 +24,37 @@
       <a-form-item label="附加编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['addcode',{rules:[{validator:checkChineses}]}]"
+          v-decorator="['addcode',{rules:[{validator:checkChinese}]}]"
         />
       </a-form-item>
       <a-form-item label="自定义编码1" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['defcode1',{rules:[,{max: 20,message:'最多输入20个字'}]}]"
+          v-decorator="['defcode1',{rules:[{validator:checkChinese}]}]"
         />
       </a-form-item>
       <a-form-item label="自定义编码2" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['defcode2',{rules:[,{max: 20,message:'最多输入20个字'}]}]"
+          v-decorator="['defcode2',{rules:[{validator:checkChinese}]}]"
         />
       </a-form-item>
       <a-form-item label="拼音码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['spellcode',{rules:[,{max: 50,message:'最多输入50个字'}]}]"
+          v-decorator="['spellcode',{rules:[{validator:checkChinese}]}]"
         />
       </a-form-item>
       <a-form-item label="自定义名称" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['icdname',{rules:[{ required: true, message: '请输入编号' },{max: 200,message:'最多输入200个字'}]}]"
+          v-decorator="['icdname',{rules:[{ required: true, message: '请输入编号' },{validator:checkChinese}]}]"
         />
       </a-form-item>
       <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-textarea
           :read-only="readOnly"
-          v-decorator="['remark',{rules:[,{max: 2000,message:'最多输入2000个字'}]}]"
+          v-decorator="['remark',{rules:[,{validator:checkChinese}]}]"
         />
       </a-form-item>
       <a-form-item label="诊断类型" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -104,7 +104,7 @@ export default {
       patientid: '',
       formData: [],
       loadingTable: false,
-      patientid: ''
+      pid: ''
     }
   },
   created() {
@@ -122,24 +122,18 @@ export default {
   methods: {
     //校验数据
     checkChinese(rule, value, callback) {
-      let num = 20
-      let newarr = value.match(/[^\x00-\xff]+/g) == null ? 0 : value.match(/[^\x00-\xff]+/g).join('').length
-      console.log(value.length, newarr)
-      let endLength = value.length + newarr
-      if (endLength > num) {
-        callback('输入字符超过限制')
-      } else {
-        callback()
-      }
-    },
-    //校验数据
-    checkChineses(rule, value, callback) {
-      let num = 20
-      let newarr = value.match(/[^\x00-\xff]+/g) == null ? 0 : value.match(/[^\x00-\xff]+/g).join('').length
-      console.log(value.length, newarr)
-      let endLength = value.length + newarr
-      if (endLength > num) {
-        callback('输入字符超过限制')
+      if (value) {
+        let obj = { icdcode: 20, addcode: 20, defcode1: 20, defcode2: 20, spellcode: 50, icdname: 200, remark: 2000 }
+        console.log(obj[rule.field])
+        let num = obj[rule.field]
+        let newarr = value.match(/[^\x00-\xff]+/g) == null ? 0 : value.match(/[^\x00-\xff]+/g).join('').length
+        // console.log(value.length, newarr)
+        let endLength = value.length + newarr
+        if (endLength > num) {
+          callback('输入字符超过限制')
+        } else {
+          callback()
+        }
       } else {
         callback()
       }
@@ -147,10 +141,18 @@ export default {
     handleSubmit(e) {
       this.loadingTable = true
       e.preventDefault()
+      // console.log(this.form.getFieldsValue())
       this.form.validateFields((err, values) => {
         if (!err) {
           let params = values
-          if (this.$route.params.patientid != 'n') {
+          if (this.$route.params.id != 'n') {
+            if (this.pid == undefined) {
+              params.patientid = ''
+            } else {
+              params.patientid = this.pid
+            }
+          }
+          if (this.$route.params.id == 'n') {
             params.patientid = this.$route.params.patientid
           }
           this.$axios({
@@ -191,6 +193,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             let arr = res.data
+            this.pid = res.data.patientid
             let { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status } = arr,
               formData = { id, icdcode, addcode, defcode1, defcode2, spellcode, icdname, remark, icdtype, status }
             this.form.setFieldsValue(formData)

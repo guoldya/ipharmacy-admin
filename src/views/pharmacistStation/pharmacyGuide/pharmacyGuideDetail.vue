@@ -4,7 +4,7 @@
           <a-col :xl="8" :xxl="5" v-if="page===JSON.stringify('look')">
             <div class="ruleCow">
               <a-card>
-                <a-input-search class="txtCenter" placeholder="输入要查询日期" @search="" />
+                <a-input-search class="txtCenter" placeholder="输入要查询日期"  />
                 <a-list size="large" class="margin-top-10" bordered :dataSource="date">
                   <a-list-item :style="{ 'padding-left': '34%'}"  slot="renderItem" slot-scope="item">{{item}}</a-list-item>
                 </a-list>
@@ -12,46 +12,9 @@
             </div>
           </a-col>
           <a-col  :xxl="page===JSON.stringify('look')?19:24" :xl="page===JSON.stringify('look')?16:24">
-            <a-card>
-               <a-icon type="star" class="star" theme="filled" :style="{ color: '#1890ff' }" />
-              <a-row>
-                <span class="titleText font-bold userName">梁汉文</span>
-                <span class="titleText margin-left-20">
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#40a9ff'"
-                    :key="1"
-                  >91084654</a-tag>
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#40a9ff'"
-                    :key="2"
-                  >肝</a-tag>
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#58C7CF'"
-                    :key="3"
-                  >肾</a-tag>
-                  <a-tag
-                    class="tagStyle"
-                    :color="'#B497EE'"
-                    :key="4"
-                  >心</a-tag>
-                </span>
-              </a-row>
-              <a-row class="fontSize16 margin-top-10">
-                <span>男</span>
-                <a-divider type="vertical"/>
-                <span>35岁</span>
-                <a-divider type="vertical"/>
-                <span>皮肤科 5病区/2床</span>
-                <a-divider type="vertical"/>
-                <span>医护：胡清/黄晶锐</span>
-                <a-divider type="vertical"/>
-                <span>入院日期：2019-08-05</span>
-              </a-row>
-              <p class="margin-top-10">诊断：过敏性皮炎</p>
-            </a-card>
+           
+            <detailHeader :userName="userName" :tagList="tagList" :userInfo="userInfo" :diag="diag"></detailHeader>
+            
             <a-card class="margin-top-5 borderNone">
               <div class="medicineGuide">
                 <span class="font-bold fontSize16"><a-icon type="medicine-box" /> 指导信息</span>
@@ -131,7 +94,7 @@
                   >
                   </el-table-column>
                   <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-                    <template slot-scope="scope">
+                    <template>
                      <span>删除</span>
                     </template>
                   </el-table-column>
@@ -160,7 +123,7 @@
                     >
                     </el-table-column>
                   <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
-                    <template slot-scope="scope">
+                    <template>
                       <span>删除</span>
                     </template>
                   </el-table-column>
@@ -189,6 +152,23 @@
     name: 'pharmacyGuideDetail',
     data(){
       return{
+        userName:'梁汉文',
+            tagList:[
+                {tag:'91084654',color:'#40a9ff'},
+                {tag:'肝',color:'#40a9ff'},
+                {tag:'肾',color:'#58C7CF'},
+                {tag:'心',color:'#B497EE'},
+
+            ],
+            userInfo:{
+                sex:'男',
+                age:'35岁'  ,
+                dept:'皮肤科',
+                stage:' 5病区/2床',
+                docNurse:'胡清/黄晶锐',
+                date:'2019-08-05'
+            },
+            diag:'过敏性皮炎',
         date:['2019-08-01','2019-08-02','2019-08-03',
           '2019-08-04','2019-08-05','2019-08-06',
           '2019-08-07'
