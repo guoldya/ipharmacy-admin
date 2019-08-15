@@ -87,7 +87,7 @@
                             v-if="cd.columnId == 'AGE' && cd.logic == '2'"
                             @change="assertValSpec($event,cd.ruleId)"
                             :defaultValue="cd.spec"
-                            style="width: 19%"
+                            style="width: 22%"
                         >
                             <a-select-option
                                 v-for="item in ageType"
@@ -125,6 +125,7 @@
                 <a-col v-if="cd.columnId == 'LENGTHOFSTAY'&& cd.logic == '1'" :span="1">
                     <a-input class="margin-left-5" value="天" disabled></a-input>
                 </a-col>
+
                 <a-col :span="1">
                     <a-icon
                         class="iconStyle"
