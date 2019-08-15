@@ -5,14 +5,14 @@
       style="width: 300px"
       :allowClear="allowClear"
       :disabled="disabled"
-      mode="multiple"
       v-model="vModel"
       :filterOption="false"
       @search="search"
     >
-      <div slot="dropdownRender" slot-scope="tree">
-<!--        <v-nodes :vnodes="tree"/>-->
+      <div slot="dropdownRender" slot-scope="menu">
+<!--        <v-nodes :vnodes="menu"/>-->
         <a-tree
+          checkable
           :autoExpandParent="false"
           @select="onSelect"
           :selectedKeys="selectedKeys"
@@ -42,18 +42,18 @@
       vModel:{
         type:Array
       },
-      search:{
-        type:Function
-      },
+      // search:{
+      //   type:Function
+      // },
       optionData:{
         type:Array
       },
       // treeData:{
       //   type:Array
       // },
-      onSelect:{
-        type:Function
-      },
+      // onSelect:{
+      //   type:Function
+      // },
       searchSelect:{
         type:Function
       }
@@ -115,6 +115,12 @@
       }
     },
     methods: {
+      search(){
+
+      },
+      onSelect(){
+
+      }
     }
   }
 </script>
