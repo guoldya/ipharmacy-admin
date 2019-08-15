@@ -2,14 +2,7 @@
     <div class="pharmacyGuideDetail">
         <a-row :gutter="10">
           <a-col :xl="8" :xxl="5" v-if="page===JSON.stringify('look')">
-            <div class="ruleCow">
-              <a-card>
-                <a-input-search class="txtCenter" placeholder="输入要查询日期"  />
-                <a-list size="large" class="margin-top-10" bordered :dataSource="date">
-                  <a-list-item :style="{ 'padding-left': '34%'}"  slot="renderItem" slot-scope="item">{{item}}</a-list-item>
-                </a-list>
-              </a-card>
-            </div>
+            <dateList :date="date"></dateList>
           </a-col>
           <a-col  :xxl="page===JSON.stringify('look')?19:24" :xl="page===JSON.stringify('look')?16:24">
            
@@ -169,7 +162,7 @@
                 date:'2019-08-05'
             },
             diag:'过敏性皮炎',
-        date:['2019-08-01','2019-08-02','2019-08-03',
+        date:['2019-08-11','2019-08-02','2019-08-03',
           '2019-08-04','2019-08-05','2019-08-06',
           '2019-08-07'
         ],
@@ -215,7 +208,6 @@
     },
     computed:{
       page(){
-       
         return localStorage.childPage
       }
     },

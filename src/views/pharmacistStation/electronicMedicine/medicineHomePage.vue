@@ -31,13 +31,13 @@
                 <a-form-item :label="list.label" class="wordBreakLabel" :class="list.type==='textarea'||list.type==='table'?'':'unit'"
                  :label-col="{ span: 2 }"
                 :wrapper-col="{ span: 22 }">
-                    <a-radio-group @change="onRadioChange"  v-decorator="[list.val]" name="radioGroup" v-if="list.type==='radio'&&i===0">
+                    <a-radio-group @change="onRadioChange"  v-decorator="[list.val,{initialValue: '1'}]" name="radioGroup" v-if="list.type==='radio'&&i===0">
                         <a-radio
                          v-for="(itemRadio,index) in list.radioItem" :key="index" :value="itemRadio.value">{{itemRadio.name}}
                         </a-radio>
                     </a-radio-group>
                     
-                    <a-radio-group @change="onAllergyChanege"  v-decorator="[list.val]" name="radioGroup" v-if="list.type==='radio'&i===1">
+                    <a-radio-group @change="onAllergyChanege"  v-decorator="[list.val,{initialValue: '13'}]" name="radioGroup" v-if="list.type==='radio'&i===1">
                         <a-radio
                          v-for="(itemRadio,index) in list.radioItem" :key="index" :value="itemRadio.value">{{itemRadio.name}}
                         </a-radio>
@@ -51,11 +51,11 @@
                        <div  v-if="i===0 &&defaultValue!== '1'&&defaultValue===itemRadio.value">
                             <a-row :gutter="24">
                                 <a-col :span="defaultValue==='4'?'12':'24'" class="unit">
-                                    <a-input /> 
+                                    <a-input v-decorator="[itemRadio.value]"/> 
                                     <span :style="{width:'19%'}" class="marginLeft8">{{itemRadio.unit}}</span>
                                 </a-col>
                                 <a-col :span="12" v-if="defaultValue==='4'"  class="unit">
-                                    <a-input /> 
+                                    <a-input v-decorator="[list.radioItem[index-1].value]"/> 
                                     <span :style="{width:'19%'}" class="marginLeft8">{{list.radioItem[index-1].unit}}</span>
                                 </a-col>
                             </a-row>
@@ -84,17 +84,17 @@
                     </a-spin>
                 </a-form-item>
                 <!-- 过敏史 -->
-                <a-form-item :label="list.label" v-if="i===1&&defaultValueAllergy!== '1'" class="allergy"
+                <a-form-item :label="list.label" v-if="i===1&&defaultValueAllergy!== '13'" class="allergy"
                  :label-col="{ span: 2 }"
                 :wrapper-col="{ span: 22 }">
                  
                     <div>
                         <a-button type="primary"><a-icon type="plus" />添加过敏药</a-button>
-                        <a-input
-                    v-decorator="[list.allergyMedicine,
+                        <a-textarea
+                    v-decorator="[defaultValueAllergy,
                         ]" type="textarea"  :autosize="{ minRows: 4}"
                         :placeholder=list.label
-                    />
+                    ></a-textarea>
                     </div>
                 </a-form-item>
                 
@@ -112,7 +112,7 @@ import { setTimeout } from 'timers';
     data(){
       return{
             defaultValue:'1',
-            defaultValueAllergy:'1',
+            defaultValueAllergy:'13',
             loading: false,
             columns: [
                 { title: '诊断日期', dataIndex: 'indexId', width: 240, align: 'left' },
@@ -160,10 +160,10 @@ import { setTimeout } from 'timers';
                     ]
                 },
                 {label:'过敏史',type:'radio',val:"allergy",allergyMedicine:'',radioItem:[
-                    {value:'1',name:'无'},
-                    {value:'2',name:'皮试过敏'},
-                    {value:'3',name:'一种药物/食物过敏或一般过敏反应'},
-                    {value:'4',name:'两种或两种以上药物/食物过敏或严重过敏'}
+                    {value:'13',name:'无'},
+                    {value:'24',name:'皮试过敏'},
+                    {value:'35',name:'一种药物/食物过敏或一般过敏反应'},
+                    {value:'46',name:'两种或两种以上药物/食物过敏或严重过敏'}
                     ]
                 },
                 {label:'家族史',type:'textarea',val:'familyHistory'},
