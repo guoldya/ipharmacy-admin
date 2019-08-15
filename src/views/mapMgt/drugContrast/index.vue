@@ -584,7 +584,7 @@ export default {
 <style lang='less'>
 .testchk {
   .ant-card {
-    padding-top: 12px;
+    padding-top: 1px;
   }
   .headers {
     line-height: 36px;

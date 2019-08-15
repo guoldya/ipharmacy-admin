@@ -330,7 +330,6 @@ export default {
                     let params = {}
                     params = values
                     let listData = this.planruleList
-                  console.log(this.planruleList,'234')
                     let specText = ''
                     for (let key in listData) {
                         if (listData[key].columnId == 'AGE') {
@@ -354,10 +353,10 @@ export default {
                                 }
                             }
                         }
-                        delete listData[key].spec
-                        delete listData[key].inputType
-                        delete listData[key].operators
-                        delete listData[key].treeData
+                        // delete listData[key].spec
+                        // delete listData[key].inputType
+                        // delete listData[key].operators
+                        // delete listData[key].treeData
                     }
                     params.sampling = '1'
                     params.distribution = '1'

@@ -119,7 +119,7 @@
           restrictionType: null,
           verdictType: null,
           itemId: null,
-          precondition:'',
+          precondition:null,
           dataDrilling:null,
           calculation:'',
           formula:null,
@@ -182,8 +182,8 @@
         gridCheck: false,
         titleData: { status: null, type2: null, type: null, name: null, updateTime: null, visible: null },
         //属性框初始化
-        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', itemId: null},
-        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', itemId: null,lo:null},
+        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '',  nodeTreeData:{}},
+        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', edgeTreeData:{}},
         pieChartData: {},
         getEdgesData: [],
         //modal属性
@@ -402,7 +402,12 @@
       },
       selectNodeItemId(newValue, oldValue) {
         if (newValue != oldValue) {
-          this.flow.update(this.selectNode.id, { itemId: newValue })
+          if (newValue){
+            this.flow.update(this.selectNode.id, { itemId: newValue })
+          } else{
+            this.flow.update(this.selectNode.id, { itemId: newValue })
+          }
+
         }
         // if (oldValue != null && newValue != oldValue && newValue != null){
         //   let data = this.flow.save();
@@ -415,7 +420,11 @@
       },
       selectNodePrecondition(newValue, oldValue) {
         if (newValue != oldValue) {
-          this.flow.update(this.selectNode.id, { precondition: newValue })
+          if (newValue){
+            this.flow.update(this.selectNode.id, { precondition: newValue })
+          } else {
+            this.flow.update(this.selectNode.id, { precondition: newValue })
+          }
         }
       },
       selectNodeDataDrilling(newValue, oldValue){
@@ -424,8 +433,6 @@
         }
       },
       selectNodeCalculation(newValue, oldValue){
-        console.log(newValue,'new')
-        console.log(oldValue,'oldValue')
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { calculation: newValue })
         }
@@ -674,8 +681,9 @@
                     break
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
-                    _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
-                    _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
+                    _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
+                    console.log(shape,'shape')
+                    _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
                     _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
@@ -723,7 +731,10 @@
                       })
                     }else if (params.lo == 3 && $.trim(params.parentId).length>0){
                       this.boxInitialized.inputType = 'treeSelect'
-                      this.boxInitialized.itemId = params.itemId
+                      this.boxInitialized.nodeTreeData.itemId = params.itemId
+                      this.boxInitialized.nodeTreeData.val =  params.val;
+                      this.boxInitialized.nodeTreeData.display =  params.display;
+                      this.boxInitialized.nodeTreeData.parentId =  params.parentId;
                       let paramsNodeData = {id: params.itemId};
                       if (ev.item.model.assertValList){
                         paramsNodeData.valueList = params.assertValList
@@ -759,8 +770,8 @@
                     }
                     _this.selectNode.lo = params.lo
                     _this.selectNode.colDbType = params.colDbType
-                    _this.selectNode.itemId = model.itemId != null ? model.itemId : shape.itemId
-                    _this.selectNode.precondition = model.precondition != null ? model.precondition : shape.precondition
+                    _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
+                    _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
                     _this.selectNode.dataDrilling = model.dataDrilling != null ? model.dataDrilling : shape.dataDrilling
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
@@ -825,7 +836,10 @@
                   }else if(sourceP.lo == 3 && $.trim(sourceP.parentId).length >0 ){
                     this.edgeInitialized.lo = 3;
                     this.edgeInitialized.inputEdge = 'treeSelect'
-                    this.edgeInitialized.itemId = sourceP.itemId;
+                    this.edgeInitialized.edgeTreeData.itemId = sourceP.itemId;
+                    this.edgeInitialized.edgeTreeData.val =  sourceP.val;
+                    this.edgeInitialized.edgeTreeData.display =  sourceP.display;
+                    this.edgeInitialized.edgeTreeData.parentId =  sourceP.parentId;
                     let paramsData = {id: sourceP.itemId};
                     if (ev.item.model.assertValList){
                       paramsData.valueList = ev.item.model.assertValList;
@@ -1161,6 +1175,7 @@
           list[key].ruleId = this.$route.params.id;
           list[key].verdictType = Number(list[key].verdictType)
           list[key].precondition = Number(list[key].precondition)
+          list[key].itemId = Number(list[key].itemId)
           delete  list[key].index
         }
         coreRuleNodeUpdate({ ruleNodeVOS: list,status:'0',ruleId:this.$route.params.id  }).then(res => {
@@ -1200,7 +1215,7 @@
         }
         this.verifyFlow({status:false});
         if ( this.submitStatus){
-          coreRuleNodeUpdate({ ruleNodeVOS: list,status:'1' }).then(res => {
+          coreRuleNodeUpdate({ ruleNodeVOS: list,status:'1',ruleId:this.$route.params.id}).then(res => {
             if (res.code == '200') {
               this.success('提交成功')
             } else {
@@ -1382,7 +1397,7 @@
                 handleType: nodeData[key].handleType,
                 itemName: nodeData[key].itemName,
                 itemId: nodeData[key].itemId,
-                precondition:''+nodeData[key].precondition,
+                precondition:nodeData[key].precondition,
                 dataDrilling:nodeData[key].dataDrilling,
                 calculation:nodeData[key].calculation,
                 formula:nodeData[key].formula,
@@ -1645,10 +1660,10 @@
             children.push({
               title:list[key].colName,
               value:''+list[key].id,
-              key:list[key].id,
+              key:''+list[key].id,
               disabled:list[key].isleaf? true:false,
               id:list[key].id,
-              pid:list[key].pid,
+              pid:''+list[key].pid,
               lo:list[key].lo,
               colDbType:list[key].colDbType,
 
@@ -1657,10 +1672,10 @@
             children = [{
               title:list[key].colName,
               value:''+list[key].id,
-              key:list[key].id,
+              key:''+list[key].id,
               disabled:list[key].isleaf? true:false,
               id:list[key].id,
-              pid:list[key].pid,
+              pid:''+list[key].pid,
               lo:list[key].lo,
               colDbType:list[key].colDbType,
             }]

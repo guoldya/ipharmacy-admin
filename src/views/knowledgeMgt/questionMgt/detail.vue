@@ -14,16 +14,16 @@
           v-decorator="[ 'parentId', ]"
         ></a-tree-select>
       </a-form-item>
-<!--      <a-form-item label="问题序号" :label-col="labelCol" :wrapper-col="wrapperCol">-->
-<!--        <a-input-->
-<!--          class="readOnlyInput"-->
-<!--          :disabled="true"-->
-<!--          v-decorator="[-->
-<!--                'id',-->
-<!--              ]"-->
-<!--          placeholder="<系统自动生成>"-->
-<!--        />-->
-<!--      </a-form-item>-->
+      <!--      <a-form-item label="问题序号" :label-col="labelCol" :wrapper-col="wrapperCol">-->
+      <!--        <a-input-->
+      <!--          class="readOnlyInput"-->
+      <!--          :disabled="true"-->
+      <!--          v-decorator="[-->
+      <!--                'id',-->
+      <!--              ]"-->
+      <!--          placeholder="<系统自动生成>"-->
+      <!--        />-->
+      <!--      </a-form-item>-->
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           v-if="disable"
@@ -41,14 +41,14 @@
           placeholder="一般由数字和字母组成"
         />
         <a-input
-         v-else
+          v-else
           v-decorator="[
                 'code',
                 {
                   rules: [{
                     required: true,
                     message: '请输入问题编码',
-                  },{max:10,message:'两位有效编码'},{ message: '两位有效编码', pattern: /^[0-9a-zA-Z]{1,10}$/}],
+                  },{ message: '不超过10个字符的英文或数字', pattern: /^[0-9a-zA-Z]{1,10}$/}],
                 }
               ]"
           placeholder="一般由数字和字母组成"
@@ -69,10 +69,16 @@
         />
       </a-form-item>
       <a-form-item label="拼音编码" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-input  v-decorator="['spellCode',{rule:[,{max:15,message:'拼音码输入过多'}]}]" placeholder="为空时由系统自动生成"/>
+        <a-input
+          v-decorator="['spellCode',{rules:[{validator:checkChinese}]}]"
+          placeholder="为空时由系统自动生成"
+        />
       </a-form-item>
-      <a-form-item  label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-textarea  v-decorator="['remark',{rule:[,{max:80,message:'备注超长'}]}]" placeholder="可以添加更多丰富的信息"/>
+      <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-textarea
+          v-decorator="['remark',{rules:[{validator:checkChinese}]}]"
+          placeholder="可以添加更多丰富的信息"
+        />
       </a-form-item>
       <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-radio-group v-decorator="[ 'status',{initialValue:'1'}]">
@@ -95,7 +101,7 @@ export default {
   data() {
     return {
       api: {
-        dicBaseSelectOne:'sys/dicBase/selectOne',
+        dicBaseSelectOne: 'sys/dicBase/selectOne',
         selectTitlesList: 'sys/dicBase/selectTitlesList',
         insert: 'sys/dicBase/insert',
         update: 'sys/dicBase/update'
@@ -113,44 +119,60 @@ export default {
       disable: false,
       treedata: [],
       isNew: false,
-      getIdData:{},
+      getIdData: {}
     }
   },
   mounted() {
     if (this.$route.params.id == '-1') {
-      this.isNew = true;
+      this.isNew = true
       this.disable = false
-    }else{
+    } else {
       this.disable = true
-      this.isNew = false;
+      this.isNew = false
     }
     this.getTreeLists({ codeclass: 7 })
-    if (!this.isNew){
-      this.getDetail();
+    if (!this.isNew) {
+      this.getDetail()
     }
   },
   methods: {
-    getDetail(){
+    //校验数据长度
+    checkChinese(rule, value, callback) {
+      if (value) {
+       let obj = {  spellCode: 15, remark: 80 }
+        let num = obj[rule.field]
+        let newarr = value.match(/[^\x00-\xff]+/g) == null ? 0 : value.match(/[^\x00-\xff]+/g).join('').length
+        let endLength = value.length + newarr
+        if (endLength > num) {
+          callback('输入字符超过限制')
+        } else {
+          callback()
+        }
+      } else {
+        callback()
+      }
+    },
+    getDetail() {
       this.$axios({
         url: this.api.dicBaseSelectOne,
         method: 'put',
-        data: {codeclass: 7,id:this.$route.params.id}
+        data: { codeclass: 7, id: this.$route.params.id }
       })
         .then(res => {
           if (res.code == '200') {
-            let params = {};
-            this.getIdData = res.data;
-            params.parentId = res.data.parentId;
-            params.id = res.data.id;
-            params.code = res.data.code;
-            params.name = res.data.name;
-            params.spellCode = res.data.spellCode;
-            params.remark = res.data.remark;
-            params.status = res.data.status;
-            setTimeout(()=>{
+            let params = {}
+            this.getIdData = res.data
+            params.parentId = res.data.parentId
+            params.id = res.data.id
+            params.code = res.data.code
+            params.name = res.data.name
+            params.spellCode = res.data.spellCode
+            params.remark = res.data.remark
+            params.status = res.data.status
+            setTimeout(() => {
               this.form.setFieldsValue(params)
-            },100)
-          }else{
+            }, 100)
+          } else {
             this.warn(res.msg)
           }
         })
@@ -165,7 +187,7 @@ export default {
         if (!err) {
           if (this.$route.params.id == '-1') {
             let params = values
-            params.codeclass = 7;
+            params.codeclass = 7
             this.$axios({
               url: this.api.insert,
               method: 'post',
@@ -173,9 +195,10 @@ export default {
             })
               .then(res => {
                 if (res.code == '200') {
+                  this.$message.info('新增成功!')
                   this.success(res.msg)
                   setTimeout(this.backTo, 500)
-                }else{
+                } else {
                   this.warn(res.msg)
                 }
               })
@@ -186,8 +209,8 @@ export default {
           }
           if (this.$route.params.id != '-1') {
             let params = values
-            params.codeclass = 7;
-            params.id =this.getIdData.id;
+            params.codeclass = 7
+            params.id = this.getIdData.id
             this.$axios({
               url: this.api.update,
               method: 'post',
@@ -197,7 +220,7 @@ export default {
                 if (res.code == '200') {
                   this.$message.info('保存成功!')
                   setTimeout(this.backTo, 500)
-                }else{
+                } else {
                   this.warn(res.msg)
                 }
               })
@@ -305,5 +328,4 @@ export default {
 }
 </script>
 <style>
-
 </style>
