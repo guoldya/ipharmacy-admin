@@ -1,26 +1,13 @@
 <template>
   <div>
-    <a-select defaultValue="lucy" style="width: 120px"  mode="multiple">
-      <div slot="dropdownRender" slot-scope="menu">
-        <v-nodes :vnodes="menu"/>
-        <a-divider style="margin: 4px 0;" />
-        <div style="padding: 8px; cursor: pointer;">
-          <a-icon type="plus" /> Add item
-        </div>
-      </div>
-      <a-select-option value="jack">Jack</a-select-option>
-      <a-select-option value="lucy">Lucy</a-select-option>
-    </a-select>
-    <treeSelect
-      :search="searchTree"
-      :onSelect="selectTree"
+    <test21
+      :vModel="vModel"
       :treeData="treeData"
-      :vModel="data"
+      :selectChange="selectChange"
+      :treeSelect="treeSelect"
+      :loadData="loadData"
+      :selectedKeys="selectedKeys"
     >
-
-    </treeSelect>
-    <test21 :values=values 
-      :treeData="treeData">
     </test21>
   </div>
 
@@ -28,48 +15,24 @@
 <script>
   import treeSelect from './picCropper'
   import test21 from './test21'
+
   export default {
-   data(){
-     return{
-       values:['23423','234234','234234'],
-       treeData: [{
-         title: '0-0',
-         key: '0-0',
-         children: [{
-           title: '0-0-0',
-           key: '0-0-0',
-           children: [
-             { title: '0-0-0-0', key: '0-0-0-0' },
-             { title: '0-0-0-1', key: '0-0-0-1' },
-             { title: '0-0-0-2', key: '0-0-0-2' }
-           ]
-         }, {
-           title: '0-0-1',
-           key: '0-0-1',
-           children: [
-             { title: '0-0-1-0', key: '0-0-1-0' },
-             { title: '0-0-1-1', key: '0-0-1-1' },
-             { title: '0-0-1-2', key: '0-0-1-2' }
-           ]
-         }, {
-           title: '0-0-2',
-           key: '0-0-2'
-         }]
-       }, {
-         title: '0-1',
-         key: '0-1',
-         children: [
-           { text: '0-1-0-0', id: '0-1-0-0' },
-           { text: '0-1-0-1', id: '0-1-0-1' },
-           { text: '0-1-0-2', id: '0-1-0-2' }
-         ]
-       }, {
-         title: '0-2',
-         key: '0-2'
-       }],
-       data:['0-1-0-1', '0-1-0-2'],
-     }
-   },
+    data() {
+      return {
+        vModel:[],
+        selectedKeys:[],
+        treeData: [
+          { title: '0-0-0-0', key: '0-0-0-0' },
+          { title: '0-0-0-1', key: '0-0-0-1' },
+          { title: '0-0-0-2', key: '0-0-0-2' },
+          { title: '0-0-1-0', key: '0-0-1-0' },
+          { title: '0-0-1-1', key: '0-0-1-1' },
+          { title: '0-0-1-2', key: '0-0-1-2' },
+          { title: '0-1-0-0', key: '0-1-0-0' },
+          { title: '0-1-0-1', key: '0-1-0-1' },
+          { title: '0-1-0-2', key: '0-1-0-2' }],
+      }
+    },
     components: {
       VNodes: {
         functional: true,
@@ -78,15 +41,20 @@
       treeSelect,
       test21
     },
-    methods:{
-      searchTree(value){
-        console.log(value)
+    methods: {
+      treeSelect(value,e){
+        console.log(e)
+        this.vModel = value;
+        this.selectedKeys = value;
       },
-      selectTree(value){
-        console.log(value);
-        // this.data=value;
-        // this.testData =value;
-      }
+      selectChange(value){
+        console.log(value)
+        this.vModel = value;
+        this.selectedKeys = value;
+      },
+      loadData(){
+
+      },
     }
   }
 </script>

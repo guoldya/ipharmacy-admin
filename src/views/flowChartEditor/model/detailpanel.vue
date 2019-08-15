@@ -359,16 +359,29 @@
               </a-select>
             </div>
             <div v-else-if="edgeInitialized.inputEdge =='treeSelect' && selectEdge.lo ==3">
-              <a-tree-select
-                size="small"
-                allowClear
-                multiple
-                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                :treeData=" edgeInitialized.inputEdgeSelect"
-                v-model="selectEdge.assertValList"
-                @change="selectEdgeTree"
+<!--              <a-tree-select-->
+<!--                size="small"-->
+<!--                allowClear-->
+<!--                multiple-->
+<!--                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"-->
+<!--                :treeData=" edgeInitialized.inputEdgeSelect"-->
+<!--                v-model="selectEdge.assertValList"-->
+<!--                @change="selectEdgeTree"-->
+<!--              >-->
+<!--              </a-tree-select>-->
+              <treeSelect
+                :size="'small'"
+                style="maxHeight:300px;"
+                :vModel="vModel"
+                :optionData="edgeInitialized.viewSelect"
+                :treeData="edgeInitialized.inputEdgeSelect"
+                :selectChange="selectChange"
+                :treeSelect="treeSelected"
+                :loadData="edgeLoadData"
+                :selectedKeys="selectedKeys"
               >
-              </a-tree-select>
+
+              </treeSelect>
             </div>
             <a-date-picker v-else-if="selectEdge.lo==1 && selectEdge.colDbType ==2" size="small"
                            :defaultValue="selectEdge.assertVal? moment(selectEdge.assertVal, 'YYYY-MM-DD'): null"
@@ -438,7 +451,10 @@
         preDetailData: [],
         judgePreDetailData: [],
         calculaStatus: null,
-        calculaFhombus: null
+        calculaFhombus: null,
+        vModel:[],
+        treeData:[],
+        selectedKeys:[],
       }
     },
     watch: {
@@ -790,7 +806,6 @@
           this.error(err)
         })
       },
-
       //线条件选择
       selectEdgeRo(value, option) {
         this.edgeCondition = option.componentOptions.propsData.title
@@ -1027,6 +1042,54 @@
       logicalEdge(value) {
         this.selectEdge.lo = value
         this.selectEdge.ro = 7
+      },
+
+
+      selectChange(value){
+        this.selectedKeys = value;
+        this.vModel = value;
+      },
+      treeSelected(value){
+        console.log(value);
+        this.selectedKeys = value;
+        this.vModel = value;
+      },
+      edgeLoadData(treeNode){
+        let _this = this;
+        return new Promise(resolve => {
+          if (treeNode.dataRef.children) {
+            resolve()
+            return
+          }
+          setTimeout(() => {
+            let params = {}
+            params.parentId = _this.edgeInitialized.edgeTreeData.parentId
+            params.parentValue= treeNode.dataRef.key
+            params.id= _this.edgeInitialized.edgeTreeData.itemId
+            console.log(params,'pa')
+            coreRuleNodeSelectColId(params).then(res => {
+                if (res.code == '200') {
+                  treeNode.dataRef.children = []
+                  for (let i in res.rows) {
+                    treeNode.dataRef.children.push({
+                    key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                    })
+                    _this.edgeInitialized.viewSelect.push({
+                      key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                    })
+                  }
+                  console.log( treeNode.dataRef.children,'3344')
+                  _this.edgeInitialized.inputEdgeSelect = [..._this.edgeInitialized.inputEdgeSelect]
+                } else {
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.error(err)
+              })
+            resolve()
+          }, 100)
+        })
       }
     }
   }
