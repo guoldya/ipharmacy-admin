@@ -12,7 +12,7 @@
       <div slot="dropdownRender" slot-scope="menu">
 <!--        <v-nodes :vnodes="menu"/>-->
         <a-tree
-          checkable
+          multiple
           :autoExpandParent="false"
           @select="onSelect"
           :selectedKeys="selectedKeys"
@@ -42,20 +42,23 @@
       vModel:{
         type:Array
       },
-      // search:{
-      //   type:Function
-      // },
+      search:{
+        type:Function
+      },
       optionData:{
         type:Array
       },
-      // treeData:{
-      //   type:Array
-      // },
-      // onSelect:{
-      //   type:Function
-      // },
+      treeData:{
+        type:Array
+      },
+      onSelect:{
+        type:Function
+      },
       searchSelect:{
         type:Function
+      },
+      testData:{
+        type:Array
       }
 
     },
@@ -67,60 +70,19 @@
     },
     data() {
       return {
-        treeData: [{
-          title: '0-0',
-          key: '0-0',
-          children: [{
-            title: '0-0-0',
-            key: '0-0-0',
-            children: [
-              { title: '0-0-0-0', key: '0-0-0-0' },
-              { title: '0-0-0-1', key: '0-0-0-1' },
-              { title: '0-0-0-2', key: '0-0-0-2' }
-            ]
-          }, {
-            title: '0-0-1',
-            key: '0-0-1',
-            children: [
-              { title: '0-0-1-0', key: '0-0-1-0' },
-              { title: '0-0-1-1', key: '0-0-1-1' },
-              { title: '0-0-1-2', key: '0-0-1-2' }
-            ]
-          }, {
-            title: '0-0-2',
-            key: '0-0-2'
-          }]
-        }, {
-          title: '0-1',
-          key: '0-1',
-          children: [
-            { text: '0-1-0-0', id: '0-1-0-0' },
-            { text: '0-1-0-1', id: '0-1-0-1' },
-            { text: '0-1-0-2', id: '0-1-0-2' }
-          ]
-        }, {
-          title: '0-2',
-          key: '0-2'
-        }],
         expandedKeys: ['0-0-0', '0-0-1'],
         autoExpandParent: true,
         checkedKeys: ['0-0-0'],
         selectedKeys: [],
-        testData: [
-          { text: '0-1-0-0', id: '0-1-0-0' },
-          { text: '0-1-0-1', id: '0-1-0-1' },
-          { text: '0-1-0-2', id: '0-1-0-2' }
-        ],
+        // testData: [
+        //   { text: '0-1-0-0', id: '0-1-0-0' },
+        //   { text: '0-1-0-1', id: '0-1-0-1' },
+        //   { text: '0-1-0-2', id: '0-1-0-2' }
+        // ],
         loadkey: '0-1-0-0'
       }
     },
     methods: {
-      search(){
-
-      },
-      onSelect(){
-
-      }
     }
   }
 </script>
