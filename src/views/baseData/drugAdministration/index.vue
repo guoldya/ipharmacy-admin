@@ -467,7 +467,7 @@
             })
               .then(res => {
                 if (res.code == '200') {
-                  this.success(res.msg);
+                    this.success('保存成功!')
                   let params = {};
                   params.offset = (this.currents - 1) * this.pageSize
                   params.pageSize = this.pageSize

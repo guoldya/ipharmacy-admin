@@ -53,7 +53,6 @@
         <a-pagination
           :total="total"
           showSizeChanger
-          hideOnSinglePage
           v-model="current"
           class="pnstyle"
           :defaultPageSize="10"
@@ -255,7 +254,9 @@ export default {
   methods: {
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-      console.log
+      params.offset=0
+      console.log(this.pageSize)
+       parmas.pageSize=this.pageSize
       this.getData(params)
     },
     //重置

@@ -397,7 +397,7 @@ export default {
                               params.offset = (this.current - 1) * this.pageSize
                               params.pageSize = this.pageSize
                                 this.getVarietiesData(params)
-                                this.success(res.msg)
+                                 this.success('保存成功!')
                                   this.Modal.visible = false
                             } else {
                                 this.warn(res.msg)

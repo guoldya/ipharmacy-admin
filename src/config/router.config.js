@@ -550,7 +550,7 @@ export const asyncRouterMap = [
                 path: '/baseData/question/index',
                 name: 'baseDataQuestion',
                 component: () => import('@/views/baseData/question/index.vue'),
-                meta: { title: '药品分类管理基础数据', hiddenHeaderContent: true, index: true }
+                meta: { title: '药品分类管理', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/baseData/question/detailBaseClass/:code/',
@@ -571,7 +571,7 @@ export const asyncRouterMap = [
                 path: '/baseData/dictionary/index',
                 name: 'dictionaryIndex',
                 component: () => import('@/views/baseData/dictionary/index.vue'),
-                meta: { title: '基础字典数据', hiddenHeaderContent: true, index: true }
+                meta: { title: '基础字典', hiddenHeaderContent: true, index: true }
               },
               {
                 path: '/baseData/dictionary/detailBaseClass/:code/',

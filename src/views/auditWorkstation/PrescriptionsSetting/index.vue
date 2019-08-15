@@ -47,7 +47,7 @@
       </a-pagination>
     </a-spin>
     <a-button class="margin-top-10" type="primary" @click="addDoctor">新增</a-button>
-    <assignDoctor :pageInPlanData="pageInPlanData" :loading="confirmLoading" :planId="planId"></assignDoctor>
+    <assignDoctor :pageInPlanData="pageInPlanData" :loading="confirmLoading" :planId="planId" :totals='totals'  ></assignDoctor>
     <a-modal
       title="分配药师"
       :visible="Modal.visible"
@@ -127,6 +127,8 @@
           visible:false,
         },
         searchData:{},
+        totals:[],
+        pages:1
       }
     },
     computed: {
@@ -316,6 +318,9 @@
           if (res.code == '200') {
             this.confirmLoading = false
             this.pageInPlanData = res.rows;
+            this.totals[0]=1
+            this.totals[1]=res.total
+            this.totals.push()
           } else {
             this.spinning = false
             this.warn(res.msg)

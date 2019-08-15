@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-spin tip="加载中..." :spinning="loading">
+    <a-spin tip="加载中..." :spinning="loadings">
       <el-table
         class="margin-top-10"
         :data="pageInPlanData" border
@@ -20,7 +20,6 @@
       <a-pagination
         showSizeChanger
         showQuickJumper
-        hideOnSinglePage
         :total="total"
         class="pnstyle"
         :defaultPageSize="pageSize"
@@ -28,6 +27,7 @@
         @showSizeChange="pageChangeSize"
         @change="pageChange"
         size="small"
+        v-model="curent"
       >
       </a-pagination>
     </a-spin>
@@ -45,6 +45,12 @@
       },
       planId: {
         String
+      },
+      totals:{
+         Array
+      },
+      pages:{
+        Number
       }
     },
     name: 'assignDoctorIndex',
@@ -55,8 +61,9 @@
           deleteP: 'sys/reviewPlan/deleteByPlanIdAndPersonId'
         },
         spinning: false,
+        loadings:null,
         dataSource: [],
-        total: 10,
+        total: 1,
         curent: 1,
         pageSize: 10,
         columns: [{ title: '工号', value: 'personId', width: 80, align: 'right' },
@@ -72,24 +79,34 @@
     },
     mounted() {
     },
+    watch:{
+      totals(){
+        this.total=this.totals[1]
+        this.curent=this.totals[0]
+        console.log( this.totals,'yyy')
+      },
+      loading(){
+        this.loadings=this.loading
+      }
+    },
     methods: {
       getData(params = {}) {
-        this.loading = true
+        this.loadings = true
         this.$axios({
           url: this.api.inPlan,
           method: 'put',
           data: params
         }).then(res => {
           if (res.code == '200') {
-            this.loading = false
-            this.pageInPlanData = res.rows
+            this.loadings = false
+            this.pageInPlanData = res.rows 
           } else {
-            this.loading = false
+            this.loadings = false
             this.warn(res.msg)
           }
         })
           .catch(err => {
-            this.loading = false
+            this.loadings = false
             this.error(err)
           })
       },
