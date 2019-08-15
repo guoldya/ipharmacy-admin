@@ -19,15 +19,19 @@
     >
 
     </treeSelect>
-
+    <test21 :values=values 
+      :treeData="treeData">
+    </test21>
   </div>
 
 </template>
 <script>
   import treeSelect from './picCropper'
+  import test21 from './test21'
   export default {
    data(){
      return{
+       values:['23423','234234','234234'],
        treeData: [{
          title: '0-0',
          key: '0-0',
@@ -71,7 +75,8 @@
         functional: true,
         render: (h, ctx) => ctx.props.vnodes
       },
-      treeSelect
+      treeSelect,
+      test21
     },
     methods:{
       searchTree(value){
