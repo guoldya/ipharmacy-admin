@@ -6,11 +6,11 @@
                 <a-col :span="12" class="txtRight">
                     <div>
                         <a-button @click="backTo">返回</a-button>
-                        <a-button type="primary"@click="handleSubmit" class="margin-left-5">提交</a-button>
+                        <a-button type="primary" @click="handleSubmit" class="margin-left-5">提交</a-button>
                     </div>
                 </a-col>
             </a-row>
-            <a-form class="ant-advanced-search-form"
+            <a-form class="ant-advanced-search-form margin-top-10"
              :form="form" @submit="handleSearch">
                  <a-row>
                     <a-col
@@ -349,6 +349,10 @@ import moment from 'moment';
                 console.log( values,'formTwo');
                 }
             });
+            this.$router.push({
+                name: 'patientsHomeIndex',
+            })
+            
         },
          handleSearch  (e) {
             e.preventDefault();

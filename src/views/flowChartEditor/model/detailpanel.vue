@@ -91,7 +91,20 @@
             <a-select v-else size="small">
             </a-select>
           </a-form-item>
-          <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-tree-select
+              size="small"
+              :allowClear="true"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+              :treeData="judgePreDetailData"
+              v-model="selectNode.rearCondition"
+              @change="rearChange"
+              placeholder="默认按当前数据行"
+              class="nodeSelect">
+            </a-tree-select>
+          </a-form-item>
+
+          <a-form-item v-if="!selectNode.rearCondition" label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input :type="boxInitialized.inValueType" v-if="selectNode.lo==1 && selectNode.colDbType !=2"
                      @change="inputChange" size="small" v-model="selectNode.assertVal"></a-input>
             <div v-else-if="selectNode.lo==2 && selectNode.colDbType !=2">
@@ -112,6 +125,8 @@
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
                 :filterOption="false"
+                :maxTagCount="10"
+                maxTagPlaceholder="+"
               >
                 <a-select-option v-for="(op,index) in boxInitialized.inputSelectData" :value="op.ID" :title="op.NAME"
                                  :key="index">{{op.NAME}}
@@ -119,17 +134,32 @@
               </a-select>
             </div>
             <div v-else-if="boxInitialized.inputType =='treeSelect' && selectNode.lo==3">
-              <a-tree-select
-                size="small"
-                showSearch
-                allowClear
-                multiple
-                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                :treeData=" boxInitialized.inputSelectData"
-                v-model="selectNode.assertValList"
-                @change="selectNodeTree"
+<!--              <a-tree-select-->
+<!--                size="small"-->
+<!--                showSearch-->
+<!--                allowClear-->
+<!--                multiple-->
+<!--                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"-->
+<!--                :treeData=" boxInitialized.inputSelectData"-->
+<!--                v-model="selectNode.assertValList"-->
+<!--                @change="selectNodeTree"-->
+<!--              >-->
+<!--              </a-tree-select>-->
+
+              <treeSelect
+                :size="'small'"
+                style="maxHeight:300px;z-index: 100"
+                :vModel="selectNode.assertValList"
+                :optionData="boxInitialized.viewSelect"
+                :treeData="boxInitialized.inputSelectData"
+                :selectChange="nodeSelectChange"
+                :treeSelect="nodeTreeSelected"
+                :loadData="nodeLoadData"
+                :selectedKeys="selectNode.assertValList"
+                :selectSearch="nodeSelectSearch"
               >
-              </a-tree-select>
+
+              </treeSelect>
             </div>
             <a-date-picker v-else-if="selectNode.lo==1 && selectNode.colDbType ==2"
                            :defaultValue =" selectNode.assertVal? moment(selectNode.assertVal,'YYYY-MM-DD') : null"
@@ -142,12 +172,11 @@
               <a-input size="small"></a-input>
             </div>
           </a-form-item>
-          <a-form-item v-if="boxInitialized.inputType =='treeSelect' && selectNode.lo==3 " label="包含下级"
+          <a-form-item v-if="boxInitialized.inputType =='treeSelect' && selectNode.lo==3 && !selectNode.rearCondition " label="包含下级"
                        :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox @change="containsChange" value="node" key="1"
                         :checked="selectNode.dataDrilling=='1'? true:false"></a-checkbox>
           </a-form-item>
-
         </a-form>
       </div>
 
@@ -162,30 +191,32 @@
               :treeData="judgePreDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
-              class="nodeSelect">
+              class="nodeSelect"
+              @select="nodePreChange">
             </a-tree-select>
           </a-form-item>
           <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select
               size="small"
               allowClear
-              disabled
-              class="readOnlyInput"
               :showArrow="false"
               v-model="selectNode.calculation"
               @change="selectIfCalculation">
-              <a-select-option v-for="item in this.enum.calculation" :value=item.id :title=item.text :key="item.id">
-                {{item.text}}
+              <a-select-option v-if="selectNode.calculation==2"  value='2' title='聚合' >
+                聚合
+              </a-select-option>
+              <a-select-option v-else-if="selectNode.calculation==1" value='1' title='常量' >
+               常量
               </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="公式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-if="selectNode.calculation =='1'" v-model="selectNode.formula">
+            <a-select size="small" v-if="selectNode.calculation =='1'" v-model="selectNode.formula"  allowClear>
               <a-select-option v-for="item in this.enum.conOperation" :value=item.id :title=item.text :key="item.id">
                 {{item.text}}
               </a-select-option>
             </a-select>
-            <a-select size="small" v-else-if="selectNode.calculation==2" v-model="selectNode.formula">
+            <a-select size="small" v-else-if="selectNode.calculation=='2'" v-model="selectNode.formula"  allowClear>
               <a-select-option v-for="(item,index) in this.enum.aggregation" :value=item.id :title=item.text
                                :key="index">
                 {{item.text}}
@@ -194,10 +225,10 @@
             <a-select size="small" v-else>
             </a-select>
           </a-form-item>
-          <a-form-item v-if="selectNode.calculation==1" label="值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="selectNode.calculation=='1'" label="值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input v-model="selectNode.calculated" size="small"/>
           </a-form-item>
-          <a-form-item v-if="selectNode.calculation==2" label="去重" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item v-if="selectNode.calculation=='2'" label="去重" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox @change="nodeIsRepeat" value="node" key="2"
                         :checked="selectNode.isRepeat=='1'? true:false"></a-checkbox>
           </a-form-item>
@@ -231,7 +262,8 @@
               :treeData="preDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
-              treeDefaultExpandAll>
+              treeDefaultExpandAll
+              @select="nodePreChange">
             </a-tree-select>
           </a-form-item>
           <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
@@ -241,8 +273,11 @@
               @change="selectCalculation"
               v-model="selectNode.calculation"
             >
-              <a-select-option v-for="item in this.enum.calculation" :value=item.id :title=item.text :key="item.id">
-                {{item.text}}
+              <a-select-option v-if="selectNode.calculation==2"  value='2' title='聚合' >
+                聚合
+              </a-select-option>
+              <a-select-option v-else-if=" selectNode.calculation==1" value='1' title='常量' >
+                常量
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -331,7 +366,20 @@
             </a-select>
           </a-form-item>
 
-          <a-form-item label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+          <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-tree-select
+              size="small"
+              :allowClear="true"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+              :treeData="preDetailData"
+              v-model="selectEdge.rearCondition"
+              @change="nodeRearChange"
+              placeholder="默认按当前数据行"
+              treeDefaultExpandAll>
+            </a-tree-select>
+          </a-form-item>
+
+          <a-form-item v-if="!selectEdge.rearCondition" label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input :type="edgeInitialized.inValueEdge" v-if="selectEdge.lo ==1 && selectEdge.colDbType !=2"
                      @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
             <div v-else-if="selectEdge.lo ==2 && selectEdge.colDbType !=2">
@@ -352,6 +400,8 @@
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
                 :filterOption="false"
+                :maxTagCount="10"
+                maxTagPlaceholder="+"
               >
                 <a-select-option v-for="(op,index) in edgeInitialized.inputEdgeSelect" :value="op.ID" :title="op.NAME"
                                  :key="index">{{op.NAME}}
@@ -371,14 +421,15 @@
 <!--              </a-tree-select>-->
               <treeSelect
                 :size="'small'"
-                style="maxHeight:300px;"
-                :vModel="vModel"
+                style="maxHeight:300px;z-index: 100"
+                :vModel="selectEdge.assertValList"
                 :optionData="edgeInitialized.viewSelect"
                 :treeData="edgeInitialized.inputEdgeSelect"
-                :selectChange="selectChange"
-                :treeSelect="treeSelected"
+                :selectChange="edgeSelectChange"
+                :treeSelect="edgeTreeSelected"
                 :loadData="edgeLoadData"
-                :selectedKeys="selectedKeys"
+                :selectedKeys="selectEdge.assertValList"
+                :selectSearch="edgeSelectSearch"
               >
 
               </treeSelect>
@@ -392,7 +443,7 @@
                             v-model="selectEdge.assertVal"></a-range-picker>
             <a-input v-else size="small"></a-input>
           </a-form-item>
-          <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect' && selectEdge.lo ==3" label="包含下级"
+          <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect' && selectEdge.lo ==3 && !selectEdge.rearCondition" label="包含下级"
                        :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox @change="edgeContainsChange" value="edge" key="2"
                         :checked="selectEdge.dataDrilling=='1'? true:false"></a-checkbox>
@@ -428,6 +479,8 @@
     data() {
       this.searchSelect = debounce(this.searchSelect, 500)
       this.searchEdge = debounce(this.searchEdge, 500)
+      this.edgeSelectSearch = debounce(this.edgeSelectSearch,500)
+      this.nodeSelectSearch = debounce(this.nodeSelectSearch,500)
       return {
         levelData: [],
         dicBaseTreeData: [],
@@ -454,7 +507,8 @@
         calculaFhombus: null,
         vModel:[],
         treeData:[],
-        selectedKeys:[],
+        edgeSelectedKeys:[],
+        nodeSelectedKeys:[],
       }
     },
     watch: {
@@ -540,6 +594,7 @@
         this.selectNode.precondition = null
         this.selectNode.assertVal1 = null
         this.selectNode.assertVal = null
+        this.selectNode.assertValList = null
         let params = extra.selectedNodes[0].data.props
         let _this = this
         _this.selectNode.itemId = params.id
@@ -570,28 +625,32 @@
           this.boxInitialized.inputType = 'treeSelect'
           this.boxInitialized.itemId = ''+params.id
           let paramsNodeData = { id: params.id }
+          paramsNodeData.val = params.val;
+          paramsNodeData.display = params.display;
+          paramsNodeData.parentId = params.parentId;
+          this.boxInitialized.nodeTreeData ={
+            val: params.val,
+            display: params.display,
+            parentId: params.parentId,
+            itemId: params.id,
+          };
           coreRuleNodeSelectColId(paramsNodeData).then(res => {
             if (res.code == '200') {
-              let listData = []
               this.boxInitialized.inputSelectData = []
+              this.boxInitialized.viewSelect=[]
               for (let key in res.rows) {
-                listData.push({
-                  ID: res.rows[key][params.val],
-                  NAME: res.rows[key][params.display],
-                  PID: res.rows[key][params.parentId]
-                })
+                this.boxInitialized.inputSelectData.push({key:res.rows[key][params.val],title:res.rows[key][params.display],})
+                this.boxInitialized.viewSelect.push({key:res.rows[key][params.val],title:res.rows[key][params.display],})
               }
-              this.boxInitialized.inputSelectData = this.dealValTree(listData, undefined)
             } else {
               this.warn(res.msg)
               this.boxInitialized.inputSelectData = []
+              this.boxInitialized.viewSelect=[]
             }
           }).catch(err => {
             this.error(err)
           })
         }
-
-
         if (params.colDbType == 1) {
           this.boxInitialized.inValueType = 'number'
         } else if (params.colDbType == 2) {
@@ -709,6 +768,7 @@
         this.selectNode.lo = params.lo
         _this.selectNode.label = params.title
         _this.selectNode.itemId = params.id
+        _this.selectNode.precondition = null
         if (params.lo == 1) {
           _this.edgeInitialized.inputEdge = 'input'
         } else if (params.lo == 2) {
@@ -1045,14 +1105,13 @@
       },
 
 
-      selectChange(value){
-        this.selectedKeys = value;
-        this.vModel = value;
+      edgeSelectChange(value){
+        this.edgeSelectedKeys = value;
+        this.selectEdge.assertValList = value;
       },
-      treeSelected(value){
-        console.log(value);
-        this.selectedKeys = value;
-        this.vModel = value;
+      edgeTreeSelected(value){
+        this.edgeSelectedKeys = value;
+        this.selectEdge.assertValList = value;
       },
       edgeLoadData(treeNode){
         let _this = this;
@@ -1066,7 +1125,6 @@
             params.parentId = _this.edgeInitialized.edgeTreeData.parentId
             params.parentValue= treeNode.dataRef.key
             params.id= _this.edgeInitialized.edgeTreeData.itemId
-            console.log(params,'pa')
             coreRuleNodeSelectColId(params).then(res => {
                 if (res.code == '200') {
                   treeNode.dataRef.children = []
@@ -1090,6 +1148,153 @@
             resolve()
           }, 100)
         })
+      },
+      //线树形搜索框事件
+      edgeSelectSearch(value){
+        let _this = this;
+            let params = {}
+            params.id= _this.edgeInitialized.edgeTreeData.itemId
+        params.val= _this.edgeInitialized.edgeTreeData.val
+        params.parentId = _this.edgeInitialized.edgeTreeData.parentId
+        params.name = _this.edgeInitialized.edgeTreeData.display
+        params.keyword = value
+            coreRuleNodeSelectColId(params).then(res => {
+              if (res.code == '200') {
+                _this.edgeInitialized.inputEdgeSelect = []
+                for (let i in res.rows) {
+                  if ($.trim(value).length>0){
+                    _this.edgeInitialized.inputEdgeSelect.push({
+                      key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display],isLeaf:true
+                    })
+                  } else{
+                    _this.edgeInitialized.inputEdgeSelect.push({
+                      key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display],isLeaf:false
+                    })
+                  }
+
+                  _this.edgeInitialized.viewSelect.push({
+                    key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                  })
+                }
+              } else {
+                this.warn(res.msg)
+              }
+            })
+              .catch(err => {
+                this.error(err)
+              })
+      },
+
+      //判断节点
+      nodeSelectChange(value){
+        this.nodeSelectedKeys = value;
+        this.selectNode.assertValList = value;
+      },
+      nodeTreeSelected(value){
+        this.nodeSelectedKeys = value;
+        this.selectNode.assertValList = value;
+      },
+      nodeLoadData(treeNode){
+        let _this = this;
+        return new Promise(resolve => {
+          if (treeNode.dataRef.children) {
+            resolve()
+            return
+          }
+          setTimeout(() => {
+            let params = {}
+            params.parentId = _this.boxInitialized.nodeTreeData.parentId
+            params.parentValue= treeNode.dataRef.key
+            params.id= _this.boxInitialized.nodeTreeData.itemId
+            console.log(params,'2233')
+            coreRuleNodeSelectColId(params).then(res => {
+              if (res.code == '200') {
+                treeNode.dataRef.children = []
+                for (let i in res.rows) {
+                  treeNode.dataRef.children.push({
+                    key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display]
+                  })
+                  _this.boxInitialized.viewSelect.push({
+                    key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display]
+                  })
+                }
+                console.log( treeNode.dataRef.children,'3344')
+                _this.boxInitialized.inputSelectData = [..._this.boxInitialized.inputSelectData]
+              } else {
+                this.warn(res.msg)
+              }
+            })
+              .catch(err => {
+                this.error(err)
+              })
+            resolve()
+          }, 100)
+        })
+      },
+      //节点树形搜索框事件
+      nodeSelectSearch(value){
+        let _this = this;
+        let params = {}
+        params.id= this.boxInitialized.nodeTreeData.itemId
+        params.val= this.boxInitialized.nodeTreeData.val
+        params.parentId = this.boxInitialized.nodeTreeData.parentId
+        params.name = this.boxInitialized.nodeTreeData.display
+        params.keyword = value
+        console.log(params,'params');
+        console.log(_this.boxInitialized,'2233');
+        coreRuleNodeSelectColId(params).then(res => {
+          if (res.code == '200') {
+            _this.boxInitialized.inputSelectData = []
+            for (let i in res.rows) {
+              if ($.trim(value).length>0){
+                _this.boxInitialized.inputSelectData.push({
+                  key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display],isLeaf:true
+                })
+              }else{
+                _this.boxInitialized.inputSelectData.push({
+                  key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display],isLeaf:false
+                })
+              }
+              _this.boxInitialized.viewSelect.push({
+                key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display]
+              })
+            }
+          } else {
+            this.warn(res.msg)
+          }
+        })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+
+      //后置条件选择
+      rearChange(value){
+        if (value){
+          this.selectNode.assertVal = null;
+          this.selectNode.assertVal1 = null;
+          this.selectNode.assertValList = [];
+          this.selectNode.dataDrilling = null;
+        }
+      },
+      nodeRearChange(value){
+        if (value){
+          this.selectEdge.assertVal = null;
+          this.selectEdge.assertVal1 = null;
+          this.selectEdge.assertValList = [];
+          this.selectEdge.dataDrilling = null;
+        }
+      },
+
+
+      nodePreChange(value,label,extra){
+        console.log(extra.selectedNodes[0].data.props,'extra.selectedNodes[0].data.props')
+        let params = extra.selectedNodes[0].data.props
+        if (params.lo == '3'){
+          this.selectNode.calculation = '2'
+        } else{
+          this.selectNode.calculation = '1'
+        }
       }
     }
   }

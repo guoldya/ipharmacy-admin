@@ -125,6 +125,7 @@
           formula:null,
           calculated:null,
           isRepeat:null,
+          rearCondition:null,
           itemName: null,
           ro: null,
           lo: null,
@@ -157,6 +158,7 @@
           formula:null,
           calculated:null,
           isRepeat:null,
+          rearCondition:null,
           ro: null,
           lo: null,
           roSymbol: null,
@@ -211,7 +213,10 @@
       this.getDataList();
       // this.getReviewLevel();
       this.getCoreFactAllStart();
-      this.autoZoom();
+      setTimeout(()=>{
+        this.autoZoom();
+      },500)
+
     },
     computed: {
       selectNodeInAccordanceWith() {
@@ -253,6 +258,9 @@
       },
       selectNodePrecondition() {
         return this.selectNode.precondition
+      },
+      selectNodeRearCondition() {
+        return this.selectNode.rearCondition
       },
       selectNodeDataDrilling(){
         return this.selectNode.dataDrilling
@@ -310,6 +318,9 @@
       },
       selectEdgeAssertValList() {
         return this.selectEdge.assertValList
+      },
+      selectEdgeRearCondition() {
+        return this.selectNode.rearCondition
       },
       selectEdgeDataDrilling() {
         return this.selectEdge.dataDrilling
@@ -427,6 +438,11 @@
           }
         }
       },
+      selectNodeRearCondition(newValue, oldValue)  {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { rearCondition: newValue })
+        }
+      },
       selectNodeDataDrilling(newValue, oldValue){
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { dataDrilling: newValue })
@@ -527,7 +543,11 @@
           this.flow.update(this.selectEdge.id, { dataDrilling: newValue })
         }
       },
-
+      selectEdgeRearCondition(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectEdge.id, {rearCondition: newValue })
+        }
+      },
       selectEdgeCalculation(newValue, oldValue){
         if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { calculation: newValue })
@@ -699,7 +719,11 @@
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
-                    console.log(shape,'shape')
+                    if (ev.item.model.precondition){
+                      ev.item.model.calculation = '2'
+                    } else{
+                      ev.item.model.calculation = '1'
+                    }
                     _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
@@ -719,6 +743,11 @@
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
+                    if (ev.item.model.precondition){
+                      ev.item.model.calculation = '2'
+                    } else{
+                      ev.item.model.calculation = '1'
+                    }
                     if (params.lo == 1) {
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
@@ -767,13 +796,13 @@
                         } else {
                           this.warn(res.msg)
                           this.boxInitialized.inputSelectData = []
-                          this.boxInitialized.viewSelect = [];
                         }
                       }).catch(err => {
                         this.error(err)
                       })
                       let listData = {id: params.itemId};
                       listData.valueList = ev.item.model.assertValList
+                      listData.val = params.val;
                       coreRuleNodeSelectColId(listData).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.viewSelect=[]
@@ -801,6 +830,7 @@
                     _this.selectNode.colDbType = params.colDbType
                     _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
                     _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
+                    _this.selectNode.rearCondition = model.rearCondition != null ? model.rearCondition : shape.rearCondition
                     _this.selectNode.dataDrilling = model.dataDrilling != null ? model.dataDrilling : shape.dataDrilling
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
@@ -870,10 +900,6 @@
                     this.edgeInitialized.edgeTreeData.display =  sourceP.display;
                     this.edgeInitialized.edgeTreeData.parentId =  sourceP.parentId;
                     let paramsData = {id: sourceP.itemId};
-                    if (ev.item.model.assertValList){
-                      // paramsData.valueList = ev.item.model.assertValList;
-
-                    }
                     paramsData.val = sourceP.val;
                     paramsData.display = sourceP.display;
                     paramsData.parentId = sourceP.parentId;
@@ -881,8 +907,10 @@
                       coreRuleNodeSelectColId(paramsData).then(res => {
                         if (res.code == '200') {
                           this.edgeInitialized.inputEdgeSelect=[]
+                          this.edgeInitialized.viewSelect=[]
                           for (let key in res.rows){
                             this.edgeInitialized.inputEdgeSelect.push({key:res.rows[key][sourceP.val],title:res.rows[key][sourceP.display]})
+                            this.edgeInitialized.viewSelect.push({key:res.rows[key][sourceP.val],title:res.rows[key][sourceP.display]})
                           }
                         } else {
                           this.warn(res.msg)
@@ -894,6 +922,7 @@
                       let listData = {};
                       listData.valueList = ev.item.model.assertValList;
                       listData.id =sourceP.itemId;
+                      listData.val =  sourceP.val;
                       coreRuleNodeSelectColId(listData).then(res => {
                         if (res.code == '200') {
                           this.edgeInitialized.viewSelect=[]
@@ -926,6 +955,7 @@
                 _this.selectEdge.assertVal = ev.item.model.assertVal
                 _this.selectEdge.assertValList = ev.item.model.assertValList
                 _this.selectEdge.dataDrilling = ev.item.model.dataDrilling
+                _this.selectEdge.rearCondition = ev.item.model.rearCondition
                 _this.selectEdge.calculation = ev.item.model.calculation
                 _this.selectEdge.formula = ev.item.model.formula
                 _this.selectEdge.calculated = ev.item.model.calculated
@@ -1443,6 +1473,7 @@
                 itemId: nodeData[key].itemId,
                 precondition:nodeData[key].precondition,
                 dataDrilling:nodeData[key].dataDrilling,
+                rearCondition:nodeData[key].rearCondition,
                 calculation:nodeData[key].calculation,
                 formula:nodeData[key].formula,
                 calculated:nodeData[key].calculated,
@@ -1479,6 +1510,7 @@
                 assertVal: edgesData[key].assertVal,
                 assertValList: edgesData[key].assertValList,
                 dataDrilling:edgesData[key].dataDrilling,
+                rearCondition:edgesData[key].rearCondition,
                 calculation:edgesData[key].calculation,
                 formula:edgesData[key].formula,
                 calculated:edgesData[key].calculated,

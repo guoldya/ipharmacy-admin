@@ -19,7 +19,8 @@
           <a-form-item label="方案名称" v-bind="formItemLayout">
             <a-input
               placeholder="请输入..."
-              v-decorator="['planName',{rules: [{ required: true, message: '请输入方案名称' },{max:33,message:'输入方案名称过长'}]}]"
+              v-decorator="['planName',{rules: [{ required: true, message: '请输入方案名称' },{ message: '请勿输入空格', pattern: /^[^\s]*$/},
+              {max:33,message:'输入方案名称过长'}]}]"
             />
           </a-form-item>
           <a-form-item v-bind="formItemLayout" label="方案类型" :required="true">
@@ -353,10 +354,10 @@ export default {
                 }
               }
             }
-            delete listData[key].spec
-            delete listData[key].inputType
-            delete listData[key].operators
-            delete listData[key].treeData
+            // delete listData[key].spec
+            // delete listData[key].inputType
+            // delete listData[key].operators
+            // delete listData[key].treeData
           }
           params.sampling = '1'
           params.distribution = '1'
