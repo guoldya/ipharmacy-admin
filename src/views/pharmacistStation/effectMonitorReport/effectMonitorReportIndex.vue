@@ -80,13 +80,14 @@
           { title: '不良反应类型', width: 120, dataIndex: 'resultType', align: 'left' },
           { title: '药品名称', width: 100, dataIndex: 'resultType1', align: 'left' },
           { title: '批号', width: 100, dataIndex: 'resultType2', align: 'left' },
+          { title: '发生时间', width: 100, dataIndex: 're3sultType2', align: 'left' },
           { title: '不良反应结果', width: 120, dataIndex: 'resultType42', align: 'left' },
           { title: '报告药师', width: 80, dataIndex: 'resultType43', align: 'left' },
           { title: '报告编号', width: 80, dataIndex: 'resultType44', align: 'left' },
 
         ],
         items: [
-          { text: '查看',  showtip: false, click: this.edits, status: '' },
+          { text: '查看',  showtip: false, click: this.effectMonitorReportAdd, status: '' },
           { text: '删除', color: 'red', showtip: true, tip: '确认删除吗？', click: this.user, status: '1' },
         ],
         dataSource: [{name:'张三',no:'939393'}],
@@ -140,7 +141,8 @@
       }
     },
     methods:{
-      effectMonitorReportAdd(){
+      effectMonitorReportAdd(data){
+      console.log(data)
         this.$router.push({
           name: 'effectMonitorReportAdd',
         })
@@ -177,14 +179,6 @@
         params.pageSize = pageSize
         this.getData(params)
         this.pageSize=pageSize
-      },
-      edits(data) {
-        //console.log(data)
-        data.msg = 'old'
-        this.$router.push({
-          name: 'indicatorsMgtDetail',
-          params:{ indexId:data.row.indexId ,}
-        })
       },
 
       //枚举

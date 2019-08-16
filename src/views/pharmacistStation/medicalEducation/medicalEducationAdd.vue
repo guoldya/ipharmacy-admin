@@ -10,7 +10,6 @@
             <a-card class="margin-top-5 borderNone">
               <div class="disFlex">
                 <span class="font-bold fontSize16">用药教育
-                  <a-tag class="marginLeft8" color="#1980FF">在院</a-tag>
                 </span>
                 <span>
                   <a-button @click="backTo"><a-icon type="arrow-left" />返回</a-button>
@@ -26,9 +25,11 @@
                 <span>
                   <span class="font-bold fontSize16">
                     <span>药品列表</span>
+                    <a-tag  v-if="page===JSON.stringify('look')" class="marginLeft8" color="#1980FF">在院</a-tag>
+
                     <!--<a-button size="small" type="primary" class="margin-left-20">在院</a-button>-->
                   </span>
-                  <a-select defaultValue="在院" class="margin-left-20" :style="{width: '120px'}" @change="handleChange">
+                  <a-select v-if="page===JSON.stringify('add')"  defaultValue="在院" class="margin-left-20" :style="{width: '120px'}" @change="handleChange">
                     <a-select-option v-for="(item,i) in selectText" :key="i" :value="item.value">
                       {{item.item}}
                     </a-select-option>
@@ -125,17 +126,19 @@
         ],
         diag:'过敏性皮炎',
         columns: [
-          { title: '药品名称及规格', dataIndex: 'name', align: 'left' , width: 200},
-          { title: '药品用法用量', dataIndex: 'name1', align: 'left', width: 120 },
-          { title: '主要用途', dataIndex: 'testItemName', align: 'left', width: 120 },
-          { title: '不良反应', dataIndex: 'englishName', align: 'left' , width: 120},
-          { title: '备注', dataIndex: 'testItemClass', align: 'left' },
-          { title: '药品厂家', dataIndex: 'testItemType', width: 180, align: 'left' },
+          { title: '用药名称/规格', dataIndex: 'name', align: 'left' , width: 200},
+          { title: '用量', dataIndex: 'name1', align: 'left', width: 80 },
+          { title: '用法', dataIndex: 'testItemName', align: 'left', width: 80 },
+          { title: '用药次数', dataIndex: 'testItemClass', align: 'left', width: 80 },
+          { title: '主要用途', dataIndex: 'testItemType', width: 180, align: 'left' },
+          { title: '不良反应', dataIndex: 'englishName', align: 'left' },
+          { title: '注意事项', dataIndex: 'englishNa2me', align: 'left' , width: 120},
+
         ],
         dataSource: [
           {name:'纳屈肝素钙注射液 4100iu支/支',
            name1:'1/支',
-           testItemName:'纳屈肝素钙注射液 4100iu支/支',
+           testItemName:'皮下注射',
            englishName:'纳屈肝素钙注射液 4100iu支/支',
            testItemType:'纳屈肝素钙注射液 4100iu支/支',
         }],

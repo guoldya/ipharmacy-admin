@@ -14,53 +14,47 @@
                 <span>
                   <a-button @click="backTo"><a-icon type="arrow-left" />返回</a-button>
                   <a-button type="primary" v-if="page===JSON.stringify('look')">新增</a-button>
-                  <a-button type="primary">保存</a-button>
+                  <a-button type="primary" @click="handleSubmit">保存</a-button>
               </span>
               </div>
 
             </a-card>
             <a-card title="基本信息">
-              <a-row>
-                <a-col :span="2">指导对象：</a-col>
-                <a-col :span="3">
-                  <a-radio-group name="radioGroup" :defaultValue="1">
-                    <a-radio :value="1">医生</a-radio>
-                    <a-radio :value="2">护士</a-radio>
-                  </a-radio-group>
-                </a-col>
+              <a-form class="margin-top-10"
+             :form="form" >
 
-                <a-col :span="19">
-                  <a-input placeholder="范华" class="inputStyle "/>
-                  <a-input placeholder="15245647896" class=inputStyle />
-                </a-col>
-              </a-row>
+                <a-row  >
+                  <a-col
+                  v-for="(list,i) in formItem" :key="i"
+                    :span="list.span"
+                    >
+                    <a-form-item :label="list.label" class="unit"
+                    :label-col="{ span: i===2||i===3?'8':'2' }"
+                    :wrapper-col="{ span: i===2||i===3?'16':'22' }">
+                        
+                        <a-radio-group v-decorator="[list.val,{initialValue: '1'}]" name="radioGroup" v-if="list.type==='radio'">
+                            <a-radio
+                            v-for="(itemRadio,index) in list.radioItem" :key="index" :value="itemRadio.value">{{itemRadio.name}}
+                            </a-radio>
+                            <span >
+                              <a-input placeholder="范华" v-decorator="['val1']" v-if="i===0" class="inputStyle "/>
+                             <a-input placeholder="15245647896"  v-decorator="['val2']" v-if="i===0" class=inputStyle />
+                            </span>
+                        </a-radio-group>
+                        
+                        <a-date-picker v-decorator="[list.val]" @change="onChange" v-if="list.type==='date'"/>
 
-              <a-row class="margin-top-10">
-                <a-col :span="2">紧急程度：</a-col>
-                <a-col :span="22">
-                  <a-radio-group name="radioGroup" :defaultValue="1">
-                    <a-radio :value="1">高</a-radio>
-                    <a-radio :value="2">中</a-radio>
-                    <a-radio :value="3">低</a-radio>
-                  </a-radio-group>
-                </a-col>
-              </a-row>
-
-              <a-row class="margin-top-10">
-                <a-col :span="8">
-                  记录时间：
-                  <a-input placeholder="2019-06-30" class="inputStyle"/>
-                </a-col>
-                <a-col :span="16">
-                  有效时间：
-                  <a-input placeholder="2019-07-30" class="inputStyle" />
-                </a-col>
-              </a-row>
-
-              <a-row class="margin-top-10">
-                <a-col :span="2">指导类别：</a-col>
-                <a-col :span="22">
-                  <a-checkbox-group  :options="plainOptions" v-model="checkValue" @change="onChange" />
+                        <a-input v-if="list.type==='input'" v-decorator="[list.val]" placeholder="请输入..."/>
+                        <span v-if="list.type==='checkbox'">
+                            <a-checkbox-group v-decorator="[list.val,{initialValue: ['1']}]">
+                              <a-checkbox
+                                v-for="(op,index) in list.options"
+                                :value="op.value"
+                                :key="index"
+                              >{{op.label}}</a-checkbox>
+                            </a-checkbox-group>
+                        </span>
+                    </a-form-item>
                 </a-col>
               </a-row>
 
@@ -132,8 +126,11 @@
                   <a-button  class="greenBg"><a-icon type="experiment" />化验信息</a-button>
                 </span>
               </div>
-
-              <a-textarea class="margin-top-10" :autosize="{minRows: 4,maxRows: 6 }" />
+              <a-form-item>
+                <a-textarea  v-decorator="['txtContent']" class="margin-top-10" :autosize="{minRows: 4,maxRows: 6 }" />
+              </a-form-item>
+             </a-form>
+            
             </a-card>
           </a-col>
         </a-row>
@@ -194,6 +191,32 @@
         doctorAdviceInfoData:[],
         medicineAdviceInfoColumns:[],
         medicineAdviceInfoData:[],
+        form: this.$form.createForm(this),
+        formItem:[
+          {label:'指导对象',type:'radio',val:'date',span:'24',radioItem:[
+              {value:'1',name:'医生'},
+              {value:'2',name:'护士'},
+            ]
+          },
+          {label:'紧急程度',type:'radio',val:'day',span:'24',radioItem:[
+               {value:'1',name:'高'},
+              {value:'2',name:'中'},
+               {value:'3',name:'低'},
+              ]
+           },
+          {label:'记录时间',type:'date',val:'dateRecoed',span:'6'},
+           {label:'有效时间',type:'date',val:'validDate',span:'6'},
+          {label:'指导类别',type:'checkbox',val:'iphoneNumber',span:'24',
+            options:[
+              { label: '用法用量', value: '1' },
+              { label: '方案疗程', value: '2' },
+              { label: '给药途径', value: '3' },
+              { label: '联合用药', value: '4' },
+            ]
+          } 
+        ],
+        val1:'',
+        val2:''
       }
     },
     props:{
@@ -212,6 +235,14 @@
       }
     },
     methods:{
+      handleSubmit(e){
+        e.preventDefault()
+            this.form.validateFields((err, values) => {
+                if (!err) {
+                  console.log(values)
+                }
+            })
+      },
       onChange (checkedValues) {
         console.log('checked = ', checkedValues)
         console.log('value = ', this.checkValue)

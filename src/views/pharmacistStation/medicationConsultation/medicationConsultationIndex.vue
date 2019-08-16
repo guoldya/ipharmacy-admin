@@ -18,9 +18,9 @@
         <el-table-column
           v-for="item in columns"
           :show-overflow-tooltip="true"
-          :key="item.dataIndex"
+          :key="item.value"
           :label="item.title"
-          :prop="item.dataIndex"
+          :prop="item.value"
           :width="item.width"
           :align="item.align"
         >
@@ -33,7 +33,7 @@
           v-if="true"
         >
           <template slot-scope="scope">
-             <a @click="look">详情</a>
+             <opcol :items="items" :more="false" :data="scope.row"></opcol>
           </template>
         </el-table-column>
       </el-table>
@@ -51,87 +51,113 @@
         :pageSize="pageSize"
       ></a-pagination>
     </a-spin>
+    <!-- <a-modal
+      title="Title"
+      :visible="modalVisible"
+      @cancel="handleCancel"
+    >
+      <p>wrwfc </p>
+    </a-modal> -->
+    <modalDetail ref="modalDetail" :modalData="modalData"></modalDetail>
   </a-card>
 </template>
 
 <script>
+  import modalDetail from './detailModal'
   export default {
-    name: 'medicationConsultationIndex',
+    name: 'medicationConsultationResultIndex',
     data(){
       return{
         loading: false,
         total: 2,
         pageSize: 10,
         columns: [
-          { title: '咨询者', dataIndex: 'indexId', width: 80, align: 'left' },
-          { title: '患者姓名', dataIndex: 'name', align: 'left', width: 100 },
-          { title: '患者科室', dataIndex: 'englishName', align: 'right', width: 140 },
-          { title: '住院号', dataIndex: 'testItemName', align: 'left' },
-          { title: '处理药师', dataIndex: 'testItemClass', width: 120, align: 'left' },
-          { title: '咨询内容', dataIndex: 'testItemType', width: 80, align: 'left' },
-          { title: '咨询类别', width: 100, dataIndex: 'resultType', align: 'left' },
-          { title: '紧急程度', dataIndex: 'resultType1', align: 'left' },
-          { title: '咨询状态', width: 100, dataIndex: 'resultType2', align: 'left' },
-          { title: '咨询时间', width: 100, dataIndex: 'resultType3', align: 'left' },
+          { title: '监护等级', value: 'planScope', width: 90, format: this.taskScope, align: 'center' },
+          { title: '类别', value: 'name', width: 80 },
+          { title: '患者位置', value: 'extractionsNumber', width: 100, align: 'right' },
+          { title: '住院号', value: 'percentageComplete', width: 130 },
+          { title: '患者姓名', value: 'na3me', width: 100, align: 'right' },
+          { title: '性别', value: 'filterStartTime', width: 70 },
+          { title: '年龄', value: 'filterEndTime', width: 70 },
+          { title: '入院时间', value: 'updateTime', width: 130 },
+          { title: '入院诊断', value: 'enter' },
+          { title: '咨询医生', value: 'user', width: 100, align: 'center' },
+          { title: '咨询类别', value: 'type', width: 130 },
+          { title: '紧急程度', value: 'radio', width: 100 },
+          { title: '咨询状态', value: 'sta1tus', width: 100 },
+          { title: '咨询时间', value: 'sta我tus', width: 100 },
         ],
         items: [
-          { text: '详情',  showtip: false, click: this.edits, status: '' },
+          { text: '详情',  showtip: false, click: this.detailModal, status: '' },
         ],
-        dataSource: [{name:'张三123'}],
+        dataSource: [{name:'张三123',user:'李医生',type:'7',radio:'2',response:'真好'}],
         current:1,
         searchData:{},
+        visible:false,
+        modalData:{},
       }
+    },
+    components:{
+      modalDetail
     },
     computed: {
       list() {
         return [
           {
-            name: '患者位置',
-            dataField: 'testItemType9',
-            type: 'select',
-            dataSource: this.enum.status,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
+          name: '患者位置',
+          dataField: 'address',
+          type: 'select',
+          dataSource: this.enum.Statuslist,
+          keyExpr: 'id',
+          valueExpr: 'text'
+        },
+        {
+          name: '患者姓名',
+          dataField: 'admitNum',
+          type: 'text'
+        },
+        {
+          name: '咨询医生',
+          dataField: 'status',
+          type: 'select',
+          dataSource: this.enum.Statuslist,
+          keyExpr: 'id',
+          valueExpr: 'text'
+        },
+        {
+          name: '咨询状态',
+          dataField: 'level',
+          type: 'select',
+          dataSource: this.enum.Statuslist,
+          keyExpr: 'id',
+          valueExpr: 'text'
+        },
+        {
+          name: '咨询类别',
+          dataField: 'level',
+          type: 'select',
+          dataSource: this.enum.Statuslist,
+          keyExpr: 'id',
+          valueExpr: 'text'
+        },
+        {
+          name: '紧急程度',
+          dataField: 'level',
+          type: 'select',
+          dataSource: this.enum.Statuslist,
+          keyExpr: 'id',
+          valueExpr: 'text'
+        },
+        {
+          name: '监护等级',
+          dataField: 'level',
+          type: 'select',
+          dataSource: this.enum.Statuslist,
+          keyExpr: 'id',
+          valueExpr: 'text'
+        },
           {
-            name: '患者姓名',
-            dataField: 'admitNum',
-            type: 'text'
-          },
-          {
-            name: '处理药师',
-            dataField: 'testItemType1',
-            type: 'select',
-            dataSource: this.enum.status,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-          {
-            name: '咨询状态',
-            dataField: 'testItemType2',
-            type: 'select',
-            dataSource: this.enum.patientProblem,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-           {
-            name: '咨询类别',
-            dataField: 'testItemType21',
-            type: 'select',
-            dataSource: this.enum.patientProblem,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-           {
-            name: '紧急程度',
-            dataField: 'testItemType22',
-            type: 'select',
-            dataSource: this.enum.patientProblem,
-            keyExpr: 'id',
-            valueExpr: 'text'
-          },
-          {
-            name: '发生时间',
+            name: '咨询时间',
             dataField: 'time',
             type: 'range-picker',
           },
@@ -139,8 +165,9 @@
       }
     },
     methods:{
-      look(){
-       
+      detailModal(data) {
+        this.$refs.modalDetail.showModal()
+        this.modalData=data;
       },
       medicationConsultationAdd(){},
       //搜索
@@ -170,14 +197,7 @@
         this.getData(params)
         this.pageSize=pageSize
       },
-      edits(data) {
-        //console.log(data)
-        data.msg = 'old'
-        this.$router.push({
-          name: 'indicatorsMgtDetail',
-          params:{ indexId:data.row.indexId ,}
-        })
-      },
+      
 
       //枚举
       testItemTypeFormatter(data) {
