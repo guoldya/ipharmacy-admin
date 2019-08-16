@@ -322,7 +322,7 @@
           if (res.code == '200') {
               this.updateGdata(params, this.gData)
             this.Modal.visible = false
-            this.success(res.msg)
+            this.success('保存成功!')
           } else {
             this.warn(res.msg)
           }
@@ -364,7 +364,7 @@
                   this.addFatherData(values, this.gData);
                 }
                 this.Modal.visible = false
-                this.success(res.msg)
+                  this.success('保存成功!')
               } else {
                 this.warn(res.msg)
               }

@@ -253,7 +253,7 @@
         })
           .then(res => {
             if (res.code == '200') {
-              this.success(res.msg)
+                this.success('保存成功!')
             } else {
               this.warn(res.msg)
             }
@@ -282,7 +282,7 @@
                   params.offset = (this.current - 1) * this.pageSize
                   params.pageSize = this.pageSize
                   this.getVarietiesData(params)
-                  this.success(res.msg)
+                   this.success('保存成功!')
                   this.Modal.visible = false
                 } else {
                   this.warn(res.msg)

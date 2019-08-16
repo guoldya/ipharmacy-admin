@@ -163,6 +163,7 @@ export default {
             this.loading = true
             //orgTyoe
             let parameter = {
+                status:'1',
                 codeClass: ['34', '33']
             }
             this.$axios({

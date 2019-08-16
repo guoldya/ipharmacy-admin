@@ -12,7 +12,7 @@
                 </a-form-item>
                 <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
                     <a-input
-                        v-decorator="['title', {rules: [{ required: true, message: '请输入名称' },{max: 30,message:'输入名称超过30字'}]}]"
+                        v-decorator="['title', {rules: [{ required: true, message: '请输入名称' },{ message: '请勿输入空格', pattern: /^[^\s]*$/},{max: 30,message:'输入名称超过30字'}]}]"
                     />
                 </a-form-item>
                 <a-form-item label="上级机构" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -57,7 +57,7 @@
                 </a-form-item>
                 <a-form-item label="等级" :label-col="{span: 8}" :wrapper-col="{span: 8}">
                     <a-select
-                        v-decorator="[ 'orgGrade',{rules: [{ required: true, message: '请选择医院分类' }]}]"
+                        v-decorator="[ 'orgGrade',{rules: [{ required: true, message: '请选择等级' }]}]"
                     >
                         <a-select-option
                             v-for="(op,index) in enumList['34']"

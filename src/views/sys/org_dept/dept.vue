@@ -61,7 +61,7 @@
                                 placeholder="请输入..."
                                 v-decorator="[
                                 'code',
-                                {rules: [{ required: true, message: '请输入部门编码' },{ max:15 }]}
+                                {rules: [{ required: true, message: '请输入部门编码' },{ message: '请勿输入汉字空格且15个字符以内', pattern: /^\w{1,15}$/}]}
                                 ]"
                         />
                     </a-form-item>
@@ -73,7 +73,7 @@
                                 placeholder="请输入..."
                                 v-decorator="[
                                 'title',
-                                {rules: [{ required: true, message: '请输入部门名称' },{ max:70 }]}
+                               {rules: [{ required: true, message: '请输入部门名称' },{validator:checkChinese},{ message: '请勿输入空格', pattern: /^[^\s]*$/}]},
                                 ]"
                         />
                     </a-form-item>
@@ -152,6 +152,22 @@
             this.init();
         },
         methods:{
+             //校验数据
+    checkChinese(rule, value, callback) {
+      if (value) { 
+        let num =70
+        let newarr = value.match(/[^\x00-\xff]+/g) == null ? 0 : value.match(/[^\x00-\xff]+/g).join('').length
+        // console.log(value.length, newarr)
+        let endLength = value.length + newarr
+        if (endLength > num) {
+          callback('输入字符超过限制')
+        } else {
+          callback()
+        }
+      } else {
+        callback()
+      }
+    },
             init(){
                 this.spinning = true;
                 let id = this.$route.params.deptId;

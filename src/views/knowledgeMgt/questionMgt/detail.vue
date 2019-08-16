@@ -62,7 +62,7 @@
                   rules: [{
                     required: true,
                     message: '请输入问题名称',
-                  },{max:33,message:'问题名称过长'},],
+                  },{max:33,message:'问题名称过长'},{ message: '请勿输入空格', pattern: /^[^\s]*$/}],
                 }
               ]"
           placeholder="你想新增问题的名称"
@@ -195,8 +195,7 @@ export default {
             })
               .then(res => {
                 if (res.code == '200') {
-                  this.$message.info('新增成功!')
-                  this.success(res.msg)
+                  this.success('保存成功!')
                   setTimeout(this.backTo, 500)
                 } else {
                   this.warn(res.msg)
@@ -218,7 +217,7 @@ export default {
             })
               .then(res => {
                 if (res.code == '200') {
-                  this.$message.info('保存成功!')
+                 this.success('保存成功!')
                   setTimeout(this.backTo, 500)
                 } else {
                   this.warn(res.msg)

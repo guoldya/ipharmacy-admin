@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-button type="primary" @click="addDictionary">新增药品</a-button>
+    <a-button type="primary" @click="addDictionary" :disabled='dictionary.disable'>新增药品</a-button>
     <a-spin tip="加载中..." :spinning="loading">
       <a-spin tip="加载中..." :spinning="dictionary.loading">
         <el-table
@@ -223,7 +223,8 @@
         editData: {},
         selectMainList: [],
         selectCompositionList: [],
-        current: 1
+        current: 1,
+        isshow:true
       }
     },
     mounted() {
@@ -419,6 +420,7 @@
       getDosageList() {
         let params = {}
         params.codeClass = 1
+        params.status= '1'
         this.$axios({
           url: this.api.selectDosageList,
           method: 'put',
