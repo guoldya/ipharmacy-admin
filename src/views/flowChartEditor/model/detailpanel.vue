@@ -372,13 +372,14 @@
               <treeSelect
                 :size="'small'"
                 style="maxHeight:300px;"
-                :vModel="vModel"
+                :vModel="selectEdge.assertValList"
                 :optionData="edgeInitialized.viewSelect"
                 :treeData="edgeInitialized.inputEdgeSelect"
-                :selectChange="selectChange"
-                :treeSelect="treeSelected"
+                :selectChange="edgeSelectChange"
+                :treeSelect="edgeTreeSelected"
                 :loadData="edgeLoadData"
-                :selectedKeys="selectedKeys"
+                :selectedKeys="edgeSelectedKeys"
+                :selectSearch="edgeSelectSearch"
               >
 
               </treeSelect>
@@ -428,6 +429,7 @@
     data() {
       this.searchSelect = debounce(this.searchSelect, 500)
       this.searchEdge = debounce(this.searchEdge, 500)
+      this.edgeSelectSearch = debounce(this.edgeSelectSearch,500)
       return {
         levelData: [],
         dicBaseTreeData: [],
@@ -454,7 +456,7 @@
         calculaFhombus: null,
         vModel:[],
         treeData:[],
-        selectedKeys:[],
+        edgeSelectedKeys:[],
       }
     },
     watch: {
@@ -1045,14 +1047,14 @@
       },
 
 
-      selectChange(value){
-        this.selectedKeys = value;
-        this.vModel = value;
+      edgeSelectChange(value){
+        this.edgeSelectedKeys = value;
+        this.selectEdge.assertValList = value;
       },
-      treeSelected(value){
+      edgeTreeSelected(value){
         console.log(value);
-        this.selectedKeys = value;
-        this.vModel = value;
+        this.edgeSelectedKeys = value;
+        this.selectEdge.assertValList = value;
       },
       edgeLoadData(treeNode){
         let _this = this;
@@ -1066,7 +1068,6 @@
             params.parentId = _this.edgeInitialized.edgeTreeData.parentId
             params.parentValue= treeNode.dataRef.key
             params.id= _this.edgeInitialized.edgeTreeData.itemId
-            console.log(params,'pa')
             coreRuleNodeSelectColId(params).then(res => {
                 if (res.code == '200') {
                   treeNode.dataRef.children = []
@@ -1090,6 +1091,34 @@
             resolve()
           }, 100)
         })
+      },
+      //线树形搜索框事件
+      edgeSelectSearch(value){
+        let _this = this;
+       console.log(value,'value');
+            let params = {}
+            params.id= _this.edgeInitialized.edgeTreeData.itemId
+        params.val= _this.edgeInitialized.edgeTreeData.val
+        params.name = _this.edgeInitialized.edgeTreeData.display
+        params.keyword = value
+            coreRuleNodeSelectColId(params).then(res => {
+              if (res.code == '200') {
+                _this.edgeInitialized.inputEdgeSelect = []
+                for (let i in res.rows) {
+                  _this.edgeInitialized.inputEdgeSelect.push({
+                    key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                  })
+                  _this.edgeInitialized.viewSelect.push({
+                    key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                  })
+                }
+              } else {
+                this.warn(res.msg)
+              }
+            })
+              .catch(err => {
+                this.error(err)
+              })
       }
     }
   }
