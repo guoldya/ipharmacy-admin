@@ -269,7 +269,7 @@
       resetForm() {
         this.searchData = {}
         this.$refs.searchPanel.form.resetFields()
-        this.getData({ pageSize: 10, offset: 0 })
+        this.getData({ pageSize: this.pageSize, offset: 0 })
       },
       //获取网格数据
       getData(params={}) {

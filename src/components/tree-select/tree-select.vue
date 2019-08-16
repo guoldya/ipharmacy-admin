@@ -6,8 +6,11 @@
       :value="vModel"
       placeholder="请选择"
       @dropdownVisibleChange="dvc"
+      :autoClearSearchValue="false"
       @change="selectChange"
       @search="selectSearch"
+      :maxTagCount="10"
+      maxTagPlaceholder="+"
     >
       <a-select-option v-for="item in optionData" :key="item.key">
         {{item.title}}
@@ -22,7 +25,7 @@
       ref="content">
       <a-tree
         multiple
-        style="maxHeight:400px;overflow-y:auto;"
+        style="maxHeight:300px;overflow-y:auto;"
         :autoExpandParent="false"
         :treeData="treeData"
         @select="treeSelect"
@@ -100,7 +103,8 @@
     data() {
       return {
         show: false,
-        position: 'bottom'
+        position: 'bottom',
+          loadedKeys:[],
       }
     },
     mounted() {
