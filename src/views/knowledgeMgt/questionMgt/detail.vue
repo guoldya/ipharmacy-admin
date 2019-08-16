@@ -70,13 +70,13 @@
       </a-form-item>
       <a-form-item label="拼音编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
-          v-decorator="['spellCode',{rules:[{validator:checkChinese}]}]"
+          v-decorator="['spellCode',{rules:[{validator:checkChinese},{ message: '请勿输入空格', pattern: /^[^\s]*$/}]}]"
           placeholder="为空时由系统自动生成"
         />
       </a-form-item>
       <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-textarea
-          v-decorator="['remark',{rules:[{validator:checkChinese}]}]"
+          v-decorator="['remark',{rules:[{validator:checkChinese},{ message: '请勿输入空格', pattern: /^[^\s]*$/}]}]"
           placeholder="可以添加更多丰富的信息"
         />
       </a-form-item>
@@ -139,7 +139,7 @@ export default {
     //校验数据长度
     checkChinese(rule, value, callback) {
       if (value) {
-       let obj = {  spellCode: 15, remark: 80 }
+        let obj = { spellCode: 15, remark: 80 }
         let num = obj[rule.field]
         let newarr = value.match(/[^\x00-\xff]+/g) == null ? 0 : value.match(/[^\x00-\xff]+/g).join('').length
         let endLength = value.length + newarr
@@ -217,7 +217,7 @@ export default {
             })
               .then(res => {
                 if (res.code == '200') {
-                 this.success('保存成功!')
+                  this.success('保存成功!')
                   setTimeout(this.backTo, 500)
                 } else {
                   this.warn(res.msg)

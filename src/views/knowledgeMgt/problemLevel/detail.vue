@@ -25,7 +25,7 @@
         >
           <a-input  v-if="readOnly" class="readOnlyInput"  :disabled="true" v-decorator="['levelName',]"/>
           <a-input v-else v-decorator="['levelName',
-        {rules: [{ required: true, message: '请输入等级名称' },{max: 50,message:'输入名称过长'}]}]"/>
+        {rules: [{ required: true, message: '请输入等级名称' },{max: 50,message:'输入名称过长'},{ message: '请勿输入空格', pattern: /^[^\s]*$/}]}]"/>
         </a-form-item>
         <a-form-item
           label="等级说明"

@@ -82,7 +82,7 @@ export default {
         { title: '结论', value: 'completion',  width: 200,align: 'left' },
         { title: '违反规则', value: 'reviewCompletionRegularVOList', align: 'left', },
         { title: '修改时间', value: 'updateTime', width: 140 },
-        { title: '修改人', value: 'updateUser', width: 100, },
+        { title: '修改人', value: 'updateUserName', width: 100, },
         { title: '状态', value: 'status', width: 80, align: 'center' }
       ],
       items: [

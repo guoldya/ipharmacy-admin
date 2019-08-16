@@ -509,9 +509,11 @@ export default {
     resetForm() {
       this.$refs.searchPanel.form.resetFields(['drugName', 'isCurrent', []])
       let params = { pageSize: 20, offset: 0 }
+       this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
       this.getData(params)
+      
       // this.$refs.searchPanel.form.resetFields()
       // this.getData({ pageSize: 20, offset: 0 })
     },

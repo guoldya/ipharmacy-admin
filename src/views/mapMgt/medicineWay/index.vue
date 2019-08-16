@@ -304,6 +304,7 @@ export default {
       this.isCurrent = row.isCurrent
       this.NData = row
       this.MData = {}
+       this.isShow = true
       if (this.NData.isCurrent == '0') {
         this.getSimilarData(params)
       } else {
@@ -364,6 +365,7 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.disable = false
+       this.isShow = true
       this.name = this.MData.name
     },
     //点击确定的处理事件
@@ -434,6 +436,7 @@ export default {
       // this.current = 1
       this.$refs.searchPanel.form.resetFields(['name', 'isCurrent', []])
       let params = { pageSize: 20, offset: 0 }
+        this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
       this.getData(params)

@@ -318,11 +318,11 @@ export default {
         },
         // 移除关联
         delRows(data) {
-            // console.log(data)
+             console.log(data)
             let params = Object.assign(
                 {},
                 {
-                    dicId: this.variety.categoryId,
+                    dicId: data.categoryId,
                     varietyCode: data.varietyCode,
                     linkType: data.linkType
                 }
@@ -537,7 +537,6 @@ export default {
         },
         // 里面值改变
         handleChange(value, option) {
-          console.log(value,'222');
             this.selectDrugData = value
         },
         // 控制气泡框

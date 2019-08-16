@@ -81,7 +81,7 @@
                                         placeholder="请输入..."
                                         v-decorator="[
                                 'code',
-                                {rules: [{ required: true, message: '请输入人员编码' },{ max:20,message:'最多20个字' }],initialValue: formData.code}
+                                {rules: [{ required: true, message: '请输入人员编码' },{ max:20,message:'最多20个字' },{ message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/},],initialValue: formData.code}
                                 ]"
                                 />
                             </a-form-item>
@@ -94,7 +94,7 @@
                                         placeholder="请输入..."
                                         v-decorator="[
                                 'name',
-                                {rules: [{ required: true, message: '请输入姓名' },{ max:50,message:'最多50个字' }],initialValue: formData.name}
+                                {rules: [{ required: true, message: '请输入姓名' },{ max:50,message:'最多50个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.name}
                                 ]"
                                 />
                             </a-form-item>
@@ -133,7 +133,7 @@
                                         placeholder="请输入..."
                                         v-decorator="[
                                 'email',
-                                {rules: [{ required: true, message: '请输入电子邮箱' },{ max:50,message:'最多50个字' }],initialValue: formData.email}
+                                {rules: [{ required: true, message: '请输入电子邮箱' },{ max:50,message:'最多50个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.email}
                                 ]"
                                 />
                             </a-form-item>
@@ -159,7 +159,7 @@
                                         placeholder="请输入..."
                                         v-decorator="[
                                 'idCard',
-                                {rules: [{ required: true, message: '请输入身份证号' },{ max:18,message:'最多18个字' }],initialValue: formData.idCard}
+                                {rules: [{ required: true, message: '请输入身份证号' },{ max:18,message:'最多18个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.idCard}
                                 ]"
                                 />
                             </a-form-item>
@@ -229,7 +229,7 @@
                                         placeholder="请输入..."
                                         v-decorator="[
                                 'certificateNo',
-                                {rules: [{ required: true, message: '请输入资格证书号' },{ max:50,message:'最多50个字' }],initialValue: formData.certificateNo}
+                                {rules: [{ required: true, message: '请输入资格证书号' },{ max:50,message:'最多50个字' },{ message: '请勿输入空格', pattern: /^[^\s]*$/}],initialValue: formData.certificateNo}
                                 ]"
                                 />
                             </a-form-item>
@@ -463,6 +463,7 @@
                 })
             },
             getOrgData(obj = {}) {
+                obj.status='1'
                 this.$axios({
                     url: this.api.orgUrl,
                     method: 'put',
@@ -494,7 +495,7 @@
                 this.$axios({
                     url: this.api.deptUrl,
                     method: 'put',
-                    data: { orgId:val }
+                    data: { orgId:val,status:'1' }
                 }).then(res => {
                     if (res.code == '200') {
                         this.deptData = this.getDeptTreeData(res.rows, undefined)
@@ -522,7 +523,7 @@
                 this.$axios({
                     url: this.api.titleUrl,
                     method: 'put',
-                    data: { codeClass:'36' }
+                    data: { codeClass:'36',status:'1' }
                 }).then(res => {
                     if (res.code == '200') {
                         this.titleData = res.rows;
@@ -537,7 +538,7 @@
                 this.$axios({
                     url: this.api.posUrl,
                     method: 'put',
-                    data: { codeClass:'35' }
+                    data: { codeClass:'35',status:'1' }
                 }).then(res => {
                     if (res.code == '200') {
                         this.posData = res.rows;
@@ -552,7 +553,7 @@
                 this.$axios({
                     url: this.api.mentUrl,
                     method: 'put',
-                    data: { codeClass:'37' }
+                    data: { codeClass:'37',status:'1'  }
                 }).then(res => {
                     if (res.code == '200') {
                         this.mentData = res.rows;

@@ -105,7 +105,7 @@ export default {
       ],
       items: [
         { text: '编辑', showtip: false, click: this.editDept },
-        { text: '删除', showtip: true, color: '#ff9900', tip: '确认删除吗？', click: this.delDept },
+        // { text: '删除', showtip: true, color: '#ff9900', tip: '确认删除吗？', click: this.delDept },
         { text: '启用', color: '#2D8cF0', showtip: true, tip: '确认启用吗？', click: this.changeStatus, status: '1' },
         { text: '停用', showtip: true, color: '#ff9900', tip: '确认停用吗？', click: this.changeStatus, status: '0' }
       ],
@@ -216,6 +216,7 @@ export default {
       this.getUserData(params)
     },
     orgCurrentChange(val) {
+      sessionStorage.setItem('val', JSON.stringify(val))
       if (val) {
         this.orgId = val.orgId
         this.deptButton = false
@@ -238,7 +239,12 @@ export default {
       return arr[row.type - 1]
     },
     setOrgCurrent() {
-      this.$refs.orgTable.$refs.multipleTable.setCurrentRow(this.dataSource[0])
+      let datas = JSON.parse(sessionStorage.getItem('val'))
+      if (datas) {
+        this.$refs.orgTable.$refs.multipleTable.setCurrentRow(datas)
+      } else {
+        this.$refs.orgTable.$refs.multipleTable.setCurrentRow(this.dataSource[0])
+      }
     },
     setDeptCurrent() {
       this.$refs.deptTable.$refs.multipleTable.setCurrentRow(this.deptData[0])

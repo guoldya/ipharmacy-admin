@@ -187,7 +187,8 @@ export default {
             this.loading = true
             //orgTyoe
             let parameter = {
-                codeClass: ['34', '33']
+                codeClass: ['34', '33'],
+                status:"1"
             }
             this.$axios({
                 url: this.api.selectClassListWithMoreParam,

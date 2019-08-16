@@ -10,7 +10,7 @@
         <a-input
           class="readOnlyInput"
           :disabled="true"
-          placeholder="<系统自动生产>"
+          placeholder="<自动生成>"
           v-decorator="['id',]"
         />
       </a-form-item>

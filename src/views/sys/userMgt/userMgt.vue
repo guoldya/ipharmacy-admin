@@ -217,7 +217,7 @@ export default {
       ],
       total: 0,
       current: 1,
-      pageSize:10,
+      pageSize: 10,
       isNew: true,
       visible: false,
       loading: false,
@@ -254,9 +254,9 @@ export default {
   methods: {
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.offset=0
+      params.offset = 0
+      params.pageSize = this.pageSize
       console.log(this.pageSize)
-       parmas.pageSize=this.pageSize
       this.getData(params)
     },
     //重置
@@ -277,17 +277,15 @@ export default {
       this.getPersonData(row.deptId)
       this.formData = row
       let params = {
-        orgId:this.formData.orgId,
-        deptId:this.formData.deptId,
-        personId:this.formData.personId,
-        account:this.formData.account,
-        password:this.formData.password,
+        orgId: this.formData.orgId,
+        deptId: this.formData.deptId,
+        personId: this.formData.personId,
+        account: this.formData.account,
+        password: this.formData.password
       }
-      setTimeout(()=>{
+      setTimeout(() => {
         this.form.setFieldsValue(params)
-      },100)
-
-
+      }, 100)
     },
     cancel() {
       this.visible = false
@@ -295,10 +293,10 @@ export default {
     submit() {
       this.loading = true
       this.form.validateFields((err, values) => {
-        console.log(err,"11223")
+        console.log(err, '11223')
         if (!err) {
           values.account = values.account.replace(/(^\s*)|(\s*$)/g, '')
-          if (values.password){
+          if (values.password) {
             values.password = values.password.replace(/(^\s*)|(\s*$)/g, '')
           }
           let params = values,
@@ -435,6 +433,7 @@ export default {
         })
     },
     getOrgData(obj = {}) {
+      obj.status = '1'
       this.$axios({
         url: this.api.orgUrl,
         method: 'put',
@@ -485,7 +484,7 @@ export default {
       this.$axios({
         url: this.api.getUrl,
         method: 'put',
-        data: { }
+        data: { status: '1' }
       })
         .then(res => {
           if (res.code == '200') {
@@ -512,10 +511,14 @@ export default {
       return tree
     },
     getPersonData(val) {
+      let params = { deptId: val }
+      if (this.isNew) {
+        params.status = '1'
+      }
       this.$axios({
         url: this.api.personUrl,
         method: 'put',
-        data: { deptId: val }
+        data: params
       })
         .then(res => {
           if (res.code == '200') {

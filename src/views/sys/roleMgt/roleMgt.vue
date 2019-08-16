@@ -106,6 +106,18 @@
           >
           </el-table-column>
         </el-table>
+         <a-pagination
+          :total="totals"
+          showSizeChanger
+          v-model="currents"
+          class="pnstyle"
+          :defaultPageSize="10"
+          :pageSizeOptions="['10', '20','50']"
+          @showSizeChange="sizeChanges"
+          @change="pageChanges"
+          size="small"
+        >
+        </a-pagination>
       </a-spin>
     </a-card>
     <a-modal
@@ -280,7 +292,9 @@
         userForm: this.$form.createForm(this),
         userForData: [],
         disabled: true,
-        listData: {}
+        listData: {},
+        totals:1,
+        currents:1
       }
     },
     mounted() {
@@ -296,6 +310,17 @@
       }
     },
     methods: {
+
+      // 第二个分页条
+        pageChanges(page, size) {
+        params.offset = (page - 1) * size
+        this.getData(params)
+      },
+      sizeChanges(current, size) {
+        this.currents = 1
+        params.pageSize = size
+        this.getData(params)
+      },
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue()
         this.getData(params)
