@@ -1,14 +1,14 @@
 <template>
   <div class="select" ref="sel">
     <a-select
+      :size="size"
       mode="multiple"
       :value="vModel"
       placeholder="请选择"
-      style="width: 420px"
       @dropdownVisibleChange="dvc"
       @change="selectChange"
     >
-      <a-select-option v-for="item in treeData" :key="item.key">
+      <a-select-option v-for="item in optionData" :key="item.key">
         {{item.title}}
       </a-select-option>
       <div slot="dropdownRender" slot-scope="menu">
@@ -16,12 +16,12 @@
     </a-select>
     <div
       class="content"
-      style="width: 420px"
       :class="{'bottom' : position == 'bottom', 'top' : position == 'top'}"
       v-show="show && values.length"
       ref="content">
       <a-tree
         multiple
+        style="maxHeight:400px;overflow-y:auto;"
         :autoExpandParent="false"
         :treeData="treeData"
         @select="treeSelect"
@@ -35,7 +35,13 @@
 <script>
   export default {
     props: {
+      size:{
+        type: String,
+      },
       treeData: {
+        type: Array
+      },
+      optionData:{
         type: Array
       },
       treeSelect:{
@@ -131,7 +137,7 @@
     max-height: px(300);
     overflow-y: scroll;
     border-radius: 4px;
-    margin-top: 2px;
+    /*margin-top: 2px;*/
     position: absolute;
     left: 0;
     background-color: white;

@@ -29,9 +29,8 @@ import vcolorpicker from 'vcolorpicker'
 import msgHandler from '@/comm-msg/msg-handler.js'
 import Searchpanel from '@/components/search-panel'
 import detailHeader from '@/components/detailHeader/header'
+import treeSelect from '@/components/tree-select'
 import dateList from '@/components/dateList/dateList'
-
-
 
 import util from '@utils/util'
 import { getFormat, dateFormat,checkArray,changeTime } from '@/utils/misc'
@@ -87,9 +86,8 @@ Vue.component('Searchpanel', Searchpanel)
 Vue.component('grid-item', GridItem)
 Vue.component('opcol', opcol)
 Vue.component('detailHeader', detailHeader)
+Vue.component('treeSelect',treeSelect)
 Vue.component('dateList', dateList)
-
-
 
 new Vue({
     router,
