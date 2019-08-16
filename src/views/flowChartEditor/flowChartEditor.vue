@@ -774,6 +774,7 @@
                       })
                       let listData = {id: params.itemId};
                       listData.valueList = ev.item.model.assertValList
+                      listData.val = params.val;
                       coreRuleNodeSelectColId(listData).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.viewSelect=[]
@@ -870,10 +871,6 @@
                     this.edgeInitialized.edgeTreeData.display =  sourceP.display;
                     this.edgeInitialized.edgeTreeData.parentId =  sourceP.parentId;
                     let paramsData = {id: sourceP.itemId};
-                    if (ev.item.model.assertValList){
-                      // paramsData.valueList = ev.item.model.assertValList;
-
-                    }
                     paramsData.val = sourceP.val;
                     paramsData.display = sourceP.display;
                     paramsData.parentId = sourceP.parentId;
@@ -894,6 +891,7 @@
                       let listData = {};
                       listData.valueList = ev.item.model.assertValList;
                       listData.id =sourceP.itemId;
+                      listData.val =  sourceP.val;
                       coreRuleNodeSelectColId(listData).then(res => {
                         if (res.code == '200') {
                           this.edgeInitialized.viewSelect=[]

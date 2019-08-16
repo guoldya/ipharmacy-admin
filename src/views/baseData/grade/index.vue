@@ -126,7 +126,8 @@ export default {
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.pageSize = 10
+      params.pageSize = this.pageSize
+      this.current=1
       params.offset = 0
       this.getData(params)
     },

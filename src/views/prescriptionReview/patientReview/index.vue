@@ -1,7 +1,7 @@
 <template>
   <div class="allContent">
     <a-card>
-      <detail-list>
+      <detail-list v-if='shows'>
         <detail-list-item term="任务名称">
           <span class="renwu">{{database.name}}</span>
         </detail-list-item>
@@ -25,6 +25,7 @@
           >{{changeTimes(database.filterStartTime)}}~{{changeTimes(database.filterEndTime)}}</span>
         </detail-list-item>
       </detail-list>
+      <h3  v-if='!shows' class="nodata">暂无点评任务</h3>
     </a-card>
     <a-card class="margin-top-5">
       <Searchpanel ref="searchPanel" :list="list" :choose="choose">
@@ -35,6 +36,7 @@
       </Searchpanel>
     </a-card>
     <a-card class="margin-top-5">
+      <div v-if='shows'>
       <a-popconfirm
         v-if="buttonType == 'danger'"
         title="确定停止点评?"
@@ -42,10 +44,10 @@
         okText="确定"
         cancelText="取消"
       >
-        <a-button class="margin-left-5" :type="buttonType">{{rewButoon}}</a-button>
+        <a-button class="margin-left-5" :type="buttonType" >{{rewButoon}}</a-button>
       </a-popconfirm>
       <a-button v-else class="margin-left-5" @click="magicRew" :type="buttonType">{{rewButoon}}</a-button>
-      <!-- <a-button :type="buttonType" @click="magicRew">{{rewButoon}}</a-button> -->
+      </div>
       <a-spin tip="加载中..." :spinning="loading" class="tables">
         <el-table
           ref="multipleTable"
@@ -154,7 +156,8 @@ export default {
       timeInitialize: null,
       buttonText: '自动点评',
       alldatasouce: [],
-      pageSize: 10
+      pageSize: 10,
+      shows:false
     }
   },
   computed: {
@@ -363,6 +366,7 @@ export default {
                 })
                   .then(res => {
                     if (res.code == '200') {
+                      this.shows=true
                       this.database = res.data
                     } else {
                       this.warn(res.msg)
@@ -541,6 +545,11 @@ export default {
   text-align: center;
 }
 .allContent {
+  .nodata{
+    text-align: center;
+    height: 70px;
+    line-height: 70px;
+  }
   .ant-card-bordered {
     border: 0px;
   }

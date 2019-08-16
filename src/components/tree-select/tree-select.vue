@@ -7,6 +7,7 @@
       placeholder="请选择"
       @dropdownVisibleChange="dvc"
       @change="selectChange"
+      @search="selectSearch"
     >
       <a-select-option v-for="item in optionData" :key="item.key">
         {{item.title}}
@@ -33,15 +34,35 @@
   </div>
 </template>
 <script>
+  /**
+   * { size:'', treeData:'', treeSelect:'', loadData:'', “selectedKeys”,"optionData","selectChange:","selectSearch","values:","vModel:"}
+   *
+   * size 输入框尺寸
+   *
+   * treeData 树形结构数据源
+   *
+   * treeSelect 树形结构选择事件
+   *
+   * loadData 树形结构异步加载事件
+   *
+   * selectedKeys 树形结构选中值绑定
+   *
+   * selectChange 输入框值改变事件
+   *
+   * selectSearch 输入框搜索事件
+   *
+   * optionData 输入框数据源
+   *
+   * values 默认值
+   *
+   * vModel  输入框绑定值数组
+   */
   export default {
     props: {
       size:{
         type: String,
       },
       treeData: {
-        type: Array
-      },
-      optionData:{
         type: Array
       },
       treeSelect:{
@@ -51,6 +72,12 @@
         type: Function
       },
       selectChange:{
+        type: Function
+      },
+      optionData:{
+        type: Array
+      },
+      selectSearch:{
         type: Function
       },
       selectedKeys:{
