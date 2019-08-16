@@ -40,6 +40,14 @@
                             </a-form-item>
                             <a-form-item
                                 :label="item.name"
+                                v-if="item.type=='date-picker'"
+                                v-bind="formItemLayout"
+                            >
+                            <a-date-picker  v-decorator="[item.dataField]"/>
+
+                            </a-form-item>
+                            <a-form-item
+                                :label="item.name"
                                 v-if="item.type=='select'"
                                 v-bind="formItemLayout"
                             >

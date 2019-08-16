@@ -22,7 +22,7 @@
                     <a-divider v-if="i!=='date'&&i!=='dept'" type="vertical"/>
                 </span>
             </a-row>
-            <p class="margin-top-10" v-if="diag">诊断：{{diag}}</p>
+            <p class="fontSize16  margin-top-10" v-if="diag">诊断：{{diag}}</p>
         </a-card>
     </div>
 </template>

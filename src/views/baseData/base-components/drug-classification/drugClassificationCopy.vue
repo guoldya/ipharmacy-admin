@@ -184,7 +184,7 @@
           .then(res => {
             if (res.code == '200') {
               this.loading = false
-              this.dealData(res.rows)
+              this.dealData(res.rows,params)
             } else {
               this.loading = false
               this.warn(res.msg)
@@ -214,9 +214,13 @@
             this.error(err)
           })
       },
-      dealData(data) {
-        this.gData = []
+      dealData(data,params) {
+        this.gData = [];
+
         for (let i in data) {
+          if ($.trim(params.keyword).length>0){
+            data[i].isleaf = 0;
+          }
           let isleaf = false
           if (data[i].isleaf == 1) {
             isleaf = false
@@ -234,7 +238,6 @@
             pid: data[i].pid,
             categoryType: data[i].categoryType
           })
-
         }
       },
       //延迟加载树
