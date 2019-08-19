@@ -143,7 +143,7 @@
            testItemType:'纳屈肝素钙注射液 4100iu支/支',
         }],
         items: [
-          { text: '删除', color: 'red', showtip: true, tip: '确认删除吗？', click: this.delete, status: '1' },
+          { text: '删除', color: '#E6A23C', showtip: true, tip: '确认删除吗？', click: this.delete, status: '1' },
           { text: '上移',  showtip: false, click: this.medicalEducationAdd, status: '1' },
           { text: '下移',  showtip: false, click: this.edits, status: '' },
 

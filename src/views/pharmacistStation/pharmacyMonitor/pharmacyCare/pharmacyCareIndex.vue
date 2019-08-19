@@ -6,7 +6,7 @@
         <div class="disFlex">
           <span>
             <span class="font-bold fontSize16">监护计划</span>
-             
+             <a-button type='primary' class="margin-left-5" @click="selectModal">选择模板</a-button>
           </span>
           <span>
             <a-button  type="primary" @click="handleSubmit">提交</a-button>
@@ -186,12 +186,15 @@
           { value: 4, item: 'Ⅱ级监护'},
           { value: 5, item: 'Ⅰ级监护'}
         ],
-       
-        
         items:[],
       }
     },
     methods:{
+      selectModal(){
+        this.$router.push({
+          name: 'selectTemplate',
+        })
+      },
       //radio-tabs
       callback (val) {
         console.log(val)

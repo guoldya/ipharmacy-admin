@@ -189,7 +189,7 @@
         ],
         items: [
           { text: '编辑',  showtip: false, click: this.edits, status: '' },
-          { text: '删除', color: 'red', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
+          { text: '删除', color: '#E6A23C', showtip: true, tip: '确认启用吗？', click: this.user, status: '1' },
         ],
       pagination: {},
       }
