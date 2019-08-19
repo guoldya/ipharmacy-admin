@@ -44,8 +44,7 @@
         </el-table>
         <a-pagination
           showSizeChanger
-          showQuickJumper
-          hideOnSinglePage
+          showQuickJumper        
           :total="total"
           class="pnstyle"
           :defaultPageSize="pageSize"
@@ -75,7 +74,7 @@
               :wrapper-col="{ span: 15 }"
             >
               <a-input
-                v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入分组名称' },{max: 16,message:'输入名称过长'}]} ]"
+                v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入分组名称' },{max: 16,message:'输入名称过长'},{ message: '请勿输入空格', pattern: /^[^\s]*$/}]} ]"
               />
             </a-form-item>
             <a-form-item

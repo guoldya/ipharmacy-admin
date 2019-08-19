@@ -63,7 +63,6 @@
         <a-pagination
           :total="total"
           showSizeChanger
-          hideOnSinglePage
           v-model="current"
           class="pnstyle"
           :defaultPageSize="10"
@@ -294,7 +293,8 @@
         disabled: true,
         listData: {},
         totals:1,
-        currents:1
+        currents:1,
+        roleId:''
       }
     },
     mounted() {
@@ -313,13 +313,18 @@
 
       // 第二个分页条
         pageChanges(page, size) {
+          let params={}
         params.offset = (page - 1) * size
-        this.getData(params)
+         params.roleId=this.roleId
+        params.pageSize = size
+        this.getUserData(params)
       },
       sizeChanges(current, size) {
+          let params={}
         this.currents = 1
         params.pageSize = size
-        this.getData(params)
+        params.roleId=this.roleId
+        this.getUserData(params)
       },
       search() {
         let params = this.$refs.searchPanel.form.getFieldsValue()
@@ -393,6 +398,7 @@
         }).then(res => {
           if (res.code == '200') {
             this.success('删除成功!', () => {
+                this.currents = 1
               this.getData()
             })
           } else {
@@ -417,6 +423,7 @@
         }).then(res => {
           if (res.code == '200') {
             this.success('操作成功!', () => {
+              this.currents = 1
               this.getData()
             })
           } else {
@@ -496,6 +503,7 @@
         if (row) {
           this.selectRole = row
           this.disabled = false
+          this.roleId=row.roleId
           this.getUserData({ roleId: row.roleId })
         } else {
           this.selectRole = {}
@@ -544,6 +552,7 @@
         }).then(res => {
           if (res.code == '200') {
             this.userData = res.rows
+            this.totals=res.total
             this.uerSpin = false
           } else {
             this.uerSpin = false

@@ -98,7 +98,7 @@
               <a-form-item style="padding-top: 20px" label="名称"
                            :label-col="{ span: 4 }"
                            :wrapper-col="{ span: 17 }">
-                <a-input v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入名称' },{max: 20,message:'输入名称过长'}]} ]"/>
+                <a-input v-decorator="[ 'specName',{rules: [{ required: true, message: '请输入名称' },{max: 20,message:'输入名称过长'},{ message: '请勿输入空格', pattern: /^[^\s]*$/}]} ]"/>
               </a-form-item>
               <a-form-item label="备注"
                            :label-col="{ span: 4 }"

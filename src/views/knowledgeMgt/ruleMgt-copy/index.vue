@@ -75,7 +75,7 @@
         <a-pagination
           showSizeChanger
           showQuickJumper
-          hideOnSinglePage
+      
           :total="total"
           class="pnstyle"
           :defaultPageSize="pageSize"

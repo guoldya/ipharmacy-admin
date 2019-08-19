@@ -35,7 +35,6 @@
         <a-pagination
           showSizeChanger
           showQuickJumper
-          hideOnSinglePage
           :total="dictionary.total"
           class="pnstyle"
           :defaultPageSize="pageSize"
