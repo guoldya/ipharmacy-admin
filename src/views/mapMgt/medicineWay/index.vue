@@ -420,6 +420,7 @@ export default {
     //点击取消
     clickCancel() {
       this.MData = {}
+      this.name=''
     },
     //搜索
     search() {

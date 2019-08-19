@@ -425,6 +425,7 @@ export default {
     //点击取消
     clickCancel() {
       this.MData = {}
+      this.icdname=''
     },
     //搜索
     search() {

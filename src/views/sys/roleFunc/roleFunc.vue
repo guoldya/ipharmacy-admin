@@ -27,7 +27,7 @@
                         <a-pagination
                                 :total="total"
                                 showSizeChanger
-                                hideOnSinglePage
+                          
                                 v-model="current"
                                 class="pnstyle"
                                 :defaultPageSize="10"

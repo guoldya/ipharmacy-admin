@@ -10,8 +10,8 @@
       @change="selectChange"
       @search="selectSearch"
       :maxTagCount="10"
-      maxTagPlaceholder="+"
     >
+      <span slot="maxTagPlaceholder" @click="treeMoreTag">查看更多</span>
       <a-select-option v-for="item in optionData" :key="item.key">
         {{item.title}}
       </a-select-option>
@@ -21,7 +21,7 @@
     <div
       class="content"
       :class="{'bottom' : position == 'bottom', 'top' : position == 'top'}"
-      v-show="show && values.length"
+      v-show="show"
       ref="content">
       <a-tree
         multiple
@@ -38,7 +38,7 @@
 </template>
 <script>
   /**
-   * { size:'', treeData:'', treeSelect:'', loadData:'', “selectedKeys”,"optionData","selectChange:","selectSearch","values:","vModel:"}
+   * { size:'', treeData:'', treeSelect:'', loadData:'', “selectedKeys”,"optionData","selectChange:","selectSearch","values:","vModel:","treeMoreTag:"}
    *
    * size 输入框尺寸
    *
@@ -59,6 +59,8 @@
    * values 默认值
    *
    * vModel  输入框绑定值数组
+   *
+   * treeMoreTag 查看更多
    */
   export default {
     props: {
@@ -98,6 +100,9 @@
       placeholder: {
         type: String,
         default: '请选择'
+      },
+      treeMoreTag:{
+        type: Function
       }
     },
     data() {

@@ -89,7 +89,7 @@
           </el-table-column>
         </el-table>
         <a-pagination
-          hideOnSinglePage
+      
           showSizeChanger
           showQuickJumper
           :total="total"

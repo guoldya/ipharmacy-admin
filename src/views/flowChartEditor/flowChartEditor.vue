@@ -755,6 +755,8 @@
                     } else if (params.lo == 3 && $.trim(params.parentId).length == 0) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
+                      this.boxInitialized.val =  params.val;
+                      this.boxInitialized.display =  params.display;
                       let paramsNodeData = {id: params.itemId};
                       if (ev.item.model.assertValList){
                         paramsNodeData.valueList = params.assertValList
@@ -777,10 +779,10 @@
                       })
                     }else if (params.lo == 3 && $.trim(params.parentId).length>0){
                       this.boxInitialized.inputType = 'treeSelect'
-                      this.boxInitialized.nodeTreeData.itemId = params.itemId
-                      this.boxInitialized.nodeTreeData.val =  params.val;
-                      this.boxInitialized.nodeTreeData.display =  params.display;
-                      this.boxInitialized.nodeTreeData.parentId =  params.parentId;
+                      this.boxInitialized.itemId = params.itemId
+                      this.boxInitialized.val =  params.val;
+                      this.boxInitialized.display =  params.display;
+                      this.boxInitialized.parentId =  params.parentId;
                       let paramsNodeData = {id: params.itemId};
                       paramsNodeData.val = params.val;
                       paramsNodeData.display = params.display;
@@ -870,6 +872,8 @@
                     this.edgeInitialized.lo = 3;
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId;
+                    this.edgeInitialized.val =  sourceP.val;
+                    this.edgeInitialized.display =  sourceP.display;
                     let paramsData = {id: sourceP.itemId};
                     if (ev.item.model.assertValList){
                       paramsData.valueList = ev.item.model.assertValList;
@@ -877,7 +881,8 @@
                       paramsData.display = sourceP.display;
                       paramsData.parentId = sourceP.parentId;
                     }
-                    if ( this.edgeInitialized.inputEdgeSelect.length==0) {
+
+                    // if ( this.edgeInitialized.inputEdgeSelect.length==0) {
                       coreRuleNodeSelectColId(paramsData).then(res => {
                         if (res.code == '200') {
                             this.edgeInitialized.inputEdgeSelect=[]
@@ -891,19 +896,19 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                    }
+                    // }
                   }else if(sourceP.lo == 3 && $.trim(sourceP.parentId).length >0 ){
                     this.edgeInitialized.lo = 3;
                     this.edgeInitialized.inputEdge = 'treeSelect'
-                    this.edgeInitialized.edgeTreeData.itemId = sourceP.itemId;
-                    this.edgeInitialized.edgeTreeData.val =  sourceP.val;
-                    this.edgeInitialized.edgeTreeData.display =  sourceP.display;
-                    this.edgeInitialized.edgeTreeData.parentId =  sourceP.parentId;
+                    this.edgeInitialized.itemId = sourceP.itemId;
+                    this.edgeInitialized.val =  sourceP.val;
+                    this.edgeInitialized.display =  sourceP.display;
+                    this.edgeInitialized.parentId =  sourceP.parentId;
                     let paramsData = {id: sourceP.itemId};
                     paramsData.val = sourceP.val;
                     paramsData.display = sourceP.display;
                     paramsData.parentId = sourceP.parentId;
-                    if ( this.edgeInitialized.inputEdgeSelect.length==0) {
+                    // if ( this.edgeInitialized.inputEdgeSelect.length==0) {
                       coreRuleNodeSelectColId(paramsData).then(res => {
                         if (res.code == '200') {
                           this.edgeInitialized.inputEdgeSelect=[]
@@ -920,7 +925,12 @@
                         this.error(err)
                       })
                       let listData = {};
-                      listData.valueList = ev.item.model.assertValList;
+                      if (ev.item.model.assertValList){
+                        listData.valueList = ev.item.model.assertValList;
+                      } else{
+                        listData.valueList = [];
+                      }
+
                       listData.id =sourceP.itemId;
                       listData.val =  sourceP.val;
                       coreRuleNodeSelectColId(listData).then(res => {
@@ -936,7 +946,7 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                    }
+                    // }
                   }
                   if (sourceP.colDbType == 1) {
                     this.edgeInitialized.inValueEdge = 'number'

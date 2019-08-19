@@ -496,6 +496,7 @@ export default {
     //点击取消
     clickCancel() {
       this.MData = {}
+       this.drugName=''
     },
     //搜索
     search() {
