@@ -126,26 +126,16 @@
                 :showArrow="false"
                 :filterOption="false"
                 :maxTagCount="10"
-                maxTagPlaceholder="+"
+                :open="nodeSelectOpen"
+                @dropdownVisibleChange="nodeVisibleChange"
               >
+                <span slot="maxTagPlaceholder" @click="nodeTagPlaceholder">查看更多</span>
                 <a-select-option v-for="(op,index) in boxInitialized.inputSelectData" :value="op.ID" :title="op.NAME"
                                  :key="index">{{op.NAME}}
                 </a-select-option>
               </a-select>
             </div>
             <div v-else-if="boxInitialized.inputType =='treeSelect' && selectNode.lo==3">
-<!--              <a-tree-select-->
-<!--                size="small"-->
-<!--                showSearch-->
-<!--                allowClear-->
-<!--                multiple-->
-<!--                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"-->
-<!--                :treeData=" boxInitialized.inputSelectData"-->
-<!--                v-model="selectNode.assertValList"-->
-<!--                @change="selectNodeTree"-->
-<!--              >-->
-<!--              </a-tree-select>-->
-
               <treeSelect
                 :size="'small'"
                 style="maxHeight:300px;z-index: 100"
@@ -157,6 +147,7 @@
                 :loadData="nodeLoadData"
                 :selectedKeys="selectNode.assertValList"
                 :selectSearch="nodeSelectSearch"
+                :treeMoreTag="treeMoreNode"
               >
 
               </treeSelect>
@@ -401,8 +392,10 @@
                 :showArrow="false"
                 :filterOption="false"
                 :maxTagCount="10"
-                maxTagPlaceholder="+"
+                :open="edgeSelectOpen"
+                @dropdownVisibleChange="edgeVisibleChange"
               >
+                <span slot="maxTagPlaceholder" @click="maxTagPlaceholder">查看更多</span>
                 <a-select-option v-for="(op,index) in edgeInitialized.inputEdgeSelect" :value="op.ID" :title="op.NAME"
                                  :key="index">{{op.NAME}}
                 </a-select-option>
@@ -430,8 +423,8 @@
                 :loadData="edgeLoadData"
                 :selectedKeys="selectEdge.assertValList"
                 :selectSearch="edgeSelectSearch"
+                :treeMoreTag="treeMoreEdge"
               >
-
               </treeSelect>
             </div>
             <a-date-picker v-else-if="selectEdge.lo==1 && selectEdge.colDbType ==2" size="small"
@@ -466,16 +459,30 @@
     <div data-status="multi-selected" class="pannel" id="multi_detailpannel" style="display: none;">
       <div class="panel-title">属性</div>
     </div>
+
+      <valueListModal
+        v-if="modalVisible"
+        :visibled="modalVisible"
+        :cancel="modalCancel"
+        :ok="edgeValueOk"
+        :fullData="fullData"
+        :initialized="initialized"
+        :assertValList="valueList"
+      />
   </div>
+
 </template>
 
 <script>
   import { reviewAuditlevelSelect, dicBaseSelectClassList, coreFactColAll, coreRuleNodeSelectColId } from '@/api/login'
   import debounce from 'lodash/debounce'
   import moment from 'moment'
-
+  import valueListModal from './valueListModal'
   export default {
     props: ['graphAPI', 'selectNode', 'selectEdge', 'boxInitialized', 'edgeInitialized', 'preData', 'judgePreData'],
+    components: {
+      'valueListModal':valueListModal,
+    },
     data() {
       this.searchSelect = debounce(this.searchSelect, 500)
       this.searchEdge = debounce(this.searchEdge, 500)
@@ -509,6 +516,13 @@
         treeData:[],
         edgeSelectedKeys:[],
         nodeSelectedKeys:[],
+        modalVisible:false,
+        valueList:[],
+        fullData:{},
+        initialized:{},
+        edgeSelectOpen:false,
+        nodeSelectOpen:false,
+
       }
     },
     watch: {
@@ -628,12 +642,10 @@
           paramsNodeData.val = params.val;
           paramsNodeData.display = params.display;
           paramsNodeData.parentId = params.parentId;
-          this.boxInitialized.nodeTreeData ={
-            val: params.val,
-            display: params.display,
-            parentId: params.parentId,
-            itemId: params.id,
-          };
+          this.boxInitialized. val =  params.val;
+          this.boxInitialized. display =  params.display;
+          this.boxInitialized. parentId =  params.parentId;
+          this.boxInitialized. itemId =  params.itemId;
           coreRuleNodeSelectColId(paramsNodeData).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = []
@@ -969,75 +981,7 @@
           this.selectNode.isRepeat = '0'
         }
       },
-      edgeIsRepeat(e) {
-        if (e.target.checked) {
-          this.selectEdge.isRepeat = '1'
-        } else {
-          this.selectEdge.isRepeat = '0'
-        }
-      },
-      selectNodeTree(value, option) {
-        if ($.trim(this.modelValue).length == 0) {
-          this.modelValue = this.selectNode.itemName
-        }
-        if ($.trim(this.condition).length == 0) {
-          this.condition = this.selectNode.roSymbol
-        }
-        this.conditionValue = ''
-        for (let key in option) {
-          if (key < 1) {
-            this.conditionValue = option[0]
-          } else {
-            this.conditionValue = option[0] + '...'
-          }
-        }
 
-        this.selectNode.label = this.modelValue + this.condition + this.conditionValue
-      },
-      selectEdgeTree(value, option) {
-        this.selectEdge.lo = 3
-        if ($.trim(this.edgeCondition).length == 0) {
-          this.edgeCondition = this.selectEdge.roSymbol
-        }
-        this.edgeConditionValue = ''
-        for (let key in option) {
-          if (key < 1) {
-            this.edgeConditionValue = option[0]
-          } else {
-            this.edgeConditionValue = option[0] + '...'
-          }
-        }
-        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
-      },
-
-      searchEdgeTree(value){
-        let _this = this;
-        let params = {}
-        params.id = _this.edgeInitialized.edgeTreeData.itemId;
-        params.keyword = value
-        params.valueList = this.selectEdge.assertValList;
-        params.val = _this.edgeInitialized.edgeTreeData.val;
-        params.display = _this.edgeInitialized.edgeTreeData.display;
-        params.parentId = _this.edgeInitialized.edgeTreeData.parentId;
-        coreRuleNodeSelectColId(params).then(res => {
-          if (res.code == '200') {
-            let list = []
-            _this.edgeInitialized.inputEdgeSelect = []
-            for (let key in res.rows) {
-              list.push({
-                ID: res.rows[key][ _this.edgeInitialized.edgeTreeData.val],
-                NAME: res.rows[key][ _this.edgeInitialized.edgeTreeData.display],
-                PID: res.rows[key][ _this.edgeInitialized.edgeTreeData.parentId]
-              })
-            }
-            _this.edgeInitialized.inputEdgeSelect = this.dealValTree(list, undefined)
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.error(err)
-        })
-      },
       dealValTree(data, pid) {
         var items = []
         for (var key in data) {
@@ -1122,18 +1066,18 @@
           }
           setTimeout(() => {
             let params = {}
-            params.parentId = _this.edgeInitialized.edgeTreeData.parentId
+            params.parentId = _this.edgeInitialized.parentId
             params.parentValue= treeNode.dataRef.key
-            params.id= _this.edgeInitialized.edgeTreeData.itemId
+            params.id= _this.edgeInitialized.itemId
             coreRuleNodeSelectColId(params).then(res => {
                 if (res.code == '200') {
                   treeNode.dataRef.children = []
                   for (let i in res.rows) {
                     treeNode.dataRef.children.push({
-                    key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                    key:res.rows[i][_this.edgeInitialized.val],title:res.rows[i][_this.edgeInitialized.display]
                     })
                     _this.edgeInitialized.viewSelect.push({
-                      key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                      key:res.rows[i][_this.edgeInitialized.val],title:res.rows[i][_this.edgeInitialized.display]
                     })
                   }
                   console.log( treeNode.dataRef.children,'3344')
@@ -1153,10 +1097,10 @@
       edgeSelectSearch(value){
         let _this = this;
             let params = {}
-            params.id= _this.edgeInitialized.edgeTreeData.itemId
-        params.val= _this.edgeInitialized.edgeTreeData.val
-        params.parentId = _this.edgeInitialized.edgeTreeData.parentId
-        params.name = _this.edgeInitialized.edgeTreeData.display
+            params.id= _this.edgeInitialized.itemId
+        params.val= _this.edgeInitialized.val
+        params.parentId = _this.edgeInitialized.parentId
+        params.name = _this.edgeInitialized.display
         params.keyword = value
             coreRuleNodeSelectColId(params).then(res => {
               if (res.code == '200') {
@@ -1164,16 +1108,16 @@
                 for (let i in res.rows) {
                   if ($.trim(value).length>0){
                     _this.edgeInitialized.inputEdgeSelect.push({
-                      key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display],isLeaf:true
+                      key:res.rows[i][_this.edgeInitialized.val],title:res.rows[i][_this.edgeInitialized.display],isLeaf:true
                     })
                   } else{
                     _this.edgeInitialized.inputEdgeSelect.push({
-                      key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display],isLeaf:false
+                      key:res.rows[i][_this.edgeInitialized.val],title:res.rows[i][_this.edgeInitialized.display],isLeaf:false
                     })
                   }
 
                   _this.edgeInitialized.viewSelect.push({
-                    key:res.rows[i][_this.edgeInitialized.edgeTreeData.val],title:res.rows[i][_this.edgeInitialized.edgeTreeData.display]
+                    key:res.rows[i][_this.edgeInitialized.val],title:res.rows[i][_this.edgeInitialized.display]
                   })
                 }
               } else {
@@ -1203,19 +1147,19 @@
           }
           setTimeout(() => {
             let params = {}
-            params.parentId = _this.boxInitialized.nodeTreeData.parentId
+            params.parentId = _this.boxInitialized.parentId
             params.parentValue= treeNode.dataRef.key
-            params.id= _this.boxInitialized.nodeTreeData.itemId
+            params.id= _this.boxInitialized.itemId
             console.log(params,'2233')
             coreRuleNodeSelectColId(params).then(res => {
               if (res.code == '200') {
                 treeNode.dataRef.children = []
                 for (let i in res.rows) {
                   treeNode.dataRef.children.push({
-                    key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display]
+                    key:res.rows[i][_this.boxInitialized.val],title:res.rows[i][_this.boxInitialized.display]
                   })
                   _this.boxInitialized.viewSelect.push({
-                    key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display]
+                    key:res.rows[i][_this.boxInitialized.val],title:res.rows[i][_this.boxInitialized.display]
                   })
                 }
                 console.log( treeNode.dataRef.children,'3344')
@@ -1235,10 +1179,10 @@
       nodeSelectSearch(value){
         let _this = this;
         let params = {}
-        params.id= this.boxInitialized.nodeTreeData.itemId
-        params.val= this.boxInitialized.nodeTreeData.val
-        params.parentId = this.boxInitialized.nodeTreeData.parentId
-        params.name = this.boxInitialized.nodeTreeData.display
+        params.id= this.boxInitialized.itemId
+        params.val= this.boxInitialized.val
+        params.parentId = this.boxInitialized.parentId
+        params.name = this.boxInitialized.display
         params.keyword = value
         console.log(params,'params');
         console.log(_this.boxInitialized,'2233');
@@ -1248,15 +1192,15 @@
             for (let i in res.rows) {
               if ($.trim(value).length>0){
                 _this.boxInitialized.inputSelectData.push({
-                  key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display],isLeaf:true
+                  key:res.rows[i][_this.boxInitialized.val],title:res.rows[i][_this.boxInitialized.display],isLeaf:true
                 })
               }else{
                 _this.boxInitialized.inputSelectData.push({
-                  key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display],isLeaf:false
+                  key:res.rows[i][_this.boxInitialized.val],title:res.rows[i][_this.boxInitialized.display],isLeaf:false
                 })
               }
               _this.boxInitialized.viewSelect.push({
-                key:res.rows[i][_this.boxInitialized.nodeTreeData.val],title:res.rows[i][_this.boxInitialized.nodeTreeData.display]
+                key:res.rows[i][_this.boxInitialized.val],title:res.rows[i][_this.boxInitialized.display]
               })
             }
           } else {
@@ -1295,7 +1239,57 @@
         } else{
           this.selectNode.calculation = '1'
         }
-      }
+      },
+
+      maxTagPlaceholder(){
+        this.modalVisible = true;
+        this.edgeSelectOpen=false;
+        this.valueList = this.selectEdge.assertValList;
+        this.fullData =  this.selectEdge;
+        this.initialized = this.edgeInitialized
+      },
+      edgeVisibleChange(open){
+        if (!this.modalVisible){
+          this.edgeSelectOpen=open;
+        } else{
+          this.edgeSelectOpen = false;
+        }
+      },
+
+      nodeTagPlaceholder(){
+        this.modalVisible = true;
+        this.nodeSelectOpen=false;
+        this.valueList = this.selectNode.assertValList
+        this.fullData =  this.selectNode;
+        this.initialized = this.boxInitialized
+      },
+      nodeVisibleChange(open){
+        if (!this.modalVisible){
+          this.nodeSelectOpen=open;
+        } else{
+          this.nodeSelectOpen = false;
+        }
+      },
+      treeMoreNode(){
+        this.modalVisible = true;
+        this.valueList = this.selectNode.assertValList
+        this.fullData =  this.selectNode;
+        this.initialized = this.boxInitialized
+      },
+
+      treeMoreEdge(){
+        this.modalVisible = true;
+        this.valueList = this.selectEdge.assertValList
+        this.fullData =  this.selectEdge;
+        this.initialized = this.edgeInitialized
+      },
+
+      modalCancel(){
+        this.modalVisible = false;
+      },
+      edgeValueOk(){
+        this.modalVisible = false;
+      },
     }
   }
 </script>
