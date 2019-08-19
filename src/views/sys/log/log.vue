@@ -135,6 +135,7 @@
                 }).then(res => {
                     if (res.code == '200') {
                         this.dataSource = this.$dateFormat(res.rows,['logDate']);
+                        this.total=res.total
                         this.spinning = false
                     } else {
                         this.spinning = false

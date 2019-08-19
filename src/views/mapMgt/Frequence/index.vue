@@ -389,7 +389,7 @@ export default {
         id: this.NData.mapperId
       }
       if (Object.keys(this.MData).length == 0) {
-        $message.info('请添加知识库数据')
+        this.$message.info('请添加知识库数据')
       }
       this.loading = true
       this.$axios({
@@ -428,6 +428,7 @@ export default {
     //点击取消
     clickCancel() {
       this.MData = {}
+      this.remark=''
     },
     //搜索
     search() {

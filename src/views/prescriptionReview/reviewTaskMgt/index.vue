@@ -100,7 +100,7 @@
                     </el-table-column>
                 </el-table>
                 <a-pagination
-                    hideOnSinglePage
+                  
                     :total="total"
                     showSizeChanger
                     v-model="current"
@@ -142,7 +142,7 @@
                     </el-table-column>
                 </el-table>
                 <a-pagination
-                    hideOnSinglePage
+                  
                     :total="bmTotal"
                     showSizeChanger
                     v-model="bmCurrent"

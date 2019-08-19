@@ -18,31 +18,31 @@
         <a-input
           :read-only="readOnly"
           placeholder="ICD编码..."
-          v-decorator="['icdcode', {rules: [{ required: true, message: '请输入ICD编码' },{validator:checkChinese},{ message: '请勿输入空格', pattern: /^[^\s]*$/}]}, ]"
+          v-decorator="['icdcode', {rules: [{ required: true, message: '请输入ICD编码' },{validator:checkChinese}, { message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/},]}, ]"
         />
       </a-form-item>
       <a-form-item label="附加编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['addcode',{rules:[{validator:checkChinese}]}]"
+          v-decorator="['addcode',{rules:[{validator:checkChinese},{ message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/}]}]"
         />
       </a-form-item>
       <a-form-item label="自定义编码1" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['defcode1',{rules:[{validator:checkChinese}]}]"
+          v-decorator="['defcode1',{rules:[{validator:checkChinese},{ message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/}]}]"
         />
       </a-form-item>
       <a-form-item label="自定义编码2" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['defcode2',{rules:[{validator:checkChinese}]}]"
+          v-decorator="['defcode2',{rules:[{validator:checkChinese},{ message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/}]}]"
         />
       </a-form-item>
       <a-form-item label="拼音码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['spellcode',{rules:[{validator:checkChinese}]}]"
+          v-decorator="['spellcode',{rules:[{validator:checkChinese},{ message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/}]}]"
         />
       </a-form-item>
       <a-form-item label="自定义名称" :label-col="labelCol" :wrapper-col="wrapperCol">

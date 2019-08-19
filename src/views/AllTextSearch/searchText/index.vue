@@ -35,7 +35,7 @@
           </div>
           <footer class="jiewei">
             <a-pagination
-              hideOnSinglePage
+            
               showSizeChanger
               showQuickJumper
               :total="total"

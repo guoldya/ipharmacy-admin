@@ -1,24 +1,24 @@
 <template>
-    <a-card>
-        <Searchpanel ref="searchPanel" :list="list">
-            <div slot="control">
-                <a-button type="primary" @click="search">查询</a-button>
-                <a-button class="margin-left-5" @click="resetForm">重置</a-button>
-            </div>
-        </Searchpanel>
-        <a-button class="margin-top-10" type="primary" @click="adds">新增</a-button>
-        <a-spin :spinning="loading" tip="加载中...">
-            <a-treeTable
-                class="margin-top-10"
-                :columns="columns"
-                :data="dataSource"
-                :items="items"
-                :opColWidth="110"
-                :moreOp="false"
-                :isoperate="'false'"
-            ></a-treeTable>
-        </a-spin>
-    </a-card>
+  <a-card>
+    <Searchpanel ref="searchPanel" :list="list">
+      <div slot="control">
+        <a-button type="primary" @click="search">查询</a-button>
+        <a-button class="margin-left-5" @click="resetForm">重置</a-button>
+      </div>
+    </Searchpanel>
+    <a-button class="margin-top-10" type="primary" @click="adds">新增</a-button>
+    <a-spin :spinning="loading" tip="加载中...">
+      <a-treeTable
+        class="margin-top-10"
+        :columns="columns"
+        :data="dataSource"
+        :items="items"
+        :opColWidth="110"
+        :moreOp="false"
+        :isoperate="'false'"
+      ></a-treeTable>
+    </a-spin>
+  </a-card>
 </template>
 
 <script>
@@ -236,6 +236,9 @@ export default {
                             this.success('启用成功')
                         }
                         this.getData()
+                    }
+                     else if(res.code == '500'){
+                        this.warn(res.msg)
                     } else {
                         if (data.status == '1') {
                             this.warn('停用失败')
@@ -318,6 +321,6 @@ export default {
 
 <style scoped>
 .userModel-p {
-    text-align: center;
+  text-align: center;
 }
 </style>

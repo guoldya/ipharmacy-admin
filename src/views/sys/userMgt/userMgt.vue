@@ -232,7 +232,8 @@ export default {
       orgData: [],
       deptData: [],
       deptDatas: [],
-      personData: []
+      personData: [],
+      searchData:{}
     }
   },
   components: {},
@@ -241,7 +242,7 @@ export default {
       return [
         { name: '账号', dataField: 'account', type: 'text' },
         { name: '姓名', dataField: 'username', type: 'text' },
-        { name: '机构', dataField: 'orgId', type: 'tree-select', keyExpr: 'keyword', treeData: this.orgData },
+        { name: '机构', dataField: 'orgId', type: 'tree-select', keyExpr: 'keyword', treeData: this.orgData,onSelect:this.selectTree },
         { name: '部门', dataField: 'deptId', type: 'tree-select', keyExpr: 'keyword', treeData: this.deptDatas }
       ]
     }
@@ -249,10 +250,17 @@ export default {
   mounted() {
     this.getData()
     this.getOrgData()
-    this.getDeptDatas()
+   // this.getDeptDatas()
   },
   methods: {
+    // 选择机构
+     selectTree(value){
+          console.log(value,'value');
+        this.getDeptDatas(value)
+      },
+      // 搜索
     search() {
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.offset = 0
       params.pageSize = this.pageSize
@@ -261,6 +269,7 @@ export default {
     },
     //重置
     resetForm() {
+       this.searchData = {}
       this.$refs.searchPanel.form.resetFields()
       this.getData()
     },
@@ -387,14 +396,14 @@ export default {
         })
     },
     pageChange(page, size) {
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+     let params = this.searchData
       params.offset = (page - 1) * size
       this.getData(params)
     },
     sizeChange(current, size) {
       this.current = 1
       this.pageSize = size
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+     let params = this.searchData
       params.pageSize = size
       this.getData(params)
     },
@@ -467,7 +476,7 @@ export default {
       this.$axios({
         url: this.api.deptUrl,
         method: 'put',
-        data: { orgId: val }
+        data: { orgId: val ,status:'1'}
       })
         .then(res => {
           if (res.code == '200') {
@@ -480,11 +489,11 @@ export default {
           this.error(err)
         })
     },
-    getDeptDatas() {
+    getDeptDatas(val) {
       this.$axios({
-        url: this.api.getUrl,
+        url: this.api.deptUrl,
         method: 'put',
-        data: { status: '1' }
+        data: { status: '1',orgId: val }
       })
         .then(res => {
           if (res.code == '200') {

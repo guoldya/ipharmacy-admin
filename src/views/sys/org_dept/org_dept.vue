@@ -87,7 +87,7 @@ export default {
         deptUrl: '/sys/sysOrgs/selectDeptsByOrgId',
         updateUrl: '/sys/sysDepts/update',
         delDeptUrl: '/sys/sysDepts/delete',
-        orgUserUrl: '/sys/sysDeptpersons/selectPersonsListWithDeptId',
+        orgUserUrl: '/sys/sysDeptpersons/selectPersonsPageWithDeptId',
         updateStatus: '/sys/sysDepts/updateStatus'
       },
       dataSource: [],
@@ -216,7 +216,8 @@ export default {
       this.getUserData(params)
     },
     orgCurrentChange(val) {
-      sessionStorage.setItem('val', JSON.stringify(val))
+      console.log(val)
+      //window.sessionStorage.setItem('val', JSON.stringify(vals))
       if (val) {
         this.orgId = val.orgId
         this.deptButton = false

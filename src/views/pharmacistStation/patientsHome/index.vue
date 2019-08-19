@@ -74,7 +74,7 @@
                   </el-table-column>
                 </el-table>
                 <a-pagination
-                  hideOnSinglePage
+                
                   :total="total"
                   showSizeChanger
                   v-model="current"
@@ -120,7 +120,7 @@
               </el-table-column>
             </el-table>
             <a-pagination
-              hideOnSinglePage
+           
               :total="issueTotal"
               showSizeChanger
               v-model="issueCurrent"
@@ -169,7 +169,7 @@
               </el-table-column>
             </el-table>
             <a-pagination
-              hideOnSinglePage
+           
               :total="guideTotal"
               showSizeChanger
               v-model="guideCurrent"

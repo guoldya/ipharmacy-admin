@@ -60,7 +60,7 @@
           </el-table-column>
         </el-table>
         <a-pagination
-          hideOnSinglePage
+      
           :total="total"
           showSizeChanger
           v-model="current"
