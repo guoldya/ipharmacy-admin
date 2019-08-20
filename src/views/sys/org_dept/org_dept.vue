@@ -130,6 +130,9 @@ export default {
       deptButton: true
     }
   },
+  destroyed(){
+      sessionStorage.clear();
+  },
   mounted() {
     this.getData()
   },
@@ -216,15 +219,22 @@ export default {
       this.getUserData(params)
     },
     orgCurrentChange(val) {
-      console.log(val)
-      //window.sessionStorage.setItem('val', JSON.stringify(vals))
       if (val) {
-        this.orgId = val.orgId
-        this.deptButton = false
-        this.getDeptData({ orgId: val.orgId })
-      } else {
-        this.deptData = []
-        this.deptButton = true
+        if (val.items) {
+          delete val.items
+        }
+        if (val.parent) {
+          delete val.parent
+        }
+        sessionStorage.setItem('val', JSON.stringify(val))
+        if (val) {
+          this.orgId = val.orgId
+          this.deptButton = false
+          this.getDeptData({ orgId: val.orgId })
+        } else {
+          this.deptData = []
+          this.deptButton = true
+        }
       }
     },
     deptCurrentChange(val) {
