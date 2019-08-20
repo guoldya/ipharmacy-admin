@@ -21,7 +21,7 @@
                       <div class="disFlex">
                         <!-- <span class="font-bold fontSize16">{{list.title}}</span>
                         <span> -->
-                          <a-button type="primary" v-if="list.btn"><a-icon type="plus" />{{list.btn}}</a-button>
+                          <a-button type="primary" @click="addMonitorTarget" v-if="list.btn"><a-icon type="plus" />{{list.btn}}</a-button>
                         <!-- </span> -->
                       </div>
 
@@ -62,27 +62,27 @@
                           </el-table>
                       </a-spin>
 
-                      <a-row  class="margin-top-5" :gutter="24">
+                      <a-row  class="margin-top-5"  >
                             <a-col
                               v-for="(item,i) in list.checkItem" :key="i"
-                              :span="14"
+                              :span="24"
                               >
                                 <a-form-item :label="item.label"
-                                  :label-col="{ span: 2 }"
-                                  :wrapper-col="{ span: 22 }">
+                                  :label-col="{ span: 1 }"
+                                  :wrapper-col="{ span: 23 }">
                                     <a-checkbox-group :options="item.options"   v-decorator="[item.dataField]" @change="onChange" />
                                 </a-form-item>
                             </a-col>
                       </a-row>
 
-                      <a-row  class="margin-top-5" :gutter="24">
+                      <a-row  class="margin-top-5"  >
                             <a-col
                               v-for="(item,i) in list.formItem" :key="i"
                               :span="6"
                               >
                                 <a-form-item :label="item.label" class="unit"
-                                  :label-col="{ span: 5 }"
-                                  :wrapper-col="{ span: 19 }">
+                                  :label-col="{ span: 4 }"
+                                  :wrapper-col="{ span: 20 }">
                                     <a-date-picker v-decorator="[item.val]" v-if="item.type==='date'"/>
                                     <a-select placeholder="请选择..." :style="{width:'180px'}" v-decorator="[item.dataField]" v-if="item.type=='select'">
                                         <a-select-option :value="op.value" v-for="(op,index) in selectItem" :key="index">
@@ -97,13 +97,13 @@
             </a-tabs>
             
         </a-form>
-        
-        
+        <addMonitorTarget ref="addMonitorTarget"></addMonitorTarget>
       </a-card>
     </div>
 </template>
 
 <script>
+import addMonitorTarget from './addMonitorTarget'
   export default {
     name: 'pharmacyMonitorIndex',
     data(){
@@ -137,7 +137,7 @@
                 {label:'开始日期',type:'date',val:'date',dataField:'date'}
             ],
           },
-          {title:'从依性监测',dataField:'rely',value:'3',
+          {title:'依从性监测',dataField:'rely',value:'3',
             formItem:[
                 {label:'监护频率',type:'select',val:'time',dataField:'time'},
                 {label:'开始日期',type:'date',val:'date',dataField:'date'}
@@ -189,13 +189,19 @@
         items:[],
       }
     },
+    components:{
+      addMonitorTarget
+    },
     methods:{
+      addMonitorTarget(){
+        this.$refs.addMonitorTarget.showModal()
+      },
       selectModal(){
         this.$router.push({
           name: 'selectTemplate',
         })
       },
-      //radio-tabs
+      //tabs
       callback (val) {
         console.log(val)
       },

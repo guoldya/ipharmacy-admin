@@ -156,7 +156,7 @@ export default {
                 {label:'开始日期',type:'date',val:'date',dataField:'date'}
             ],
           },
-          {title:'从依性监测',dataField:'rely',value:'3',
+          {title:'依从性监测',dataField:'rely',value:'3',
             formItem:[
                 {label:'监护频率',type:'select',val:'time',dataField:'time'},
                 {label:'开始日期',type:'date',val:'date',dataField:'date'}
