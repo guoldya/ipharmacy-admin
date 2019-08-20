@@ -13,13 +13,11 @@ import './assets/iconfont/iconfont.css'
 import admin from '@/plugin/admin'
 import bootstrap from './core/bootstrap'
 import { VueAxios } from '@/utils/request'
+import util from '@/utils/util'
 import './core/use'
 import '@/permission' // vue 权限控制
 import '@/utils/filter' // vue 全局 filter  
 import 'babel-polyfill' // polyfill
-import $ from 'jquery'
-
-window.$ = $
 //组件相关
 import { Table, TableColumn, Card, Tag, Collapse, CollapseItem, Scrollbar, Tooltip,Progress } from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局
@@ -32,7 +30,7 @@ import detailHeader from '@/components/detailHeader/header'
 import treeSelect from '@/components/tree-select'
 import dateList from '@/components/dateList/dateList'
 
-import util from '@utils/util'
+// import util from '@utils/util'
 import { getFormat, dateFormat,checkArray,changeTime } from '@/utils/misc'
 import { asyncRouterMap } from '@/config/router.config'
 import Enum from '@/comm-data/enum.js'
@@ -78,6 +76,7 @@ Vue.prototype.$debuger = util.debuger
 Vue.prototype.$notification = notification
 Vue.prototype.$dateFormat = dateFormat
 Vue.prototype.$changeTime = changeTime
+Vue.prototype.$util = util
 
 /**
  * @description 全局注册应用配置

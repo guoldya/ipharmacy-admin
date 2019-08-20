@@ -752,7 +752,7 @@
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
                       this.boxInitialized.inputType = 'scopeInput'
-                    } else if (params.lo == 3 && $.trim(params.parentId).length == 0) {
+                    } else if (params.lo == 3 && !this.$util.trim(params.parentId)) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
                       this.boxInitialized.val =  params.val;
@@ -777,7 +777,7 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                    }else if (params.lo == 3 && $.trim(params.parentId).length>0){
+                    }else if (params.lo == 3 && this.$util.trim(params.parentId)){
                       this.boxInitialized.inputType = 'treeSelect'
                       this.boxInitialized.itemId = params.itemId
                       this.boxInitialized.val =  params.val;
@@ -870,7 +870,7 @@
                   } else if (sourceP.lo == 2) {
                     this.edgeInitialized.inputEdge = 'scopeInput'
                     this.edgeInitialized.lo = 2;
-                  } else if (sourceP.lo == 3 && $.trim(sourceP.parentId).length == 0 ) {
+                  } else if (sourceP.lo == 3 && !this.$util.trim(sourceP.parentId) ) {
                     this.edgeInitialized.lo = 3;
                     this.edgeInitialized.inputEdge = 'select'
                     this.edgeInitialized.itemId = sourceP.itemId;
@@ -899,7 +899,7 @@
                         this.error(err)
                       })
                     // }
-                  }else if(sourceP.lo == 3 && $.trim(sourceP.parentId).length >0 ){
+                  }else if(sourceP.lo == 3 && this.$util.trim(sourceP.parentId)){
                     this.edgeInitialized.lo = 3;
                     this.edgeInitialized.inputEdge = 'treeSelect'
                     this.edgeInitialized.itemId = sourceP.itemId;
@@ -1068,7 +1068,7 @@
       verifyFlow(status) {
         this.submitStatus = true;
         let data = this.flow.save();
-        if ($.trim(data.nodes).length == 0 && $.trim(data.edges).length == 0){
+        if (this.$util.trim(data.nodes) ==null && this.$util.trim(data.edges) == null){
           if(status.status){
             this.warn('未选择节点!');
           }
@@ -1082,7 +1082,7 @@
           this.submitStatus = false;
           return
         }
-        if ($.trim(data.edges).length == 0){
+        if (this.$util.trim(data.edges) == null){
            if(status.status){
           this.warn('节点未连线!');
            }
@@ -1137,7 +1137,7 @@
           if (nodes[i].id == edge.pid) {
             if (nodes[i].shape == 'model-rect-attribute' ) {
               if (nodes[i].lo == 3){
-                if ($.trim(edge.label).length == 0|| $.trim(edge.ro).length == 0|| $.trim(edge.assertValList).length == 0) {
+                if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.ro) == null || this.$util.trim(edge.assertValList) == null) {
                   if(status.status){
                     this.warn('请输入线段值');
                   }
@@ -1146,7 +1146,7 @@
                   return false
                 }
               } else if(nodes[i].lo == 2){
-                if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0 || $.trim(edge.assertVal1).length == 0) {
+                if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.assertVal) == null || this.$util.trim(edge.assertVal1) == null) {
                   if(status.status){
                   this.warn('请输入线段值');
                   }
@@ -1155,7 +1155,7 @@
                   return false
                 }
               }else if(nodes[i].lo == 1){
-                 if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0|| $.trim(edge.ro).length == 0) {
+                 if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.assertVal) == null|| this.$util.trim(edge.ro) == null) {
               if(status.status){
                   this.warn('请输入线段值');
                   }
@@ -1165,7 +1165,7 @@
                 }
               }
             } else if (nodes[i].shape == 'flow-rhombus-if') {
-              if ($.trim(edge.label).length == 0|| $.trim(edge.assertVal).length == 0) {
+              if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.assertVal) == null) {
                if(status.status){
                   this.warn('请输入线段值');
                   }
@@ -1174,7 +1174,7 @@
                 return false
               }
             } else if (nodes[i].shape == 'model-image-branch') {
-              if ($.trim(edge.label).length == 0) {
+              if (this.$util.trim(edge.label) == null) {
               if(status.status){
                   this.warn('请输入线段值');
                   }
@@ -1193,7 +1193,7 @@
           // for (let i in pids){
             // if (edges[key].id == pids[i]) {
               if (node.shape == 'model-rect-attribute'){
-                if ($.trim(node.itemId).length == 0 || $.trim(node.childNodes).length == 0 || node.pid.length == 0){
+                if (this.$util.trim(node.itemId) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0){
                   if(status.status){
                   this.warn('属性节点未完善或缺少结论节点和上级节点');
                   }
@@ -1202,7 +1202,7 @@
                   return false
                 }
               }else if (node.shape == 'model-image-branch' ){
-                if ($.trim(node.label).length == 0 || $.trim(node.childNodes) == 0 || node.pid.length == 0){
+                if (this.$util.trim(node.label) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0){
                    if(status.status){
                   this.warn('分支节点或缺少结论节点和上级节点');
                    }
@@ -1211,7 +1211,7 @@
                 }
               }else if (node.shape == 'flow-rhombus-if'){
                 if (node.lo == 3){
-                  if ($.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertValList).length == 0 ||$.trim(node.childNodes) == 0 || node.pid.length == 0){
+                  if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.assertValList) == null ||this.$util.trim(node.childNodes) == null || node.pid.length == 0){
                      if(status.status){
                     this.warn('条件节点或缺少结论节点和上级节点');
                      }
@@ -1219,7 +1219,7 @@
                     return false
                   }
                 } else{
-                  if ( $.trim(node.itemId).length == 0 || $.trim(node.ro).length == 0 || $.trim(node.assertVal).length == 0||  $.trim(node.childNodes) == 0 || node.pid.length == 0){
+                  if ( this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.assertVal) == null||  this.$util.trim(node.childNodes) == null || node.pid.length == 0){
                      if(status.status){
                     this.warn('条件节点或缺少结论节点和上级节点');
                      }
@@ -1228,7 +1228,7 @@
                   }
                 }
               }else if (node.shape == 'model-card-conclusion'){
-                if ($.trim(node.inAccordanceWith).length == 0 || $.trim(node.levels).length == 0 || ($.trim(node.message).length == 0 || $.trim(node.suggest).length == 0 || $.trim(node.verdictType).length == 0 || node.pid.length == 0)){
+                if (this.$util.trim(node.inAccordanceWith) == null || this.$util.trim(node.levels) == null || (this.$util.trim(node.message) == null || this.$util.trim(node.suggest) == null || this.$util.trim(node.verdictType) == null || node.pid.length == 0)){
                    if(status.status){
                   this.warn('结论节点未完善或缺少上级节点');
                    }
@@ -1795,7 +1795,7 @@
         }
       },
       getPreData(pid,data){
-        if ($.trim(pid).length>0){
+        if (this.$util.trim(pid)){
           for(let key in data){
             if (pid == data[key].id){
               return data[key]

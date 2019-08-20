@@ -767,7 +767,7 @@ export default {
         pass() {
             let params = {}
             let reviewIds = []
-            if ($.trim(this.selections).length <= 0) {
+            if (this.$util.trim(this.selections) == null) {
                 this.warn('请选择处方')
                 return
             } else {
@@ -802,7 +802,7 @@ export default {
         rejected() {
             let params = {}
             let reviewIds = []
-            if ($.trim(this.selections).length <= 0) {
+            if (this.$util.trim(this.selections) ==null) {
                 this.warn('请选择处方')
                 return
             } else {
@@ -966,7 +966,7 @@ export default {
         },
         //存为模板
         saveTemplate() {
-            if ($.trim(this.templateText).length == 0) {
+            if (this.$util.trim(this.templateText) == null) {
                 this.warn('请输入审核意见')
                 return
             } else {
@@ -1013,7 +1013,7 @@ export default {
             let params = {}
             params.auditType = '1'
             params.passType = '1'
-          if($.trim(this.templateText).length>0){
+          if(this.$util.trim(this.templateText)){
             params.reviewOpinion = this.templateText
           }else{
             params.reviewOpinion = '驳回'
