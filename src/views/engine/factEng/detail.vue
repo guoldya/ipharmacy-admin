@@ -277,7 +277,7 @@ export default {
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
-              let { id, pie, colType, colName, colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
+              let { id, pie, colType, colName, colZySql,colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
                 formData = {
                   id,
                   pie,

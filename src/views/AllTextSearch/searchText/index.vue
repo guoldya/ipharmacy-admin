@@ -161,9 +161,8 @@ export default {
       this.getdata({ keyword: this.value, pageNo: page, pageSize: pageSize })
     },
     pageChangeSize(page, pageSize) {
-      this.current = page
-      let params = {}
       this.pageSize = pageSize
+      let params = {}
       params.pageNo = page
       params.pageSize = pageSize
       this.getdata({ keyword: this.value, pageNo: page, pageSize: pageSize })

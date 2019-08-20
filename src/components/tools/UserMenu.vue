@@ -57,8 +57,9 @@
           content: '真的要注销登录吗 ?',
           onOk() {
             return that.Logout({}).then(() => {
+             console.log(that.$store.state.page)
               that.success('注销成功');
-               that.$router.push({ name: 'login' })
+               that.$router.push({ name: 'login' })       
             }).catch(err => {
               that.$message.error({
                 title: '错误',

@@ -282,6 +282,7 @@ export default {
     this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
     this.getData()
     this.getOrgData()
+    console.log(this.$store.state.page.opened)
   },
 
   methods: {
@@ -352,7 +353,6 @@ export default {
       this.isActive = false
       this.drugName = ''
       this.isShow = true
-      console.log(row)
       this.NData = row
       this.MData = {}
       let params = {}

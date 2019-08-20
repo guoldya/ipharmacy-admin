@@ -149,6 +149,7 @@ export default {
     resetForm({}) {
       this.$refs.searchPanel.form.resetFields()
       this.searchData ={};
+      this.pageSize=10
       this.getData({ pageSize: this.pageSize, offset: 0 })
     },
     // 获取初始数据

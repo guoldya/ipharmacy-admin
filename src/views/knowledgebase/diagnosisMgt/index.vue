@@ -273,10 +273,11 @@ export default {
         this.searchData = {}
         this.$refs.searchPanel.form.resetFields()
         let params = { patientid: this.id }
-        params.pageSize = this.pageSize
+         this.current = 1
+         this.pageSize=10
+        params.pageSize = 10
         params.offset = 0
         this.getPageData(params)
-        this.current = 1
       }
     },
     //查询按下回车的回调

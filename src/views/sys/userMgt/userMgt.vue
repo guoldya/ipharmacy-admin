@@ -271,7 +271,10 @@ export default {
     resetForm() {
        this.searchData = {}
       this.$refs.searchPanel.form.resetFields()
-      this.getData()
+      let params={}
+       params.pageSize = this.pageSize
+      params.offset = 0
+      this.getData(params)
     },
     addUser() {
       this.isNew = true

@@ -86,7 +86,7 @@ export default {
           name: '状态',
           dataField: 'status',
           type: 'select',
-          dataSource: this.enum.statu,
+          dataSource: this.enum.status,
           keyExpr: 'id',
           valueExpr: 'text'
         }

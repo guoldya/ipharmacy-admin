@@ -136,6 +136,7 @@ export default {
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
       this.searchData ={};
+      this.pageSize=10
       this.getData({ pageSize: this.pageSize, offset: 0 })
     },
     getData(params = {}) {
@@ -161,6 +162,7 @@ export default {
         })
     },
     pageChange(page, pageSize) {
+      this.current=page
       this.pageSize = pageSize;
       let params = this.searchData
       params.offset = (page - 1) * pageSize
@@ -168,6 +170,7 @@ export default {
       this.getData(params)
     },
     pageChangeSize(page, pageSize) {
+       this.current=page
       this.pageSize = pageSize;
       let params =this.searchData
       params.offset = (page - 1) * pageSize

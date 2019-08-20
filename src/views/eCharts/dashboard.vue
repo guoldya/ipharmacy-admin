@@ -39,7 +39,7 @@
                 }
               },
               radius: '100%',
-              data: [{value: 50, name: '完成率',color:'#ffffff'}],
+              data: [{value: 79, name: '完成率',color:'#ffffff'}],
             }
           ]
         },
