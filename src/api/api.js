@@ -94,7 +94,7 @@ function errHandler(error) {
 //结果拦截器
 instance.interceptors.response.use(
     res => {
-        if ($.trim(res.data).length <= 0)
+        if (res.data.length <= 0)
             return Promise.reject(res)
         const data = res.data
         switch (data.code) {

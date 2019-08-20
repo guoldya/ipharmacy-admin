@@ -257,7 +257,7 @@ export default {
 
     //搜索
     search() {
-      if ($.trim(this.id).length > 0) {
+      if (this.$util.trim(this.id)) {
         let params = this.$refs.searchPanel.form.getFieldsValue()
         this.searchData = this.$refs.searchPanel.form.getFieldsValue()
         params.pageSize = this.pageSize
@@ -269,7 +269,7 @@ export default {
     },
     //重置
     resetForm() {
-      if ($.trim(this.id).length > 0) {
+      if (this.$util.trim(this.id)) {
         this.searchData = {}
         this.$refs.searchPanel.form.resetFields()
         let params = { patientid: this.id }
@@ -292,7 +292,7 @@ export default {
     // 查找事件
     onChange(value) {
        this.loadedKeys = []
-        if ($.trim(value).length > 0) {
+        if (this.$util.trim(value)) {
           this.gData = []
           let params = { keyword: value }
           this.getTreeData(params)

@@ -639,7 +639,7 @@ export default {
             let params = {}
             params.auditType = '1'
             // params.passType = "1";
-            if ($.trim(this.templateText).length>0) {
+            if (this.$util.trim(this.templateText)) {
                 params.reviewOpinion = this.templateText
             } else {
                 params.reviewOpinion = '驳回'
@@ -810,7 +810,7 @@ export default {
         },
         //存为模板
         saveTemplate() {
-            if ($.trim(this.templateText).length > 0) {
+            if (this.$util.trim(this.templateText)) {
                 setTimeout(() => {
                     this.form.setFieldsValue({
                         titles: this.templateTitle,

@@ -181,11 +181,11 @@ export default {
                   assertVal = this.planruleList[key].assertVal
                   assertVal2 = this.planruleList[key].assertVal2
                   if (assertVal) {
-                    this.planruleList[key].assertVal = Number(assertVal.slice(0, $.trim(assertVal).length - 1))
-                    spec = assertVal.slice($.trim(assertVal).length - 1, $.trim(assertVal).length)
+                    this.planruleList[key].assertVal = Number(assertVal.slice(0, assertVal.length - 1))
+                    spec = assertVal.slice(assertVal.length - 1, assertVal.length)
                   }
                   if (assertVal2) {
-                    this.planruleList[key].assertVal2 = Number(assertVal2.slice(0, $.trim(assertVal2).length - 1))
+                    this.planruleList[key].assertVal2 = Number(assertVal2.slice(0, assertVal2.length - 1))
                   }
                   if (spec == '岁') {
                     this.planruleList[key].spec = '3'
