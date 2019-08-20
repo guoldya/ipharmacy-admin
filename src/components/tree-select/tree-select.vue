@@ -9,7 +9,7 @@
       :autoClearSearchValue="false"
       @change="selectChange"
       @search="selectSearch"
-      :maxTagCount="10"
+      :maxTagCount="3"
     >
       <span slot="maxTagPlaceholder" @click="treeMoreTag">查看更多</span>
       <a-select-option v-for="item in optionData" :key="item.key">
@@ -21,7 +21,7 @@
     <div
       class="content"
       :class="{'bottom' : position == 'bottom', 'top' : position == 'top'}"
-      v-show="show"
+      v-show="show && values.length"
       ref="content">
       <a-tree
         multiple

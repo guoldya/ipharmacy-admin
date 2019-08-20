@@ -48,7 +48,7 @@
       <a-form-item label="自定义名称" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           :read-only="readOnly"
-          v-decorator="['icdname',{rules:[{ required: true, message: '请输入名称' },{validator:checkChinese}]}]"
+          v-decorator="['icdname',{rules:[{ required: true, message: '请输入名称' },{validator:checkChinese},{ message: '请勿输入空格',pattern: /^[^\s]*$/}]}]"
         />
       </a-form-item>
       <a-form-item label="备注" :label-col="labelCol" :wrapper-col="wrapperCol">

@@ -320,7 +320,7 @@
         this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
       },
       changeNum(value) {
-        if ($.trim(value).length > 0) {
+        if (this.$util.trim(value)) {
           this.getBase({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
           this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
         }

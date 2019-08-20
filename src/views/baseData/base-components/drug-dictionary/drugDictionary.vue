@@ -439,7 +439,7 @@
       },
       //获取成分列表
       getDrugComposition(params = {}) {
-        if ($.trim(params.keyword).length == 0) {
+        if (this.$util.trim(params.keyword)) {
           params.keyword = ''
         }
         this.$axios({

@@ -81,7 +81,7 @@ const user = {
                         return value.path == item1.name
                     })
                     if (ret1) {
-                        let routerMenu = $.extend(true, {}, item1)
+                        let routerMenu =  Object.assign({}, item1)
                         routerMenu.children = []
                         if (item1.children) {
                             for (let ii in item1.children) {
@@ -90,7 +90,7 @@ const user = {
                                     return value.path == item2.name
                                 })
                                 if (ret2) {
-                                    let sonMenu = $.extend(true, {}, item2)
+                                    let sonMenu = Object.assign({}, item2)
                                     routerMenu.children.push(sonMenu)
                                 }
                             }

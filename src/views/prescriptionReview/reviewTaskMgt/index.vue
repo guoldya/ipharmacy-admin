@@ -291,6 +291,7 @@ export default {
         //重置
         resetForm() {
             this.$refs.searchPanel.form.resetFields()
+            let params={}
             this.searchData = {}
             params.offset = 0;
             params.pageSize = this.pageSize;

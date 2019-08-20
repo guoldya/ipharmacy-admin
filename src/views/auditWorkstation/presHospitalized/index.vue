@@ -615,7 +615,7 @@ export default {
     pass() {
       let params = {}
       let reviewIds = []
-      if ($.trim(this.selections).length <= 0) {
+      if (this.$util.trim(this.selections) == null) {
         this.warn('请选择处方')
         return
       } else {
@@ -651,7 +651,7 @@ export default {
     rejected() {
       let params = {}
       let reviewIds = []
-      if ($.trim(this.selections).length <= 0) {
+      if (this.$util.trim(this.selections) == null) {
         this.warn('请选择处方')
         return
       } else {

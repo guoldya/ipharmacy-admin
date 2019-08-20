@@ -325,7 +325,7 @@ console.log(value)
     },
     //button点击事件模板的存储；
     saveTemplate() {
-      if ($.trim(this.templateText).length > 0) {
+      if (this.$util.trim(this.templateText)) {
         setTimeout(() => {
           this.form.setFieldsValue({ titles: this.templateTitle, reviewTemplate: this.templateText, templetType: '1' })
         }, 100)
