@@ -807,10 +807,12 @@
                       listData.val = params.val;
                       coreRuleNodeSelectColId(listData).then(res => {
                         if (res.code == '200') {
-                          this.boxInitialized.viewSelect=[]
-                          for (let key in res.rows){
-                            this.boxInitialized.viewSelect.push({key:res.rows[key][params.val],title:res.rows[key][params.display],})
-                          }
+                            let resData = [];
+                            for (let key in res.rows){
+                              resData.push({key:res.rows[key][params.val],title:res.rows[key][params.display]})
+                            }
+                            this.boxInitialized.viewSelect.push(...resData);
+                            this.boxInitialized.viewSelect = Array.from(new Set( this.boxInitialized.viewSelect))
                         } else {
                           this.warn(res.msg)
                           this.boxInitialized.viewSelect= []
@@ -882,7 +884,7 @@
                       paramsData.parentId = sourceP.parentId;
                     }
 
-                    // if ( this.edgeInitialized.inputEdgeSelect.length==0) {
+                    // if (  this.edgeInitialized.itemId != sourceP.itemId) {
                       coreRuleNodeSelectColId(paramsData).then(res => {
                         if (res.code == '200') {
                             this.edgeInitialized.inputEdgeSelect=[]
@@ -908,7 +910,7 @@
                     paramsData.val = sourceP.val;
                     paramsData.display = sourceP.display;
                     paramsData.parentId = sourceP.parentId;
-                    // if ( this.edgeInitialized.inputEdgeSelect.length==0) {
+                    // if (  this.edgeInitialized.itemId != sourceP.itemId) {
                       coreRuleNodeSelectColId(paramsData).then(res => {
                         if (res.code == '200') {
                           this.edgeInitialized.inputEdgeSelect=[]
@@ -924,29 +926,31 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                      let listData = {};
-                      if (ev.item.model.assertValList){
-                        listData.valueList = ev.item.model.assertValList;
-                      } else{
-                        listData.valueList = [];
-                      }
-
-                      listData.id =sourceP.itemId;
-                      listData.val =  sourceP.val;
-                      coreRuleNodeSelectColId(listData).then(res => {
-                        if (res.code == '200') {
-                          this.edgeInitialized.viewSelect=[]
-                          for (let key in res.rows){
-                            this.edgeInitialized.viewSelect.push({key:res.rows[key][sourceP.val],title:res.rows[key][sourceP.display]})
-                          }
-                        } else {
-                          this.warn(res.msg)
-                          this.edgeInitialized.viewSelect = []
-                        }
-                      }).catch(err => {
-                        this.error(err)
-                      })
                     // }
+                    let listData = {};
+                    if (ev.item.model.assertValList){
+                      listData.valueList = ev.item.model.assertValList;
+                    } else{
+                      listData.valueList = [];
+                      ev.item.model.assertValList = []
+                    }
+                    console.log(ev.item.model.assertValList,'2233')
+                    listData.id =sourceP.itemId;
+                    listData.val =  sourceP.val;
+                    coreRuleNodeSelectColId(listData).then(res => {
+                      if (res.code == '200') {
+                        let resData = [];
+                        for (let key in res.rows){
+                          resData.push({key:res.rows[key][sourceP.val],title:res.rows[key][sourceP.display]})
+                        }
+                        this.edgeInitialized.viewSelect.push(...resData);
+                        this.edgeInitialized.viewSelect = Array.from(new Set( this.edgeInitialized.viewSelect))
+                      } else {
+                        this.warn(res.msg)
+                      }
+                    }).catch(err => {
+                      this.error(err)
+                    })
                   }
                   if (sourceP.colDbType == 1) {
                     this.edgeInitialized.inValueEdge = 'number'
