@@ -7,7 +7,7 @@
           <a-form-item label="名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-input size="small" v-if="selectNode.shape == 'flow-circle-start'" v-model="selectNode.label"
                      :disabled="true"/>
-            <a-input size="small" :read-only="true" v-else v-model="selectNode.label"/>
+            <a-input size="small" v-else v-model="selectNode.label"/>
           </a-form-item>
         </a-form>
       </div>
@@ -91,12 +91,8 @@
                 <a-select-option :value=4 title="≤" v-if="selectNode.lo==1">小于等于</a-select-option>
                 <a-select-option :value=5 title=">" v-if="selectNode.lo==1">大于</a-select-option>
                 <a-select-option :value=6 title="≥" v-if="selectNode.lo==1">大于等于</a-select-option>
-                <a-select-option :value=7 title="包含" v-if="selectNode.lo==1">包含</a-select-option>
-                <a-select-option :value=8 title="不包含" v-if="selectNode.lo==1">不包含</a-select-option>
-                <a-select-option :value=7 title="包含" v-if="selectNode.lo==2">包含</a-select-option>
-                <a-select-option :value=8 title="不包含" v-if="selectNode.lo==2">不包含</a-select-option>
-                <a-select-option :value=7 title="包含" v-if="selectNode.lo==3">包含</a-select-option>
-                <a-select-option :value=8 title="不包含" v-if="selectNode.lo==3">不包含</a-select-option>
+                <a-select-option :value=7 title="包含">包含</a-select-option>
+                <a-select-option :value=8 title="不包含">不包含</a-select-option>
               </a-select>
             </a-form-item>
             <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
@@ -206,31 +202,24 @@
           <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select
               size="small"
-              allowClear
               :showArrow="false"
               v-model="selectNode.calculation"
               @change="selectIfCalculation">
-              <a-select-option v-if="selectNode.calculation==2" value='2' title='聚合'>
-                聚合
-              </a-select-option>
+              <a-select-option v-if="selectNode.calculation==2" value='2' title='聚合'>聚合</a-select-option>
               <a-select-option v-else-if="selectNode.calculation==1 || !selectNode.precondition" value='1' title='常量'>
                 常量
               </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="公式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-if="selectNode.calculation =='1'" v-model="selectNode.formula" allowClear>
-              <a-select-option v-for="item in this.enum.conOperation" :value=item.id :title=item.text :key="item.id">
+            <a-select size="small" v-model="selectNode.formula" allowClear>
+              <a-select-option v-if="selectNode.calculation =='1'" v-for="item in this.enum.conOperation" :value=item.id
+                               :title=item.text :key="item.id">{{item.text}}
+              </a-select-option>
+              <a-select-option v-if="selectNode.calculation=='2'" v-for="(item,index) in this.enum.aggregation"
+                               :value=item.id :title=item.text :key="index">
                 {{item.text}}
               </a-select-option>
-            </a-select>
-            <a-select size="small" v-else-if="selectNode.calculation=='2'" v-model="selectNode.formula" allowClear>
-              <a-select-option v-for="(item,index) in this.enum.aggregation" :value=item.id :title=item.text
-                               :key="index">
-                {{item.text}}
-              </a-select-option>
-            </a-select>
-            <a-select size="small" v-else>
             </a-select>
           </a-form-item>
           <a-form-item v-if="selectNode.calculation=='1'" label="值" :label-col="{ span: 5 }"
@@ -254,7 +243,9 @@
           <a-input size="small" v-model="selectEdge.label"></a-input>
         </div>
       </div>
-      <div class="panel-title" v-if="selectEdge.sourceType=='flow-rhombus-if' || selectEdge.sourceType=='model-rect-attribute'">规则属性</div>
+      <div class="panel-title"
+           v-if="selectEdge.sourceType=='flow-rhombus-if' || selectEdge.sourceType=='model-rect-attribute'">规则属性
+      </div>
       <div class="block-container" v-if="selectEdge.sourceType=='flow-rhombus-if'">
         <a-form>
           <a-form-item label="判断条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
@@ -275,19 +266,15 @@
             </a-select>
           </a-form-item>
           <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select  size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
+            <a-select size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
               <a-select-option :value=1 title="=" v-if="selectEdge.lo == 1">等于</a-select-option>
               <a-select-option :value=2 title="≠" v-if="selectEdge.lo == 1">不等于</a-select-option>
               <a-select-option :value=3 title="<" v-if="selectEdge.lo == 1">小于</a-select-option>
               <a-select-option :value=4 title="≤" v-if="selectEdge.lo == 1">小于等于</a-select-option>
               <a-select-option :value=5 title=">" v-if="selectEdge.lo == 1">大于</a-select-option>
               <a-select-option :value=6 title="≥" v-if="selectEdge.lo == 1">大于等于</a-select-option>
-              <a-select-option :value=7 title="包含" v-if="selectEdge.lo == 1">包含</a-select-option>
-              <a-select-option :value=8 title="不包含" v-if="selectEdge.lo == 1">不包含</a-select-option>
-              <a-select-option :value=7 title="包含" v-if="selectEdge.lo == 2">包含</a-select-option>
-              <a-select-option :value=8 title="不包含" v-if="selectEdge.lo == 2">不包含</a-select-option>
-              <a-select-option :value=7 title="包含" v-if="selectEdge.lo==3">包含</a-select-option>
-              <a-select-option :value=8 title="不包含" v-if="selectEdge.lo==3">不包含</a-select-option>
+              <a-select-option :value=7 title="包含">包含</a-select-option>
+              <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
@@ -413,30 +400,22 @@
       this.searchEdge = debounce(this.searchEdge, 500)
       this.edgeSelectSearch = debounce(this.edgeSelectSearch, 500)
       this.nodeSelectSearch = debounce(this.nodeSelectSearch, 500)
+
       return {
         levelData: [],
         dicBaseTreeData: [],
         CoreFactAllTree: [],
-        inputType: 'input',
-        inValueType: 'Number',
         inputSelectData: [],
         modelValue: '',
         condition: '',
         conditionValue: '',
         conditionValue1: '',
-        //模型id
-        modelId: null,
-        inputEdge: 'input',
-        inValueEdge: 'Number',
-        edgeModel: '',
         edgeId: null,
         edgeCondition: '',
         edgeConditionValue: '',
         edgeConditionValue1: '',
         preDetailData: [],
         judgePreDetailData: [],
-        calculaStatus: null,
-        calculaFhombus: null,
         vModel: [],
         treeData: [],
         nodeSelectedKeys: [],
@@ -446,18 +425,17 @@
         initialized: {},
         edgeSelectOpen: false,
         nodeSelectOpen: false
-
       }
     },
     watch: {
-      preData(newValue, oldValue) {
+      preData(newValue) {
         if (newValue.length > 0) {
           this.preDetailData = this.preData
         } else {
           this.preDetailData = []
         }
       },
-      judgePreData(newValue, oldValue) {
+      judgePreData(newValue) {
         if (newValue.length > 0) {
           this.judgePreDetailData = this.judgePreData
         } else {
@@ -535,7 +513,6 @@
         this.selectNode.assertValList = null
         let params = extra.selectedNodes[0].data.props
         let _this = this
-        console.log(params, '2233')
         _this.selectNode.itemId = params.id
         if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
           this.boxInitialized.inputType = 'select'
@@ -619,11 +596,13 @@
       //判断节点条件选择事件
       selectNodeRo(value, option) {
         this.condition = option.componentOptions.propsData.title
-        if (this.$util.trim(this.modelValue) == null) {
-          this.modelValue = this.selectNode.itemName
-        }
         this.selectNode.ro = value
-        this.selectNode.label = this.modelValue + this.condition + this.conditionValue
+        this.selectNode.label = this.condition + this.conditionValue
+      },
+      selectEdgeRo(value, option) {
+        this.edgeCondition = option.componentOptions.propsData.title
+        this.selectEdge.ro = value
+        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
       },
       //条件值单个输入事件
       inputChange(e) {
@@ -642,7 +621,7 @@
         if (this.$util.trim(this.conditionValue1) == null) {
           this.conditionValue1 = this.selectNode.assertVal1
         }
-        this.selectNode.label = this.modelValue + '[' + this.conditionValue + '-' + this.conditionValue1 + ']'
+        this.selectNode.label = this.modelValue + '[' + this.selectNode.assertVal + '-' + this.selectNode.assertVal1 + ']'
       },
       scopeAssertVal1(e) {
         this.conditionValue1 = e.srcElement.value
@@ -652,7 +631,7 @@
         if (this.$util.trim(this.conditionValue) == null) {
           this.conditionValue = this.selectNode.assertVal
         }
-        this.selectNode.label = this.modelValue + '[' + this.conditionValue + '-' + this.conditionValue1 + ']'
+        this.selectNode.label = this.modelValue + '[' + this.selectNode.assertVal + '-' + this.selectNode.assertVal1 + ']'
       },
       //下拉选择事件
       assertValSelect(value, option) {
@@ -677,11 +656,6 @@
       searchSelect(value) {
         let params = {}
         params.keyword = value
-        // if ($.trim(this.modelId).length == 0){
-        //   params.id = this.boxInitialized.itemId;
-        // } else{
-        //   params.id = this.modelId;
-        // }
         params.id = this.boxInitialized.itemId
         coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
@@ -771,21 +745,17 @@
 
       //线段输入框input事件
       inputEdgeChange(e) {
-        this.edgeConditionValue = e.srcElement.value
-        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
+        this.selectEdge.label = this.selectEdge.assertVal
       },
       //线中下拉事件
       assertValEdge(value, option) {
         this.selectEdge.lo = 3
-        if (this.$util.trim(this.edgeCondition) == null) {
+        if (!this.edgeCondition) {
           this.edgeCondition = this.selectEdge.roSymbol
         }
-        this.edgeConditionValue = ''
         for (let key in option) {
           if (key < 1) {
             this.edgeConditionValue = option[0].componentOptions.propsData.title
-          } else {
-            this.edgeConditionValue = option[0].componentOptions.propsData.title + '...'
           }
         }
         this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
@@ -805,25 +775,14 @@
           this.error(err)
         })
       },
-      //线条件选择
-      selectEdgeRo(value, option) {
-        this.edgeCondition = option.componentOptions.propsData.title
-        this.selectEdge.label = this.edgeCondition
-      },
       //多个条件值输入第一个事件
-      edgeAssertVal(e) {
-        this.edgeConditionValue = '' + e
-        if (this.$util.trim(this.edgeConditionValue1) == null) {
-          this.edgeConditionValue1 = '' + this.selectNode.assertVal1
-        }
-        this.selectEdge.label = '范围' + '[' + this.edgeConditionValue + '-' + this.edgeConditionValue1 + ']'
+      edgeAssertVal() {
+        this.selectEdge.label = []
+        this.selectEdge.label = '范围' + '[' + this.selectEdge.assertVal + '-' + this.selectEdge.assertVal1 + ']'
       },
-      edgeAssertVal1(e) {
-        this.edgeConditionValue1 = '' + e
-        if (this.$util.trim(this.edgeConditionValue) == null) {
-          this.edgeConditionValue = '' + this.selectNode.assertVal
-        }
-        this.selectEdge.label = '范围' + '[' + this.edgeConditionValue + '-' + this.edgeConditionValue1 + ']'
+      edgeAssertVal1() {
+        this.selectEdge.label = []
+        this.selectEdge.label = '范围' + '[' + this.selectEdge.assertVal + '-' + this.selectEdge.assertVal1 + ']'
       },
       getCoreFactAllStart() {
         coreFactColAll({}).then(res => {
@@ -971,11 +930,9 @@
 
 
       edgeSelectChange(value) {
-        console.log(123)
         this.selectEdge.assertValList = value
       },
       edgeTreeSelected(value) {
-        console.log(1)
         this.selectEdge.assertValList = value
       },
       edgeLoadData(treeNode) {
@@ -1001,7 +958,6 @@
                     key: res.rows[i][_this.edgeInitialized.val], title: res.rows[i][_this.edgeInitialized.display]
                   })
                 }
-                console.log(treeNode.dataRef.children, '3344')
                 _this.edgeInitialized.inputEdgeSelect = [..._this.edgeInitialized.inputEdgeSelect]
               } else {
                 this.warn(res.msg)
@@ -1075,7 +1031,6 @@
             params.parentId = _this.boxInitialized.parentId
             params.parentValue = treeNode.dataRef.key
             params.id = _this.boxInitialized.itemId
-            console.log(params, '2233')
             coreRuleNodeSelectColId(params).then(res => {
               if (res.code == '200') {
                 treeNode.dataRef.children = []
@@ -1087,7 +1042,6 @@
                     key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
                   })
                 }
-                console.log(treeNode.dataRef.children, '3344')
                 _this.boxInitialized.inputSelectData = [..._this.boxInitialized.inputSelectData]
               } else {
                 this.warn(res.msg)
@@ -1109,8 +1063,6 @@
         params.parentId = this.boxInitialized.parentId
         params.name = this.boxInitialized.display
         params.keyword = value
-        console.log(params, 'params')
-        console.log(_this.boxInitialized, '2233')
         coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
             _this.boxInitialized.inputSelectData = []
@@ -1160,13 +1112,14 @@
       },
 
 
-      nodePreChange: function(value, label, extra) {
-        if (value) {
-        } else {
+      nodePreChange: function(value) {
+        if (!value) {
           this.selectNode.calculation = null
+          this.selectNode.formula = null
+
         }
       },
-      nodePreSelect(value, label, extra){
+      nodePreSelect(value, label, extra) {
         let params = extra.selectedNodes[0].data.props
         if (params.lo == '3') {
           this.selectNode.calculation = '2'

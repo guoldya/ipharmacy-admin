@@ -31,24 +31,6 @@ util.open = function(url) {
   document.body.removeChild(document.getElementById('admin-menu-link'))
 }
 
-function trimfy(val) {
-  var demo = String(this)
-  if (demo.indexOf(val) >= 0) {
-    if (demo.substring(demo.indexOf(val), val.length) === val) {
-      demo = demo.substring(demo.indexOf(val) + val.length)
-    }
-  }
-  if (demo.lastIndexOf(val) >= 0) {
-    if (demo.substring(demo.lastIndexOf(val)) === val) {
-      demo = demo.slice(0, demo.lastIndexOf(val))
-    }
-  }
-  if (demo.indexOf(val) == 0 || demo.lastIndexOf(val) == 0) {
-    demo = demo.trimfy(val)
-  }
-  return demo
-}
-
 /**
  * @description 字符串去空
  * @param {String} val 入参
@@ -58,12 +40,14 @@ util.trim = function(val) {
     return null
   } else if (val == undefined) {
     return null
+  }else if (val == '') {
+    return null
   } else if (val == 'null') {
     return null
   } else if (val == 'undefined') {
     return null
   } else if (typeof (val) == 'string') {
-    return trimfy(val)
+    return val.trim()
   } else {
     return val
   }
