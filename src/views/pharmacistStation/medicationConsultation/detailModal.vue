@@ -6,6 +6,7 @@
       @cancel="handleCancel"
       :maskClosable="false"
       :width="800"
+      :destroyOnClose='true'
     >
       <template slot="footer">
         <a-button key="back" @click="handleCancel">取消</a-button>

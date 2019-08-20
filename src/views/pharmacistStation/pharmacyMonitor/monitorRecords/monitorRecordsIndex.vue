@@ -6,7 +6,7 @@
         <a-button class="margin-left-5" @click="resetForm">重置</a-button>
       </div>
     </Searchpanel>
-     <a-button class="margin-top-10" type="primary" @click="monitorRecordsAdd">新增</a-button>
+     <a-button class="margin-top-10" type="primary" @click="monitorRecordsAdd(true)">新增</a-button>
     <a-spin :spinning="loading" tip="加载中...">
       <el-table
         class="margin-top-10"
@@ -25,7 +25,7 @@
           :align="item.align"
         >
         </el-table-column>
-        <el-table-column
+         <el-table-column
           fixed="right"
           label="操作"
           :width="180"
@@ -33,18 +33,7 @@
           v-if="true"
         >
           <template slot-scope="scope">
-
-             <a >编辑</a>
-            <a-divider type="vertical" v-if="scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " />
-            <a-popconfirm
-              title="确定删除?"
-              @confirm="del(scope.row)"
-              okText="删除"
-              cancelText="取消"
-              v-if="scope.row.status == 1"
-            >
-              <a href="javascript:;">删除</a>
-            </a-popconfirm>
+             <opcol :items="items" :more="false" :data="scope.row"></opcol>
           </template>
         </el-table-column>
       </el-table>
@@ -62,10 +51,13 @@
         :pageSize="pageSize"
       ></a-pagination>
     </a-spin>
+    <!-- <edit ref="editModal" :modalData="modalData"></edit> -->
   </a-card>
 </template>
 
 <script>
+  import edit from './edit'
+
   export default {
     name: 'monitorRecordsIndex',
     data(){
@@ -83,12 +75,20 @@
           { title: '药学监护结果分析（包括疗效、不良反应和执行情况）', dataIndex: 'resultType', align: 'left' },
           { title: '药物治疗方案分析', width: 140, dataIndex: 'resultType1', align: 'left' },
           { title: '备注', width: 100, dataIndex: 'resultType2', align: 'left' },
-          { title: '监护时间', width: 100, dataIndex: 'resultType3', align: 'left' },
+          { title: '监护时间', width: 100, dataIndex: 'date', align: 'left' },
         ],
-        dataSource: [{name:'张三',status:'1',audit:'0'},{name:'李四',status:'1',audit:'1'}],
+        dataSource: [{name:'张三',date:"2019-08-10 12:00"},{name:'李四',date:"2019-08-10 12:00"}],
         current:1,
         searchData:{},
+        items: [
+          { text: '编辑', showtip: false, click: this.monitorRecordsAdd },
+          { text: '删除', color: '#ff9900', showtip: true, tip: '确认删除吗？', click: this.del },
+        ],
+        modalData:{},
       }
+    },
+    components:{
+      edit,
     },
     computed: {
       list() {
@@ -112,9 +112,29 @@
       }
     },
     methods:{
-      monitorRecordsAdd(){
+      monitorRecordsAdd(val){
         this.$router.push({
+          name:'monitorRecordsEdit'
         })
+        if(typeof(val)==='boolean'){
+          window.sessionStorage.setItem('childPage', JSON.stringify('add'));
+        }else{
+          window.sessionStorage.setItem('childPage', JSON.stringify('look'))
+           window.sessionStorage.setItem('monitorRecordsData', JSON.stringify(val))
+
+        }
+      },
+
+      editModal(data) {
+        
+        this.$router.push({
+          name:'monitorRecordsEdit',
+          params: { id:'123'}
+        })
+        // 使用modal弹窗
+        // this.modalData=data;
+        // this.$refs.editModal.showModal();
+
       },
       //搜索
       search() {

@@ -88,7 +88,7 @@
         ],
         items: [
           { text: '查看',  showtip: false, click: this.effectMonitorReportAdd, status: '' },
-          { text: '删除', color: 'red', showtip: true, tip: '确认删除吗？', click: this.user, status: '1' },
+          { text: '删除', color: '#E6A23C', showtip: true, tip: '确认删除吗？', click: this.user, status: '1' },
         ],
         dataSource: [{name:'张三',no:'939393'}],
         current:1,

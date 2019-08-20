@@ -51,13 +51,6 @@
         :pageSize="pageSize"
       ></a-pagination>
     </a-spin>
-    <!-- <a-modal
-      title="Title"
-      :visible="modalVisible"
-      @cancel="handleCancel"
-    >
-      <p>wrwfc </p>
-    </a-modal> -->
     <modalDetail ref="modalDetail" :modalData="modalData"></modalDetail>
   </a-card>
 </template>
@@ -90,10 +83,12 @@
         items: [
           { text: '详情',  showtip: false, click: this.detailModal, status: '' },
         ],
-        dataSource: [{name:'张三123',user:'李医生',type:'7',radio:'2',response:'真好'}],
+        dataSource: [
+          {name:'张三123',user:'李医生',type:'7',radio:'2',response:'真好'},
+          {name:'李四123',user:'李医生',type:'4',radio:'1',response:'真好'}
+        ],
         current:1,
         searchData:{},
-        visible:false,
         modalData:{},
       }
     },
