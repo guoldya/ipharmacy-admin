@@ -391,6 +391,7 @@ export default {
       if (Object.keys(this.MData).length == 0) {
         this.$message.info('请添加知识库数据')
       }
+      else{
       this.loading = true
       this.$axios({
         url: this.api.mapUrl,
@@ -424,6 +425,7 @@ export default {
           this.loading = false
           this.error(err)
         })
+      }
     },
     //点击取消
     clickCancel() {
