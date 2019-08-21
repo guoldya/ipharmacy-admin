@@ -105,7 +105,8 @@
                 class="nodeSelect">
               </a-tree-select>
             </a-form-item>
-            <a-form-item v-if="!selectNode.rearCondition" label="条件值" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
+            <a-form-item v-if="!selectNode.rearCondition" label="条件值" :label-col="{ span: 5 }"
+                         :wrapper-col="{ span: 19 }">
               <a-input :type="boxInitialized.inValueType" v-if="selectNode.lo==1 && selectNode.colDbType !=2"
                        @change="inputChange" size="small" v-model="selectNode.assertVal"></a-input>
               <div v-else-if="selectNode.lo==2 && selectNode.colDbType !=2">
@@ -126,7 +127,7 @@
                   :defaultActiveFirstOption="false"
                   :showArrow="false"
                   :filterOption="false"
-                  :maxTagCount="10"
+                  :maxTagCount="3"
                   :open="nodeSelectOpen"
                   @dropdownVisibleChange="nodeVisibleChange"
                 >
@@ -146,6 +147,8 @@
                   :selectChange="nodeSelectChange"
                   :treeSelect="nodeTreeSelected"
                   :loadData="nodeLoadData"
+                  :loadedKeys="nodeLoadedKeys"
+                  :load="nodeLoad"
                   :selectedKeys="selectNode.assertValList"
                   :selectSearch="nodeSelectSearch"
                   :treeMoreTag="treeMoreNode"
@@ -308,7 +311,7 @@
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
                 :filterOption="false"
-                :maxTagCount="10"
+                :maxTagCount="3"
                 :open="edgeSelectOpen"
                 @dropdownVisibleChange="edgeVisibleChange"
               >
@@ -328,6 +331,8 @@
                 :selectChange="edgeSelectChange"
                 :treeSelect="edgeTreeSelected"
                 :loadData="edgeLoadData"
+                :loadedKeys="edgeLoadedKeys"
+                :load="edgeLoad"
                 :selectedKeys="selectEdge.assertValList"
                 :selectSearch="edgeSelectSearch"
                 :treeMoreTag="treeMoreEdge"
@@ -403,9 +408,6 @@
         dicBaseTreeData: [],
         CoreFactAllTree: [],
         inputSelectData: [],
-        condition: '',
-        conditionValue: '',
-        conditionValue1: '',
         edgeId: null,
         edgeCondition: '',
         edgeConditionValue: '',
@@ -416,14 +418,14 @@
         treeData: [],
         nodeSelectedKeys: [],
         modalVisible: false,
-        modalTitle:'',
+        modalTitle: '',
         valueList: [],
         fullData: {},
         initialized: {},
         edgeSelectOpen: false,
         nodeSelectOpen: false,
-        nodeLoadKeys:[],
-        edgeLoadKeys:[],
+        nodeLoadedKeys: [],
+        edgeLoadedKeys: [],
       }
     },
     watch: {
@@ -581,9 +583,6 @@
         _this.selectNode.assertVal = null
         _this.selectNode.assertVal1 = null
         _this.selectNode.assertValList = []
-        this.condition = ''
-        this.conditionValue = ''
-        this.conditionValue1 = ''
         this.judgePreDetailData = []
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
@@ -631,7 +630,7 @@
       selectEdgeRo(value, option) {
         this.edgeCondition = option.componentOptions.propsData.title
         this.selectEdge.ro = value
-        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
+        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue + this.edgeConditionValue1
       },
       //属性节点后线段属性
       attributeEdge(value, node, extra) {
@@ -704,8 +703,8 @@
 
       //线段输入框input事件
       inputEdgeChange(e) {
-        this.edgeConditionValue =  this.selectEdge.assertVal
-        this.selectEdge.label =this.edgeCondition+ this.edgeConditionValue
+        this.edgeConditionValue = this.selectEdge.assertVal
+        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
       },
       //线中下拉事件
       assertValEdge(value, option) {
@@ -738,11 +737,13 @@
       //多个条件值输入第一个事件
       edgeAssertVal() {
         this.selectEdge.label = []
-        this.selectEdge.label = '范围' + '[' + this.selectEdge.assertVal + '-' + this.selectEdge.assertVal1 + ']'
+        this.edgeConditionValue = this.selectEdge.assertVal
+        this.selectEdge.label = this.edgeCondition + '[' + this.edgeConditionValue + '-' + this.edgeConditionValue1 + ']'
       },
       edgeAssertVal1() {
         this.selectEdge.label = []
-        this.selectEdge.label = '范围' + '[' + this.selectEdge.assertVal + '-' + this.selectEdge.assertVal1 + ']'
+        this.edgeConditionValue1 = this.selectEdge.assertVal1
+        this.selectEdge.label = this.edgeCondition + '[' + this.edgeConditionValue + '-' + this.edgeConditionValue1 + ']'
       },
       getCoreFactAllStart() {
         coreFactColAll({}).then(res => {
@@ -882,6 +883,7 @@
       logicalChange(value) {
         this.selectNode.lo = value
         this.selectNode.ro = 7
+        console.log(this.boxInitialized.inputSelectData,'2233')
       },
       logicalEdge(value) {
         this.selectEdge.lo = value
@@ -892,8 +894,10 @@
       edgeSelectChange(value) {
         this.selectEdge.assertValList = value
       },
-      edgeTreeSelected(value) {
+      edgeTreeSelected(value, option) {
         this.selectEdge.assertValList = value
+        this.edgeConditionValue = option.selectedNodes[0].data.props.title
+        this.selectEdge.label = this.edgeCondition +this.edgeConditionValue
       },
       edgeLoadData(treeNode) {
         let _this = this
@@ -914,9 +918,8 @@
                   treeNode.dataRef.children.push({
                     key: res.rows[i][_this.edgeInitialized.val], title: res.rows[i][_this.edgeInitialized.display]
                   })
-                  _this.edgeInitialized.viewSelect.push({
-                    key: res.rows[i][_this.edgeInitialized.val], title: res.rows[i][_this.edgeInitialized.display]
-                  })
+                  _this.edgeInitialized.viewSelect.push(... treeNode.dataRef.children);
+                  _this.edgeInitialized.viewSelect = Array.from(new Set( _this.edgeInitialized.viewSelect))
                 }
                 _this.edgeInitialized.inputEdgeSelect = [..._this.edgeInitialized.inputEdgeSelect]
               } else {
@@ -930,13 +933,14 @@
           }, 100)
         })
       },
-      edgeLoad(loadedKeys, expanded){
-        this.edgeLoadKeys = loadedKeys
+      edgeLoad(loadedKeys, expanded) {
+        console.log(expanded,'2233')
+        this.edgeLoadedKeys = loadedKeys
       },
 
       //线树形搜索框事件
       edgeSelectSearch(value) {
-        this.edgeLoadKeys = []
+        this.edgeLoadedKeys = []
         let _this = this
         let params = {}
         params.id = _this.edgeInitialized.itemId
@@ -1003,9 +1007,11 @@
                   treeNode.dataRef.children.push({
                     key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
                   })
-                  _this.boxInitialized.viewSelect.push({
-                    key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
-                  })
+                  // _this.boxInitialized.viewSelect.push({
+                  //   key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
+                  // })
+                  _this.boxInitialized.viewSelect.push(... treeNode.dataRef.children);
+                  _this.boxInitialized.viewSelect = Array.from(new Set( _this.boxInitialized.viewSelect))
                 }
                 _this.boxInitialized.inputSelectData = [..._this.boxInitialized.inputSelectData]
               } else {
@@ -1019,12 +1025,12 @@
           }, 100)
         })
       },
-      nodeLoad(loadedKeys, expanded){
-        this.nodeLoadKeys = loadedKeys
+      nodeLoad(loadedKeys, expanded) {
+        this.nodeLoadedKeys = loadedKeys
       },
       //节点树形搜索框事件
       nodeSelectSearch(value) {
-        this.nodeLoadKeys=[]
+        this.nodeLoadedKeys = []
         let _this = this
         let params = {}
         params.id = this.boxInitialized.itemId
@@ -1141,7 +1147,6 @@
         this.fullData = this.selectNode
         this.initialized = this.boxInitialized
       },
-
 
 
       modalCancel() {

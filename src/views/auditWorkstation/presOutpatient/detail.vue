@@ -152,6 +152,8 @@
                         <a-tab-pane tab="门诊病历" key="4"></a-tab-pane>
                     </a-tabs>
                 </a-card>
+
+              <div  class="huaYiDao"></div>
             </a-col>
             <a-col :span="10" class="padding-left-5">
                 <a-card class="cardRight">
@@ -363,6 +365,12 @@
             <!-- <versionComp :propData="routerData"></versionComp> -->
             <versionCompBeta  :propData="routerData"></versionCompBeta>
         </a-modal>
+      <copyModal
+        :visibled="copyVisibled"
+        :copyText="copyText"
+        :copyArray="copyArray"
+      >
+      </copyModal>
         <footer-tool-bar
             :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
         >
@@ -434,6 +442,7 @@ import versionCompBeta from '../component/version-comparison/versionCompBeta'
 import detailCheck from '../presHospitalized/detailCheck.vue'
 import DetailTest from '../presHospitalized/detailTest.vue'
 import { mapActions } from 'vuex'
+import copyModal from './copyModal'
 import { fail } from 'assert'
 
 const DetailListItem = DetailList.Item
@@ -445,7 +454,8 @@ export default {
         versionComp,
         versionCompBeta,
         detailCheck,
-        DetailTest
+        DetailTest,
+      copyModal
     },
     mixins: [mixin, mixinDevice],
     name: 'detail',
@@ -512,6 +522,9 @@ export default {
             },
             quesNumTotal: 0,
             opStatus:true,
+            copyVisibled:false,
+            copyText:'',
+            copyArray:[],
         }
     },
     mounted() {
@@ -614,7 +627,24 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.success(res.msg)
+                      this.success(res.msg)
+                      this.copyArray = []
+                      let i  = 0 ;
+                      let msgSuccess = ''
+                      for (let key in res.rows){
+                        if (res.rows[key].returncode == 'SUCCESS' ){
+                          this.copyVisibled = true;
+                          this.copyArray.push(res.rows[key])
+                          i++;
+                          msgSuccess = res.rows[key].returncode
+                        }
+                      }
+                      if (i == 0 ){
+                        this.copyVisibled = false;
+                        this.warn('操作失败,没有该处方')
+                      } else{
+                        this.success( msgSuccess)
+                      }
                         this.getDetailData()
                         this.getTemplate()
                         this.getRecord()
@@ -659,7 +689,24 @@ export default {
             })
                 .then(res => {
                     if (res.code == '200') {
-                        this.success(res.msg)
+                      this.success(res.msg)
+                      this.copyArray = []
+                      let i  = 0 ;
+                      let msgSuccess = ''
+                      for (let key in res.rows){
+                        if (res.rows[key].returncode == 'SUCCESS' ){
+                          this.copyVisibled = true;
+                          this.copyArray.push(res.rows[key])
+                          i++;
+                          msgSuccess = res.rows[key].returncode
+                        }
+                      }
+                      if (i == 0 ){
+                        this.copyVisibled = false;
+                        this.warn('操作失败,没有该处方')
+                      } else{
+                        this.success( msgSuccess)
+                      }
                         this.getDetailData()
                         this.getTemplate()
                         this.getRecord()
@@ -972,7 +1019,6 @@ export default {
         },
 
         cancel() {
-
           if(this.routerData.isNew ==1){
             this.closeTag({
               tagName: 'presOutpatientDetail',
@@ -1279,5 +1325,14 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+.huaYiDao {
+  width: 456px;
+  height: 50px;
+  margin-top: 50px;
+  margin-left: 50px;
+  z-index: 3;
+  background-image: url('~@/assets/huayi.png');
+  background-repeat: no-repeat;
 }
 </style>
