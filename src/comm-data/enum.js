@@ -262,6 +262,15 @@ const Enum = {
   calculationAg:[{id:'2',text:'聚合'}],
   calculationCo:[{id:'1',text:'常量'}],
   conOperation:[{id:'+',text:'+'},{id:'-',text:'-'},{id:'*',text:'*'},{id:'/',text:'/'}],
-  aggregation:[{id:'sum',text:'sum'},{id:'count',text:'count'},{id:'max',text:'max'},{id:'min',text:'min'}]
+  aggregation:[{id:'sum',text:'sum'},{id:'count',text:'count'},{id:'max',text:'max'},{id:'min',text:'min'}],
+
+  condition:[
+    { id: 1, text: '等于',title: '=' },
+    { id: 2, text: '不等于',title: '≠'  },
+    { id: 3, text: '小于' ,title: '<' },
+    { id: 4, text: '小于等于',title: '≤'  },
+    { id: 5, text: '大于',title: '>'  },
+    { id: 6, text: '大于等于',title: '≥'  },
+  ]
 }
 export default Enum

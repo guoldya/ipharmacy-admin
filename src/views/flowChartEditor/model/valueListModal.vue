@@ -1,17 +1,18 @@
 <template>
   <div>
-    <a-card>
-      <a-modal
-        @ok="ok"
-        :confirmLoading="loading"
-        @cancel="cancel"
-        :width="550"
-        :visible="visibled"
-      >
+    <a-modal
+      :title="title"
+      @ok="ok"
+      :confirmLoading="loading"
+      @cancel="cancel"
+      :width="550"
+      :visible="visibled"
+    >
         <el-table
-          class="margin-top-10 width-100"
+          class=" width-100"
           :data="dataSource"
           ref="table"
+          height="375"
         >
           <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
             <template slot-scope="scope">
@@ -42,7 +43,6 @@
           v-model="current"
         ></a-pagination>
       </a-modal>
-    </a-card>
   </div>
 </template>
 
@@ -54,7 +54,8 @@
       ok:Function,
       fullData:Object,
       initialized:Object,
-      assertValList:Array
+      assertValList:Array,
+      title:String,
     },
     name: 'ruleModal',
     data() {

@@ -130,7 +130,7 @@ export default {
       this.disable = true
       this.isNew = false
     }
-    this.getTreeLists({ codeclass: 7 })
+    this.getTreeLists({ codeclass: 7,editId:this.$route.params.id })
     if (!this.isNew) {
       this.getDetail()
     }

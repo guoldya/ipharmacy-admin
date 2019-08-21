@@ -109,7 +109,6 @@
       return {
         show: false,
         position: 'bottom',
-          loadedKeys:[],
       }
     },
     mounted() {
