@@ -1,16 +1,18 @@
 <template>
   <a-modal
     title="复制"
-    @ok="ok"
-    :confirmLoading="loading"
-    @cancel="cancel"
     :width="550"
+    @cancel="cancel"
     :visible="visibled"
+    :footer="null"
   >
-    <a-input v-for="(item,index) in copyArray" read-only :defaultValue="item.data" id="copy" :key="index">
-      1234
-      <a-icon slot="addonAfter" type="copy" @click="copyLink"/>
+    <a-input v-for="(item,index) in copyArray" read-only  :defaultValue="item.data" id="copy" :key="index">
     </a-input>
+    <template slot="footer">
+      <a-button key="一键复制" type="primary"@click="copyLink">
+        Submit
+      </a-button>
+    </template>
   </a-modal>
 </template>
 
@@ -20,6 +22,7 @@
       visibled: Boolean,
       copyText:String,
       copyArray:Array,
+      cancel:Function,
     },
     name: 'copyModal',
     data(){
@@ -33,12 +36,6 @@
         e.select(); // 选择对象
         document.execCommand("Copy"); // 执行浏览器复制命令
       },
-      ok(){
-        this.visibled = false;
-      },
-      cancel(){
-        this.visibled = false;
-      }
     }
   }
 </script>
