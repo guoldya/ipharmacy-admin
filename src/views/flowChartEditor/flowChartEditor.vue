@@ -719,11 +719,6 @@
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
-                    if (ev.item.model.precondition){
-                      ev.item.model.calculation = '2'
-                    } else{
-                      ev.item.model.calculation = '1'
-                    }
                     _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
@@ -743,11 +738,6 @@
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
-                    if (ev.item.model.precondition){
-                      ev.item.model.calculation = '2'
-                    } else{
-                      ev.item.model.calculation = '1'
-                    }
                     if (params.lo == 1) {
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {

@@ -192,11 +192,10 @@
                 <a-pagination
                     showSizeChanger
                     showQuickJumper
-                
                     :total="total"
                     class="pnstyle"
                     v-model="current"
-                    :defaultPageSize="10"
+                    :defaultPageSize="pageSize"
                     :pageSizeOptions="['10', '20','50']"
                     @showSizeChange="clientSizeChange"
                     @change="customerPageChange"
@@ -387,8 +386,9 @@ export default {
                 { title: '年龄', prop: 'age', width: 60 }
             ],
             //页码初始化
-            total: null,
+            total: 0,
             current: 1,
+            pageSize:10,
             //已分配科室
             dis: false,
             Modal: {
@@ -453,7 +453,10 @@ export default {
         }, 15000)
         setTimeout(() => {
             if (this.iconSpin) {
-                this.fetchYJSMapData()
+              let data = this.pageChangeFilter;
+              data.pageSize = this.pageSize;
+              data.offset = (this.current-1)*this.pageSize
+                this.fetchYJSMapData(data)
                 this.getCountText()
                 this.setTimeRval(10000)
             }
@@ -568,7 +571,7 @@ export default {
         search() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
             this.pageChangeFilter = this.$refs.searchPanel.form.getFieldsValue()
-            params.pageSize = 10
+            params.pageSize = this.pageSize
             params.offset = 0
             if (this.buttonText != '开始审方') {
                 this.fetchYJSMapData(params)
@@ -595,7 +598,8 @@ export default {
         //更改一页多少数据
         clientSizeChange(current, size) {
             this.current = 1
-            let params = {}
+            this.pageSize = size;
+            let params = this.pageChangeFilter
             params.pageSize = size
             params.offset = 0
             if (this.buttonText != '开始审方') {
@@ -603,7 +607,7 @@ export default {
             }
         },
         //获取数据
-        fetchYJSMapData(params = { pageSize: 10, offset: 0 }) {
+        fetchYJSMapData(params = {}) {
             this.loading = true
             selectTribunalRecord(params)
                 .then(res => {
@@ -787,7 +791,10 @@ export default {
                     .then(res => {
                         if (res.code == '200') {
                           this.success(res.msg)
-                            this.fetchYJSMapData()
+                            let data = this.pageChangeFilter;
+                          data.pageSize = this.pageSize;
+                          data.offset = (this.current-1)*this.pageSize
+                            this.fetchYJSMapData(data)
                             this.getCountText()
                         } else {
                             this.warn(res.msg)
@@ -822,7 +829,10 @@ export default {
                     .then(res => {
                         if (res.code == '200') {
                           this.success(res.msg)
-                            this.fetchYJSMapData()
+                          let data = this.pageChangeFilter;
+                          data.pageSize = this.pageSize;
+                          data.offset = (this.current-1)*this.pageSize
+                            this.fetchYJSMapData(data)
                             this.getCountText()
 
                         } else {
@@ -851,7 +861,10 @@ export default {
                 .then(res => {
                     if (res.code == '200') {
                         this.success(res.msg)
-                        this.fetchYJSMapData()
+                      let data = this.pageChangeFilter;
+                      data.pageSize = this.pageSize;
+                      data.offset = (this.current-1)*this.pageSize
+                        this.fetchYJSMapData(data)
                         this.getCountText()
                     } else {
                         this.warn(res.msg)
@@ -1030,7 +1043,10 @@ export default {
                     if (res.code == '200') {
                         this.success(res.msg)
                         this.Modal.visible = false
-                        this.fetchYJSMapData()
+                      let data = this.pageChangeFilter;
+                      data.pageSize = this.pageSize;
+                      data.offset = (this.current-1)*this.pageSize
+                        this.fetchYJSMapData(data)
                         this.getCountText()
                     } else {
                         this.warn(res.msg)
@@ -1095,7 +1111,10 @@ export default {
         //定时器
         setTimeRval(data) {
             this.timeInitialize = setInterval(() => {
-                this.fetchYJSMapData()
+              let data = this.pageChangeFilter;
+              data.pageSize = this.pageSize;
+              data.offset = (this.current-1)*this.pageSize
+                this.fetchYJSMapData(data)
                 this.getCountText()
               this.selections = [];
             }, data)
