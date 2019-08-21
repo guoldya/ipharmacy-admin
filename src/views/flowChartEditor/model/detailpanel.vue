@@ -85,12 +85,10 @@
             </a-form-item>
             <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
               <a-select size="small" v-model="selectNode.ro" @select="selectNodeRo">
-                <a-select-option :value=1 title="=" v-if="selectNode.lo==1">等于</a-select-option>
-                <a-select-option :value=2 title="≠" v-if="selectNode.lo==1">不等于</a-select-option>
-                <a-select-option :value=3 title="<" v-if="selectNode.lo==1">小于</a-select-option>
-                <a-select-option :value=4 title="≤" v-if="selectNode.lo==1">小于等于</a-select-option>
-                <a-select-option :value=5 title=">" v-if="selectNode.lo==1">大于</a-select-option>
-                <a-select-option :value=6 title="≥" v-if="selectNode.lo==1">大于等于</a-select-option>
+                <a-select-option v-if="selectNode.lo==1" v-for="(item,index) in this.enum.condition" :value="item.id"
+                                 :title="item.title" :key="index">
+                  {{item.text}}
+                </a-select-option>
                 <a-select-option :value=7 title="包含">包含</a-select-option>
                 <a-select-option :value=8 title="不包含">不包含</a-select-option>
               </a-select>
@@ -129,11 +127,11 @@
                   :defaultActiveFirstOption="false"
                   :showArrow="false"
                   :filterOption="false"
-                  :maxTagCount="10"
+                  :maxTagCount="3"
                   :open="nodeSelectOpen"
                   @dropdownVisibleChange="nodeVisibleChange"
                 >
-                  <span slot="maxTagPlaceholder" @click="nodeTagPlaceholder">查看更多</span>
+                  <span slot="maxTagPlaceholder" class="primary" @click="nodeTagPlaceholder">查看更多</span>
                   <a-select-option v-for="(op,index) in boxInitialized.inputSelectData" :value="op.ID" :title="op.NAME"
                                    :key="index">{{op.NAME}}
                   </a-select-option>
@@ -149,6 +147,8 @@
                   :selectChange="nodeSelectChange"
                   :treeSelect="nodeTreeSelected"
                   :loadData="nodeLoadData"
+                  :loadedKeys="nodeLoadedKeys"
+                  :load="nodeLoad"
                   :selectedKeys="selectNode.assertValList"
                   :selectSearch="nodeSelectSearch"
                   :treeMoreTag="treeMoreNode"
@@ -202,11 +202,12 @@
           <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select
               size="small"
+              :allowClear="true"
               :showArrow="false"
               v-model="selectNode.calculation"
               @change="selectIfCalculation">
-              <a-select-option v-if="selectNode.calculation==2" value='2' title='聚合'>聚合</a-select-option>
-              <a-select-option v-else-if="selectNode.calculation==1 || !selectNode.precondition" value='1' title='常量'>
+              <a-select-option v-if="selectNode.precondition" value='2' title='聚合'>聚合</a-select-option>
+              <a-select-option v-else value='1' title='常量'>
                 常量
               </a-select-option>
             </a-select>
@@ -267,12 +268,10 @@
           </a-form-item>
           <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
-              <a-select-option :value=1 title="=" v-if="selectEdge.lo == 1">等于</a-select-option>
-              <a-select-option :value=2 title="≠" v-if="selectEdge.lo == 1">不等于</a-select-option>
-              <a-select-option :value=3 title="<" v-if="selectEdge.lo == 1">小于</a-select-option>
-              <a-select-option :value=4 title="≤" v-if="selectEdge.lo == 1">小于等于</a-select-option>
-              <a-select-option :value=5 title=">" v-if="selectEdge.lo == 1">大于</a-select-option>
-              <a-select-option :value=6 title="≥" v-if="selectEdge.lo == 1">大于等于</a-select-option>
+              <a-select-option v-if="selectEdge.lo==1" v-for="(item,index) in this.enum.condition" :value="item.id"
+                               :title="item.title" :key="index">
+                {{item.text}}
+              </a-select-option>
               <a-select-option :value=7 title="包含">包含</a-select-option>
               <a-select-option :value=8 title="不包含">不包含</a-select-option>
             </a-select>
@@ -312,11 +311,11 @@
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
                 :filterOption="false"
-                :maxTagCount="10"
+                :maxTagCount="3"
                 :open="edgeSelectOpen"
                 @dropdownVisibleChange="edgeVisibleChange"
               >
-                <span slot="maxTagPlaceholder" @click="maxTagPlaceholder">查看更多</span>
+                <span slot="maxTagPlaceholder" class="primary" @click="maxTagPlaceholder">查看更多</span>
                 <a-select-option v-for="(op,index) in edgeInitialized.inputEdgeSelect" :value="op.ID" :title="op.NAME"
                                  :key="index">{{op.NAME}}
                 </a-select-option>
@@ -332,6 +331,8 @@
                 :selectChange="edgeSelectChange"
                 :treeSelect="edgeTreeSelected"
                 :loadData="edgeLoadData"
+                :loadedKeys="edgeLoadedKeys"
+                :load="edgeLoad"
                 :selectedKeys="selectEdge.assertValList"
                 :selectSearch="edgeSelectSearch"
                 :treeMoreTag="treeMoreEdge"
@@ -372,6 +373,7 @@
     </div>
 
     <valueListModal
+      :title="modalTitle"
       v-if="modalVisible"
       :visibled="modalVisible"
       :cancel="modalCancel"
@@ -406,10 +408,6 @@
         dicBaseTreeData: [],
         CoreFactAllTree: [],
         inputSelectData: [],
-        modelValue: '',
-        condition: '',
-        conditionValue: '',
-        conditionValue1: '',
         edgeId: null,
         edgeCondition: '',
         edgeConditionValue: '',
@@ -420,11 +418,14 @@
         treeData: [],
         nodeSelectedKeys: [],
         modalVisible: false,
+        modalTitle: '',
         valueList: [],
         fullData: {},
         initialized: {},
         edgeSelectOpen: false,
-        nodeSelectOpen: false
+        nodeSelectOpen: false,
+        nodeLoadedKeys: [],
+        edgeLoadedKeys: [],
       }
     },
     watch: {
@@ -447,6 +448,7 @@
       this.getReviewLevel()
       this.getSelectClassList()
       this.getCoreFactAllStart()
+
     },
     methods: {
       moment,
@@ -577,14 +579,10 @@
         _this.selectNode.lo = params.lo
         _this.selectNode.ro = null
         _this.selectNode.colDbType = params.colDbType
-        this.modelValue = params.title
-        _this.selectNode.label = this.modelValue
+        _this.selectNode.label = params.title
         _this.selectNode.assertVal = null
         _this.selectNode.assertVal1 = null
         _this.selectNode.assertValList = []
-        this.condition = ''
-        this.conditionValue = ''
-        this.conditionValue1 = ''
         this.judgePreDetailData = []
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
@@ -595,62 +593,18 @@
       },
       //判断节点条件选择事件
       selectNodeRo(value, option) {
-        this.condition = option.componentOptions.propsData.title
         this.selectNode.ro = value
-        this.selectNode.label = this.condition + this.conditionValue
-      },
-      selectEdgeRo(value, option) {
-        this.edgeCondition = option.componentOptions.propsData.title
-        this.selectEdge.ro = value
-        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
       },
       //条件值单个输入事件
       inputChange(e) {
-        this.conditionValue = e.srcElement.value
-        if (this.$util.trim(this.modelValue) == null) {
-          this.modelValue = this.selectNode.itemName
-        }
-        this.selectNode.label = this.modelValue + this.condition + this.conditionValue
       },
       //多个条件值输入第一个事件
       scopeAssertVal(e) {
-        this.conditionValue = e.srcElement.value
-        if (this.$util.trim(this.modelValue) == null) {
-          this.modelValue = this.selectNode.itemName
-        }
-        if (this.$util.trim(this.conditionValue1) == null) {
-          this.conditionValue1 = this.selectNode.assertVal1
-        }
-        this.selectNode.label = this.modelValue + '[' + this.selectNode.assertVal + '-' + this.selectNode.assertVal1 + ']'
       },
       scopeAssertVal1(e) {
-        this.conditionValue1 = e.srcElement.value
-        if (this.$util.trim(this.modelValue) == null) {
-          this.modelValue = this.selectNode.itemName
-        }
-        if (this.$util.trim(this.conditionValue) == null) {
-          this.conditionValue = this.selectNode.assertVal
-        }
-        this.selectNode.label = this.modelValue + '[' + this.selectNode.assertVal + '-' + this.selectNode.assertVal1 + ']'
       },
       //下拉选择事件
       assertValSelect(value, option) {
-        if (this.$util.trim(this.modelValue) == null) {
-          this.modelValue = this.selectNode.itemName
-        }
-        if (this.$util.trim(this.condition) == null) {
-          this.condition = this.selectNode.roSymbol
-        }
-        this.conditionValue = ''
-        for (let key in option) {
-          if (key < 1) {
-            this.conditionValue = option[0].componentOptions.propsData.title
-          } else {
-            this.conditionValue = option[0].componentOptions.propsData.title + '...'
-          }
-        }
-
-        this.selectNode.label = this.modelValue + this.condition + this.conditionValue
       },
       //枚举时搜索下拉框
       searchSelect(value) {
@@ -671,8 +625,12 @@
 
       //线判断条件
       lineCondition(value, option) {
-        option.componentOptions.propsData.title
         this.selectEdge.label = option.componentOptions.propsData.title
+      },
+      selectEdgeRo(value, option) {
+        this.edgeCondition = option.componentOptions.propsData.title
+        this.selectEdge.ro = value
+        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue + this.edgeConditionValue1
       },
       //属性节点后线段属性
       attributeEdge(value, node, extra) {
@@ -745,7 +703,8 @@
 
       //线段输入框input事件
       inputEdgeChange(e) {
-        this.selectEdge.label = this.selectEdge.assertVal
+        this.edgeConditionValue = this.selectEdge.assertVal
+        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
       },
       //线中下拉事件
       assertValEdge(value, option) {
@@ -778,11 +737,13 @@
       //多个条件值输入第一个事件
       edgeAssertVal() {
         this.selectEdge.label = []
-        this.selectEdge.label = '范围' + '[' + this.selectEdge.assertVal + '-' + this.selectEdge.assertVal1 + ']'
+        this.edgeConditionValue = this.selectEdge.assertVal
+        this.selectEdge.label = this.edgeCondition + '[' + this.edgeConditionValue + '-' + this.edgeConditionValue1 + ']'
       },
       edgeAssertVal1() {
         this.selectEdge.label = []
-        this.selectEdge.label = '范围' + '[' + this.selectEdge.assertVal + '-' + this.selectEdge.assertVal1 + ']'
+        this.edgeConditionValue1 = this.selectEdge.assertVal1
+        this.selectEdge.label = this.edgeCondition + '[' + this.edgeConditionValue + '-' + this.edgeConditionValue1 + ']'
       },
       getCoreFactAllStart() {
         coreFactColAll({}).then(res => {
@@ -922,6 +883,7 @@
       logicalChange(value) {
         this.selectNode.lo = value
         this.selectNode.ro = 7
+        console.log(this.boxInitialized.inputSelectData,'2233')
       },
       logicalEdge(value) {
         this.selectEdge.lo = value
@@ -932,8 +894,10 @@
       edgeSelectChange(value) {
         this.selectEdge.assertValList = value
       },
-      edgeTreeSelected(value) {
+      edgeTreeSelected(value, option) {
         this.selectEdge.assertValList = value
+        this.edgeConditionValue = option.selectedNodes[0].data.props.title
+        this.selectEdge.label = this.edgeCondition +this.edgeConditionValue
       },
       edgeLoadData(treeNode) {
         let _this = this
@@ -954,9 +918,8 @@
                   treeNode.dataRef.children.push({
                     key: res.rows[i][_this.edgeInitialized.val], title: res.rows[i][_this.edgeInitialized.display]
                   })
-                  _this.edgeInitialized.viewSelect.push({
-                    key: res.rows[i][_this.edgeInitialized.val], title: res.rows[i][_this.edgeInitialized.display]
-                  })
+                  _this.edgeInitialized.viewSelect.push(... treeNode.dataRef.children);
+                  _this.edgeInitialized.viewSelect = Array.from(new Set( _this.edgeInitialized.viewSelect))
                 }
                 _this.edgeInitialized.inputEdgeSelect = [..._this.edgeInitialized.inputEdgeSelect]
               } else {
@@ -970,8 +933,14 @@
           }, 100)
         })
       },
+      edgeLoad(loadedKeys, expanded) {
+        console.log(expanded,'2233')
+        this.edgeLoadedKeys = loadedKeys
+      },
+
       //线树形搜索框事件
       edgeSelectSearch(value) {
+        this.edgeLoadedKeys = []
         let _this = this
         let params = {}
         params.id = _this.edgeInitialized.itemId
@@ -1038,9 +1007,11 @@
                   treeNode.dataRef.children.push({
                     key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
                   })
-                  _this.boxInitialized.viewSelect.push({
-                    key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
-                  })
+                  // _this.boxInitialized.viewSelect.push({
+                  //   key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
+                  // })
+                  _this.boxInitialized.viewSelect.push(... treeNode.dataRef.children);
+                  _this.boxInitialized.viewSelect = Array.from(new Set( _this.boxInitialized.viewSelect))
                 }
                 _this.boxInitialized.inputSelectData = [..._this.boxInitialized.inputSelectData]
               } else {
@@ -1054,8 +1025,12 @@
           }, 100)
         })
       },
+      nodeLoad(loadedKeys, expanded) {
+        this.nodeLoadedKeys = loadedKeys
+      },
       //节点树形搜索框事件
       nodeSelectSearch(value) {
+        this.nodeLoadedKeys = []
         let _this = this
         let params = {}
         params.id = this.boxInitialized.itemId
@@ -1116,19 +1091,20 @@
         if (!value) {
           this.selectNode.calculation = null
           this.selectNode.formula = null
-
         }
       },
       nodePreSelect(value, label, extra) {
-        let params = extra.selectedNodes[0].data.props
-        if (params.lo == '3') {
-          this.selectNode.calculation = '2'
-        } else {
-          this.selectNode.calculation = '1'
-        }
+        this.selectNode.calculation = null
+        // let params = extra.selectedNodes[0].data.props
+        // if (params.lo == '3') {
+        //   this.selectNode.calculation = '2'
+        // } else {
+        //   this.selectNode.calculation = '1'
+        // }
       },
 
       maxTagPlaceholder() {
+        this.modalTitle = this.selectEdge.label
         this.modalVisible = true
         this.edgeSelectOpen = false
         this.valueList = this.selectEdge.assertValList
@@ -1142,8 +1118,15 @@
           this.edgeSelectOpen = false
         }
       },
-
+      treeMoreEdge() {
+        this.modalTitle = this.selectEdge.label
+        this.modalVisible = true
+        this.valueList = this.selectEdge.assertValList
+        this.fullData = this.selectEdge
+        this.initialized = this.edgeInitialized
+      },
       nodeTagPlaceholder() {
+        this.modalTitle = this.selectNode.label
         this.modalVisible = true
         this.nodeSelectOpen = false
         this.valueList = this.selectNode.assertValList
@@ -1158,18 +1141,13 @@
         }
       },
       treeMoreNode() {
+        this.modalTitle = this.selectNode.label
         this.modalVisible = true
         this.valueList = this.selectNode.assertValList
         this.fullData = this.selectNode
         this.initialized = this.boxInitialized
       },
 
-      treeMoreEdge() {
-        this.modalVisible = true
-        this.valueList = this.selectEdge.assertValList
-        this.fullData = this.selectEdge
-        this.initialized = this.edgeInitialized
-      },
 
       modalCancel() {
         this.modalVisible = false

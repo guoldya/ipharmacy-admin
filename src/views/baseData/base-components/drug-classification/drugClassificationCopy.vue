@@ -49,17 +49,23 @@
           v-if="!classification.disable && Modal.title == '新增分类'"
           style="padding-top: 20px"
           label="上级分类"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 15 }"
+          v-bind="formItemLayout"
         >
           <a-input disabled v-model="fatherTitle"></a-input>
+        </a-form-item>
+        <a-form-item
+          v-if="detailData.pid && Modal.title == '编辑分类'"
+          style="padding-top: 20px"
+          label="上级分类"
+          v-bind="formItemLayout"
+        >
+          <a-input disabled  v-model="detailData.pidName"></a-input>
         </a-form-item>
         <a-form-item
           v-if="classification.disable && Modal.title == '新增分类'"
           style="padding-top: 20px"
           label="上级分类"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 15 }"
+          v-bind="formItemLayout"
         >
           <a-input disabled v-model="fatherTitle">
             <!--<a-tooltip placement="top">-->
@@ -73,8 +79,7 @@
         <a-form-item
           label="分类名称"
           v-if=" Modal.title == '新增分类'"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 15 }"
+          v-bind="formItemLayout"
         >
           <a-input
             v-decorator="[ 'categoryName',{rules: [{ required: true, message: '请输入分类名称' }]} ] "
@@ -84,19 +89,28 @@
         <a-form-item
           label="分类名称"
           style="padding-top: 20px"
-          v-if=" Modal.title == '编辑分类'"
-          :label-col="{ span: 5 }"
-          :wrapper-col="{ span: 15 }"
+          v-if="!detailData.pid && Modal.title == '编辑分类'"
+          v-bind="formItemLayout"
         >
           <a-input
             v-decorator="[ 'categoryName',{rules: [{ required: true, message: '请输入分类名称' }]} ] "
             placeholder="请输入分类名称"
           />
         </a-form-item>
-        <a-form-item label="拼音码" :label-col="{ span: 5 }" :wrapper-col="{ span: 15 }">
+        <a-form-item
+          label="分类名称"
+          v-else-if="detailData.pid && Modal.title == '编辑分类'"
+          v-bind="formItemLayout"
+        >
+          <a-input
+            v-decorator="[ 'categoryName',{rules: [{ required: true, message: '请输入分类名称' }]} ] "
+            placeholder="请输入分类名称"
+          />
+        </a-form-item>
+        <a-form-item label="拼音码"  v-bind="formItemLayout">
           <a-input v-decorator="[ 'spellCode' ]" placeholder="为空时后台自动生成"/>
         </a-form-item>
-        <a-form-item label="分类属性" :label-col="{ span: 5 }" :wrapper-col="{ span: 15 }">
+        <a-form-item label="分类属性"  v-bind="formItemLayout">
           <a-select allowClear v-decorator="[ 'categoryProperty' ]">
             <a-select-option
               :value="op.id"
@@ -106,7 +120,7 @@
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="状态" :label-col="{ span: 5 }" :wrapper-col="{ span: 15 }">
+        <a-form-item label="状态"  v-bind="formItemLayout">
           <a-radio-group v-decorator="[ 'status' ]">
             <a-radio :value="op.id" v-for="(op,index) in this.enum.status" :key="index">{{op.text}}</a-radio>
           </a-radio-group>
@@ -164,9 +178,14 @@
           visible: false,
           confirmLoading: false
         },
+        detailData:{},
         fatherTitle: '',
         fatherId: null,
-        form: this.$form.createForm(this)
+        form: this.$form.createForm(this),
+        formItemLayout: {
+          labelCol: { span: 5 },
+          wrapperCol: { span: 15 }
+        },
       }
     },
     mounted() {
@@ -313,14 +332,15 @@
           .then(res => {
             if (res.code == '200') {
               params = res.data
+              this.detailData = res.data;
               setTimeout(() => {
                 this.form.setFieldsValue({
                   categoryName: params.categoryName,
                   spellCode: params.spellCode,
                   categoryProperty: params.categoryProperty,
-                  status: params.status
+                  status: params.status,
                 })
-              }, 0)
+              }, 100)
             } else {
               this.warn(res.msg)
             }
@@ -504,8 +524,6 @@
       expandTree(loadedKeys, expanded) {
         this.loadedKeys = loadedKeys
       },
-
-
     }
   }
 </script>

@@ -719,11 +719,6 @@
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
                     _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
-                    if (ev.item.model.precondition){
-                      ev.item.model.calculation = '2'
-                    } else{
-                      ev.item.model.calculation = '1'
-                    }
                     _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
@@ -743,11 +738,6 @@
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
-                    if (ev.item.model.precondition){
-                      ev.item.model.calculation = '2'
-                    } else{
-                      ev.item.model.calculation = '1'
-                    }
                     if (params.lo == 1) {
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
@@ -762,7 +752,6 @@
                         paramsNodeData.valueList = params.assertValList
                         paramsNodeData.val = params.val;
                         paramsNodeData.display = params.display;
-                        paramsNodeData.parentId = params.parentId;
                       }
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
                         if (res.code == '200') {
@@ -1211,7 +1200,7 @@
                 }
               }else if (node.shape == 'flow-rhombus-if'){
                 if (node.lo == 3){
-                  if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.assertValList) == null ||this.$util.trim(node.childNodes) == null || node.pid.length == 0){
+                  if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null  ||this.$util.trim(node.childNodes) == null || node.pid.length == 0){
                      if(status.status){
                     this.warn('条件节点或缺少结论节点和上级节点');
                      }

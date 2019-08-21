@@ -30,7 +30,9 @@
         :treeData="treeData"
         @select="treeSelect"
         :loadData="loadData"
+        @load="load"
         :selectedKeys="selectedKeys"
+        :loadedKeys="loadedKeys"
       />
     </div>
 
@@ -76,6 +78,9 @@
       loadData:{
         type: Function
       },
+      load:{
+        type: Function
+      },
       selectChange:{
         type: Function
       },
@@ -103,13 +108,15 @@
       },
       treeMoreTag:{
         type: Function
+      },
+      loadedKeys:{
+        type:Array
       }
     },
     data() {
       return {
         show: false,
         position: 'bottom',
-          loadedKeys:[],
       }
     },
     mounted() {
