@@ -14,16 +14,16 @@
         </div>
       </a-col>
       <a-col :xl="19" :xxl="19">
-        <a-card title="药品品种">
-          <drugVarieties
-            :variety="variety"
-            :disable="disable"
-            :clickRow="clickRow"
-          ></drugVarieties>
-        </a-card>
-        <a-card class="margin-top-5" title="药品字典">
-          <drugDictionary :dictionary="dictionary"></drugDictionary>
-        </a-card>
+        <div class="kinds">
+          <a-card title="药品品种">
+            <drugVarieties :variety="variety" :disable="disable" :clickRow="clickRow"></drugVarieties>
+          </a-card>
+        </div>
+        <div class="dic">
+          <div title="药品字典" class="margin-top-10">
+            <drugDictionary :dictionary="dictionary"></drugDictionary>
+          </div>
+        </div>
       </a-col>
     </a-row>
   </a-card>
@@ -48,7 +48,8 @@ export default {
       api: {
         drugVarietyPageId: 'sys/dicDrugcategory/selectDrugVarietyPageByCategoryId',
         dicDrugSelectPage: 'sys/dicDrug/selectPage',
-        dicBaseSelectList: 'sys/dicBase/selectClassList'
+        dicBaseSelectList: 'sys/dicBase/selectClassList',
+        differentKinds: 'sys/dicDrugcategory/selectCategoryPageByVarietyCode'
       },
       classification: {
         disable: false
@@ -56,13 +57,14 @@ export default {
       variety: {
         drugVarietyData: [],
         total: 0,
-        categoryId: null,
+        categoryId: null
       },
       dictionary: {
         drugDictionaryData: [],
         total: 0,
         disable: true,
-        varietyCode: null
+        varietyCode: null,
+        lineData:[]
       },
       toxicologyData: [],
       current: 1
@@ -79,14 +81,14 @@ export default {
       // this.classification.disable = true
       console.log(this.classification.disable)
       console.log(e.node.dataRef.categoryType)
-      if(e.node.dataRef.categoryType=='1'){
-         this.classification.disable = false
+      if (e.node.dataRef.categoryType == '1') {
+        this.classification.disable = false
       }
-      if(e.node.dataRef.categoryType=='2'){
-         this.classification.disable = true
+      if (e.node.dataRef.categoryType == '2') {
+        this.classification.disable = true
       }
       this.nodeData = e.node.dataRef
-      console.log(this.nodeData,'nodeData')
+      console.log(this.nodeData, 'nodeData')
       this.variety.categoryId = e.node.dataRef.key
       if (this.variety.categoryId) {
         this.getVarietiesData({ categoryId: this.variety.categoryId })
@@ -97,9 +99,9 @@ export default {
       this.disable = false
     },
     getVarietiesData(params = {}) {
-  if(params.offset==0){
-          this.current=1
-        }
+      if (params.offset == 0) {
+        this.current = 1
+      }
       this.$axios({
         url: this.api.drugVarietyPageId,
         method: 'put',
@@ -118,15 +120,16 @@ export default {
           this.error(err)
         })
     },
- 
-  
+
     //品种网格列点击事件
     clickRow(row, event, column) {
       this.varietyCode = row.varietyCode
       this.dictionary.disable = false
       this.dictionary.varietyCode = row.varietyCode
       this.getDictionary({ varietyCode: row.varietyCode })
+      this.getlinedurg({varietyCode: row.varietyCode})
     },
+    //获得药品字典
     getDictionary(params = {}) {
       this.$axios({
         url: this.api.dicDrugSelectPage,
@@ -137,6 +140,25 @@ export default {
           if (res.code == '200') {
             this.dictionary.drugDictionaryData = res.rows
             this.dictionary.total = res.total
+          } else {
+            this.warn(res.msg)
+          }
+        })
+        .catch(err => {
+          this.error(err)
+        })
+    },
+    // 获得关联数据
+    getlinedurg(params = {}) {
+      this.$axios({
+        url: this.api.differentKinds,
+        method: 'put',
+        data: params
+      })
+        .then(res => {
+          if (res.code == '200') {
+            this.dictionary.lineData = res.rows
+            console.log(res.rows)
           } else {
             this.warn(res.msg)
           }
@@ -168,18 +190,23 @@ export default {
 }
 </script>
 
-<style>
+<style lang='less'>
 .ruleCow {
   padding-right: 5px;
 }
-
+.kinds {
+  .ant-card-body {
+    padding: 15px !important;
+  }
+}
+.dic {
+  .ant-card-body {
+    padding: 0px !important;
+  }
+}
 .treeCol {
   padding-left: 10px;
   line-height: 32px;
-}
-
-.ruleRow .ant-card-body {
-  padding: 15px !important;
 }
 
 .ruleModal .ant-modal-body {

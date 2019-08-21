@@ -82,10 +82,9 @@
                 <a-pagination
                     :total="total"
                     showSizeChanger
-                
                     v-model="current"
                     class="pnstyle"
-                    :defaultPageSize="10"
+                    :defaultPageSize="pageSize"
                     :pageSizeOptions="['10', '20','50']"
                     @showSizeChange="sizeChange"
                     @change="pageChange"
@@ -237,15 +236,18 @@ export default {
             return arr[val - 1]
         },
         pageChange(page, size) {
-            let params = this.$refs.searchPanel.form.getFieldsValue()
+            this.current=page
+            let params =  this.pageChangeFilter
             params.offset = (page - 1) * size
+            params.pageSize=size
             this.getData(params)
         },
         sizeChange(current, size) {
             this.current = 1
-            let params = this.$refs.searchPanel.form.getFieldsValue()
+            let params =  this.pageChangeFilter
+            params.offset = (page - 1) * size
             params.pageSize = size
-          this.pageSize = size;
+            this.pageSize = size;
             this.getData(params)
         },
         getData(params = {}) {

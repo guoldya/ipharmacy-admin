@@ -219,7 +219,8 @@ export default {
             this.$refs.searchPanel.form.resetFields()
             this.searchData = {}
             let params = {}
-            params.pageSize = this.pageSize
+             this.pageSize=20
+            params.pageSize =this.pageSize
             params.offset = 0;
             this.getData(params)
         },
@@ -252,7 +253,7 @@ export default {
         pageChange(page, pageSize) {
             let params = this.$refs.searchPanel.form.getFieldsValue(['searchDate', []])
             params.pageSize = this.pageSize
-            params.offset = (page - 1) * this.pageSize
+            params.offset = (page - 1) * pageSize
             if (params.searchDate) {
                 params.searchDate = [
                     params.searchDate[0].format('YYYY-MM-DD HH:mm'),

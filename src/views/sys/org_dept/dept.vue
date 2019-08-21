@@ -147,6 +147,7 @@
             }
         },
         mounted(){
+             sessionStorage.setItem('val',this.$route.params.orgId)
             this.getOrgData();
             this.getDeptData({ orgId:this.$route.params.orgId,deptId:this.$route.params.deptId });
             this.init();

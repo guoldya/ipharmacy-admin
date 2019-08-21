@@ -130,8 +130,8 @@ export default {
       deptButton: true
     }
   },
-  destroyed(){
-      sessionStorage.clear();
+  destroyed() {
+    sessionStorage.clear()
   },
   mounted() {
     this.getData()
@@ -220,21 +220,13 @@ export default {
     },
     orgCurrentChange(val) {
       if (val) {
-        if (val.items) {
-          delete val.items
-        }
-        if (val.parent) {
-          delete val.parent
-        }
-        sessionStorage.setItem('val', JSON.stringify(val))
-        if (val) {
-          this.orgId = val.orgId
-          this.deptButton = false
-          this.getDeptData({ orgId: val.orgId })
-        } else {
-          this.deptData = []
-          this.deptButton = true
-        }
+        this.orgId = val.orgId
+        sessionStorage.setItem('val', this.orgId)
+        this.deptButton = false
+        this.getDeptData({ orgId: val.orgId })
+      } else {
+        this.deptData = []
+        this.deptButton = true
       }
     },
     deptCurrentChange(val) {
@@ -249,14 +241,7 @@ export default {
       let arr = ['业务类型', '系统类型']
       return arr[row.type - 1]
     },
-    setOrgCurrent() {
-      let datas = JSON.parse(sessionStorage.getItem('val'))
-      if (datas) {
-        this.$refs.orgTable.$refs.multipleTable.setCurrentRow(datas)
-      } else {
-        this.$refs.orgTable.$refs.multipleTable.setCurrentRow(this.dataSource[0])
-      }
-    },
+
     setDeptCurrent() {
       this.$refs.deptTable.$refs.multipleTable.setCurrentRow(this.deptData[0])
     },
@@ -292,7 +277,13 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.dataSource = this.getDataChildren(res.rows, undefined)
-            this.setOrgCurrent()
+            let srt = sessionStorage.getItem('val')
+            if (srt) {
+              this.getDeptData({ orgId: srt })
+            } else {
+              this.getDeptData({ orgId: this.dataSource[0].orgId })
+            }
+            this.deptButton = false
             this.loading = false
           } else {
             this.loading = false
@@ -314,7 +305,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.deptData = this.getDeptChildren(this.$dateFormat(res.rows, ['createDate', 'updateDate']), undefined)
-            this.setDeptCurrent()
             this.spinning = false
           } else {
             this.spinning = false

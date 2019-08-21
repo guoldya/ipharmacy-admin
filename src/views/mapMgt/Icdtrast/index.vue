@@ -161,6 +161,7 @@
 </template>
 <script>
 import debounce from 'lodash/debounce'
+import { mapActions,mapGetters } from 'vuex'
 export default {
   data() {
     this.handleSearch = debounce(this.handleSearch, 800)
@@ -246,6 +247,7 @@ export default {
     this.getOrgData()
   },
   methods: {
+    
     // 搜索
     handleSearch(value) {
       let params = { keyword: value, id: this.marpperId }

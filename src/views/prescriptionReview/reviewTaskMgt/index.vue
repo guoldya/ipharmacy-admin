@@ -105,7 +105,7 @@
                     showSizeChanger
                     v-model="current"
                     class="pnstyle"
-                    :defaultPageSize="10"
+                    :defaultPageSize="pageSize"
                     :pageSizeOptions="['10', '20','50']"
                     @showSizeChange="sizeChange"
                     @change="pageChange"
@@ -204,7 +204,7 @@ export default {
             ],
             total: 0,
             bmTotal: 1,
-            current: 0,
+            current: 1,
             bmCurrent: 1,
             countText: [
                 { itemCount: 0, item: '抽取点评', itemColors: '#4586ff' },
@@ -212,6 +212,7 @@ export default {
                 { itemCount: 0, item: '问题点评', itemColors: '#ff6781' }
             ],
           searchData:{},
+          pageSize:10
         }
     },
     computed: {
@@ -294,6 +295,8 @@ export default {
             let params={}
             this.searchData = {}
             params.offset = 0;
+            this.current=1
+            this.pageSize=10
             params.pageSize = this.pageSize;
             this.getData(params)
         },
@@ -301,10 +304,11 @@ export default {
             let params = this.searchData
             params.offset = (page - 1) * size
             params.pageSize = size
-            this.pageSize = size
+            this.current=page
             this.getData(params)
         },
         sizeChange(current, size) {
+             this.pageSize = size
             let params = this.searchData
             params.pageSize = size
             params.offset = (current - 1) * size
