@@ -293,7 +293,7 @@ export default {
     },
     backTo() {
       this.$router.push({
-        name: 'pharmacyCareIndex'
+        name: 'pharmacyMonitorPlanIndex'
       })
     },
     handleSelectionChange(val,id) {
