@@ -1112,20 +1112,20 @@ export const asyncRouterMap = [
                   },
                 ]
               },
-              {
-                path: '/pharmacistStation/medicationConsultationResult',
-                name: 'medicationConsultationResult',
-                component: RouteView,
-                meta: { title: '用药咨询记录', multistage: true },
-                children: [
-                  {
-                    path: '/pharmacistStation/medicationConsultationResult/medicationConsultationResultIndex',
-                    name: 'medicationConsultationResultIndex',
-                    component: () => import('@/views/pharmacistStation/medicationConsultationResult/medicationConsultationResultIndex.vue'),
-                    meta: { title: '用药咨询记录', hiddenHeaderContent: true, index: true }
-                  },
-                ]
-              },
+              // {
+              //   path: '/pharmacistStation/medicationConsultationResult',
+              //   name: 'medicationConsultationResult',
+              //   component: RouteView,
+              //   meta: { title: '用药咨询记录', multistage: true },
+              //   children: [
+              //     {
+              //       path: '/pharmacistStation/medicationConsultationResult/medicationConsultationResultIndex',
+              //       name: 'medicationConsultationResultIndex',
+              //       component: () => import('@/views/pharmacistStation/medicationConsultationResult/medicationConsultationResultIndex.vue'),
+              //       meta: { title: '用药咨询记录', hiddenHeaderContent: true, index: true }
+              //     },
+              //   ]
+              // },
               {
                 path: '/pharmacistStation/electronicMedicine',
                 name: 'electronicMedicine',
@@ -1182,22 +1182,37 @@ export const asyncRouterMap = [
                     ]
                   },
                   {
-                    path: '/pharmacistStation/pharmacyMonitor/pharmacyCare',
-                    name: 'pharmacyCare',
+                    path: '/pharmacistStation/pharmacyMonitor/pharmacyMonitorPlan',
+                    name: 'pharmacyMonitorPlan',
                     component: RouteView,
                     meta: { title: '药学监护计划', multistage: true },
                     children: [
                       {
-                        path: '/pharmacistStation/pharmacyMonitor/pharmacyCare/pharmacyCareIndex',
-                        name: 'pharmacyCareIndex',
-                        component: () => import('@/views/pharmacistStation/pharmacyMonitor/pharmacyCare/pharmacyCareIndex.vue'),
+                        path: '/pharmacistStation/pharmacyMonitor/pharmacyMonitorPlan/pharmacyMonitorPlanIndex',
+                        name: 'pharmacyMonitorPlanIndex',
+                        component: () => import('@/views/pharmacistStation/pharmacyMonitor/pharmacyMonitorPlan/pharmacyMonitorPlanIndex.vue'),
                         meta: { title: '药学监护计划', hiddenHeaderContent: true, index: true }
                       },
                       {
-                        path: '/pharmacistStation/pharmacyMonitor/pharmacyCare/selectTemplate',
+                        path: '/pharmacistStation/pharmacyMonitor/pharmacyMonitorPlan/selectTemplate',
                         name: 'selectTemplate',
-                        component: () => import('@/views/pharmacistStation/pharmacyMonitor/pharmacyCare/selectTemplate.vue'),
+                        component: () => import('@/views/pharmacistStation/pharmacyMonitor/pharmacyMonitorPlan/selectTemplate.vue'),
                         meta: { title: '选择模板', hiddenHeaderContent: true, index: true }
+                      },
+                    ]
+                  },
+
+                  {
+                    path: '/pharmacistStation/pharmacyMonitor/pharmacyMonitorResult',
+                    name: 'pharmacyMonitorResult',
+                    component: RouteView,
+                    meta: { title: '药学监护结果', multistage: true },
+                    children: [
+                      {
+                        path: '/pharmacistStation/pharmacyMonitor/pharmacyMonitorResult/pharmacyMonitorResultIndex',
+                        name: 'pharmacyMonitorResultIndex',
+                        component: () => import('@/views/pharmacistStation/pharmacyMonitor/pharmacyMonitorResult/pharmacyMonitorResultIndex.vue'),
+                        meta: { title: '药学监护结果', hiddenHeaderContent: true, index: true }
                       },
                     ]
                   },
