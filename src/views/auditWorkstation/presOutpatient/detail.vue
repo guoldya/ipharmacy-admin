@@ -369,6 +369,7 @@
         :visibled="copyVisibled"
         :copyText="copyText"
         :copyArray="copyArray"
+        :cancel="copyCancel"
       >
       </copyModal>
         <footer-tool-bar
@@ -1080,7 +1081,12 @@ export default {
                 .catch(err => {
                     this.error(err)
                 })
-        }
+        },
+
+
+      copyCancel(){
+         this.copyVisibled = false;
+      }
     },
     filters: {
         control_type(value) {
