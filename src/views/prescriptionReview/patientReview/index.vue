@@ -1,7 +1,7 @@
 <template>
   <div class="allContent">
     <a-card>
-      <detail-list v-if='shows'>
+      <detail-list v-if="shows">
         <detail-list-item term="任务名称">
           <span class="renwu">{{database.name}}</span>
         </detail-list-item>
@@ -25,7 +25,7 @@
           >{{changeTimes(database.filterStartTime)}}~{{changeTimes(database.filterEndTime)}}</span>
         </detail-list-item>
       </detail-list>
-      <h3  v-if='!shows' class="nodata">暂无点评任务</h3>
+      <h3 v-if="!shows" class="nodata">暂无点评任务</h3>
     </a-card>
     <a-card class="margin-top-5">
       <Searchpanel ref="searchPanel" :list="list" :choose="choose">
@@ -36,17 +36,17 @@
       </Searchpanel>
     </a-card>
     <a-card class="margin-top-5">
-      <div v-if='shows'>
-      <a-popconfirm
-        v-if="buttonType == 'danger'"
-        title="确定停止点评?"
-        @confirm="magicRew"
-        okText="确定"
-        cancelText="取消"
-      >
-        <a-button class="margin-left-5" :type="buttonType" >{{rewButoon}}</a-button>
-      </a-popconfirm>
-      <a-button v-else class="margin-left-5" @click="magicRew" :type="buttonType">{{rewButoon}}</a-button>
+      <div v-if="shows">
+        <a-popconfirm
+          v-if="buttonType == 'danger'"
+          title="确定停止点评?"
+          @confirm="magicRew"
+          okText="确定"
+          cancelText="取消"
+        >
+          <a-button class="margin-left-5" :type="buttonType">{{rewButoon}}</a-button>
+        </a-popconfirm>
+        <a-button v-else class="margin-left-5" @click="magicRew" :type="buttonType">{{rewButoon}}</a-button>
       </div>
       <a-spin tip="加载中..." :spinning="loading" class="tables">
         <el-table
@@ -89,7 +89,6 @@
           </el-table-column>
         </el-table>
         <a-pagination
-      
           showSizeChanger
           showQuickJumper
           :total="total"
@@ -157,7 +156,8 @@ export default {
       buttonText: '自动点评',
       alldatasouce: [],
       pageSize: 10,
-      shows:false
+      shows: false,
+      searchData: {}
     }
   },
   computed: {
@@ -274,7 +274,7 @@ export default {
               this.rewButoon = '自动点评'
               clearInterval(this.timeInitialize)
               this.timeInitialize = null
-                this.$message.info('自动点评已完成!')
+              this.$message.info('自动点评已完成!')
             }
           } else {
             this.warn(res.msg)
@@ -366,7 +366,7 @@ export default {
                 })
                   .then(res => {
                     if (res.code == '200') {
-                      this.shows=true
+                      this.shows = true
                       this.database = res.data
                     } else {
                       this.warn(res.msg)
@@ -400,6 +400,7 @@ export default {
       return params
     },
     search() {
+      this.searchData = this.getFormData()
       this.current = 1
       let params = this.getFormData()
       params.pageSize = 10
@@ -409,19 +410,21 @@ export default {
     // 重置数据
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
+      this.pageSize=10
+      this.current=1
       this.getformData({ pageSize: 10, offset: 0 })
     },
     // 改变页码
     pageChange(page, pageSize) {
       this.curent = page
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params = this.searchData
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getformData(params)
     },
     pageChangeSize(page, pageSize) {
       this.pageSize = pageSize
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params = this.searchData
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getformData(params)
@@ -545,7 +548,7 @@ export default {
   text-align: center;
 }
 .allContent {
-  .nodata{
+  .nodata {
     text-align: center;
     height: 70px;
     line-height: 70px;

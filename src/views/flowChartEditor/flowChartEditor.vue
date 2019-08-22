@@ -752,7 +752,6 @@
                         paramsNodeData.valueList = params.assertValList
                         paramsNodeData.val = params.val;
                         paramsNodeData.display = params.display;
-                        paramsNodeData.parentId = params.parentId;
                       }
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
                         if (res.code == '200') {
@@ -1201,7 +1200,7 @@
                 }
               }else if (node.shape == 'flow-rhombus-if'){
                 if (node.lo == 3){
-                  if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.assertValList) == null ||this.$util.trim(node.childNodes) == null || node.pid.length == 0){
+                  if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null  ||this.$util.trim(node.childNodes) == null || node.pid.length == 0){
                      if(status.status){
                     this.warn('条件节点或缺少结论节点和上级节点');
                      }

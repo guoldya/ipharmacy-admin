@@ -39,7 +39,6 @@
   import ErrLog from './ErrLog'
   import TopLock from './TopLock'
   import { mapActions, mapGetters } from 'vuex'
-
   export default {
     name: 'UserMenu',
     components: {
@@ -48,8 +47,9 @@
       TopLock
     },
     methods: {
-      ...mapActions(['Logout']),
+      ...mapActions( ['Logout'],),
       ...mapGetters(['nickname', 'avatar']),
+      ...mapActions( 'page',['closeAll']),
       handleLogout() {
         const that = this
         this.$confirm({
@@ -57,7 +57,7 @@
           content: '真的要注销登录吗 ?',
           onOk() {
             return that.Logout({}).then(() => {
-             console.log(that.$store.state.page)
+              that.closeAll(that);
               that.success('注销成功');
                that.$router.push({ name: 'login' })       
             }).catch(err => {

@@ -1,7 +1,6 @@
 <template>
     <div class="footer">
         <div class="copyright">
-          <div class="huaYiDao"></div>
           <span>药师审方干预系统</span>
         </div>
     </div>
@@ -44,15 +43,5 @@
             color: rgba(0, 0, 0, .45);
             font-size: 14px;
         }
-      .huaYiDao{
-        width: 183px;
-        height: 96px;
-        
-        z-index: 3;
-        background-image: url('~@/assets/huayiLogo.png');
-        background-repeat: no-repeat;
-        /*background-size: 50% 50%;*/
-        opacity: 0.8;
-      }
     }
 </style>
