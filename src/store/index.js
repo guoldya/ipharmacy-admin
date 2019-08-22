@@ -8,6 +8,7 @@ import page from './modules/page'
 import db from './modules/db'
 import preference from './modules/preference'
 import ua from './modules/ua'
+import text from './modules/text'
 import getters from './getters'
 Vue.use(Vuex)
 const state = {routerData:{},drugList:[],drugId:'',proslist:[],status:'2',sessiondata:null}
@@ -21,6 +22,7 @@ export default new Vuex.Store({
     permission,
     releases,
     log,
+    text
   },
   state,
   mutations: {

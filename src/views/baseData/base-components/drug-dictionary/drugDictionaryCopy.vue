@@ -213,7 +213,6 @@ export default {
         selectByDrugCode: 'sys/dicDrug/selectDrugcompositionByDrugCode',
         dicDrugUpdate: 'sys/dicDrug/update',
         statusUpdate: 'sys/dicDrug/updateStatus',
-       
       },
       loading: false,
       pageSize: 10,
@@ -310,7 +309,6 @@ export default {
       this.editData = data
       let main = []
       let auxiliary = []
-      console.log(data)
       let composition = data.dicDrugcompositionVOList
       if (composition.length > 0) {
         let i = 0,
@@ -579,7 +577,5 @@ export default {
     -webkit-transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
     transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
-.ruleRow .ant-card-body {
-  padding: 0px !important;
-}
+
 </style>

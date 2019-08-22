@@ -83,7 +83,6 @@
       totals(){
         this.total=this.totals[1]
         this.curent=this.totals[0]
-        console.log( this.totals,'yyy')
       },
       loading(){
         this.loadings=this.loading

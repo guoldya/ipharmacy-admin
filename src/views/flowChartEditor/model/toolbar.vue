@@ -42,7 +42,8 @@
         <span class="opacity8 margin-right-15">{{titleData.name}}</span>
         <span v-if="titleData.status =='启用'" style="color: #2D8cF0;" class="opacity8 margin-right-15"> {{titleData.status}}  </span>
         <span v-else style="color: #ff9900;" class="opacity8 margin-right-15"> {{titleData.status}}  </span>
-        <span class="opacity8 margin-right-15">{{titleData.updateTime}}</span>
+        <span class="opacity8 margin-right-15"><span class="opacity6">更新人：</span>{{titleData.updateBy}}</span>
+        <span class="opacity8 margin-right-15"><span class="opacity6">更新时间：</span>{{titleData.updateTime}}</span>
       </a-row>
     </div>
 

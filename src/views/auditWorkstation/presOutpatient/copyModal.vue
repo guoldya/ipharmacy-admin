@@ -4,13 +4,15 @@
     :width="550"
     @cancel="cancel"
     :visible="visibled"
-    :footer="null"
   >
-    <a-input v-for="(item,index) in copyArray" read-only  :defaultValue="item.data" id="copy" :key="index">
+    <a-input read-only  :defaultValue="copyArray[0].data" id="copy" :key="0">
     </a-input>
+    <a-input v-for="(item,index) in copyArray" v-if="index>0" read-only  :defaultValue="item.data"  :key="index">
+    </a-input>
+
     <template slot="footer">
       <a-button key="一键复制" type="primary"@click="copyLink">
-        Submit
+        一键复制
       </a-button>
     </template>
   </a-modal>
