@@ -9,7 +9,7 @@
                <a-radio-group v-model='type'>
                     <a-radio value="1">全部</a-radio>
                     <a-radio value="2">目录</a-radio>
-                    <a-radio value="2">模板</a-radio>
+                    <a-radio value="3">模板</a-radio>
                 </a-radio-group>
               </a-col>
               <a-col class="margin-top-5" :span="24">
