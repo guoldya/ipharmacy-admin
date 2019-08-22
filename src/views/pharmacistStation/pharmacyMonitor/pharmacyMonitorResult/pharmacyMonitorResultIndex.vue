@@ -42,7 +42,7 @@
             </a-tabs>
             
 
-             <a-tabs :defaultActiveKey="1" @change="callback">
+             <a-tabs :defaultActiveKey="1" >
                 <a-tab-pane v-for="(list,i) in contentTwo" :key="i+1" :tab="list.tab">
                     <div>
                       <a-spin v-if="list.columns" class="margin-top-5" :spinning="loading" tip="加载中...">
@@ -90,7 +90,7 @@ import echarts from 'echarts'
       return{
           option : {
             title: {
-            text: '折线图堆叠'
+            text: '指标趋势图'
             },
             tooltip: {
                 trigger: 'axis'
@@ -230,13 +230,6 @@ import echarts from 'echarts'
                 docNurse:'胡清/黄晶锐',
                 date:'2019-08-05'
             },
-        selectText: [
-          { value: 1, item: '在院'},
-          { value: 2, item: '特级监护'},
-          { value: 3, item: 'Ⅲ级监护'},
-          { value: 4, item: 'Ⅱ级监护'},
-          { value: 5, item: 'Ⅰ级监护'}
-        ],
         items:[],
       }
     },
