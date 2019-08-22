@@ -369,6 +369,7 @@
         :visibled="copyVisibled"
         :copyText="copyText"
         :copyArray="copyArray"
+        v-if="copyVisibled"
         :cancel="copyCancel"
       >
       </copyModal>

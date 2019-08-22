@@ -1,6 +1,6 @@
 <template>
   <a-card>
-    <a-row class="ruleRow">
+    <a-row class="drugSpec">
       <!-- <a-col :xl="5" :xxl="5">
         <div class="ruleCow">
           <a-card title="药品分类">
@@ -174,7 +174,7 @@
     line-height: 32px;
   }
 
-  .ruleRow .ant-card-body {
+  .drugSpec .ant-card-body {
     padding: 15px !important;
   }
 

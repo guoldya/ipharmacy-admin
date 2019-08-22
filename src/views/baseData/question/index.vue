@@ -1,8 +1,8 @@
 <template>
   <a-card>
-    <a-row class="ruleRow">
-      <a-col :xl="5" :xxl="5">
-        <div class="ruleCow">
+    <a-row class="dicBase">
+      <a-col :xl="5" :xxl="5" class="ruleCow">
+        <div >
           <a-card title="药品分类">
             <drugClassification
               :onSelect="onSelect"
@@ -13,7 +13,8 @@
           </a-card>
         </div>
       </a-col>
-      <a-col :xl="19" :xxl="19">
+
+      <a-col :xl="19" :xxl="19" class="kindDic">
         <div class="kinds">
           <a-card title="药品品种">
             <drugVarieties :variety="variety" :disable="disable" :clickRow="clickRow"></drugVarieties>
@@ -78,9 +79,6 @@ export default {
   methods: {
     //左侧点击事件
     onSelect(selectedKeys, e) {
-      // this.classification.disable = true
-      console.log(this.classification.disable)
-      console.log(e.node.dataRef.categoryType)
       if (e.node.dataRef.categoryType == '1') {
         this.classification.disable = false
       }
@@ -191,29 +189,25 @@ export default {
 </script>
 
 <style lang='less'>
-.ruleCow {
-  padding-right: 5px;
-}
-.kinds {
-  .ant-card-body {
-    padding: 15px !important;
-  }
-}
-.dic {
-  .ant-card-body {
-    padding: 0px !important;
-  }
-}
-.treeCol {
-  padding-left: 10px;
-  line-height: 32px;
-}
-
-.ruleModal .ant-modal-body {
-  padding: 4px !important;
-}
-
-.drugModal .ant-modal-body {
-  text-align: right;
-}
+  /*.ruleRow{*/
+    .ruleCow {
+      padding-right: 5px;
+    }
+    .dic .ant-card-body {
+        padding: 0px !important;
+      }
+    .kinds .ant-card-body {
+      padding: 15px !important;
+    }
+    .ruleModal .ant-modal-body {
+      padding: 4px !important;
+    }
+    .drugModal .ant-modal-body {
+      text-align: right;
+    }
+    .treeCol {
+      padding-left: 10px;
+      line-height: 32px;
+    }
+  /*}*/
 </style>

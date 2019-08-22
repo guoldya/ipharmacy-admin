@@ -1,7 +1,7 @@
 <template>
     <div class="footer">
         <div class="copyright">
-          <span>药师审方干预系统</span>
+          <span>智慧审方平台</span>
         </div>
     </div>
 </template>

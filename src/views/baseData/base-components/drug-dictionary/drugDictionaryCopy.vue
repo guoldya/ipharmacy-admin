@@ -577,7 +577,5 @@ export default {
     -webkit-transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
     transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
-.ruleRow .ant-card-body {
-  padding: 0px !important;
-}
+
 </style>
