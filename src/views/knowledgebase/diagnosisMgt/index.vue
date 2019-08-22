@@ -1,6 +1,6 @@
 <template>
   <a-card>
-    <a-row class="ruleRow">
+    <a-row class="diagnosisMgt">
       <a-col :xl="8" :xxl="5">
         <div class="ruleCow">
           <a-card>

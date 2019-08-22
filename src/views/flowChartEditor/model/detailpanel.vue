@@ -291,9 +291,9 @@
 
           <a-form-item v-if="!selectEdge.rearCondition" label="条件值" :label-col="{ span: 5 }"
                        :wrapper-col="{ span: 19 }">
-            <a-input :type="edgeInitialized.inValueEdge" v-if="selectEdge.lo ==1 && selectEdge.colDbType !=2"
+            <a-input :type="edgeInitialized.inValueEdge" v-if="edgeInitialized.lo ==1 && edgeInitialized.colDbType !=2"
                      @change="inputEdgeChange" size="small" v-model="selectEdge.assertVal"></a-input>
-            <div v-else-if="selectEdge.lo ==2 && selectEdge.colDbType !=2">
+            <div v-else-if="edgeInitialized.lo ==2 && edgeInitialized.colDbType !=2">
               <a-input :type="edgeInitialized.inValueEdge" class="inputLeft" size="small" placeholder="最小值"
                        @change="edgeAssertVal" v-model="selectEdge.assertVal"/>
               <a-input-number class="inputCenter" size="small" placeholder="~" disabled/>
@@ -339,16 +339,16 @@
               >
               </treeSelect>
             </div>
-            <a-date-picker v-else-if="selectEdge.lo==1 && selectEdge.colDbType ==2" size="small"
+            <a-date-picker v-else-if="edgeInitialized.lo==1 && edgeInitialized.colDbType=='2'" size="small"
                            :defaultValue="selectEdge.assertVal? moment(selectEdge.assertVal, 'YYYY-MM-DD'): null"
                            @change="edgeDatePick"></a-date-picker>
-            <a-range-picker v-else-if="selectEdge.lo==2 && selectEdge.colDbType ==2" size="small"
+            <a-range-picker v-else-if="edgeInitialized.lo==2 && edgeInitialized.colDbType=='2'" size="small"
                             @change="edgeRangePick"
                             :defaultValue="selectEdge.assertVal ? [moment(selectEdge.assertVal,  'YYYY-MM-DD'), moment(this.selectEdge.assertVal1,  'YYYY-MM-DD')]: null"
                             v-model="selectEdge.assertVal"></a-range-picker>
             <a-input v-else size="small"></a-input>
           </a-form-item>
-          <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect' && selectEdge.lo ==3 && !selectEdge.rearCondition"
+          <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect' && edgeInitialized.lo ==3 && !selectEdge.rearCondition"
                        label="包含下级"
                        :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-checkbox @change="edgeContainsChange" value="edge" key="2"
@@ -382,6 +382,7 @@
       :initialized="initialized"
       :assertValList="valueList"
     />
+
   </div>
 
 </template>
@@ -512,7 +513,7 @@
         this.selectNode.precondition = null
         this.selectNode.assertVal1 = null
         this.selectNode.assertVal = null
-        this.selectNode.assertValList = null
+        this.selectNode.assertValList = []
         let params = extra.selectedNodes[0].data.props
         let _this = this
         _this.selectNode.itemId = params.id
@@ -586,7 +587,10 @@
         this.judgePreDetailData = []
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
-          if (params.pid == this.CoreFactAllTree[key].id) {
+          // if (params.pid == this.CoreFactAllTree[key].id) {
+          //   this.judgePreDetailData.push(this.CoreFactAllTree[key])
+          // }
+          if (params.pid == '15') {
             this.judgePreDetailData.push(this.CoreFactAllTree[key])
           }
         }
@@ -608,9 +612,14 @@
       },
       //枚举时搜索下拉框
       searchSelect(value) {
+        let _this = this;
         let params = {}
         params.keyword = value
-        params.id = this.boxInitialized.itemId
+        console.log(value,'value');
+        console.log(this.boxInitialized)
+        params.val = _this.boxInitialized.val
+        params.display = _this.boxInitialized.display
+        params.parentId = _this.boxInitialized.parentId
         coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
             this.boxInitialized.inputSelectData = res.rows
@@ -634,68 +643,37 @@
       },
       //属性节点后线段属性
       attributeEdge(value, node, extra) {
-        let _this = this
+        let _this = this;
+        console.log( extra.selectedNodes[0].data.props)
         let params = extra.selectedNodes[0].data.props
-        this.selectNode.lo = params.lo
+        _this.selectNode.lo = params.lo
         _this.selectNode.label = params.title
+        _this.selectNode.colDbType = params.colDbType
         _this.selectNode.itemId = params.id
         _this.selectNode.precondition = null
+        _this.selectNode.lo = params.lo
+        _this.selectNode.val = params.val
+        _this.selectNode.display = params.display
+        _this.selectNode.parentId = params.parentId
         if (params.lo == 1) {
-          _this.edgeInitialized.inputEdge = 'input'
+          this.edgeInitialized.inputEdge = 'input'
         } else if (params.lo == 2) {
-          _this.edgeInitialized.inputEdge = 'scopeInput'
+          this.edgeInitialized.inputEdge = 'scopeInput'
         } else if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
-          _this.edgeInitialized.inputEdge = 'select'
-          _this.edgeId = params.id
-          _this.edgeInitialized.itemId = '' + params.id
-          coreRuleNodeSelectColId({ id: this.edgeId }).then(res => {
-            if (res.code == '200') {
-              _this.edgeInitialized.inputEdgeSelect = []
-              for (let key in res.rows) {
-                _this.edgeInitialized.inputEdgeSelect.push({
-                  ID: res.rows[key][params.val],
-                  NAME: res.rows[key][params.display]
-                })
-              }
-            } else {
-              this.warn(res.msg)
-            }
-          }).catch(err => {
-            this.error(err)
-          })
+          this.edgeInitialized.inputEdge = 'select'
+          this.edgeId = params.id
+          this.edgeInitialized.itemId = '' + params.id
         } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
-          _this.edgeInitialized.inputEdge = 'treeSelect'
-          _this.edgeId = params.id
-          _this.edgeInitialized.itemId = '' + params.id
-          coreRuleNodeSelectColId({ id: this.edgeId }).then(res => {
-            if (res.code == '200') {
-              let list = []
-              _this.edgeInitialized.inputEdgeSelect = []
-              for (let key in res.rows) {
-                list.push({
-                  ID: res.rows[key][params.val],
-                  NAME: res.rows[key][params.display],
-                  PID: res.rows[key][params.parentId]
-                })
-              }
-              _this.edgeInitialized.inputEdgeSelect = this.dealValTree(list, undefined)
-            } else {
-              this.warn(res.msg)
-            }
-          }).catch(err => {
-            this.error(err)
-          })
-        }
-        if (params.colDbType == 1) {
-          _this.edgeInitialized.inValueEdge = 'number'
-        } else if (params.colDbType == 2) {
-          _this.edgeInitialized.inValueEdge == 'time'
-        } else if (params.colDbType == 3) {
-          _this.edgeInitialized.inValueEdge = 'text'
+          this.edgeInitialized.inputEdge = 'treeSelect'
+          this.edgeId = params.id
+          this.edgeInitialized.itemId = '' + params.id
         }
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
-          if (params.pid == this.CoreFactAllTree[key].id) {
+          // if (params.pid == this.CoreFactAllTree[key].id) {
+          //   this.preDetailData.push(this.CoreFactAllTree[key])
+          // }
+          if (params.pid == '15') {
             this.preDetailData.push(this.CoreFactAllTree[key])
           }
         }
@@ -724,6 +702,8 @@
         let params = {}
         params.keyword = value
         params.id = this.edgeInitialized.itemId
+        params.val = this.edgeInitialized.val
+        params.name = this.edgeInitialized.display
         coreRuleNodeSelectColId(params).then(res => {
           if (res.code == '200') {
             this.edgeInitialized.inputEdgeSelect = res.rows
@@ -881,13 +861,31 @@
         this.selectNode.isRepeat = null
       },
       logicalChange(value) {
-        this.selectNode.lo = value
-        this.selectNode.ro = 7
-        console.log(this.boxInitialized.inputSelectData,'2233')
+        let _this = this;
+        _this.selectNode.lo = value
+        _this.selectNode.ro = 7
+        if (value ==3){
+          if (_this.boxInitialized.parentId){
+            _this.boxInitialized.inputType ='treeSelect'
+          }else{
+            _this.boxInitialized.inputType ='select'
+          }
+        }
+        console.log( _this.selectNode,' this.selectNode')
+        console.log(_this.boxInitialized,'this.box')
       },
       logicalEdge(value) {
         this.selectEdge.lo = value
         this.selectEdge.ro = 7
+        this.edgeInitialized.lo = value
+        if (value ==3){
+          if (this.edgeInitialized.parentId){
+            this.edgeInitialized.inputEdge ='treeSelect'
+          }else{
+            this.edgeInitialized.inputEdge ='select'
+          }
+        }
+        console.log(this.edgeInitialized,'2233')
       },
 
 
@@ -965,7 +963,6 @@
                   isLeaf: false
                 })
               }
-
               _this.edgeInitialized.viewSelect.push({
                 key: res.rows[i][_this.edgeInitialized.val], title: res.rows[i][_this.edgeInitialized.display]
               })
@@ -981,12 +978,16 @@
 
       //判断节点
       nodeSelectChange(value) {
-        this.nodeSelectedKeys = value
         this.selectNode.assertValList = value
       },
       nodeTreeSelected(value) {
-        this.nodeSelectedKeys = value
+        if ( this.selectNode.assertValList){
+
+        }else{
+          this.selectNode.assertValList = []
+        }
         this.selectNode.assertValList = value
+
       },
       nodeLoadData(treeNode) {
         let _this = this
