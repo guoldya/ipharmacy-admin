@@ -125,7 +125,7 @@ export default {
       userLoading: false,
       total: 0,
       current: 1,
-      orgId: null,
+      orgId: '1',
       deptId: null,
       deptButton: true
     }
@@ -183,6 +183,7 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功!', () => {
+              console.log(this.orgId )
               this.getDeptData({ orgId: this.orgId })
             })
           } else {
