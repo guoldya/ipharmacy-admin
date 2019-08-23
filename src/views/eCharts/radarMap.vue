@@ -3,7 +3,11 @@
 </template>
 
 <script>
-  import echarts from 'echarts'
+  //import echarts from 'echarts'
+  require('echarts/lib/chart/radar')
+// 引入提示框和title组件
+require('echarts/lib/component/tooltip')
+require('echarts/lib/component/title')
   export default {
     props: {
       widths: {
@@ -71,6 +75,7 @@
     },
     methods:{
       initChart() {
+        let echarts = require('echarts/lib/echarts')
         this.chart = echarts.init(document.getElementById('radarMap'));
         this.chart.setOption(this.option, true);
         this.chart.resize();

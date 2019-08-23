@@ -48,6 +48,7 @@
             @showSizeChange="pageChangeSize"
             @change="pageChange"
             size="small"
+            :pageSize='pageSize'
           ></a-pagination>
         </a-spin>
       </a-card>
@@ -202,7 +203,8 @@ export default {
       isShow: true,
       drugAllList: [],
       isActive: true,
-      orgData: []
+      orgData: [],
+       searchdata: { orgId: this.$store.state.user.account.info.orgId }
     }
   },
   computed: {
@@ -425,6 +427,7 @@ export default {
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
+       this.searchdata=this.$refs.searchPanel.form.getFieldsValue()
       params.pageSize = 20
       params.offset = 0
       this.current = 1
@@ -440,21 +443,23 @@ export default {
         this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
+      this.pageSize=20
       this.getData(params)
+      this.searchdata={orgId: this.$store.state.user.account.info.orgId}
     },
     //页码size change事件
     pageChangeSize(page, pageSize) {
       this.pageSize = pageSize
       this.current = 1
       let params = { offset: 0, pageSize: pageSize }
-      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      Object.assign(params, this.searchdata)
       this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
       this.current = page
       let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
-      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      Object.assign(params, this.searchdata)
       this.getData(params)
     },
     //页码跳转
