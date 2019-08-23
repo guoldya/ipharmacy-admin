@@ -182,10 +182,24 @@
         <a-form>
           <a-form-item label="范围" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-tree-select
+              v-if="selectNode.shape == 'flow-rhombus-if'"
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
               :treeData="judgePreDetailData"
+              v-model="selectNode.precondition"
+              placeholder="默认按当前数据行"
+              class="nodeSelect"
+              @select="nodePreSelect"
+              @change="nodePreChange"
+            >
+            </a-tree-select>
+            <a-tree-select
+              v-if="selectNode.shape =='model-rect-attribute'"
+              size="small"
+              :allowClear="true"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+              :treeData="preDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
               class="nodeSelect"
@@ -582,7 +596,7 @@
         this.preDetailData = []
         //处理节点上计算条件数据
         for (let key in this.CoreFactAllTree) {
-          if (params.pid == '15') {
+          if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
             this.judgePreDetailData.push(this.CoreFactAllTree[key])
           }
         }
@@ -648,7 +662,7 @@
         //线上计算条件处理
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
-          if (params.pid == '15') {
+          if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
             this.preDetailData.push(this.CoreFactAllTree[key])
           }
         }

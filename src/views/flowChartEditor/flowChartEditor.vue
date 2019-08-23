@@ -341,7 +341,7 @@
         return this.selectEdge.assertValList
       },
       selectEdgeRearCondition() {
-        return this.selectNode.rearCondition
+        return this.selectEdge.rearCondition
       },
       selectEdgeDataDrilling() {
         return this.selectEdge.dataDrilling
@@ -725,6 +725,7 @@
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
+                    _this.prePid = []
                     _this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
                     _this.preData = []
                     if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
@@ -846,13 +847,12 @@
               } else {
                 _this.multiId.push(ev.item.model.id)
               }
+              this.prePid = []
               this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
               _this.judgePreData = []
-              console.log(this.getPreData(this.prePid, this.CoreFactAllTree),'2233')
               if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
                 _this.judgePreData = []
               } else {
-                console.log(this.prePid,'2334')
                 _this.judgePreData.push(this.getPreData(this.prePid, this.CoreFactAllTree))
               }
               break
@@ -861,6 +861,7 @@
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
               let sourceP = ev.item.source.model
               if (sourceP.shape == 'model-rect-attribute') {
+                _this.selectEdge.rearCondition = ev.item.model.rearCondition
                 _this.edgeInitialized.colDbType = sourceP.colDbType
                 if (sourceP.lo == 1) {
                   _this.edgeInitialized.inputEdge = 'input'
@@ -967,7 +968,6 @@
                 _this.selectEdge.assertVal = ev.item.model.assertVal
                 _this.selectEdge.assertValList = ev.item.model.assertValList
                 _this.selectEdge.dataDrilling = ev.item.model.dataDrilling
-                _this.selectEdge.rearCondition = ev.item.model.rearCondition
                 _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                 _this.selectEdge.ro = ev.item.model.ro
                 _this.selectEdge.roSymbol = ev.item.model.roSymbol
@@ -1830,22 +1830,6 @@
           return []
         }
       },
-
-      dealValTree(data, pid) {
-        var items = []
-        for (var key in data) {
-          var item = data[key]
-          if (pid == item.PID) {
-            items.push({
-              title: item.NAME,
-              value: item.ID,
-              key: item.ID,
-              children: this.dealValTree(data, item.ID)
-            })
-          }
-        }
-        return items
-      }
     }
   }
 </script>
