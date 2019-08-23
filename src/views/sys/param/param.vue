@@ -40,10 +40,9 @@
                 <a-pagination
                         :total="total"
                         showSizeChanger
-                  
                         v-model="current"
                         class="pnstyle"
-                        :defaultPageSize="10"
+                        :pageSize="pageSize"
                         :pageSizeOptions="['10', '20','50']"
                         @showSizeChange="sizeChange"
                         @change="pageChange"
@@ -153,6 +152,8 @@
                 ],
                 total:0,
                 current:1,
+                pageSize:10,
+                searchData:{},
                 api:{
                     paramUrl:'/sys/sysParams/selectPage',
                     orgUrl:'/sys/sysOrgs/selectList',
@@ -193,11 +194,16 @@
         methods:{
             moment,
             search() {
+                this.searchData = this.$refs.searchPanel.form.getFieldsValue();
                 let params = this.$refs.searchPanel.form.getFieldsValue();
+                params.offset = (this.current-1)*this.pageSize;
+                params.pageSize = this.pageSize;
                 this.getData(params)
             },
             resetForm() {
                 this.$refs.searchPanel.form.resetFields();
+                this.searchData = {}
+                this.pageSize = 10;
                 this.getData()
             },
             setType(row){
@@ -232,7 +238,10 @@
                 }).then(res => {
                     if (res.code == '200') {
                         this.success('删除成功!',()=>{
-                            this.getData();
+                            let data = this.searchData;
+                            data.pageSize = this.pageSize;
+                            data.offset = (this.current-1)*this.pageSize;
+                            this.getData(data);
                         })
                     } else {
                         this.warn(res.msg);
@@ -260,7 +269,10 @@
                         }).then(res => {
                             if (res.code == '200') {
                                 this.success('保存成功!',()=>{
-                                    this.getData();
+                                  let data = this.searchData;
+                                  data.pageSize = this.pageSize;
+                                  data.offset = (this.current-1)*this.pageSize;
+                                    this.getData(data);
                                     this.visible = false;
                                     this.loading = false;
                                 })
@@ -280,12 +292,14 @@
             pageChange(page, size) {
                 let params = this.$refs.searchPanel.form.getFieldsValue();
                 params.offset = (page - 1) * size;
+                params.pageSize = size;
                 this.getData(params)
             },
             sizeChange(current, size) {
-                this.current = 1;
+              this.pageSize = size;
                 let params = this.$refs.searchPanel.form.getFieldsValue();
                 params.pageSize = size;
+                params.offset = (current-1)*size;
                 this.getData(params)
             },
             getData( params = {}){
