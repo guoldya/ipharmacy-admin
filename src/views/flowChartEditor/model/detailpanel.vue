@@ -107,14 +107,11 @@
             </a-form-item>
             <a-form-item v-if="!selectNode.rearCondition" label="条件值" :label-col="{ span: 5 }"
                          :wrapper-col="{ span: 19 }">
-              <a-input :type="boxInitialized.inValueType" v-if="selectNode.lo==1 && selectNode.colDbType !=2"
-                       @change="inputChange" size="small" v-model="selectNode.assertVal"></a-input>
+              <a-input :type="boxInitialized.inValueType" v-if="selectNode.lo==1 && selectNode.colDbType !=2" size="small" v-model="selectNode.assertVal"></a-input>
               <div v-else-if="selectNode.lo==2 && selectNode.colDbType !=2">
-                <a-input :type="boxInitialized.inValueType" class="inputLeft" size="small" placeholder="最小值"
-                         @change="scopeAssertVal" v-model="selectNode.assertVal"/>
+                <a-input :type="boxInitialized.inValueType" class="inputLeft" size="small" placeholder="最小值" v-model="selectNode.assertVal"/>
                 <a-input class="inputCenter" size="small" placeholder="~" disabled/>
-                <a-input :type="boxInitialized.inValueType" class="inputRight" size="small" placeholder="最大值"
-                         @change="scopeAssertVal1" v-model="selectNode.assertVal1"/>
+                <a-input :type="boxInitialized.inValueType" class="inputRight" size="small" placeholder="最大值" v-model="selectNode.assertVal1"/>
               </div>
               <div v-else-if="boxInitialized.inputType =='select' && selectNode.lo==3">
                 <a-select
@@ -123,15 +120,14 @@
                   showSearch
                   mode="multiple"
                   @search="searchSelect"
-                  @change="assertValSelect"
                   :defaultActiveFirstOption="false"
                   :showArrow="false"
                   :filterOption="false"
                   :maxTagCount="3"
                   :open="nodeSelectOpen"
-                  @dropdownVisibleChange="nodeVisibleChange"
+                  @dropdownVisibleChange="nodeDropdownVisible"
                 >
-                  <span slot="maxTagPlaceholder" class="primary" @click="nodeTagPlaceholder">查看更多</span>
+                  <span slot="maxTagPlaceholder" class="primary" @click="nodeSelectMaxTag">查看更多</span>
                   <a-select-option v-for="(op,index) in boxInitialized.inputSelectData" :value="op.ID" :title="op.NAME"
                                    :key="index">{{op.NAME}}
                   </a-select-option>
@@ -144,16 +140,15 @@
                   :vModel="selectNode.assertValList"
                   :optionData="boxInitialized.viewSelect"
                   :treeData="boxInitialized.inputSelectData"
-                  :selectChange="nodeSelectChange"
+                  :selectChange="nodeTreeSelectChange"
                   :treeSelect="nodeTreeSelected"
-                  :loadData="nodeLoadData"
+                  :loadData="nodeTreeLoadData"
                   :loadedKeys="nodeLoadedKeys"
-                  :load="nodeLoad"
+                  :load="nodeTreeLoad"
                   :selectedKeys="selectNode.assertValList"
-                  :selectSearch="nodeSelectSearch"
-                  :treeMoreTag="treeMoreNode"
+                  :selectSearch="nodeTreeSelectSearch"
+                  :treeMoreTag="nodeTreeSelectMaxTag"
                 >
-
                 </treeSelect>
               </div>
               <a-date-picker v-else-if="selectNode.lo==1 && selectNode.colDbType ==2"
@@ -171,7 +166,7 @@
               v-if="boxInitialized.inputType =='treeSelect' && selectNode.lo==3 && !selectNode.rearCondition "
               label="包含下级"
               :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-              <a-checkbox @change="containsChange" value="node" key="1"
+              <a-checkbox @change="nodeContainsChange" value="node" key="1"
                           :checked="selectNode.dataDrilling=='1'? true:false"></a-checkbox>
             </a-form-item>
           </div>
@@ -187,10 +182,24 @@
         <a-form>
           <a-form-item label="范围" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-tree-select
+              v-if="selectNode.shape == 'flow-rhombus-if'"
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
               :treeData="judgePreDetailData"
+              v-model="selectNode.precondition"
+              placeholder="默认按当前数据行"
+              class="nodeSelect"
+              @select="nodePreSelect"
+              @change="nodePreChange"
+            >
+            </a-tree-select>
+            <a-tree-select
+              v-if="selectNode.shape =='model-rect-attribute'"
+              size="small"
+              :allowClear="true"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+              :treeData="preDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
               class="nodeSelect"
@@ -313,9 +322,9 @@
                 :filterOption="false"
                 :maxTagCount="3"
                 :open="edgeSelectOpen"
-                @dropdownVisibleChange="edgeVisibleChange"
+                @dropdownVisibleChange="edgeDropdownVisible"
               >
-                <span slot="maxTagPlaceholder" class="primary" @click="maxTagPlaceholder">查看更多</span>
+                <span slot="maxTagPlaceholder" class="primary" @click="edgeSelectMaxTag">查看更多</span>
                 <a-select-option v-for="(op,index) in edgeInitialized.inputEdgeSelect" :value="op.ID" :title="op.NAME"
                                  :key="index">{{op.NAME}}
                 </a-select-option>
@@ -328,14 +337,14 @@
                 :vModel="selectEdge.assertValList"
                 :optionData="edgeInitialized.viewSelect"
                 :treeData="edgeInitialized.inputEdgeSelect"
-                :selectChange="edgeSelectChange"
+                :selectChange="edgeTreeSelectChange"
                 :treeSelect="edgeTreeSelected"
-                :loadData="edgeLoadData"
+                :loadData="edgeTreeLoadData"
                 :loadedKeys="edgeLoadedKeys"
-                :load="edgeLoad"
+                :load="edgeTreeLoad"
                 :selectedKeys="selectEdge.assertValList"
-                :selectSearch="edgeSelectSearch"
-                :treeMoreTag="treeMoreEdge"
+                :selectSearch="edgeTreeSelectSearch"
+                :treeMoreTag="edgeTreeSelectMaxTag"
               >
               </treeSelect>
             </div>
@@ -377,7 +386,7 @@
       v-if="modalVisible"
       :visibled="modalVisible"
       :cancel="modalCancel"
-      :ok="edgeValueOk"
+      :ok="modalOkl"
       :fullData="fullData"
       :initialized="initialized"
       :assertValList="valueList"
@@ -401,8 +410,8 @@
     data() {
       this.searchSelect = debounce(this.searchSelect, 500)
       this.searchEdge = debounce(this.searchEdge, 500)
-      this.edgeSelectSearch = debounce(this.edgeSelectSearch, 500)
-      this.nodeSelectSearch = debounce(this.nodeSelectSearch, 500)
+      this.edgeTreeSelectSearch = debounce(this.edgeTreeSelectSearch, 500)
+      this.nodeTreeSelectSearch = debounce(this.nodeTreeSelectSearch, 500)
 
       return {
         levelData: [],
@@ -539,15 +548,11 @@
         } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
           this.boxInitialized.inputType = 'treeSelect'
           this.boxInitialized.itemId = '' + params.id
-          let paramsNodeData = { id: params.id }
-          paramsNodeData.val = params.val
-          paramsNodeData.display = params.display
-          paramsNodeData.parentId = params.parentId
           this.boxInitialized.val = params.val
           this.boxInitialized.display = params.display
           this.boxInitialized.parentId = params.parentId
           this.boxInitialized.itemId = params.itemId
-          coreRuleNodeSelectColId(paramsNodeData).then(res => {
+          coreRuleNodeSelectColId({id: params.id, val:params.val, display:params.display, parentId:params.parentId}).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = []
               this.boxInitialized.viewSelect = []
@@ -584,13 +589,14 @@
         _this.selectNode.assertVal = null
         _this.selectNode.assertVal1 = null
         _this.selectNode.assertValList = []
+        _this.selectNode.val = params.val
+        _this.selectNode.display = params.display
+        _this.selectNode.parentId = params.parentId
         this.judgePreDetailData = []
         this.preDetailData = []
+        //处理节点上计算条件数据
         for (let key in this.CoreFactAllTree) {
-          // if (params.pid == this.CoreFactAllTree[key].id) {
-          //   this.judgePreDetailData.push(this.CoreFactAllTree[key])
-          // }
-          if (params.pid == '15') {
+          if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
             this.judgePreDetailData.push(this.CoreFactAllTree[key])
           }
         }
@@ -599,24 +605,11 @@
       selectNodeRo(value, option) {
         this.selectNode.ro = value
       },
-      //条件值单个输入事件
-      inputChange(e) {
-      },
-      //多个条件值输入第一个事件
-      scopeAssertVal(e) {
-      },
-      scopeAssertVal1(e) {
-      },
-      //下拉选择事件
-      assertValSelect(value, option) {
-      },
       //枚举时搜索下拉框
       searchSelect(value) {
         let _this = this;
         let params = {}
         params.keyword = value
-        console.log(value,'value');
-        console.log(this.boxInitialized)
         params.val = _this.boxInitialized.val
         params.display = _this.boxInitialized.display
         params.parentId = _this.boxInitialized.parentId
@@ -631,7 +624,6 @@
           this.error(err)
         })
       },
-
       //线判断条件
       lineCondition(value, option) {
         this.selectEdge.label = option.componentOptions.propsData.title
@@ -644,7 +636,6 @@
       //属性节点后线段属性
       attributeEdge(value, node, extra) {
         let _this = this;
-        console.log( extra.selectedNodes[0].data.props)
         let params = extra.selectedNodes[0].data.props
         _this.selectNode.lo = params.lo
         _this.selectNode.label = params.title
@@ -668,12 +659,10 @@
           this.edgeId = params.id
           this.edgeInitialized.itemId = '' + params.id
         }
+        //线上计算条件处理
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
-          // if (params.pid == this.CoreFactAllTree[key].id) {
-          //   this.preDetailData.push(this.CoreFactAllTree[key])
-          // }
-          if (params.pid == '15') {
+          if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
             this.preDetailData.push(this.CoreFactAllTree[key])
           }
         }
@@ -684,7 +673,7 @@
         this.edgeConditionValue = this.selectEdge.assertVal
         this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
       },
-      //线中下拉事件
+      //线上选择框change事件
       assertValEdge(value, option) {
         this.selectEdge.lo = 3
         if (!this.edgeCondition) {
@@ -697,7 +686,7 @@
         }
         this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
       },
-      //线下拉搜索
+      //线上选择框搜索
       searchEdge(value) {
         let params = {}
         params.keyword = value
@@ -714,6 +703,7 @@
           this.error(err)
         })
       },
+
       //多个条件值输入第一个事件
       edgeAssertVal() {
         this.selectEdge.label = []
@@ -725,6 +715,7 @@
         this.edgeConditionValue1 = this.selectEdge.assertVal1
         this.selectEdge.label = this.edgeCondition + '[' + this.edgeConditionValue + '-' + this.edgeConditionValue1 + ']'
       },
+      //获取模型数据
       getCoreFactAllStart() {
         coreFactColAll({}).then(res => {
           if (res.code == '200') {
@@ -785,14 +776,15 @@
         }
         return children
       },
-      //撰取数据
-      containsChange(e) {
+      //节点包含下级
+      nodeContainsChange(e) {
         if (e.target.checked) {
           this.selectNode.dataDrilling = '1'
         } else {
           this.selectNode.dataDrilling = '0'
         }
       },
+      //线包含下级
       edgeContainsChange(e) {
         if (e.target.checked) {
           this.selectEdge.dataDrilling = '1'
@@ -808,23 +800,6 @@
           this.selectNode.isRepeat = '0'
         }
       },
-
-      dealValTree(data, pid) {
-        var items = []
-        for (var key in data) {
-          var item = data[key]
-          if (pid == item.PID) {
-            items.push({
-              title: item.NAME,
-              value: item.ID,
-              key: item.ID,
-              children: this.dealValTree(data, item.ID)
-            })
-          }
-        }
-        return items
-      },
-
       //节点时间选择
       nodeDatePick(date, dateString) {
         if (date) {
@@ -838,14 +813,12 @@
           this.selectNode.assertVal1 = '' + date[1].format('YYYY-MM-DD')
         }
       },
-
       //线时间选择
       edgeDatePick(date) {
         if (date) {
           this.selectEdge.assertVal = '' + date.format('YYYY-MM-DD HH:mm')
         }
       },
-
       //线时间范围选择
       edgeRangePick(date, dateString) {
         if (date.length > 0) {
@@ -853,13 +826,13 @@
           this.selectEdge.assertVal1 = '' + date[1].format('YYYY-MM-DD')
         }
       },
-
       //判断条件计算方式
       selectIfCalculation(value) {
         this.selectNode.formula = null
         this.selectNode.calculated = ''
         this.selectNode.isRepeat = null
       },
+      //节点上逻辑运算事件
       logicalChange(value) {
         let _this = this;
         _this.selectNode.lo = value
@@ -871,9 +844,8 @@
             _this.boxInitialized.inputType ='select'
           }
         }
-        console.log( _this.selectNode,' this.selectNode')
-        console.log(_this.boxInitialized,'this.box')
       },
+      //线上逻辑运算事件
       logicalEdge(value) {
         this.selectEdge.lo = value
         this.selectEdge.ro = 7
@@ -885,11 +857,13 @@
             this.edgeInitialized.inputEdge ='select'
           }
         }
-        console.log(this.edgeInitialized,'2233')
       },
 
-
-      edgeSelectChange(value) {
+      /**
+       * @线上树形选择框
+       *
+       */
+      edgeTreeSelectChange(value) {
         this.selectEdge.assertValList = value
       },
       edgeTreeSelected(value, option) {
@@ -897,7 +871,8 @@
         this.edgeConditionValue = option.selectedNodes[0].data.props.title
         this.selectEdge.label = this.edgeCondition +this.edgeConditionValue
       },
-      edgeLoadData(treeNode) {
+      //线上树形结构异步加载事件
+      edgeTreeLoadData(treeNode) {
         let _this = this
         return new Promise(resolve => {
           if (treeNode.dataRef.children) {
@@ -931,13 +906,12 @@
           }, 100)
         })
       },
-      edgeLoad(loadedKeys, expanded) {
-        console.log(expanded,'2233')
+      //线上树形结构异步加完成事件
+      edgeTreeLoad(loadedKeys, expanded) {
         this.edgeLoadedKeys = loadedKeys
       },
-
       //线树形搜索框事件
-      edgeSelectSearch(value) {
+      edgeTreeSelectSearch(value) {
         this.edgeLoadedKeys = []
         let _this = this
         let params = {}
@@ -975,21 +949,34 @@
             this.error(err)
           })
       },
+      //线上树形显示更多点击事件
+      edgeTreeSelectMaxTag() {
+        this.modalTitle = this.selectEdge.label
+        this.modalVisible = true
+        this.valueList = this.selectEdge.assertValList
+        this.fullData = this.selectEdge
+        this.initialized = this.edgeInitialized
+      },
 
+
+      /**
+       *
+       * @节点上树形选择框
+       */
       //判断节点
-      nodeSelectChange(value) {
+      nodeTreeSelectChange(value) {
         this.selectNode.assertValList = value
       },
+      //节点树形选择事件
       nodeTreeSelected(value) {
         if ( this.selectNode.assertValList){
-
         }else{
           this.selectNode.assertValList = []
         }
         this.selectNode.assertValList = value
-
       },
-      nodeLoadData(treeNode) {
+      //节点异步加载事件
+      nodeTreeLoadData(treeNode) {
         let _this = this
         return new Promise(resolve => {
           if (treeNode.dataRef.children) {
@@ -1008,9 +995,6 @@
                   treeNode.dataRef.children.push({
                     key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
                   })
-                  // _this.boxInitialized.viewSelect.push({
-                  //   key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
-                  // })
                   _this.boxInitialized.viewSelect.push(... treeNode.dataRef.children);
                   _this.boxInitialized.viewSelect = Array.from(new Set( _this.boxInitialized.viewSelect))
                 }
@@ -1026,11 +1010,12 @@
           }, 100)
         })
       },
-      nodeLoad(loadedKeys, expanded) {
+      //节点异步加载完成事件
+      nodeTreeLoad(loadedKeys, expanded) {
         this.nodeLoadedKeys = loadedKeys
       },
       //节点树形搜索框事件
-      nodeSelectSearch(value) {
+      nodeTreeSelectSearch(value) {
         this.nodeLoadedKeys = []
         let _this = this
         let params = {}
@@ -1068,6 +1053,15 @@
             this.error(err)
           })
       },
+      //节点树形显示更多点击事件
+      nodeTreeSelectMaxTag() {
+        this.modalTitle = this.selectNode.label
+        this.modalVisible = true
+        this.valueList = this.selectNode.assertValList
+        this.fullData = this.selectNode
+        this.initialized = this.boxInitialized
+      },
+
 
       //后置条件选择
       rearChange(value) {
@@ -1078,6 +1072,7 @@
           this.selectNode.dataDrilling = null
         }
       },
+      //计算条件改变事件
       nodeRearChange(value) {
         if (value) {
           this.selectEdge.assertVal = null
@@ -1086,25 +1081,20 @@
           this.selectEdge.dataDrilling = null
         }
       },
-
-
+      //范围选择事件
       nodePreChange: function(value) {
         if (!value) {
           this.selectNode.calculation = null
           this.selectNode.formula = null
         }
       },
+      //范围值change事件
       nodePreSelect(value, label, extra) {
         this.selectNode.calculation = null
-        // let params = extra.selectedNodes[0].data.props
-        // if (params.lo == '3') {
-        //   this.selectNode.calculation = '2'
-        // } else {
-        //   this.selectNode.calculation = '1'
-        // }
       },
 
-      maxTagPlaceholder() {
+      //线上显示更多点击事件
+      edgeSelectMaxTag() {
         this.modalTitle = this.selectEdge.label
         this.modalVisible = true
         this.edgeSelectOpen = false
@@ -1112,21 +1102,17 @@
         this.fullData = this.selectEdge
         this.initialized = this.edgeInitialized
       },
-      edgeVisibleChange(open) {
+      //线上选择框下拉事件
+      edgeDropdownVisible(open) {
         if (!this.modalVisible) {
           this.edgeSelectOpen = open
         } else {
           this.edgeSelectOpen = false
         }
       },
-      treeMoreEdge() {
-        this.modalTitle = this.selectEdge.label
-        this.modalVisible = true
-        this.valueList = this.selectEdge.assertValList
-        this.fullData = this.selectEdge
-        this.initialized = this.edgeInitialized
-      },
-      nodeTagPlaceholder() {
+
+      //节点上显示更多事件
+      nodeSelectMaxTag() {
         this.modalTitle = this.selectNode.label
         this.modalVisible = true
         this.nodeSelectOpen = false
@@ -1134,26 +1120,21 @@
         this.fullData = this.selectNode
         this.initialized = this.boxInitialized
       },
-      nodeVisibleChange(open) {
+      //节点选择框下拉事件
+      nodeDropdownVisible(open) {
         if (!this.modalVisible) {
           this.nodeSelectOpen = open
         } else {
           this.nodeSelectOpen = false
         }
       },
-      treeMoreNode() {
-        this.modalTitle = this.selectNode.label
-        this.modalVisible = true
-        this.valueList = this.selectNode.assertValList
-        this.fullData = this.selectNode
-        this.initialized = this.boxInitialized
-      },
+
 
 
       modalCancel() {
         this.modalVisible = false
       },
-      edgeValueOk() {
+      modalOkl() {
         this.modalVisible = false
       }
     }

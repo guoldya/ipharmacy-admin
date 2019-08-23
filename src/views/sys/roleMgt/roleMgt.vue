@@ -21,22 +21,22 @@
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template slot-scope="scope">
               <a @click="edit(scope.row)">编辑</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)">
+              <a-divider type="vertical"/>
+              <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)" placement="topRight">
                 <a class="delColor">删除</a>
               </a-popconfirm>
-              <a-divider type="vertical" />
+              <a-divider type="vertical"/>
               <a-popconfirm
                 title="确认启用吗?"
-                placement="top"
                 @confirm="changeStatus(scope.row,true)"
+                placement="topRight"
                 v-if="scope.row.status == '0'"
               >
                 <a>启用</a>
               </a-popconfirm>
               <a-popconfirm
                 title="确认停用吗?"
-                placement="top"
+                placement="topRight"
                 @confirm="changeStatus(scope.row,false)"
                 v-else
               >
@@ -69,7 +69,7 @@
           showSizeChanger
           v-model="current"
           class="pnstyle"
-          :defaultPageSize="pageSize"
+          :pageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="sizeChange"
           @change="pageChange"
@@ -98,11 +98,11 @@
           ></el-table-column>
         </el-table>
         <a-pagination
-          :total="totals"
+          :total="totalBottom"
           showSizeChanger
-          v-model="currents"
+          v-model="currentBottom"
           class="pnstyle"
-          :defaultPageSize="10"
+          :pageSize="pageSizeBottom"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="sizeChanges"
           @change="pageChanges"
@@ -204,7 +204,8 @@
                 :value="item.sysUserId"
                 v-for="(item,index) in userForData"
                 :key="index"
-              >{{item.name}}</a-select-option>
+              >{{item.name}}
+              </a-select-option>
             </a-select>
           </a-form-item>
         </a-form>
@@ -213,391 +214,441 @@
   </div>
 </template>
 <script>
-import debounce from 'lodash/debounce'
-export default {
-  data() {
-    this.handleSearch = debounce(this.handleSearch, 800)
-    return {
-      spinning: false,
-      dataSource: [],
-      columns: [
-        { title: '角色名', prop: 'title' },
-        { title: '机构', prop: 'orgTitle' },
-        { title: '编辑人', prop: 'editUser', width: 100 },
-        { title: '编辑时间', prop: 'editTime', width: 150 },
-        { title: '状态', prop: 'status', align: 'center', width: 100 },
-        { title: '备注', prop: 'remark' }
-      ],
-      total: 0,
-      current: 1,
-      selectRole: {},
-      api: {
-        roleUrl: '/sys/sysRole/selectPage',
-        orgUrl: '/sys/sysOrgs/selectList',
-        delUrl: '/sys/sysRole/delete',
-        updateUrl: '/sys/sysRole/update',
-        updateStatusUrl: 'sys/sysRole/updateStatus',
-        userUrl: '/sys/sysRole/selectUsersByRoleId',
-        updateUserUrl: '/sys/sysRole/insertOrDeleteRoleUser',
-        userByOrgUrl: '/sys/sysRole/selectUsersByRoleIdNotInUserIds'
-      },
-      isNew: true,
-      loading: false,
-      visible: false,
-      form: this.$form.createForm(this),
-      formItemLayout: {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 13 }
-      },
-      formData: {
-        status: '1'
-      },
-      orgData: [],
-      uerSpin: false,
-      userData: [],
-      userCol: [
-        { title: '账号', prop: 'account' },
-        { title: '姓名', prop: 'username' },
-        { title: '科室', prop: 'deptTitle' },
-        { title: '职称', prop: 'titlesName', width: 150 },
-        { title: '管理职务', prop: 'mentPositionName', width: 150 }
-      ],
-      modalVisible: false,
-      userLoading: false,
-      userForm: this.$form.createForm(this),
-      userForData: [],
-      disabled: true,
-      listData: {},
-      totals: 1,
-      currents: 1,
-      roleId: '',
-      searchData:{},
-      pageSize:10
-    }
-  },
-  mounted() {
-    this.getData()
-    this.getOrgData()
-  },
-  computed: {
-    list() {
-      return [{ name: '角色', dataField: 'title', type: 'text' }, { name: '机构', dataField: 'orgTitle', type: 'text' }]
-    }
-  },
-  methods: {
-    // 第二个分页条
-    pageChanges(page, size) {
-      let params = {}
-      params.offset = (page - 1) * size
-      params.roleId = this.roleId
-      params.pageSize = size
-      this.getUserData(params)
+  import debounce from 'lodash/debounce'
+
+  export default {
+    data() {
+      this.handleSearch = debounce(this.handleSearch, 800)
+      return {
+        spinning: false,
+        dataSource: [],
+        columns: [
+          { title: '角色名', prop: 'title' },
+          { title: '机构', prop: 'orgTitle' },
+          { title: '编辑人', prop: 'editUser', width: 100 },
+          { title: '编辑时间', prop: 'editTime', width: 150 },
+          { title: '状态', prop: 'status', align: 'center', width: 100 },
+          { title: '备注', prop: 'remark' }
+        ],
+        total: 0,
+        current: 1,
+        pageSize: 10,
+        selectRole: {},
+        api: {
+          roleUrl: '/sys/sysRole/selectPage',
+          orgUrl: '/sys/sysOrgs/selectList',
+          delUrl: '/sys/sysRole/delete',
+          updateUrl: '/sys/sysRole/update',
+          updateStatusUrl: 'sys/sysRole/updateStatus',
+          userUrl: '/sys/sysRole/selectUsersByRoleId',
+          updateUserUrl: '/sys/sysRole/insertOrDeleteRoleUser',
+          userByOrgUrl: '/sys/sysRole/selectUsersByRoleIdNotInUserIds'
+        },
+        isNew: true,
+        loading: false,
+        visible: false,
+        form: this.$form.createForm(this),
+        formItemLayout: {
+          labelCol: { span: 6 },
+          wrapperCol: { span: 13 }
+        },
+        formData: {
+          status: '1'
+        },
+        orgData: [],
+        uerSpin: false,
+        userData: [],
+        userCol: [
+          { title: '账号', prop: 'account' },
+          { title: '姓名', prop: 'username' },
+          { title: '科室', prop: 'deptTitle' },
+          { title: '职称', prop: 'titlesName', width: 150 },
+          { title: '管理职务', prop: 'mentPositionName', width: 150 }
+        ],
+        modalVisible: false,
+        userLoading: false,
+        userForm: this.$form.createForm(this),
+        userForData: [],
+        disabled: true,
+        listData: {},
+        totalBottom: 1,
+        currentBottom: 1,
+        roleId: '',
+        searchData: {},
+        pageSizeBottom: 10
+      }
     },
-    sizeChanges(current, size) {
-      let params = {}
-      this.currents = 1
-      params.pageSize = size
-      params.roleId = this.roleId
-      this.getUserData(params)
-    },
-    search() {
-      this.searchData= this.$refs.searchPanel.form.getFieldsValue()
-      let params = this.$refs.searchPanel.form.getFieldsValue()
-      this.getData(params)
-    },
-    resetForm() {
-        this.searchData={}
-      this.$refs.searchPanel.form.resetFields()
+    mounted() {
       this.getData()
+      this.getOrgData()
     },
-    formatter(row) {
-      let sex = ['未知', '男', '女']
-      return sex[row.sex]
+    computed: {
+      list() {
+        return [{ name: '角色', dataField: 'title', type: 'text' },
+          { name: '机构', dataField: 'orgTitle', type: 'text' },
+          {
+            name: '状态',
+            dataField: 'status',
+            type: 'select',
+            keyExpr: 'id',
+            valueExpr: 'text',
+            dataSource: this.enum.status
+          }]
+      }
     },
-    addRole() {
-      this.isNew = true
-      this.form.resetFields()
-      this.formData = { status: '1' }
-      this.visible = true
-    },
-    edit(row) {
-      this.form.resetFields()
-      this.isNew = false
-      this.formData = row
-      this.visible = true
-    },
-    cancel() {
-      this.visible = false
-      this.modalVisible = false
-    },
-    submit() {
-      this.loading = true
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          let params = values
-          if (!this.isNew) {
-            params.roleId = this.formData.roleId
-          }
-          this.$axios({
-            url: this.api.updateUrl,
-            method: 'post',
-            data: params
-          })
-            .then(res => {
-              if (res.code == '200') {
-                this.success('保存成功!', () => {
-                  let param=this.searchData
-                  this.current=1
-                  param.offset=0
-                  param.pageSize=10
-                  this.getData()
-                  this.visible = false
+    methods: {
+      // 第二个分页条
+      pageChanges(page, size) {
+        let params = {}
+        params.offset = (page - 1) * size
+        params.roleId = this.roleId
+        params.pageSize = size
+        this.getUserData(params)
+      },
+      sizeChanges(current, size) {
+        let params = {}
+        this.currentBottom = 1
+        this.pageSizeBottom = size
+        params.pageSize = size
+        params.offset = (current - 1) * size
+        params.roleId = this.roleId
+        this.getUserData(params)
+      },
+      search() {
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
+        let params = this.$refs.searchPanel.form.getFieldsValue()
+        params.offset = 0
+        params.pageSize = this.pageSize
+        this.current = 1
+        this.getData(params)
+      },
+      resetForm() {
+        this.searchData = {}
+        this.pageSize = 10
+        this.current = 1
+        this.pageSizeBottom = 10
+        this.$refs.searchPanel.form.resetFields()
+        this.getData()
+      },
+      formatter(row) {
+        let sex = ['未知', '男', '女']
+        return sex[row.sex]
+      },
+      addRole() {
+        this.isNew = true
+        this.form.resetFields()
+        this.formData = { status: '1' }
+        this.visible = true
+      },
+      edit(row) {
+        this.form.resetFields()
+        this.isNew = false
+        this.formData = row
+        this.formData.orgId = '' + row.orgId
+        this.visible = true
+      },
+      cancel() {
+        this.visible = false
+        this.modalVisible = false
+      },
+      submit() {
+        this.loading = true
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            let params = values
+            if (!this.isNew) {
+              params.roleId = this.formData.roleId
+            }
+            this.$axios({
+              url: this.api.updateUrl,
+              method: 'post',
+              data: params
+            })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success('保存成功!', () => {
+                    let param = this.searchData
+                    this.current = 1
+                    param.offset = 0
+                    param.pageSize = 10
+                    this.getData()
+                    this.visible = false
+                    this.loading = false
+                  })
+                } else {
                   this.loading = false
-                })
-              } else {
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
                 this.loading = false
-                this.warn(res.msg)
-              }
-            })
-            .catch(err => {
-              this.loading = false
-              this.error(err)
-            })
-        } else {
-          this.loading = false
+                this.error(err)
+              })
+          } else {
+            this.loading = false
+          }
+        })
+      },
+      delRow(row) {
+        if (row.status == '1') {
+          this.warn('请先停用该角色，再删除!')
+          return
         }
-      })
-    },
-    delRow(row) {
-      if (row.status == '1') {
-        this.warn('请先停用该角色，再删除!')
-        return
-      }
-      this.$axios({
-        url: this.api.delUrl,
-        method: 'delete',
-        data: { roleId: row.roleId }
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success('删除成功!', () => {
-              this.current = 1
-              this.getData()
+        this.$axios({
+          url: this.api.delUrl,
+          method: 'delete',
+          data: { roleId: row.roleId }
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('删除成功!', () => {
+                this.current = 1
+                this.getData()
+              })
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      changeStatus(row, flag) {
+        let params = {}
+        if (flag) {
+          params.status = 1
+        } else {
+          params.status = 0
+        }
+        params.roleId = row.roleId
+        this.$axios({
+          url: this.api.updateStatusUrl,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('操作成功!', () => {
+                //this.current = 1
+                let params = this.searchData
+                params.offset = (this.current - 1) * this.pageSize
+                params.pageSize = this.pageSize
+                this.getData(params)
+              })
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      async addUser() {
+        let params = {},
+          ids = []
+        params.roleId = this.selectRole.roleId
+        params.orgId = this.selectRole.orgId
+        this.userData.forEach(item => {
+          ids.push(item.userId)
+        })
+        params.userIds = ids
+        console.log(this.userData, 'this.userData')
+        await this.getUserFormData(params)
+        this.userForm.resetFields()
+        this.modalVisible = true
+      },
+      remove(row) {
+        let params = {}
+        params.roleId = this.selectRole.roleId
+        params.userId = row.userId
+        this.$axios({
+          url: this.api.updateUserUrl,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('移除成功!', () => {
+                this.getUserData({ roleId: this.selectRole.roleId })
+              })
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      userSubmit() {
+        this.userLoading = true
+        this.userForm.validateFields((err, values) => {
+          if (!err) {
+            let params = values
+            params.roleId = this.selectRole.roleId
+            this.$axios({
+              url: this.api.updateUserUrl,
+              method: 'post',
+              data: params
             })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success('保存成功!', () => {
+                    this.getUserData({ roleId: this.selectRole.roleId })
+                    this.modalVisible = false
+                    this.userLoading = false
+                  })
+                } else {
+                  this.userLoading = false
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.userLoading = false
+                this.error(err)
+              })
           } else {
-            this.warn(res.msg)
+            this.userLoading = false
           }
         })
-        .catch(err => {
-          this.error(err)
+      },
+      setCurrent() {
+        this.$refs.table.setCurrentRow(this.dataSource[0])
+      },
+      currentChange(row) {
+        if (row) {
+          this.selectRole = row
+          this.disabled = false
+          this.roleId = row.roleId
+          this.getUserData({ roleId: row.roleId })
+        } else {
+          this.selectRole = {}
+          this.userData = []
+          this.disabled = true
+        }
+      },
+      pageChange(page, size) {
+        this.current = 1
+        let params = this.searchData
+        params.offset = (page - 1) * size
+        params.pageSize = size
+        this.getData(params)
+      },
+      sizeChange(current, size) {
+        this.pageSize = size
+        let params = this.searchData
+        params.pageSize = size
+        params.offset = (current - 1) * size
+        this.getData(params)
+      },
+      getData(obj = {}) {
+        this.spinning = true
+        this.$axios({
+          url: this.api.roleUrl,
+          method: 'put',
+          data: obj
         })
-    },
-    changeStatus(row, flag) {
-      let params = {}
-      if (flag) {
-        params.status = 1
-      } else {
-        params.status = 0
-      }
-      params.roleId = row.roleId
-      this.$axios({
-        url: this.api.updateStatusUrl,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success('操作成功!', () => {
-              //this.currents = 1
-              let params = this.searchData
-              params.offset = (this.current - 1) * this.pageSize
-              params.pageSize = this.pageSize
-              this.getData(params)
-            })
-          } else {
-            this.warn(res.msg)
+          .then(res => {
+            if (res.code == '200') {
+              this.dataSource = this.$dateFormat(res.rows, ['editTime'])
+              this.total = res.total
+              this.setCurrent()
+              this.spinning = false
+            } else {
+              this.spinning = false
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.spinning = false
+            this.error(err)
+          })
+      },
+      getUserData(obj = {}) {
+        this.uerSpin = true
+        this.$axios({
+          url: this.api.userUrl,
+          method: 'post',
+          data: obj
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.userData = res.rows
+              this.totalBottom = res.total
+              this.uerSpin = false
+            } else {
+              this.uerSpin = false
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.uerSpin = false
+            this.error(err)
+          })
+      },
+      getOrgData(obj = {}) {
+        this.$axios({
+          url: this.api.orgUrl,
+          method: 'put',
+          data: obj
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.orgData = this.getOrgTreeData(res.rows, undefined)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
+      },
+      getOrgTreeData(data, pid) {
+        let tree = []
+        data.forEach(item => {
+          let row = item
+          row.key = item.orgId
+          row.value = item.orgId
+          if (pid == item.parentId) {
+            row.children = this.getOrgTreeData(data, item.orgId)
+            tree.push(row)
           }
         })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    async addUser() {
-      let params = {},
-        ids = []
-      params.roleId = this.selectRole.roleId
-      params.orgId = this.selectRole.orgId
-      this.userData.forEach(item => {
-        ids.push(item.userId)
-      })
-      params.userIds = ids
-      console.log(this.userData, 'this.userData')
-      await this.getUserFormData(params)
-      this.userForm.resetFields()
-      this.modalVisible = true
-    },
-    remove(row) {
-      let params = {}
-      params.roleId = this.selectRole.roleId
-      params.userId = row.userId
-      this.$axios({
-        url: this.api.updateUserUrl,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success('移除成功!', () => {
-              this.getUserData({ roleId: this.selectRole.roleId })
-            })
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    userSubmit() {
-      this.userLoading = true
-      this.userForm.validateFields((err, values) => {
-        if (!err) {
-          let params = values
-          params.roleId = this.selectRole.roleId
+        return tree
+      },
+      getUserFormData(obj = {}) {
+        return new Promise((resolve, reject) => {
           this.$axios({
-            url: this.api.updateUserUrl,
+            url: this.api.userByOrgUrl,
             method: 'post',
-            data: params
+            data: obj
           })
             .then(res => {
               if (res.code == '200') {
-                this.success('保存成功!', () => {
-                  this.getUserData({ roleId: this.selectRole.roleId })
-                  this.modalVisible = false
-                  this.userLoading = false
-                })
+                this.userForData = res.rows
               } else {
-                this.userLoading = false
                 this.warn(res.msg)
               }
+              resolve()
             })
             .catch(err => {
-              this.userLoading = false
               this.error(err)
+              reject(err)
             })
-        } else {
-          this.userLoading = false
+        })
+      },
+      handleSearch(value) {
+        console.log(value, 'value')
+        console.log(this.selectRole, 'this.selectRole')
+        let params = {
+          keyword: value,
+          orgId: this.selectRole.orgId,
+          roleId: this.selectRole.roleId,
+          userIds: this.userData
         }
-      })
-    },
-    setCurrent() {
-      this.$refs.table.setCurrentRow(this.dataSource[0])
-    },
-    currentChange(row) {
-      if (row) {
-        this.selectRole = row
-        this.disabled = false
-        this.roleId = row.roleId
-        this.getUserData({ roleId: row.roleId })
-      } else {
-        this.selectRole = {}
-        this.userData = []
-        this.disabled = true
-      }
-    },
-    pageChange(page, size) {
-      this.current=1
-      let params = this.searchData
-      params.offset = (page - 1) * size
-      this.getData(params)
-    },
-    sizeChange(current, size) {
-      this.pageSize=size
-      let params = this.searchData
-      params.pageSize = size
-      this.getData(params)
-    },
-    getData(obj = {}) {
-      this.spinning = true
-      this.$axios({
-        url: this.api.roleUrl,
-        method: 'put',
-        data: obj
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.dataSource = this.$dateFormat(res.rows, ['editTime'])
-            this.total = res.total
-            this.setCurrent()
-            this.spinning = false
-          } else {
-            this.spinning = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.spinning = false
-          this.error(err)
-        })
-    },
-    getUserData(obj = {}) {
-      this.uerSpin = true
-      this.$axios({
-        url: this.api.userUrl,
-        method: 'post',
-        data: obj
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.userData = res.rows
-            this.totals = res.total
-            this.uerSpin = false
-          } else {
-            this.uerSpin = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.uerSpin = false
-          this.error(err)
-        })
-    },
-    getOrgData(obj = {}) {
-      this.$axios({
-        url: this.api.orgUrl,
-        method: 'put',
-        data: obj
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.orgData = this.getOrgTreeData(res.rows, undefined)
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
-    },
-    getOrgTreeData(data, pid) {
-      let tree = []
-      data.forEach(item => {
-        let row = item
-        row.key = item.orgId
-        row.value = item.orgId
-        if (pid == item.parentId) {
-          row.children = this.getOrgTreeData(data, item.orgId)
-          tree.push(row)
-        }
-      })
-      return tree
-    },
-    getUserFormData(obj = {}) {
-      return new Promise((resolve, reject) => {
         this.$axios({
           url: this.api.userByOrgUrl,
           method: 'post',
-          data: obj
+          data: params
         })
           .then(res => {
             if (res.code == '200') {
@@ -605,39 +656,11 @@ export default {
             } else {
               this.warn(res.msg)
             }
-            resolve()
           })
           .catch(err => {
             this.error(err)
-            reject(err)
           })
-      })
-    },
-    handleSearch(value) {
-      console.log(value, 'value')
-      console.log(this.selectRole, 'this.selectRole')
-      let params = {
-        keyword: value,
-        orgId: this.selectRole.orgId,
-        roleId: this.selectRole.roleId,
-        userIds: this.userData
       }
-      this.$axios({
-        url: this.api.userByOrgUrl,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.userForData = res.rows
-          } else {
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.error(err)
-        })
     }
   }
-}
 </script>

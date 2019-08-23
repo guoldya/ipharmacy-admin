@@ -55,7 +55,7 @@
           showSizeChanger
           v-model="current"
           class="pnstyle"
-          :defaultPageSize="10"
+          :pageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="sizeChange"
           @change="pageChange"
@@ -243,7 +243,8 @@ export default {
         { name: '账号', dataField: 'account', type: 'text' },
         { name: '姓名', dataField: 'username', type: 'text' },
         { name: '机构', dataField: 'orgId', type: 'tree-select', keyExpr: 'keyword', treeData: this.orgData,onSelect:this.selectTree },
-        { name: '部门', dataField: 'deptId', type: 'tree-select', keyExpr: 'keyword', treeData: this.deptDatas }
+        { name: '部门', dataField: 'deptId', type: 'tree-select', keyExpr: 'keyword', treeData: this.deptDatas },
+        { name: '状态', dataField: 'status', type: 'select', keyExpr: 'id', valueExpr: 'text', dataSource: this.enum.status }
       ]
     }
   },
@@ -255,7 +256,6 @@ export default {
   methods: {
     // 选择机构
      selectTree(value){
-          console.log(value,'value');
         this.getDeptDatas(value)
       },
       // 搜索
@@ -264,7 +264,6 @@ export default {
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.offset = 0
       params.pageSize = this.pageSize
-      console.log(this.pageSize)
       this.getData(params)
     },
     //重置
@@ -272,7 +271,8 @@ export default {
        this.searchData = {}
       this.$refs.searchPanel.form.resetFields()
       let params={}
-       params.pageSize = this.pageSize
+      this.pageSize = 10
+       params.pageSize =10
       params.offset = 0
       this.getData(params)
     },
@@ -305,7 +305,6 @@ export default {
     submit() {
       this.loading = true
       this.form.validateFields((err, values) => {
-        console.log(err, '11223')
         if (!err) {
           values.account = values.account.replace(/(^\s*)|(\s*$)/g, '')
           if (values.password) {
@@ -313,7 +312,6 @@ export default {
           }
           let params = values,
             len = this.personData.length
-          console.log(params)
           for (let i = 0; i < len; i++) {
             if (this.personData[i].personId == values.personId) {
               params.userName = this.personData[i].name
@@ -388,7 +386,10 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功!', () => {
-              this.getData()
+              let data = this.searchData;
+              data.pageSize = this.pageSize;
+              data.offset = (this.current-1)*this.pageSize;
+              this.getData(data)
             })
           } else {
             this.warn(res.msg)
@@ -401,13 +402,14 @@ export default {
     pageChange(page, size) {
      let params = this.searchData
       params.offset = (page - 1) * size
+      params.pageSize = size;
       this.getData(params)
     },
     sizeChange(current, size) {
-      this.current = 1
       this.pageSize = size
      let params = this.searchData
       params.pageSize = size
+      params.offset = (current-1)*size;
       this.getData(params)
     },
     orgChange(val) {

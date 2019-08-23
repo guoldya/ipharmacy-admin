@@ -9,7 +9,7 @@
       </Searchpanel>
     </a-card>
     <a-card class="margin-top-5">
-      <a-button type="primary" @click="adds" style="margin-right:5px">新增</a-button>
+      <a-button type="primary" @click="adds(true)" style="margin-right:5px">新增</a-button>
       <a-spin tip="加载中..." :spinning="spinning">
         <el-table
           highlight-current-row
@@ -19,20 +19,9 @@
           style="width: 100%"
         >
           <el-table-column fixed="right" label="操作" :width="180" align="center" v-if="true">
-            <template slot-scope="scope">
-              <a @click="looks(scope.row)">审查</a>
-              <a @click="looks(scope.row)">查看</a>
-              <a-divider type="vertical" v-if="scope.row.status == 1" />
-              <a-popconfirm
-                title="确定删除?"
-                @confirm="del(scope.row)"
-                okText="删除"
-                cancelText="取消"
-                v-if="scope.row.status == 1"
-              >
-                <a href="javascript:;">删除</a>
-              </a-popconfirm>
-            </template>
+             <template slot-scope="scope">
+            <opcol :items="items" :more="false" :data="scope.row"></opcol>
+          </template>
           </el-table-column>
           <el-table-column
             v-for="item in columns"
@@ -49,18 +38,9 @@
                 <a-badge v-else-if="scope.row.status == '2'" status="warning" text="筛选中" />
                 <a-badge v-else-if="scope.row.status== '3'" status="processing" text="筛选完成" />
               </span>
+              <span class="updateBtn inHospitalNo" v-else-if="item.value==='percentageComplete'">123</span>
+
               <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
-              <span v-else-if="item.value == 'percentageComplete'">
-                <el-progress
-                  :text-inside="true"
-                  :stroke-width="15"
-                  :percentage="scope.row.percentageComplete"
-                />
-              </span>
-              <span
-                v-else-if="item.value == 'rationalPercentage' && scope.row.percentageComplete"
-              >{{scope.row.percentageComplete}}%</span>
-              <span v-else>{{scope.row[item.value]}}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -90,7 +70,7 @@
           updateStatusUrl: 'sys/reviewAuditlevel/update'
         },
         spinning: false,
-        dataSource: [],
+        dataSource: [{percentageComplete:'ww'}],
         total: null,
         current: 1,
         columns: [
@@ -103,10 +83,15 @@
           { title: '年龄', value: 'filterEndTime', width: 70 },
           { title: '入院时间', value: 'updateTime', width: 130 },
           { title: '入院诊断', value: 'enter', },
+          { title: '患者状态', value: 'u3ser', width: 100, align: 'center' },
           { title: '记录人', value: 'user', width: 100, align: 'center' },
           { title: '会诊时间', value: 'enterTime', width: 130 },
         ],
-        searchData: {}
+        searchData: {},
+        items: [
+          { text: '查看', showtip: false, click: this.adds },
+          { text: '删除', color: '#ff9900', showtip: true, tip: '确认删除吗？', click: this.delete}
+        ]
       }
     },
     computed: {
@@ -126,10 +111,13 @@
           {
             name: '患者状态',
             dataField: 'admitNum',
-            type: 'text'
+            type: 'select',
+            dataSource: this.enum.Statuslist,
+            keyExpr: 'id',
+            valueExpr: 'text'
           },
           {
-            name: '监护级别',
+            name: '监护等级',
             dataField: 'level',
             type: 'select',
             dataSource: this.enum.Statuslist,
@@ -189,10 +177,18 @@
           })
       },
       //新增
-      adds() {
+      adds(val) {
         this.$router.push({
           name: 'consultationRecordDetail',
         })
+        if(typeof(val)==='boolean'){
+          window.sessionStorage.setItem('childPage', JSON.stringify('add'));
+        }else{
+          window.sessionStorage.setItem('childPage', JSON.stringify('look'));
+          this.$router.push({
+            query:{id:'1'}
+          })
+        }
       },
       pageChange(page, pageSize) {
         let params = this.searchData

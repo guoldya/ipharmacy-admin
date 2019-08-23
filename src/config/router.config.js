@@ -989,7 +989,7 @@ export const asyncRouterMap = [
                     name: 'checkRecordDetail',
                     hidden: true,
                     component: () => import('@/views/pharmacistStation/checkRecord/detail.vue'),
-                    meta: { title: '查房记录详情', detail: true, description: '查房记录设置' }
+                    meta: { title: '查房记录新增', detail: true, description: '查房记录设置' }
                   }
                 ]
               },
@@ -1031,7 +1031,7 @@ export const asyncRouterMap = [
                     name: 'consultationRecordDetail',
                     hidden: true,
                     component: () => import('@/views/pharmacistStation/consultationRecord/detail.vue'),
-                    meta: { title: '会诊记录详情', detail: true,}
+                    meta: { title: '会诊记录新增', detail: true,}
                   }
                 ]
               },

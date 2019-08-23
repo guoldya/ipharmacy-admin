@@ -128,9 +128,9 @@
           calculated: null,
           isRepeat: null,
           rearCondition: null,
-          val:null,
-          display:null,
-          parentId:null,
+          val: null,
+          display: null,
+          parentId: null,
           itemName: null,
           ro: null,
           lo: null,
@@ -161,10 +161,6 @@
           assertValList: [],
           assertVal1: null,
           dataDrilling: null,
-          calculation: '',
-          formula: null,
-          calculated: null,
-          isRepeat: null,
           rearCondition: null,
           ro: null,
           lo: null,
@@ -345,22 +341,10 @@
         return this.selectEdge.assertValList
       },
       selectEdgeRearCondition() {
-        return this.selectNode.rearCondition
+        return this.selectEdge.rearCondition
       },
       selectEdgeDataDrilling() {
         return this.selectEdge.dataDrilling
-      },
-      selectEdgeCalculation() {
-        return this.selectEdge.calculation
-      },
-      selectEdgeFormula() {
-        return this.selectEdge.formula
-      },
-      selectEdgeCalculated() {
-        return this.selectEdge.calculated
-      },
-      selectEdgeIsRepeat() {
-        return this.selectEdge.isRepeat
       },
       selectEdgeAssertVal1() {
         return this.selectEdge.assertVal1
@@ -580,26 +564,6 @@
           this.flow.update(this.selectEdge.id, { rearCondition: newValue })
         }
       },
-      selectEdgeCalculation(newValue, oldValue) {
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { calculation: newValue })
-        }
-      },
-      selectEdgeFormula(newValue, oldValue) {
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { formula: newValue })
-        }
-      },
-      selectEdgeCalculated(newValue, oldValue) {
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { calculated: newValue })
-        }
-      },
-      selectEdgeIsRepeat(newValue, oldValue) {
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { isRepeat: newValue })
-        }
-      },
       selectEdgeAssertVal1(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { assertVal1: newValue })
@@ -616,6 +580,7 @@
         }
       }
     },
+
     methods: {
       autoZoom() {
         //自动跳转自适应画布
@@ -760,6 +725,7 @@
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
+                    _this.prePid = []
                     _this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
                     _this.preData = []
                     if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
@@ -783,9 +749,9 @@
                       let paramsNodeData = { id: params.itemId }
                       if (ev.item.model.assertValList) {
                         paramsNodeData.valueList = params.assertValList
-                        paramsNodeData.val = params.val
-                        paramsNodeData.display = params.display
                       }
+                      paramsNodeData.val = params.val
+                      paramsNodeData.display = params.display
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = []
@@ -833,9 +799,8 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                      let listData = { id: params.itemId }
+                      let listData = paramsNodeData
                       listData.valueList = ev.item.model.assertValList
-                      listData.val = params.val
                       coreRuleNodeSelectColId(listData).then(res => {
                         if (res.code == '200') {
                           let resData = []
@@ -865,7 +830,7 @@
                     _this.selectNode.colDbType = params.colDbType
                     _this.selectNode.itemId = model.itemId != null ? '' + model.itemId : shape.itemId
                     _this.selectNode.precondition = model.precondition != null ? '' + model.precondition : shape.precondition
-                    _this.selectNode.rearCondition = model.rearCondition != null ? model.rearCondition : shape.rearCondition
+                    _this.selectNode.rearCondition = model.rearCondition != null ? '' + model.rearCondition : shape.rearCondition
                     _this.selectNode.dataDrilling = model.dataDrilling != null ? model.dataDrilling : shape.dataDrilling
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
@@ -882,6 +847,7 @@
               } else {
                 _this.multiId.push(ev.item.model.id)
               }
+              this.prePid = []
               this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
               _this.judgePreData = []
               if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
@@ -895,6 +861,7 @@
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
               let sourceP = ev.item.source.model
               if (sourceP.shape == 'model-rect-attribute') {
+                _this.selectEdge.rearCondition = ev.item.model.rearCondition
                 _this.edgeInitialized.colDbType = sourceP.colDbType
                 if (sourceP.lo == 1) {
                   _this.edgeInitialized.inputEdge = 'input'
@@ -962,17 +929,13 @@
                   }).catch(err => {
                     this.error(err)
                   })
-                  let listData = {}
+                  let listData = paramsData
                   if (ev.item.model.assertValList) {
                     listData.valueList = ev.item.model.assertValList
                   } else {
                     listData.valueList = []
                     ev.item.model.assertValList = []
                   }
-                  listData.id = sourceP.itemId
-                  listData.val = sourceP.val
-                  listData.display = sourceP.display
-                  listData.parentId = sourceP.parentId
                   coreRuleNodeSelectColId(listData).then(res => {
                     if (res.code == '200') {
                       let resData = []
@@ -1005,11 +968,6 @@
                 _this.selectEdge.assertVal = ev.item.model.assertVal
                 _this.selectEdge.assertValList = ev.item.model.assertValList
                 _this.selectEdge.dataDrilling = ev.item.model.dataDrilling
-                _this.selectEdge.rearCondition = ev.item.model.rearCondition
-                _this.selectEdge.calculation = ev.item.model.calculation
-                _this.selectEdge.formula = ev.item.model.formula
-                _this.selectEdge.calculated = ev.item.model.calculated
-                _this.selectEdge.isRepeat = ev.item.model.isRepeat
                 _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                 _this.selectEdge.ro = ev.item.model.ro
                 _this.selectEdge.roSymbol = ev.item.model.roSymbol
@@ -1173,7 +1131,13 @@
           if (nodes[i].id == edge.pid) {
             if (nodes[i].shape == 'model-rect-attribute') {
               if (nodes[i].lo == 3) {
-                if (this.$util.trim(edge.label) == null || this.$util.trim(edge.ro) == null || this.$util.trim(edge.assertValList) == null || this.$util.trim(edge.rearCondition) != null) {
+                let valueList = null
+                if (this.$util.trim(node.rearCondition) != null) {
+                  valueList = 1
+                } else {
+                  valueList = this.$util.trim(edge.assertValList)
+                }
+                if (this.$util.trim(edge.label) == null || this.$util.trim(edge.ro) == null || valueList == null) {
                   if (status.status) {
                     this.warn('请输入线段值')
                   }
@@ -1182,7 +1146,15 @@
                   return false
                 }
               } else if (nodes[i].lo == 2) {
-                if (this.$util.trim(edge.label) == null || this.$util.trim(edge.assertVal) == null || this.$util.trim(edge.assertVal1) == null || this.$util.trim(edge.rearCondition) != null) {
+                let value, value1 = null
+                if (this.$util.trim(node.rearCondition) != null) {
+                  value = 1
+                  value1 = 1
+                } else {
+                  value = this.$util.trim(edge.assertVal)
+                  value1 = this.$util.trim(edge.assertVal1)
+                }
+                if (this.$util.trim(edge.label) == null || value == null || value1 == null) {
                   if (status.status) {
                     this.warn('请输入线段值')
                   }
@@ -1191,7 +1163,13 @@
                   return false
                 }
               } else if (nodes[i].lo == 1) {
-                if (this.$util.trim(edge.label) == null || this.$util.trim(edge.assertVal) == null || this.$util.trim(edge.ro) == null || this.$util.trim(edge.rearCondition) != null) {
+                let value = null
+                if (this.$util.trim(node.rearCondition) != null) {
+                  value = 1
+                } else {
+                  value = this.$util.trim(edge.assertVal)
+                }
+                if (this.$util.trim(edge.label) == null || value == null || this.$util.trim(edge.ro) == null) {
                   if (status.status) {
                     this.warn('请输入线段值')
                   }
@@ -1247,7 +1225,13 @@
           }
         } else if (node.shape == 'flow-rhombus-if') {
           if (node.lo == 3) {
-            if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0 || this.$util.trim(node.rearCondition) != null) {
+            let valueList = null
+            if (this.$util.trim(node.rearCondition) != null) {
+              valueList = 1
+            } else {
+              valueList = this.$util.trim(node.assertValList)
+            }
+            if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0 || valueList == null) {
               if (status.status) {
                 this.warn('条件节点或缺少结论节点和上级节点')
               }
@@ -1255,9 +1239,15 @@
               return false
             }
           } else {
+            let value = null
+            if (this.$util.trim(node.rearCondition) != null) {
+              value = 1
+            } else {
+              value = this.$util.trim(node.assertVal)
+            }
             if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null
-              || this.$util.trim(node.assertVal) == null || this.$util.trim(node.childNodes) == null
-              || node.pid.length == 0  || this.$util.trim(node.rearCondition) != null) {
+              || value == null || this.$util.trim(node.childNodes) == null
+              || node.pid.length == 0) {
               if (status.status) {
                 this.warn('条件节点或缺少结论节点和上级节点')
               }
@@ -1268,7 +1258,7 @@
         } else if (node.shape == 'model-card-conclusion') {
           if (this.$util.trim(node.inAccordanceWith) == null || this.$util.trim(node.levels) == null
             || (this.$util.trim(node.message) == null || this.$util.trim(node.suggest) == null
-              || this.$util.trim(node.verdictType) == null || node.pid.length == 0)  || this.$util.trim(node.rearCondition) != null) {
+              || this.$util.trim(node.verdictType) == null || node.pid.length == 0)) {
             if (status.status) {
               this.warn('结论节点未完善或缺少上级节点')
             }
@@ -1568,10 +1558,6 @@
                 assertValList: edgesData[key].assertValList,
                 dataDrilling: edgesData[key].dataDrilling,
                 rearCondition: edgesData[key].rearCondition,
-                calculation: edgesData[key].calculation,
-                formula: edgesData[key].formula,
-                calculated: edgesData[key].calculated,
-                isRepeat: edgesData[key].isRepeat,
                 assertVal1: edgesData[key].assertVal1,
                 targetAnchor: 0,
                 type: 'edge'
@@ -1579,15 +1565,12 @@
             }
             let list = nodes.concat(edges)
             let indexData = this.getNodeTreeData(list)
-
             let i = 0
             this.pieChartData = {}
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
-
-
             this.flow.read(JSON.parse(temp))
           } else {
             this.warn(res.msg)
@@ -1837,7 +1820,7 @@
         }
       },
       getPreData(pid, data) {
-        if (this.$util.trim(pid) || pid == 15) {
+        if (this.$util.trim(pid) && pid == 15) {
           for (let key in data) {
             if (pid == data[key].id) {
               return data[key]
@@ -1847,22 +1830,6 @@
           return []
         }
       },
-
-      dealValTree(data, pid) {
-        var items = []
-        for (var key in data) {
-          var item = data[key]
-          if (pid == item.PID) {
-            items.push({
-              title: item.NAME,
-              value: item.ID,
-              key: item.ID,
-              children: this.dealValTree(data, item.ID)
-            })
-          }
-        }
-        return items
-      }
     }
   }
 </script>

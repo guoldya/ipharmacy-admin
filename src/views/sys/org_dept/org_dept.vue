@@ -61,7 +61,7 @@
           showSizeChanger
           v-model="current"
           class="pnstyle"
-          :defaultPageSize="10"
+          :pageSize="10"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="sizeChange"
           @change="pageChange"

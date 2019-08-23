@@ -9,7 +9,7 @@
       </Searchpanel>
     </a-card>
     <a-card class="margin-top-5">
-      <a-button type="primary" @click="adds" style="margin-right:5px">新增</a-button>
+      <a-button type="primary" @click="adds(true)" style="margin-right:5px">新增</a-button>
       <a-spin tip="加载中..." :spinning="spinning">
         <el-table
           highlight-current-row
@@ -20,20 +20,9 @@
           @row-click="rowClick"
         >
           <el-table-column fixed="right" label="操作" :width="180" align="center" v-if="true">
-            <template slot-scope="scope">
-              <a @click="looks(scope.row)">审查</a>
-                 <a-divider type="vertical"/>
-              <a @click="looks(scope.row)">查看</a>
-              <a-popconfirm
-                title="确定删除?"
-                @confirm="del(scope.row)"
-                okText="删除"
-                cancelText="取消"
-                v-if="scope.row.status == 1"
-              >
-                <a href="javascript:;">删除</a>
-              </a-popconfirm>
-            </template>
+           <template slot-scope="scope">
+            <opcol :items="items" :more="false" :data="scope.row"></opcol>
+          </template>
           </el-table-column>
           <el-table-column
             v-for="item in columns"
@@ -50,6 +39,7 @@
                 <a-badge v-else-if="scope.row.status == '2'" status="warning" text="筛选中" />
                 <a-badge v-else-if="scope.row.status== '3'" status="processing" text="筛选完成" />
               </span>
+              <span class="updateBtn inHospitalNo" v-else-if="item.value==='percentageComplete'">123</span>
               <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
 
               <span
@@ -83,7 +73,7 @@ export default {
       api: {},
       spinning: false,
       dataSource: [
-        { planScope: 3, name: '顶你个肺', extractionsNumber: '菜市口', rationalPercentage: '金三顺', enter: '多顶顶' }
+        { planScope: 3,status:2, name: '顶你个肺', extractionsNumber: '菜市口', rationalPercentage: '金三顺', enter: '多顶顶' }
       ],
       total: null,
       current: 1,
@@ -97,10 +87,15 @@ export default {
         { title: '年龄', value: 'filterEndTime', width: 70 },
         { title: '入院时间', value: 'updateTime', width: 130 },
         { title: '入院诊断', value: 'enter' },
+        { title: '患者状态', value: 'us2er', width: 100, align: 'center' },
         { title: '记录人', value: 'user', width: 100, align: 'center' },
         { title: '记录时间', value: 'enterTime', width: 130 },
         { title: '审核状态', value: 'status', width: 100 }
-      ]
+      ],
+      items: [
+           { text: '查看', showtip: false, click: this.adds },
+          { text: '删除', color: '#ff9900', showtip: true, tip: '确认删除吗？', click: this.delete}
+        ]
     }
   },
   computed: {
@@ -143,17 +138,16 @@ export default {
           dataField: 'patientName',
           type: 'text'
         },
-        { name: '记录时间', dataField: 'updateTime', type: 'range-picker' },
         {
-          name: '关注情况',
-          dataField: 'situation',
-          type: 'text'
+            name: '带教学员',
+            dataField: 'resultType3',
+            type: 'select',
+            dataSource: this.enum.levelType,
+            keyExpr: 'id',
+            valueExpr: 'text'
         },
-        {
-          name: '带教学员',
-          dataField: 'student',
-          type: 'text'
-        }
+        { name: '记录时间', dataField: 'updateTime', type: 'range-picker' },
+
       ]
     }
   },
@@ -168,11 +162,21 @@ export default {
     // 重置
     resetForm() {},
     //新增
-    adds() {
-    this.$router.push({
-      name:'checkRecordDetail'
-    })
+    adds(val) {
+      this.$router.push({
+        name:'checkRecordDetail',
+      })
+      if(typeof(val)==='boolean'){
+          window.sessionStorage.setItem('childPage', JSON.stringify('add'));
+        }else{
+          window.sessionStorage.setItem('childPage', JSON.stringify('look'));
+          this.$router.push({
+            query:{id:'1'}
+          })
+        }
     },
+    look(){},
+    delete(){},
     // 查看
     rowClick() {},
     // 改变页码数

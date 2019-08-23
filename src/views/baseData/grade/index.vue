@@ -52,7 +52,6 @@
         showQuickJumper
         :total="total"
         class="pnstyle"
-        :defaultPageSize="pageSize"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
