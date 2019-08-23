@@ -46,7 +46,7 @@
                         showSizeChanger
                         v-model="current"
                         class="pnstyle"
-                        :defaultPageSize="10"
+                        :pageSize="pageSize"
                         :pageSizeOptions="['10', '20','50']"
                         @showSizeChange="sizeChange"
                         @change="pageChange"
@@ -78,6 +78,8 @@
                 ],
                 total:0,
                 current:1,
+                pageSize:10,
+                searchData:{},
                 api:{
                     logUrl:'/sys/sysLog/selectPage'
                 }
@@ -107,23 +109,30 @@
                 return params
             },
             search() {
+                this.searchData = this.getFormData();
                 let params = this.getFormData();
+                params.offset = (this.current-1)*this.pageSize;
+                params.pageSize = this.pageSize;
                 this.getData(params)
             },
             //重置
             resetForm() {
-                this.$refs.searchPanel.form.resetFields()
+                this.$refs.searchPanel.form.resetFields();
+                this.pageSize = 10;
+                this.searchData = {}
                 this.getData()
             },
             pageChange(page, size) {
-                let params = this.getFormData();
+                let params = this.searchData;
                 params.offset = (page - 1) * size;
+                params.pageSize = size;
                 this.getData(params);
             },
             sizeChange(current, size) {
-                this.current = 1;
-                let params = this.getFormData();
+                this.pageSize = size;
+                let params = this.searchData;
                 params.pageSize = size;
+                params.offset = (current-1)*size
                 this.getData(params);
             },
             getData(obj = {}) {
