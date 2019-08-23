@@ -13,8 +13,9 @@
         </div>
 
         <a-form  class="ant-advanced-search-form" :form="form">
+
             <a-tabs :defaultActiveKey="1" @change="callback">
-                <a-tab-pane v-for="(list,i) in content" :key="i+1" :tab="list.tab">
+                <a-tab-pane v-for="(list,i) in content" :key="i+1" :tab="list.tab" :forceRender="i===0?false:true">
                     <div>
                       <div class="disFlex borderCard">
                          <span>
@@ -33,7 +34,7 @@
                       <a-row class="margin-top-5">
                         <a-col>
                            <a-form-item>
-                             <div id="monitorResult" :style="{width:widths, height:heights}" ref="myEchart" />
+                             <div  :id="i===0?monitorResult:monitorResult+(i+1)" :style="{width:widths, height:heights}" ref="myEchart" />
                             </a-form-item>
                         </a-col>
                       </a-row>
@@ -41,7 +42,6 @@
                 </a-tab-pane>
             </a-tabs>
             
-
              <a-tabs :defaultActiveKey="1" >
                 <a-tab-pane v-for="(list,i) in contentTwo" :key="i+1" :tab="list.tab">
                     <div>
@@ -78,6 +78,7 @@
                 </a-tab-pane>
             </a-tabs>
         </a-form>
+
       </a-card>
     </div>
 </template>
@@ -88,6 +89,8 @@ import echarts from 'echarts'
     name: 'pharmacyMonitorResultIndex',
     data(){
       return{
+          monitorResult:'monitorResult',
+          activeName: 'second',
           option : {
             title: {
             text: '指标趋势图'
@@ -149,88 +152,88 @@ import echarts from 'echarts'
                     data:[820, 932, 901, 934, 1290, 1330, 1320]
                 }
             ]
-        },
-        title:'1',
-        form: this.$form.createForm(this),
-        content:[
-          {tab:'疗效监测',title:'监护指标',dataField:'curativeEffect',value:'1',
-            columns: [
-                { title: '类别', value: 'name', align: 'left' , width: 200},
-                { title: '指标名称', value: 'name1', align: 'left', width: 120 },
-                { title: '条件值', value: 'testItemName', align: 'left', width: 200 },
-                { title: '干预', value: 'englishName', align: 'left' },
-            ],
-            dataSource: [{name:'纳屈肝'}],
           },
-          {tab:'安全性监测',title:'监护指标',dataField:'safety',value:'2',
-            columns: [
-                { title: '类别123', value: 'name', align: 'left' , width: 200},
-                { title: '指标名称', value: 'name1', align: 'left', width: 120 },
-                { title: '条件值', value: 'testItemName', align: 'left', width: 200 },
-                { title: '干预', value: 'englishName', align: 'left' },
-            ],
-            dataSource: [{name:'纳屈肝123'}],
-          },
-          {tab:'依从性监测',title:'监护指标',dataField:'rely',value:'3',
-            formItem:[
-                {label:'监护频率',type:'select',val:'time',dataField:'time'},
-                {label:'开始日期',type:'date',val:'date',dataField:'date'}
-            ],
-            checkItem:[
-                {label:'监护指标',type:'checked',val:'time',dataField:'target',
-                  options:[
-                    {label:'适应症',value:'1',dataField:'disease'},
-                    {label:'用法用量',value:'2',dataField:'usage'}
-                  ]
-                },
-                {label:'干预方案',type:'checked',val:'date',dataField:'plan',
-                options:[
-                  {label:'用药教育',value:'1',dataField:'medicalEdu'},
-                  {label:'其他',value:'2',dataField:'other'}
-                ]},
-            ],
-          },
-        ],
-
-        contentTwo:[
-          {tab:'用药总结',dataField:'cu1rativeEffect',value:'1',
-            columns: [
-                { title: '药品名称', value: 'name', align: 'left' , width: 200},
-                { title: '08-10', value: 'name1', align: 'left', width: 120 },
-                { title: '08-11', value: 'testItemName', align: 'left', width: 200 },
-                { title: '08-12', value: 'englishName', align: 'left' },
-            ],
-            dataSource: [{name:'纳屈肝'}],
-          },
-          {tab:'查房视图',dataField:'sa3fety',value:'2',
-            columns: [
-                { title: '药品名称123', value: 'name', align: 'left' , width: 200},
-                { title: '08-13', value: 'name1', align: 'left', width: 120 },
-                { title: '08-14', value: 'testItemName', align: 'left', width: 200 },
-                { title: '08-15', value: 'englishName', align: 'left' },
-            ],
-            dataSource: [{name:'纳屈肝123'}],
-          },
-        ],
-        
-        loading:false,
-        userName:'梁汉文',
-            tagList:[
-                {tag:'91084654',color:'#40a9ff'},
-                {tag:'肝',color:'#40a9ff'},
-                {tag:'肾',color:'#58C7CF'},
-                {tag:'心',color:'#B497EE'},
-
-            ],
-            userInfo:{
-                sex:'男',
-                age:'35岁'  ,
-                dept:'皮肤科',
-                stage:' 5病区/2床',
-                docNurse:'胡清/黄晶锐',
-                date:'2019-08-05'
+          title:'1',
+          form: this.$form.createForm(this),
+          content:[
+            {tab:'疗效监测',title:'监护指标',dataField:'curativeEffect',value:'1',
+              columns: [
+                  { title: '类别', value: 'name', align: 'left' , width: 200},
+                  { title: '指标名称', value: 'name1', align: 'left', width: 120 },
+                  { title: '条件值', value: 'testItemName', align: 'left', width: 200 },
+                  { title: '干预', value: 'englishName', align: 'left' },
+              ],
+              dataSource: [{name:'纳屈肝'}],
             },
-        items:[],
+            {tab:'安全性监测',title:'监护指标',dataField:'safety',value:'2',
+              columns: [
+                  { title: '类别123', value: 'name', align: 'left' , width: 200},
+                  { title: '指标名称', value: 'name1', align: 'left', width: 120 },
+                  { title: '条件值', value: 'testItemName', align: 'left', width: 200 },
+                  { title: '干预', value: 'englishName', align: 'left' },
+              ],
+              dataSource: [{name:'纳屈肝123'}],
+            },
+            {tab:'依从性监测',title:'监护指标',dataField:'rely',value:'3',
+              formItem:[
+                  {label:'监护频率',type:'select',val:'time',dataField:'time'},
+                  {label:'开始日期',type:'date',val:'date',dataField:'date'}
+              ],
+              checkItem:[
+                  {label:'监护指标',type:'checked',val:'time',dataField:'target',
+                    options:[
+                      {label:'适应症',value:'1',dataField:'disease'},
+                      {label:'用法用量',value:'2',dataField:'usage'}
+                    ]
+                  },
+                  {label:'干预方案',type:'checked',val:'date',dataField:'plan',
+                  options:[
+                    {label:'用药教育',value:'1',dataField:'medicalEdu'},
+                    {label:'其他',value:'2',dataField:'other'}
+                  ]},
+              ],
+            },
+          ],
+
+          contentTwo:[
+            {tab:'用药总结',dataField:'cu1rativeEffect',value:'1',
+              columns: [
+                  { title: '药品名称', value: 'name', align: 'left' , width: 200},
+                  { title: '08-10', value: 'name1', align: 'left', width: 120 },
+                  { title: '08-11', value: 'testItemName', align: 'left', width: 200 },
+                  { title: '08-12', value: 'englishName', align: 'left' },
+              ],
+              dataSource: [{name:'纳屈肝'}],
+            },
+            {tab:'查房视图',dataField:'sa3fety',value:'2',
+              columns: [
+                  { title: '药品名称123', value: 'name', align: 'left' , width: 200},
+                  { title: '08-13', value: 'name1', align: 'left', width: 120 },
+                  { title: '08-14', value: 'testItemName', align: 'left', width: 200 },
+                  { title: '08-15', value: 'englishName', align: 'left' },
+              ],
+              dataSource: [{name:'纳屈肝123'}],
+            },
+          ],
+          
+          loading:false,
+          userName:'梁汉文',
+              tagList:[
+                  {tag:'91084654',color:'#40a9ff'},
+                  {tag:'肝',color:'#40a9ff'},
+                  {tag:'肾',color:'#58C7CF'},
+                  {tag:'心',color:'#B497EE'},
+
+              ],
+              userInfo:{
+                  sex:'男',
+                  age:'35岁'  ,
+                  dept:'皮肤科',
+                  stage:' 5病区/2床',
+                  docNurse:'胡清/黄晶锐',
+                  date:'2019-08-05'
+              },
+          items:[],
       }
     },
     props: {
@@ -248,7 +251,7 @@ import echarts from 'echarts'
     mounted(){
         let _this=this;
       setTimeout(()=>{
-        this.initChart();
+        this.initChart(this.monitorResult);
       },500);
       window.onresize = function() {
         setTimeout(() => {
@@ -257,13 +260,18 @@ import echarts from 'echarts'
       }
     },
     methods:{
-      initChart() {
-        this.chart = echarts.init(document.getElementById('monitorResult'));
+      initChart(monitorResult) {
+        this.chart = echarts.init(document.getElementById(monitorResult));
         this.chart.setOption(this.option, true);
       },
       //tabs
       callback (val) {
-        console.log(val)
+          let _this=this;
+        console.log( val)
+        this.initChart(this.monitorResult+val)
+        setTimeout(() => {
+          _this.chart.resize()
+        }, 500)
       },
     }
   }

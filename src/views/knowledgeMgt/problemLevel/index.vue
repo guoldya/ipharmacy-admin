@@ -56,6 +56,7 @@
         @change="pageChange"
         size="small"
         v-model="current"
+        :pageSize="pageSize"
       ></a-pagination>
     </a-spin>
   </a-card>
@@ -142,9 +143,11 @@ export default {
     },
     //重置
     resetForm() {
+      this.current = 1
       this.searchData = {}
       this.$refs.searchPanel.form.resetFields()
-      this.getData({ pageSize: this.pageSize, offset: 0 })
+      this.pageSize = 10
+      this.getData({ pageSize: 10, offset: 0 })
     },
     getData(params = {}) {
       this.loading = true

@@ -213,7 +213,6 @@ export default {
         selectByDrugCode: 'sys/dicDrug/selectDrugcompositionByDrugCode',
         dicDrugUpdate: 'sys/dicDrug/update',
         statusUpdate: 'sys/dicDrug/updateStatus',
-       
       },
       loading: false,
       pageSize: 10,
@@ -310,7 +309,6 @@ export default {
       this.editData = data
       let main = []
       let auxiliary = []
-      console.log(data)
       let composition = data.dicDrugcompositionVOList
       if (composition.length > 0) {
         let i = 0,

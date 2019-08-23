@@ -185,8 +185,6 @@ export default {
         reviewUpdateStatus: 'sys/reviewPlanorder/updateStatus',
         selectTribunalRecordNum: 'sys/reviewOrderissue/selectTribunalRecordNum',
         selectEason: 'sys/sysPersons/selectSysPersonsByOrgId'
-
-        // sysPersons/selectSysPersonsByOrgId
       },
       labelCol: {
         xs: { span: 24 },

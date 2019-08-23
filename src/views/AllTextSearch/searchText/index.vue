@@ -35,7 +35,7 @@
           </div>
           <footer class="jiewei">
             <a-pagination
-            
+              :hideOnSinglePage='ishow'
               showSizeChanger
               showQuickJumper
               :total="total"
@@ -96,12 +96,16 @@ export default {
       pageSize: 10,
       current: 1,
       value: null,
-      status: false
+      status: false,
+      ishow:true,
     }
   },
   computed: {},
   mounted() {},
   methods: {
+    pressEnter(value){
+     this.onSearch(value)
+    },
     onSearch(value) {
       this.value = value
       this.current=1
@@ -113,6 +117,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
+            res.rows&&(this.ishow=true)
             this.dataList = res.rows
             this.total = res.total
             if ((res.rows = null || res.rows.length <= 0)) {
