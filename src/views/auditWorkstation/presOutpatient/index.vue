@@ -175,7 +175,7 @@
                     <el-table-column prop="action" label="操作" width="140" align="center">
                         <template slot-scope="props">
                             <a @click="looks(props.row)">查看</a>
-                            <a-divider type="vertical" />
+                            <!-- <a-divider type="vertical" />
                             <a-popconfirm
                                 title="确定通过?"
                                 @confirm="passSingle(props.row)"
@@ -185,7 +185,7 @@
                                 <a href="javascript:;">通过</a>
                             </a-popconfirm>
                             <a-divider type="vertical" />
-                            <a @click="rejectedSingle(props)">驳回</a>
+                            <a @click="rejectedSingle(props)">驳回</a> -->
                         </template>
                     </el-table-column>
                 </el-table>
