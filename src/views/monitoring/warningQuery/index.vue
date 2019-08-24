@@ -12,11 +12,8 @@
             :ranges="{ '昨天': [moment().subtract(1, 'days'), moment()], '一周': [moment().subtract(1,'weeks'), moment()], '一个月':[moment().subtract(1,'months'),moment()] }"
           />
         </li>
-        <li class="oneMonth" tabindex="0" v-on:click="getRangePicker('oneMonth')">一月内</li>
-        <li class="oneWeek" tabindex="0" v-on:click="getRangePicker('oneWeek')">一周内</li>
-        <li class="threeDay" tabindex="0" v-on:click="getRangePicker('threeDay')">三天内</li>
-        <li class="twoDay" tabindex="0" v-on:click="getRangePicker('twoDay')">二天内</li>
-        <li class="oneDay" tabindex="0" v-on:click="getRangePicker('oneDay')">一天内</li>
+        <li v-for="item in dateList" :key="item.name"
+            :class="{listStyle : listStyle == item.date}"  tabindex="0" v-on:click="getRangePicker(item)">{{item.name}}</li>
       </ul>
     </a-card>
     <a-row class="margin-top-5">
@@ -126,8 +123,16 @@
               data: []
             }
           ],
-          color: ['#2ec7c9', '#b6a2de', '#5ab1ef', '#ffb980', '#d87a80', '#8d98b3', '#e5cf0d', '#97b552', '#95706d', '#dc69aa']
-        }
+          color: ['#2ec7c9', '#b6a2de', '#5ab1ef', '#ffb980', '#d87a80', '#8d98b3', '#e5cf0d', '#97b552', '#95706d', '#dc69aa'],
+        },
+        dateList:[
+          {name:'一月内',date:'oneMonth'},
+          {name:'一周内',date:'oneWeek'},
+          {name:'三天内',date:'threeDay'},
+          {name:'二天内',date:'twoDay'},
+          {name:'一天内',date:'oneDay'},
+        ],
+        listStyle:''
       }
     },
     mounted() {
@@ -154,28 +159,28 @@
         })
           .then(res => {
             if (res.code == '200') {
-              if (res.rows[0].paramValue == 1) {
-                $('.oneDay').css({ 'color': '#2c8df1', 'border-bottom': '2px solid #2c8df1' })
+              if (res.rows[0].paramDataType == 1) {
+                this.listStyle ='oneDay'
                 let dateRange = this.getDatePicker('oneDay')
                 this.startDate = dateRange[0]
                 this.endDate = dateRange[1]
-              } else if (res.rows[0].paramValue == 2) {
-                $('.twoDay').css({ 'color': '#2c8df1', 'border-bottom': '2px solid #2c8df1' })
+              } else if (res.rows[0].paramDataType == 2) {
+                this.listStyle ='twoDay'
                 let dateRange = this.getDatePicker('twoDay')
                 this.startDate = dateRange[0]
                 this.endDate = dateRange[1]
-              } else if (res.rows[0].paramValue == 3) {
-                $('.threeDay').css({ 'color': '#2c8df1', 'border-bottom': '2px solid #2c8df1' })
+              } else if (res.rows[0].paramDataType == 3) {
+                this.listStyle ='threeDay'
                 let dateRange = this.getDatePicker('threeDay')
                 this.startDate = dateRange[0]
                 this.endDate = dateRange[1]
-              } else if (res.rows[0].paramValue == 4) {
-                $('.oneWeek').css({ 'color': '#2c8df1', 'border-bottom': '2px solid #2c8df1' })
+              } else if (res.rows[0].paramDataType == 4) {
+                this.listStyle ='oneWeek'
                 let dateRange = this.getDatePicker('oneWeek')
                 this.startDate = dateRange[0]
                 this.endDate = dateRange[1]
-              } else if (res.rows[0].paramValue == 5) {
-                $('.oneMonth').css({ 'color': '#2c8df1', 'border-bottom': '2px solid #2c8df1' })
+              } else if (res.rows[0].paramDataType == 5) {
+                this.listStyle ='oneMonth'
                 let dateRange = this.getDatePicker('oneMonth')
                 this.startDate = dateRange[0]
                 this.endDate = dateRange[1]
@@ -248,12 +253,12 @@
           })
       },
       headUlList: function() {
-        $('.ulList li').click(function() {
-          $('.ulList li').css({ 'color': '#666666', 'border-bottom': 'none' })
-          $(this).css({ 'color': '#2c8df1', 'border-bottom': '2px solid #2c8df1' })
-          $('.dataPicker').css({ 'color': '#666666', 'border-bottom': 'none' })
-          $($('.ulList li').eq(0)).css({ 'color': '#666666', 'border-bottom': 'none' })
-        })
+        // $('.ulList li').click(function() {
+        //   $('.ulList li').css({ 'color': '#666666', 'border-bottom': 'none' })
+        //   $(this).css({ 'color': '#2c8df1', 'border-bottom': '2px solid #2c8df1' })
+        //   $('.dataPicker').css({ 'color': '#666666', 'border-bottom': 'none' })
+        //   $($('.ulList li').eq(0)).css({ 'color': '#666666', 'border-bottom': 'none' })
+        // })
       },
       initChart() {
         this.chart = echarts.init(document.getElementById('myEchart'))
@@ -270,17 +275,17 @@
       },
       getRangePicker(data) {
         let _this = this
-        let dateRange = this.getDatePicker(data)
-        this.startDate = dateRange[0]
-        this.endDate = dateRange[1]
-        this.getBase({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
-        this.getRank({ startDate: this.startDate, endDate: this.endDate, total: this.moreThanNum })
+        _this.listStyle = data.date;
+        let dateRange = _this.getDatePicker(data.date)
+        _this.startDate = dateRange[0]
+        _this.endDate = dateRange[1]
+        _this.getBase({ startDate: _this.startDate, endDate: _this.endDate, total: _this.moreThanNum })
+        _this.getRank({ startDate: _this.startDate, endDate: _this.endDate, total: _this.moreThanNum })
       },
       getDatePicker(data) {
         const end = new Date()
         const start = new Date()
         const dataRange = []
-
         if (data == 'oneMonth') {
           start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
         } else if (data == 'oneWeek') {
@@ -366,26 +371,21 @@
     color: #2c8df1;
     cursor: pointer
   }
+  /*.ulList li:active{*/
+  /*  color: #2c8df1;*/
+  /*  cursor: pointer;*/
+  /*  border:0px;*/
+  /*}*/
 
-  .ulList .oneMonth {
-    outline: 0
+  .ulList .listStyle:active  {
+    color: #2c8df1;
+    cursor: pointer;
+    border:0px;
   }
-
-  .ulList .oneWeek {
-    outline: 0
-  }
-
-  .ulList .threeDay {
-    outline: 0
-  }
-
-  .ulList .twoDay {
+  .ulList .listStyle  {
     outline: 0;
-
-  }
-
-  .ulList .oneDay {
-    outline: 0;
+  color: #2c8df1;
+  border-bottom: 2px solid #2c8df1;
   }
 
   .ulList .dataPicker {

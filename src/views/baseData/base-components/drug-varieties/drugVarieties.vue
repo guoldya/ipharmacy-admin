@@ -45,7 +45,6 @@
             <a-pagination
                 showSizeChanger
                 showQuickJumper
-             
                 :total="variety.total"
                 class="pnstyle"
                 :defaultPageSize="pageSize"
@@ -54,6 +53,7 @@
                 @change="varietiesPageChange"
                 size="small"
                 v-model="current"
+                  :pageSize="pageSize"
             ></a-pagination>
         </a-spin>
         <a-modal
@@ -250,7 +250,7 @@ export default {
         varietiesSearch() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
             this.pageChangeFilter = this.$refs.searchPanel.form.getFieldsValue()
-            params.pageSize = 10
+            params.pageSize = this.pageSize
             params.offset = 0
             params.categoryId = this.variety.categoryId
             this.getVarietiesData(params)
@@ -260,6 +260,7 @@ export default {
             this.current   = 1
             this.$refs.searchPanel.form.resetFields()
             this.pageChangeFilter = {}
+            this.pageSize=10
             this.getVarietiesData({ categoryId: this.variety.categoryId })
         },
         //页码数change事件

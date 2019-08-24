@@ -27,10 +27,9 @@
                         <a-pagination
                                 :total="total"
                                 showSizeChanger
-                          
                                 v-model="current"
                                 class="pnstyle"
-                                :defaultPageSize="10"
+                                :pageSize="pageSize"
                                 :pageSizeOptions="['10', '20','50']"
                                 @showSizeChange="sizeChange"
                                 @change="pageChange"
@@ -71,6 +70,7 @@
                 ],
                 total: 0,
                 current: 1,
+              pageSize:10,
                 selectRole: {},
                 api: {
                     roleUrl: '/sys/sysRole/selectPage',
@@ -162,12 +162,14 @@
             pageChange(page, size) {
                 let params = {}
                 params.offset = (page - 1) * size
+                params.pageSize = size;
                 this.getData(params)
             },
             sizeChange(current, size) {
-                this.current = 1
                 let params = {}
+                this.pageSize = size;
                 params.pageSize = size
+                params.offset = (current-1)*size
                 this.getData(params)
             },
             getData(obj = {}) {

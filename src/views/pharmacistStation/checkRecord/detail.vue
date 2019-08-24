@@ -1,41 +1,29 @@
 <template>
   <div class="detailCont">
     <a-row>
-      <a-col :span="5">
-        <a-card>
-          <a-input-search placeholder="输入要查询日期" @search="onSearch" />
-          <a-list size="large" bordered :dataSource="data">
-            <a-list-item slot="renderItem" slot-scope="item, index">{{item}}</a-list-item>
-          </a-list>
-        </a-card>
+      <a-col :xl="8" :xxl="5" v-if="!addStatus">
+          <dateList :date="date"></dateList>
       </a-col>
-      <a-col :span="19" class="padding-left-5">
-        <a-card>
-          <header>
-            <span>梁汉文</span>
-            <a-tag color="#2db7f5">95279527</a-tag>
-            <a-tag color="blue">心</a-tag>
-            <a-tag color="#108ee9">肝</a-tag>
-            <a-tag color="#87d068">肺</a-tag>
-          </header>
-          <aside class="people">
-            <span>男</span>
-            <a-divider type="vertical" />
-            <span>35岁</span>
-            <a-divider type="vertical" />
-            <span>皮肤科&nbsp;五病区/2床</span>
-            <a-divider type="vertical" />
-            <span>医护：唐伯虎/秋香</span>
-            <a-divider type="vertical" />
-            <span>入院日期：2017-4-8</span>
-          </aside>
-        </a-card>
+      <a-col  :xxl="page===JSON.stringify('look')&&!addStatus?19:24" :xl="page===JSON.stringify('look')&&!addStatus?16:24" class="padding-left-5">
+          
+          <detailHeader :userName="userName" :tagList="tagList" :userInfo="userInfo" :diag="diag"></detailHeader>   
         <a-card class="margin-top-10">
-          <header class="record">
-            <a-icon type="book" />查房记录
-          </header>
+          <div class="disFlex">
+            <span class="font-bold fontSize20"><a-icon type="book"/> 查房记录</span>
+            <span>
+              <a-button @click="backTo"><a-icon type="arrow-left" />返回</a-button>
+              <a-button type="primary" class="margin-left-5" @click="adds" v-if="!addStatus">新增</a-button>
+              <a-button type="primary" @click="handleSubmit" class="margin-left-5">提交</a-button>
+            </span>
+          </div>
           <a-divider />
-          <h3 class="record">患者主诉：</h3>
+          
+          <a-form  class="ant-advanced-search-form" :form="form">
+            <a-form-item   v-for="(list,i) in formItem" :key="i" :label="list.label" class="unit" >
+                <a-textarea :autosize="{ minRows: 4}" v-decorator="[list.val]" :placeholder="'请输入'+list.label"/>
+            </a-form-item>
+          </a-form>
+          <!-- <h3 class="record">患者主诉：</h3>
           <a-textarea placeholder="说明情况" :rows="4" />
           <h3 class="record drugfenxi">医学问题：</h3>
           <a-textarea placeholder="所犯医学问题" :rows="4" />
@@ -44,7 +32,7 @@
           <h3 class="record drugfenxi">监护计划：</h3>
           <a-textarea placeholder="监护计划" :rows="4" />
           <h3 class="record drugfenxi">结果：</h3>
-          <a-textarea placeholder="结果" :rows="4" />
+          <a-textarea placeholder="结果" :rows="4" /> -->
         </a-card>
       </a-col>
     </a-row>
@@ -55,28 +43,83 @@ export default {
   name: 'index',
   data() {
     return {
-      data: ['2014-5-6', '2014-5-7', '2014-5-7', '2014-5-7', '2014-5-7']
+      addStatus:false,
+      userName:'梁汉文',
+      tagList:[
+          {tag:'91084654',color:'#40a9ff'},
+          {tag:'肝',color:'#40a9ff'},
+          {tag:'肾',color:'#58C7CF'},
+          {tag:'心',color:'#B497EE'},
+
+      ],
+      userInfo:{
+          sex:'男',
+          age:'35岁'  ,
+          dept:'皮肤科',
+          stage:' 5病区/2床',
+          docNurse:'胡清/黄晶锐',
+          date:'2019-08-05'
+      },
+      diag:'过敏性皮炎',
+      date: ['2014-5-6', '2014-5-7', '2014-5-7', '2014-5-7', '2014-5-7'],
+      form: this.$form.createForm(this),
+      formItem:[
+        {label:'患者主诉',type:'date',val:'date'},
+        {label:'医学问题',type:'input',val:'iphoneNumber'},
+        {label:'药学评估',type:'input',val:'job'},
+        {label:'监护计划',type:'input',val:'height'},
+        {label:'结果',type:'input',val:'weight'},
+      ],
     }
   },
-  computed: {},
+  computed:{
+      page(){
+        return sessionStorage.getItem('childPage')
+      }
+  },
 
   created() {},
 
-  mounted() {},
+  mounted() {
+    if(this.page===JSON.stringify('add')){
+        document.title=document.title.split('查')[0]+'查房记录新增';
+        this.addStatus=true;
+    }else if(this.page===JSON.stringify('look')){
+        document.title=document.title.split('查')[0]+'查房记录详情';
+        this.addStatus=false;
+    }
+  },
   destroyed() {},
   methods: {
-    // 搜索
-    onSearch() {},
-    // 查询
-    search() {},
-    // 重置
-    resetForm() {},
-    //新增
-    adds() {
-      this.$router.push({
-        name: 'checkRecordDetail'
-      })
-    },
+      // 搜索
+      onSearch() {},
+      // 查询
+      search() {},
+      // 重置
+      resetForm() {},
+      //新增
+      adds() {
+        if(this.page===JSON.stringify('look')){
+          this.addStatus=true;
+        }
+      },
+      backTo() {
+        if(this.page===JSON.stringify('look')&&this.addStatus){
+          this.addStatus=false;
+        }else{
+          this.$router.push({
+            name: 'checkRecordIndex',
+          })
+        }
+      },
+      handleSubmit(e) {
+        e.preventDefault()
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            console.log(values);
+          }
+        })
+      },
     // 查看
     rowClick() {},
     // 改变页码数

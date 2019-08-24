@@ -256,54 +256,57 @@
 </script>
 
 <style lang="less">
-  .fontSize16 {
-    font-size: 16px;
-  }
-
-  .fontSize24 {
-    font-size: 24px;
-  }
-
-  .fontSize36 {
-    font-size: 36px;
-  }
-
-  .tagStyle {
-    font-size: 16px;
-  }
-
-  .ant-divider-vertical {
-    margin: 0px 12px;
-  }
-
-  .checkRecord {
-    .ant-card-body {
-      padding: 0px;
-    }
-  }
-
-  .issueOrders {
-    .ant-card-body {
-      padding: 0px;
-    }
-  }
-  /*.el-collapse-item__header.is-active{*/
-  /*  background: #fafafafa;*/
-  /*}*/
-  /*.el-collapse-item__header{*/
-  /*  background: #fafafafa;*/
-  /*}*/
   .patientsHome{
-    .el-table th{
-      background-color: #ffffff!important;
-      opacity: 0.8;
+    .fontSize16 {
+      font-size: 16px;
+    }
+
+    .fontSize24 {
+      font-size: 24px;
+    }
+
+    .fontSize36 {
+      font-size: 36px;
+    }
+
+    .tagStyle {
+      font-size: 16px;
+    }
+
+    .ant-divider-vertical {
+      margin: 0px 12px;
+    }
+
+    .checkRecord {
+      .ant-card-body {
+        padding: 0px;
+      }
+    }
+
+    .issueOrders {
+      .ant-card-body {
+        padding: 0px;
+      }
+    }
+    /*.el-collapse-item__header.is-active{*/
+    /*  background: #fafafafa;*/
+    /*}*/
+    /*.el-collapse-item__header{*/
+    /*  background: #fafafafa;*/
+    /*}*/
+    .patientsHome{
+      .el-table th{
+        background-color: #ffffff!important;
+        opacity: 0.8;
+      }
+    }
+    .el-collapse-item__arrow{
+      font-size: 20px;
+      margin: 0 20px 0 auto;
+    }
+    .rounds{
+      padding-left:20px;
     }
   }
-  .el-collapse-item__arrow{
-    font-size: 20px;
-    margin: 0 20px 0 auto;
-  }
-  .rounds{
-    padding-left:20px;
-  }
+
 </style>

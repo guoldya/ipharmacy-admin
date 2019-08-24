@@ -13,20 +13,18 @@
                     <el-table-column fixed="right" label="操作" width="100" align="center">
                         <template slot-scope="scope">
                             <a @click="edit(scope.row)">编辑</a>
-<!--                            <a-divider type="vertical" />-->
-<!--                            <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)">-->
-<!--                                <a class="delColor">删除</a>-->
-<!--                            </a-popconfirm>-->
                             <a-divider type="vertical" />
                             <a-popconfirm
                                 title="确认启用吗?"
                                 @confirm="changeStatus(scope.row,true)"
                                 v-if="scope.row.status == '0'"
+                                placement="topRight"
                             >
                                 <a>启用</a>
                             </a-popconfirm>
                             <a-popconfirm
                                 title="确认停用吗?"
+                                placement="topRight"
                                 @confirm="changeStatus(scope.row,false)"
                                 v-else
                             >
@@ -82,10 +80,9 @@
                 <a-pagination
                     :total="total"
                     showSizeChanger
-                
                     v-model="current"
                     class="pnstyle"
-                    :defaultPageSize="10"
+                    :pageSize="pageSize"
                     :pageSizeOptions="['10', '20','50']"
                     @showSizeChange="sizeChange"
                     @change="pageChange"
@@ -120,7 +117,7 @@ export default {
                 { title: '更新时间', prop: 'updateDate', width: 150 },
                 { title: '状态', prop: 'status', align: 'center', width: 80 }
             ],
-            pageChangeFilter:{},
+            searchData:{},
             total: 0,
             current: 1,
             pageSize:10,
@@ -152,14 +149,17 @@ export default {
     methods: {
         search() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
-            this.pageChangeFilter = this.$refs.searchPanel.form.getFieldsValue()
+            this.searchData = this.$refs.searchPanel.form.getFieldsValue()
+            params.pageSize = this.pageSize;
+            params.offset = (this.current-1)*this.pageSize;
             this.getData(params)
         },
         //重置
         resetForm() {
             this.current = 1
-            this.pageChangeFilter = {}
+            this.searchData = {}
             this.$refs.searchPanel.form.resetFields()
+            this.pageSize = 10;
             this.getData()
         },
         setSex(val) {
@@ -220,7 +220,7 @@ export default {
                 .then(res => {
                     if (res.code == '200') {
                       this.success(res.msg);
-                      let data = this.pageChangeFilter;
+                      let data = this.searchData;
                       data.offset = (this.current - 1) * this.pageSize;
                       data.pageSize = this.pageSize;
                       this.getData(data)
@@ -237,15 +237,17 @@ export default {
             return arr[val - 1]
         },
         pageChange(page, size) {
-            let params = this.$refs.searchPanel.form.getFieldsValue()
+            let params =  this.searchData
             params.offset = (page - 1) * size
+            params.pageSize=size
             this.getData(params)
         },
         sizeChange(current, size) {
             this.current = 1
-            let params = this.$refs.searchPanel.form.getFieldsValue()
+            let params =  this.searchData
+            params.offset = (current - 1) * size
             params.pageSize = size
-          this.pageSize = size;
+            this.pageSize = size;
             this.getData(params)
         },
         getData(params = {}) {
@@ -253,9 +255,6 @@ export default {
           if (params.offset==0){
             this.current = 1;
           }
-          console.log(params,'22')
-            // params.pageSize = params.pageSize || 10
-            // params.offset = params.offset || 0
             this.$axios({
                 url: this.api.userUrl,
                 method: 'put',

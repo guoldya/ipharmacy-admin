@@ -18,24 +18,28 @@
           highlight-current-row
           @current-change="currentChange"
         >
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="150"
-            align="center"
-          >
+          <el-table-column fixed="right" label="操作" width="150" align="center">
             <template slot-scope="scope">
               <a @click="edit(scope.row)">编辑</a>
               <a-divider type="vertical"/>
-              <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)">
+              <a-popconfirm title="确认删除吗?" @confirm="delRow(scope.row)" placement="topRight">
                 <a class="delColor">删除</a>
               </a-popconfirm>
               <a-divider type="vertical"/>
-              <a-popconfirm title="确认启用吗?" placement="top" @confirm="changeStatus(scope.row,true)"
-                            v-if="scope.row.status == '0'">
+              <a-popconfirm
+                title="确认启用吗?"
+                @confirm="changeStatus(scope.row,true)"
+                placement="topRight"
+                v-if="scope.row.status == '0'"
+              >
                 <a>启用</a>
               </a-popconfirm>
-              <a-popconfirm title="确认停用吗?" placement="top" @confirm="changeStatus(scope.row,false)" v-else>
+              <a-popconfirm
+                title="确认停用吗?"
+                placement="topRight"
+                @confirm="changeStatus(scope.row,false)"
+                v-else
+              >
                 <a class="delColor">停用</a>
               </a-popconfirm>
             </template>
@@ -50,13 +54,13 @@
             :align="item.align"
           >
             <template slot-scope="scope">
-                        <span v-if="item.prop == 'status'">
-                            <a-badge :status="scope.row.status == 0? 'default':'processing'"
-                                     :text="scope.row.status ==0?'停用':'启用'"/>
-                        </span>
-              <span v-else>
-                            {{scope.row[item.prop]}}
-                        </span>
+              <span v-if="item.prop == 'status'">
+                <a-badge
+                  :status="scope.row.status == 0? 'default':'processing'"
+                  :text="scope.row.status ==0?'停用':'启用'"
+                />
+              </span>
+              <span v-else>{{scope.row[item.prop]}}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -65,28 +69,17 @@
           showSizeChanger
           v-model="current"
           class="pnstyle"
-          :defaultPageSize="10"
+          :pageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="sizeChange"
           @change="pageChange"
           size="small"
-        >
-        </a-pagination>
+        ></a-pagination>
       </a-spin>
       <a-button type="primary" class="margin-top-10" @click="addUser" :disabled="disabled">添加用户</a-button>
       <a-spin tip="加载中..." :spinning="uerSpin">
-        <el-table
-          class="margin-top-10"
-          :data="userData"
-          border
-          style="width: 100%"
-        >
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="100"
-            align="center"
-          >
+        <el-table class="margin-top-10" :data="userData" border style="width: 100%">
+          <el-table-column fixed="right" label="操作" width="100" align="center">
             <template slot-scope="scope">
               <a-popconfirm title="确认移除吗?" @confirm="remove(scope.row)">
                 <a class="delColor">移除</a>
@@ -102,21 +95,19 @@
             :width="item.width"
             :align="item.align"
             :formatter="item.formatter"
-          >
-          </el-table-column>
+          ></el-table-column>
         </el-table>
-         <a-pagination
-          :total="totals"
+        <a-pagination
+          :total="totalBottom"
           showSizeChanger
-          v-model="currents"
+          v-model="currentBottom"
           class="pnstyle"
-          :defaultPageSize="10"
+          :pageSize="pageSizeBottom"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="sizeChanges"
           @change="pageChanges"
           size="small"
-        >
-        </a-pagination>
+        ></a-pagination>
       </a-spin>
     </a-card>
     <a-modal
@@ -126,16 +117,13 @@
       @ok="submit"
       :confirmLoading="loading"
       @cancel="cancel"
-      width=""
+      width
       centered
       :maskClosable="false"
     >
       <div style="width: 500px;">
         <a-form :form="form">
-          <a-form-item
-            label="机构"
-            v-bind="formItemLayout"
-          >
+          <a-form-item label="机构" v-bind="formItemLayout">
             <!--<a-select-->
             <!--placeholder="请选择"-->
             <!--v-decorator="[-->
@@ -151,19 +139,15 @@
             <a-tree-select
               :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
               :treeData="orgData"
-              placeholder='请选择...'
+              placeholder="请选择..."
               treeDefaultExpandAll
               v-decorator="[
                                      'orgId',
                                      {rules: [{ required: true, message: '请输选择机构' }],initialValue: formData.orgId}
                                 ]"
-            >
-            </a-tree-select>
+            ></a-tree-select>
           </a-form-item>
-          <a-form-item
-            label="角色名称"
-            v-bind="formItemLayout"
-          >
+          <a-form-item label="角色名称" v-bind="formItemLayout">
             <a-input
               placeholder="请输入角色名称"
               v-decorator="[
@@ -172,24 +156,18 @@
                                 ]"
             />
           </a-form-item>
-          <a-form-item
-            label="状态"
-            :required="true"
-            v-bind="formItemLayout"
-          >
+          <a-form-item label="状态" :required="true" v-bind="formItemLayout">
             <a-radio-group v-decorator="['status',{initialValue: formData.status}]">
               <a-radio value="1">启用</a-radio>
               <a-radio value="0">停用</a-radio>
             </a-radio-group>
           </a-form-item>
-          <a-form-item
-            label="备注"
-            v-bind="formItemLayout"
-          >
+          <a-form-item label="备注" v-bind="formItemLayout">
             <a-textarea
               placeholder="请输入..."
               :autosize="{ minRows: 4 }"
-              v-decorator="[ 'remark',{rules: [{ max:255 }],initialValue: formData.remark}]"/>
+              v-decorator="[ 'remark',{rules: [{ max:255 }],initialValue: formData.remark}]"
+            />
           </a-form-item>
         </a-form>
       </div>
@@ -201,16 +179,13 @@
       @ok="userSubmit"
       :confirmLoading="userLoading"
       @cancel="cancel"
-      width=""
+      width
       centered
       :maskClosable="false"
     >
       <div style="width: 500px;">
         <a-form :form="userForm">
-          <a-form-item
-            label="用户"
-            v-bind="formItemLayout"
-          >
+          <a-form-item label="用户" v-bind="formItemLayout">
             <a-select
               placeholder="请选择"
               showSearch
@@ -225,9 +200,11 @@
                                 {rules: [{ required: true, message: '请选择用户' }]}
                                 ]"
             >
-              <a-select-option :value="item.sysUserId" v-for="(item,index) in userForData"
-                               :key="index">
-                {{item.name}}
+              <a-select-option
+                :value="item.sysUserId"
+                v-for="(item,index) in userForData"
+                :key="index"
+              >{{item.name}}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -238,6 +215,7 @@
 </template>
 <script>
   import debounce from 'lodash/debounce'
+
   export default {
     data() {
       this.handleSearch = debounce(this.handleSearch, 800)
@@ -254,6 +232,7 @@
         ],
         total: 0,
         current: 1,
+        pageSize: 10,
         selectRole: {},
         api: {
           roleUrl: '/sys/sysRole/selectPage',
@@ -292,9 +271,11 @@
         userForData: [],
         disabled: true,
         listData: {},
-        totals:1,
-        currents:1,
-        roleId:''
+        totalBottom: 1,
+        currentBottom: 1,
+        roleId: '',
+        searchData: {},
+        pageSizeBottom: 10
       }
     },
     mounted() {
@@ -303,34 +284,49 @@
     },
     computed: {
       list() {
-        return [
-          { name: '角色', dataField: 'title', type: 'text' },
-          { name: '机构', dataField: 'orgTitle', type: 'text' }
-        ]
+        return [{ name: '角色', dataField: 'title', type: 'text' },
+          { name: '机构', dataField: 'orgTitle', type: 'text' },
+          {
+            name: '状态',
+            dataField: 'status',
+            type: 'select',
+            keyExpr: 'id',
+            valueExpr: 'text',
+            dataSource: this.enum.status
+          }]
       }
     },
     methods: {
-
       // 第二个分页条
-        pageChanges(page, size) {
-          let params={}
+      pageChanges(page, size) {
+        let params = {}
         params.offset = (page - 1) * size
-         params.roleId=this.roleId
+        params.roleId = this.roleId
         params.pageSize = size
         this.getUserData(params)
       },
       sizeChanges(current, size) {
-          let params={}
-        this.currents = 1
+        let params = {}
+        this.currentBottom = 1
+        this.pageSizeBottom = size
         params.pageSize = size
-        params.roleId=this.roleId
+        params.offset = (current - 1) * size
+        params.roleId = this.roleId
         this.getUserData(params)
       },
       search() {
+        this.searchData = this.$refs.searchPanel.form.getFieldsValue()
         let params = this.$refs.searchPanel.form.getFieldsValue()
+        params.offset = 0
+        params.pageSize = this.pageSize
+        this.current = 1
         this.getData(params)
       },
       resetForm() {
+        this.searchData = {}
+        this.pageSize = 10
+        this.current = 1
+        this.pageSizeBottom = 10
         this.$refs.searchPanel.form.resetFields()
         this.getData()
       },
@@ -348,6 +344,7 @@
         this.form.resetFields()
         this.isNew = false
         this.formData = row
+        this.formData.orgId = '' + row.orgId
         this.visible = true
       },
       cancel() {
@@ -366,21 +363,27 @@
               url: this.api.updateUrl,
               method: 'post',
               data: params
-            }).then(res => {
-              if (res.code == '200') {
-                this.success('保存成功!', () => {
-                  this.getData()
-                  this.visible = false
-                  this.loading = false
-                })
-              } else {
-                this.loading = false
-                this.warn(res.msg)
-              }
-            }).catch(err => {
-              this.loading = false
-              this.error(err)
             })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success('保存成功!', () => {
+                    let param = this.searchData
+                    this.current = 1
+                    param.offset = 0
+                    param.pageSize = 10
+                    this.getData()
+                    this.visible = false
+                    this.loading = false
+                  })
+                } else {
+                  this.loading = false
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.loading = false
+                this.error(err)
+              })
           } else {
             this.loading = false
           }
@@ -395,18 +398,20 @@
           url: this.api.delUrl,
           method: 'delete',
           data: { roleId: row.roleId }
-        }).then(res => {
-          if (res.code == '200') {
-            this.success('删除成功!', () => {
-                this.currents = 1
-              this.getData()
-            })
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.error(err)
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('删除成功!', () => {
+                this.current = 1
+                this.getData()
+              })
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       },
       changeStatus(row, flag) {
         let params = {}
@@ -420,21 +425,27 @@
           url: this.api.updateStatusUrl,
           method: 'post',
           data: params
-        }).then(res => {
-          if (res.code == '200') {
-            this.success('操作成功!', () => {
-              this.currents = 1
-              this.getData()
-            })
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.error(err)
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('操作成功!', () => {
+                //this.current = 1
+                let params = this.searchData
+                params.offset = (this.current - 1) * this.pageSize
+                params.pageSize = this.pageSize
+                this.getData(params)
+              })
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       },
       async addUser() {
-        let params = {}, ids = []
+        let params = {},
+          ids = []
         params.roleId = this.selectRole.roleId
         params.orgId = this.selectRole.orgId
         this.userData.forEach(item => {
@@ -454,17 +465,19 @@
           url: this.api.updateUserUrl,
           method: 'post',
           data: params
-        }).then(res => {
-          if (res.code == '200') {
-            this.success('移除成功!', () => {
-              this.getUserData({ roleId: this.selectRole.roleId })
-            })
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.error(err)
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('移除成功!', () => {
+                this.getUserData({ roleId: this.selectRole.roleId })
+              })
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       },
       userSubmit() {
         this.userLoading = true
@@ -476,21 +489,23 @@
               url: this.api.updateUserUrl,
               method: 'post',
               data: params
-            }).then(res => {
-              if (res.code == '200') {
-                this.success('保存成功!', () => {
-                  this.getUserData({ roleId: this.selectRole.roleId })
-                  this.modalVisible = false
-                  this.userLoading = false
-                })
-              } else {
-                this.userLoading = false
-                this.warn(res.msg)
-              }
-            }).catch(err => {
-              this.userLoading = false
-              this.error(err)
             })
+              .then(res => {
+                if (res.code == '200') {
+                  this.success('保存成功!', () => {
+                    this.getUserData({ roleId: this.selectRole.roleId })
+                    this.modalVisible = false
+                    this.userLoading = false
+                  })
+                } else {
+                  this.userLoading = false
+                  this.warn(res.msg)
+                }
+              })
+              .catch(err => {
+                this.userLoading = false
+                this.error(err)
+              })
           } else {
             this.userLoading = false
           }
@@ -503,7 +518,7 @@
         if (row) {
           this.selectRole = row
           this.disabled = false
-          this.roleId=row.roleId
+          this.roleId = row.roleId
           this.getUserData({ roleId: row.roleId })
         } else {
           this.selectRole = {}
@@ -512,14 +527,17 @@
         }
       },
       pageChange(page, size) {
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        this.current = 1
+        let params = this.searchData
         params.offset = (page - 1) * size
+        params.pageSize = size
         this.getData(params)
       },
       sizeChange(current, size) {
-        this.current = 1
-        let params = this.$refs.searchPanel.form.getFieldsValue()
+        this.pageSize = size
+        let params = this.searchData
         params.pageSize = size
+        params.offset = (current - 1) * size
         this.getData(params)
       },
       getData(obj = {}) {
@@ -528,20 +546,22 @@
           url: this.api.roleUrl,
           method: 'put',
           data: obj
-        }).then(res => {
-          if (res.code == '200') {
-            this.dataSource = this.$dateFormat(res.rows, ['editTime'])
-            this.total = res.total
-            this.setCurrent()
-            this.spinning = false
-          } else {
-            this.spinning = false
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.spinning = false
-          this.error(err)
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.dataSource = this.$dateFormat(res.rows, ['editTime'])
+              this.total = res.total
+              this.setCurrent()
+              this.spinning = false
+            } else {
+              this.spinning = false
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.spinning = false
+            this.error(err)
+          })
       },
       getUserData(obj = {}) {
         this.uerSpin = true
@@ -549,34 +569,38 @@
           url: this.api.userUrl,
           method: 'post',
           data: obj
-        }).then(res => {
-          if (res.code == '200') {
-            this.userData = res.rows
-            this.totals=res.total
-            this.uerSpin = false
-          } else {
-            this.uerSpin = false
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.uerSpin = false
-          this.error(err)
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.userData = res.rows
+              this.totalBottom = res.total
+              this.uerSpin = false
+            } else {
+              this.uerSpin = false
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.uerSpin = false
+            this.error(err)
+          })
       },
       getOrgData(obj = {}) {
         this.$axios({
           url: this.api.orgUrl,
           method: 'put',
           data: obj
-        }).then(res => {
-          if (res.code == '200') {
-            this.orgData = this.getOrgTreeData(res.rows, undefined)
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.error(err)
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.orgData = this.getOrgTreeData(res.rows, undefined)
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       },
       getOrgTreeData(data, pid) {
         let tree = []
@@ -597,36 +621,45 @@
             url: this.api.userByOrgUrl,
             method: 'post',
             data: obj
-          }).then(res => {
-            if (res.code == '200') {
-              this.userForData = res.rows
-            } else {
-              this.warn(res.msg)
-            }
-            resolve()
-          }).catch(err => {
-            this.error(err)
-            reject(err)
           })
+            .then(res => {
+              if (res.code == '200') {
+                this.userForData = res.rows
+              } else {
+                this.warn(res.msg)
+              }
+              resolve()
+            })
+            .catch(err => {
+              this.error(err)
+              reject(err)
+            })
         })
       },
       handleSearch(value) {
         console.log(value, 'value')
         console.log(this.selectRole, 'this.selectRole')
-        let params = { keyword: value, orgId: this.selectRole.orgId, roleId: this.selectRole.roleId,userIds:this.userData }
+        let params = {
+          keyword: value,
+          orgId: this.selectRole.orgId,
+          roleId: this.selectRole.roleId,
+          userIds: this.userData
+        }
         this.$axios({
           url: this.api.userByOrgUrl,
           method: 'post',
           data: params
-        }).then(res => {
-          if (res.code == '200') {
-            this.userForData = res.rows
-          } else {
-            this.warn(res.msg)
-          }
-        }).catch(err => {
-          this.error(err)
         })
+          .then(res => {
+            if (res.code == '200') {
+              this.userForData = res.rows
+            } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
+            this.error(err)
+          })
       }
     }
   }

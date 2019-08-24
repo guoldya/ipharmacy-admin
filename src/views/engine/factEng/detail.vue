@@ -281,6 +281,7 @@ export default {
                 formData = {
                   id,
                   pie,
+                  colZySql,
                   colType,
                   colName,
                   colCode,

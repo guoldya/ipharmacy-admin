@@ -25,7 +25,7 @@
                     <span v-if="list.type==='input'">
                         <a-input :disabled="i===1&&page===JSON.stringify('add')" v-decorator="[list.val,{initialValue: formData[list.val]}]"/>
                     </span>
-                     <a-button v-if="i===1" type="primary">读取患者信息</a-button>
+                     <a-button v-if="i===1&&page===JSON.stringify('add')" type="primary">读取患者信息</a-button>
                      <a-date-picker  v-if="list.type==='date'"
                      v-decorator="[list.val,{initialValue:formData[list.val]? moment(formData[list.val], dateFormat):null}]"
                           :format="dateFormat"

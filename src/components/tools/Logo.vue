@@ -13,7 +13,7 @@
     props: {
       title: {
         type: String,
-        default: '药师审方系统',
+        default: '智慧审方平台',
         required: false
       },
       showTitle: {

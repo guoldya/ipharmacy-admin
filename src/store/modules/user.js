@@ -158,6 +158,7 @@ const user = {
                     if(res.code == '200'){
                         const result = res.data;
                         util.cookies.set('user', userInfo.account);
+                       // util.cookies.set('age', 'ddd');
                         this.commit('setUserModuleList',result.modules);
                         await dispatch('SetAccountInfo', {
                             name: result.users.account,

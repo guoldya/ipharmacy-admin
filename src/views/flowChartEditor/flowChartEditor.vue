@@ -10,28 +10,29 @@
       :titleData="titleData"
       ref="toolbar"></a-toolbar>
     <div style="height: 42px;"></div>
-    <div class="bottom-container">
-      <!-- 节点 -->
-      <a-itempanel ref="itempannel"></a-itempanel>
-      <!-- 属性节点 -->
-      <a-detailpanel
-        ref="detailpannel"
-        v-bind:graphAPI="graph"
-        v-bind:selectNode="selectNode"
-        v-bind:selectEdge="selectEdge"
-        v-bind:boxInitialized="boxInitialized"
-        v-bind:edgeInitialized="edgeInitialized"
-        v-bind:preData="preData"
-        v-bind:judgePreData="judgePreData"
-      ></a-detailpanel>
-      <!-- 缩略图 -->
-      <a-navigator ref="navigator" v-bind:graphAPI="graph"></a-navigator>
-      <!-- 右键菜单 -->
-      <a-contextmenu ref="contextmenu"></a-contextmenu>
+    <a-spin size="large" :spinning="spinning">
+      <div class="bottom-container">
+        <!-- 节点 -->
+        <a-itempanel ref="itempannel"></a-itempanel>
+        <!-- 属性节点 -->
+        <a-detailpanel
+          ref="detailpannel"
+          v-bind:graphAPI="graph"
+          v-bind:selectNode="selectNode"
+          v-bind:selectEdge="selectEdge"
+          v-bind:boxInitialized="boxInitialized"
+          v-bind:edgeInitialized="edgeInitialized"
+          v-bind:preData="preData"
+          v-bind:judgePreData="judgePreData"
+        ></a-detailpanel>
+        <!-- 缩略图 -->
+        <a-navigator ref="navigator" v-bind:graphAPI="graph"></a-navigator>
+        <!-- 右键菜单 -->
+        <a-contextmenu ref="contextmenu"></a-contextmenu>
 
-      <div id="page" class="page" ref="flow" :style="conheight"></div>
-    </div>
-
+        <div id="page" class="page" ref="flow" :style="conheight"></div>
+      </div>
+    </a-spin>
     <a-modal
       :title="modal.title"
       :visible="modal.visible"
@@ -43,8 +44,7 @@
       :maskClosable="false">
       <a-ruleModal :handleChange="ruleModalChange"></a-ruleModal>
     </a-modal>
-
-      <a-addRule ref="addRule" :visible="addVisible" :addRuleOk="addRuleOk" :addRuleCancel="addRuleCancel"></a-addRule>
+    <a-addRule ref="addRule" :visible="addVisible" :addRuleOk="addRuleOk" :addRuleCancel="addRuleCancel"></a-addRule>
   </div>
 </template>
 
@@ -93,16 +93,17 @@
       'a-itempanel': itempanel,
       'a-navigator': navigator,
       'a-toolbar': toolbar,
-      'a-ruleModal':ruleModal,
-      'a-addRule':addRule,
+      'a-ruleModal': ruleModal,
+      'a-addRule': addRule
     },
     data() {
       return {
-        api:{
-          RuleNodeAndRuleCable:'sys/coreRuleNode/selectRuleNodeAndRuleCable',
-          selectRuleContent:'sys/coreRuleNode/selectRuleContent',
-          coreRuleUpdate:'/sys/coreRule/update',
+        api: {
+          RuleNodeAndRuleCable: 'sys/coreRuleNode/selectRuleNodeAndRuleCable',
+          selectRuleContent: 'sys/coreRuleNode/selectRuleContent',
+          coreRuleUpdate: '/sys/coreRule/update'
         },
+        spinning: false,
         ruleId: null,
         page: null,
         flow: null,
@@ -114,27 +115,32 @@
           ///-------结论节点特有属性---------
           inAccordanceWith: null,
           sourcename: null,
+          colDbType: null,
           message: null,
           suggest: null,
           restrictionType: null,
           verdictType: null,
           itemId: null,
-          precondition:null,
-          dataDrilling:null,
-          calculation:'',
-          formula:null,
-          calculated:null,
-          isRepeat:null,
-          rearCondition:null,
+          precondition: null,
+          dataDrilling: null,
+          calculation: '',
+          formula: null,
+          calculated: null,
+          isRepeat: null,
+          rearCondition: null,
+          val: null,
+          display: null,
+          parentId: null,
           itemName: null,
           ro: null,
           lo: null,
           roSymbol: null,
           assertVal: null,
-          assertValList: null,
+          assertValList: [],
           assertVal1: null,
           levelColor: '#ffffff',
           levels: 0,
+
           ///-------结论节点特有属性---------
 
           ///-------------属性节点特定属性-----------------
@@ -147,21 +153,18 @@
           label: null,
           value: null,
           sourceId: null,
+          colDbType: null,
           sourceType: null,
           targetId: null,
           targetType: null,
           assertVal: null,
-          assertValList: null,
+          assertValList: [],
           assertVal1: null,
-          dataDrilling:null,
-          calculation:'',
-          formula:null,
-          calculated:null,
-          isRepeat:null,
-          rearCondition:null,
+          dataDrilling: null,
+          rearCondition: null,
           ro: null,
           lo: null,
-          roSymbol: null,
+          roSymbol: null
         },
         conheight: {
           height: '806px'
@@ -182,27 +185,35 @@
         multiColor: null, // 多选模式下的color，仅以最后一个为代表颜色
         isMultiSelect: false, // 是否是多选模式
         gridCheck: false,
-        titleData: { status: null, type2: null, type: null, name: null, updateTime: null, visible: null },
+        titleData: {
+          status: null,
+          type2: null,
+          type: null,
+          name: null,
+          updateTime: null,
+          visible: null,
+          updateBy: null
+        },
         //属性框初始化
-        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '',  nodeTreeData:{},viewSelect:[]},
-        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', edgeTreeData:{},viewSelect:[]},
+        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', nodeTreeData: {}, viewSelect: [] },
+        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', edgeTreeData: {}, viewSelect: [] },
         pieChartData: {},
         getEdgesData: [],
         //modal属性
-        modal:{
-          visible:false,
-          title:'复制规则',
-          confirmLoading:false,
+        modal: {
+          visible: false,
+          title: '复制规则',
+          confirmLoading: false
         },
-        ruleModalId:null,
-        submitStatus:true,
-        verifyStatus:true,
+        ruleModalId: null,
+        submitStatus: true,
+        verifyStatus: true,
         //新增规则
-          addVisible:false,
-        CoreFactAllTree:[],
-        prePid:null,
-        preData:[],
-        judgePreData:[],
+        addVisible: false,
+        CoreFactAllTree: [],
+        prePid: null,
+        preData: [],
+        judgePreData: []
       }
     },
     mounted() {
@@ -210,12 +221,12 @@
       window.addEventListener('resize', this.getHeight)
       this.getHeight()
       this.getNodeData()
-      this.getDataList();
+      this.getDataList()
       // this.getReviewLevel();
-      this.getCoreFactAllStart();
-      setTimeout(()=>{
-        this.autoZoom();
-      },500)
+      this.getCoreFactAllStart()
+      setTimeout(() => {
+        this.autoZoom()
+      }, 500)
 
     },
     computed: {
@@ -262,19 +273,19 @@
       selectNodeRearCondition() {
         return this.selectNode.rearCondition
       },
-      selectNodeDataDrilling(){
+      selectNodeDataDrilling() {
         return this.selectNode.dataDrilling
       },
-      selectNodeCalculation(){
+      selectNodeCalculation() {
         return this.selectNode.calculation
       },
-      selectNodeFormula(){
+      selectNodeFormula() {
         return this.selectNode.formula
       },
-      selectNodeCalculated(){
+      selectNodeCalculated() {
         return this.selectNode.calculated
       },
-      selectNodeIsRepeat(){
+      selectNodeIsRepeat() {
         return this.selectNode.isRepeat
       },
       selectNodeItemName() {
@@ -292,7 +303,7 @@
       selectNodeAssertVal() {
         return this.selectNode.assertVal
       },
-      selectNodeAssertValList(){
+      selectNodeAssertValList() {
         return this.selectNode.assertValList
       },
       selectNodeAssertVal1() {
@@ -301,6 +312,16 @@
       selectNodeRoSymbol() {
         return this.selectNode.roSymbol
       },
+      selectNodeRoVal() {
+        return this.selectNode.val
+      },
+      selectNodeRoDisplay() {
+        return this.selectNode.display
+      },
+      selectNodeRoParentId() {
+        return this.selectNode.parentId
+      },
+
       selectEdgeLabel() {
         return this.selectEdge.label
       },
@@ -320,22 +341,10 @@
         return this.selectEdge.assertValList
       },
       selectEdgeRearCondition() {
-        return this.selectNode.rearCondition
+        return this.selectEdge.rearCondition
       },
       selectEdgeDataDrilling() {
         return this.selectEdge.dataDrilling
-      },
-      selectEdgeCalculation(){
-        return this.selectEdge.calculation
-      },
-      selectEdgeFormula(){
-        return this.selectEdge.formula
-      },
-      selectEdgeCalculated(){
-        return this.selectEdge.calculated
-      },
-      selectEdgeIsRepeat(){
-        return this.selectEdge.isRepeat
       },
       selectEdgeAssertVal1() {
         return this.selectEdge.assertVal1
@@ -345,7 +354,7 @@
       },
       selectEdgeRoSymbol() {
         return this.selectEdge.roSymbol
-      },
+      }
     },
 
     watch: {
@@ -413,57 +422,48 @@
       },
       selectNodeItemId(newValue, oldValue) {
         if (newValue != oldValue) {
-          if (newValue){
+          if (newValue) {
             this.flow.update(this.selectNode.id, { itemId: newValue })
-          } else{
+          } else {
             this.flow.update(this.selectNode.id, { itemId: newValue })
           }
-
         }
-        // if (oldValue != null && newValue != oldValue && newValue != null){
-        //   let data = this.flow.save();
-        //   for (let key in data.edges){
-        //     if (data.edges[key].pid == this.selectNode.id){
-        //       this.flow.update(data.edges[key].id, { assertVal: null, assertValList:[],assertVal1: null})
-        //     }
-        //   }
-        // }
       },
       selectNodePrecondition(newValue, oldValue) {
         if (newValue != oldValue) {
-          if (newValue){
+          if (newValue) {
             this.flow.update(this.selectNode.id, { precondition: newValue })
           } else {
             this.flow.update(this.selectNode.id, { precondition: newValue })
           }
         }
       },
-      selectNodeRearCondition(newValue, oldValue)  {
+      selectNodeRearCondition(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { rearCondition: newValue })
         }
       },
-      selectNodeDataDrilling(newValue, oldValue){
+      selectNodeDataDrilling(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { dataDrilling: newValue })
         }
       },
-      selectNodeCalculation(newValue, oldValue){
+      selectNodeCalculation(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { calculation: newValue })
         }
       },
-      selectNodeFormula(newValue, oldValue){
+      selectNodeFormula(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { formula: newValue })
         }
       },
-      selectNodeCalculated(newValue, oldValue){
+      selectNodeCalculated(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { calculated: newValue })
         }
       },
-      selectNodeIsRepeat(newValue, oldValue){
+      selectNodeIsRepeat(newValue, oldValue) {
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { isRepeat: newValue })
         }
@@ -508,6 +508,22 @@
           this.flow.update(this.selectNode.id, { assertVal1: newValue })
         }
       },
+
+      selectNodeRoVal(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { val: newValue })
+        }
+      },
+      selectNodeRoDisplay(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { display: newValue })
+        }
+      },
+      selectNodeRoParentId(newValue, oldValue) {
+        if (newValue != oldValue) {
+          this.flow.update(this.selectNode.id, { parentId: newValue })
+        }
+      },
       selectEdgeLabel(newValue, oldValue) {
         if (newValue != oldValue && newValue != null) {
           this.flow.update(this.selectEdge.id, { label: newValue })
@@ -524,7 +540,7 @@
         }
       },
       selectEdgeColDbType(newValue, oldValue) {
-        if (newValue != oldValue && newValue != null) {
+        if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { colDbType: newValue })
         }
       },
@@ -545,27 +561,7 @@
       },
       selectEdgeRearCondition(newValue, oldValue) {
         if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, {rearCondition: newValue })
-        }
-      },
-      selectEdgeCalculation(newValue, oldValue){
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { calculation: newValue })
-        }
-      },
-      selectEdgeFormula(newValue, oldValue){
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { formula: newValue })
-        }
-      },
-      selectEdgeCalculated(newValue, oldValue){
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { calculated: newValue })
-        }
-      },
-      selectEdgeIsRepeat(newValue, oldValue){
-        if (newValue != oldValue) {
-          this.flow.update(this.selectEdge.id, { isRepeat: newValue })
+          this.flow.update(this.selectEdge.id, { rearCondition: newValue })
         }
       },
       selectEdgeAssertVal1(newValue, oldValue) {
@@ -582,23 +578,24 @@
         if (newValue != oldValue) {
           this.flow.update(this.selectEdge.id, { roSymbol: newValue })
         }
-      },
+      }
     },
+
     methods: {
-      autoZoom(){
+      autoZoom() {
         //自动跳转自适应画布
-        for(let key in this.toolbar.commands){
-          let item=this.toolbar.commands[key];
-          if(item.dataset&&item.dataset.command=="autoZoom"){
+        for (let key in this.toolbar.commands) {
+          let item = this.toolbar.commands[key]
+          if (item.dataset && item.dataset.command == 'autoZoom') {
 
             const event = new MouseEvent('click', {
               view: window,
               bubbles: true,
               cancelable: true
-            });
-            this.toolbar.commands[key].dispatchEvent(event);
-            window.abcd=this;
-            break;
+            })
+            this.toolbar.commands[key].dispatchEvent(event)
+            window.abcd = this
+            break
           }
         }
       },
@@ -718,8 +715,9 @@
                     break
                   case 'model-rect-attribute':
                     _this.selectNode.levelColor = model.color != null ? model.color : shape.color
-                    _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
-                    _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
+                    _this.selectNode.colDbType = model.colDbType != null ? model.colDbType : shape.colDbType
+                    _this.selectNode.itemId = model.itemId != null ? '' + model.itemId : shape.itemId
+                    _this.selectNode.precondition = model.precondition != null ? '' + model.precondition : shape.precondition
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
                     _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
@@ -727,12 +725,13 @@
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
-                    _this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
-                    _this.preData = [];
-                    if (this.getPreData(this.prePid,this.CoreFactAllTree).length== 0){
+                    _this.prePid = []
+                    _this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
+                    _this.preData = []
+                    if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
                       _this.preData = []
-                    } else{
-                      _this.preData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
+                    } else {
+                      _this.preData.push(this.getPreData(this.prePid, this.CoreFactAllTree))
                     }
 
                     break
@@ -745,19 +744,22 @@
                     } else if (params.lo == 3 && !this.$util.trim(params.parentId)) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
-                      this.boxInitialized.val =  params.val;
-                      this.boxInitialized.display =  params.display;
-                      let paramsNodeData = {id: params.itemId};
-                      if (ev.item.model.assertValList){
+                      this.boxInitialized.val = params.val
+                      this.boxInitialized.display = params.display
+                      let paramsNodeData = { id: params.itemId }
+                      if (ev.item.model.assertValList) {
                         paramsNodeData.valueList = params.assertValList
-                        paramsNodeData.val = params.val;
-                        paramsNodeData.display = params.display;
                       }
+                      paramsNodeData.val = params.val
+                      paramsNodeData.display = params.display
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
                         if (res.code == '200') {
-                          this.boxInitialized.inputSelectData=[]
-                          for (let key in res.rows){
-                            this.boxInitialized.inputSelectData.push({ID:res.rows[key][params.val],NAME:res.rows[key][params.display]})
+                          this.boxInitialized.inputSelectData = []
+                          for (let key in res.rows) {
+                            this.boxInitialized.inputSelectData.push({
+                              ID: res.rows[key][params.val],
+                              NAME: res.rows[key][params.display]
+                            })
                           }
                         } else {
                           this.warn(res.msg)
@@ -766,23 +768,29 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                    }else if (params.lo == 3 && this.$util.trim(params.parentId)){
+                    } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
                       this.boxInitialized.inputType = 'treeSelect'
                       this.boxInitialized.itemId = params.itemId
-                      this.boxInitialized.val =  params.val;
-                      this.boxInitialized.display =  params.display;
-                      this.boxInitialized.parentId =  params.parentId;
-                      let paramsNodeData = {id: params.itemId};
-                      paramsNodeData.val = params.val;
-                      paramsNodeData.display = params.display;
-                      paramsNodeData.parentId = params.parentId;
+                      this.boxInitialized.val = params.val
+                      this.boxInitialized.display = params.display
+                      this.boxInitialized.parentId = params.parentId
+                      let paramsNodeData = { id: params.itemId }
+                      paramsNodeData.val = params.val
+                      paramsNodeData.display = params.display
+                      paramsNodeData.parentId = params.parentId
                       coreRuleNodeSelectColId(paramsNodeData).then(res => {
                         if (res.code == '200') {
-                          this.boxInitialized.inputSelectData=[];
-                          this.boxInitialized.viewSelect = [];
-                          for (let key in res.rows){
-                            this.boxInitialized.inputSelectData.push({key:res.rows[key][params.val],title:res.rows[key][params.display],})
-                            this.boxInitialized.viewSelect.push({key:res.rows[key][params.val],title:res.rows[key][params.display],})
+                          this.boxInitialized.inputSelectData = []
+                          this.boxInitialized.viewSelect = []
+                          for (let key in res.rows) {
+                            this.boxInitialized.inputSelectData.push({
+                              key: res.rows[key][params.val],
+                              title: res.rows[key][params.display]
+                            })
+                            this.boxInitialized.viewSelect.push({
+                              key: res.rows[key][params.val],
+                              title: res.rows[key][params.display]
+                            })
                           }
                         } else {
                           this.warn(res.msg)
@@ -791,25 +799,24 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                      let listData = {id: params.itemId};
+                      let listData = paramsNodeData
                       listData.valueList = ev.item.model.assertValList
-                      listData.val = params.val;
                       coreRuleNodeSelectColId(listData).then(res => {
                         if (res.code == '200') {
-                            let resData = [];
-                            for (let key in res.rows){
-                              resData.push({key:res.rows[key][params.val],title:res.rows[key][params.display]})
-                            }
-                            this.boxInitialized.viewSelect.push(...resData);
-                            this.boxInitialized.viewSelect = Array.from(new Set( this.boxInitialized.viewSelect))
+                          let resData = []
+                          for (let key in res.rows) {
+                            resData.push({ key: res.rows[key][params.val], title: res.rows[key][params.display] })
+                          }
+                          this.boxInitialized.viewSelect.push(...resData)
+                          this.boxInitialized.viewSelect = Array.from(new Set(this.boxInitialized.viewSelect))
                         } else {
                           this.warn(res.msg)
-                          this.boxInitialized.viewSelect= []
+                          this.boxInitialized.viewSelect = []
                         }
                       }).catch(err => {
                         this.error(err)
                       })
-                    }else{
+                    } else {
                       this.boxInitialized.inputType = 'input'
                     }
                     if (params.colDbType == 1) {
@@ -821,9 +828,9 @@
                     }
                     _this.selectNode.lo = params.lo
                     _this.selectNode.colDbType = params.colDbType
-                    _this.selectNode.itemId = model.itemId != null ? ''+model.itemId : shape.itemId
-                    _this.selectNode.precondition = model.precondition != null ? ''+model.precondition : shape.precondition
-                    _this.selectNode.rearCondition = model.rearCondition != null ? model.rearCondition : shape.rearCondition
+                    _this.selectNode.itemId = model.itemId != null ? '' + model.itemId : shape.itemId
+                    _this.selectNode.precondition = model.precondition != null ? '' + model.precondition : shape.precondition
+                    _this.selectNode.rearCondition = model.rearCondition != null ? '' + model.rearCondition : shape.rearCondition
                     _this.selectNode.dataDrilling = model.dataDrilling != null ? model.dataDrilling : shape.dataDrilling
                     _this.selectNode.calculation = model.calculation != null ? model.calculation : shape.calculation
                     _this.selectNode.formula = model.formula != null ? model.formula : shape.formula
@@ -833,121 +840,124 @@
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.selectNode.assertVal = model.assertVal != null ? model.assertVal : shape.assertVal
-                    _this.selectNode.assertValList = model.assertValList != null ? model.assertValList : shape.assertValList
+                    _this.selectNode.assertValList = model.assertValList != null ? model.assertValList : []
                     _this.selectNode.assertVal1 = model.assertVal1 != null ? model.assertVal1 : shape.assertVal1
                     _this.selectNode.roSymbol = model.roSymbol != null ? model.roSymbol : shape.roSymbol
                 }
               } else {
                 _this.multiId.push(ev.item.model.id)
               }
-              this.getPrePidData(this.selectNode.itemId,this.CoreFactAllTree);
-              _this.judgePreData = [];
-              if (this.getPreData(this.prePid,this.CoreFactAllTree).length == 0){
-                _this.judgePreData=[]
-              } else{
-                _this.judgePreData.push( this.getPreData(this.prePid,this.CoreFactAllTree));
+              this.prePid = []
+              this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
+              _this.judgePreData = []
+              if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
+                _this.judgePreData = []
+              } else {
+                _this.judgePreData.push(this.getPreData(this.prePid, this.CoreFactAllTree))
               }
               break
             case 'edge':
               //选中后设置颜色 和连接线的宽度
               _this.flow.update(ev.item.model.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
               let sourceP = ev.item.source.model
-              if (sourceP.shape == "model-rect-attribute") {
-                  if (sourceP.lo == 1) {
-                    this.edgeInitialized.inputEdge = 'input'
-                    this.edgeInitialized.lo = 1;
-                  } else if (sourceP.lo == 2) {
-                    this.edgeInitialized.inputEdge = 'scopeInput'
-                    this.edgeInitialized.lo = 2;
-                  } else if (sourceP.lo == 3 && !this.$util.trim(sourceP.parentId) ) {
-                    this.edgeInitialized.lo = 3;
-                    this.edgeInitialized.inputEdge = 'select'
-                    this.edgeInitialized.itemId = sourceP.itemId;
-                    this.edgeInitialized.val =  sourceP.val;
-                    this.edgeInitialized.display =  sourceP.display;
-                    let paramsData = {id: sourceP.itemId};
-                    if (ev.item.model.assertValList){
-                      paramsData.valueList = ev.item.model.assertValList;
-                      paramsData.val = sourceP.val;
-                      paramsData.display = sourceP.display;
-                      paramsData.parentId = sourceP.parentId;
-                    }
-
-                    // if (  this.edgeInitialized.itemId != sourceP.itemId) {
-                      coreRuleNodeSelectColId(paramsData).then(res => {
-                        if (res.code == '200') {
-                            this.edgeInitialized.inputEdgeSelect=[]
-                            for (let key in res.rows){
-                              this.edgeInitialized.inputEdgeSelect.push({ID:res.rows[key][sourceP.val],NAME:res.rows[key][sourceP.display]})
-                            }
-                        } else {
-                          this.warn(res.msg)
-                          this.edgeInitialized.inputEdgeSelect = []
-                        }
-                      }).catch(err => {
-                        this.error(err)
-                      })
-                    // }
-                  }else if(sourceP.lo == 3 && this.$util.trim(sourceP.parentId)){
-                    this.edgeInitialized.lo = 3;
-                    this.edgeInitialized.inputEdge = 'treeSelect'
-                    this.edgeInitialized.itemId = sourceP.itemId;
-                    this.edgeInitialized.val =  sourceP.val;
-                    this.edgeInitialized.display =  sourceP.display;
-                    this.edgeInitialized.parentId =  sourceP.parentId;
-                    let paramsData = {id: sourceP.itemId};
-                    paramsData.val = sourceP.val;
-                    paramsData.display = sourceP.display;
-                    paramsData.parentId = sourceP.parentId;
-                    // if (  this.edgeInitialized.itemId != sourceP.itemId) {
-                      coreRuleNodeSelectColId(paramsData).then(res => {
-                        if (res.code == '200') {
-                          this.edgeInitialized.inputEdgeSelect=[]
-                          this.edgeInitialized.viewSelect=[]
-                          for (let key in res.rows){
-                            this.edgeInitialized.inputEdgeSelect.push({key:res.rows[key][sourceP.val],title:res.rows[key][sourceP.display]})
-                            this.edgeInitialized.viewSelect.push({key:res.rows[key][sourceP.val],title:res.rows[key][sourceP.display]})
-                          }
-                        } else {
-                          this.warn(res.msg)
-                          this.edgeInitialized.inputEdgeSelect = []
-                        }
-                      }).catch(err => {
-                        this.error(err)
-                      })
-                    // }
-                    let listData = {};
-                    if (ev.item.model.assertValList){
-                      listData.valueList = ev.item.model.assertValList;
-                    } else{
-                      listData.valueList = [];
-                      ev.item.model.assertValList = []
-                    }
-                    console.log(ev.item.model.assertValList,'2233')
-                    listData.id =sourceP.itemId;
-                    listData.val =  sourceP.val;
-                    coreRuleNodeSelectColId(listData).then(res => {
-                      if (res.code == '200') {
-                        let resData = [];
-                        for (let key in res.rows){
-                          resData.push({key:res.rows[key][sourceP.val],title:res.rows[key][sourceP.display]})
-                        }
-                        this.edgeInitialized.viewSelect.push(...resData);
-                        this.edgeInitialized.viewSelect = Array.from(new Set( this.edgeInitialized.viewSelect))
-                      } else {
-                        this.warn(res.msg)
+              if (sourceP.shape == 'model-rect-attribute') {
+                _this.selectEdge.rearCondition = ev.item.model.rearCondition
+                _this.edgeInitialized.colDbType = sourceP.colDbType
+                if (sourceP.lo == 1) {
+                  _this.edgeInitialized.inputEdge = 'input'
+                  _this.edgeInitialized.lo = 1
+                } else if (sourceP.lo == 2) {
+                  _this.edgeInitialized.inputEdge = 'scopeInput'
+                  _this.edgeInitialized.lo = 2
+                } else if (sourceP.lo == 3 && !this.$util.trim(sourceP.parentId)) {
+                  _this.edgeInitialized.lo = 3
+                  _this.edgeInitialized.inputEdge = 'select'
+                  _this.edgeInitialized.itemId = sourceP.itemId
+                  _this.edgeInitialized.val = sourceP.val
+                  _this.edgeInitialized.display = sourceP.display
+                  let paramsData = { id: sourceP.itemId }
+                  if (ev.item.model.assertValList) {
+                    paramsData.valueList = ev.item.model.assertValList
+                    paramsData.val = sourceP.val
+                    paramsData.display = sourceP.display
+                  }
+                  coreRuleNodeSelectColId(paramsData).then(res => {
+                    if (res.code == '200') {
+                      _this.edgeInitialized.inputEdgeSelect = []
+                      for (let key in res.rows) {
+                        _this.edgeInitialized.inputEdgeSelect.push({
+                          ID: res.rows[key][sourceP.val],
+                          NAME: res.rows[key][sourceP.display]
+                        })
                       }
-                    }).catch(err => {
-                      this.error(err)
-                    })
+                    } else {
+                      this.warn(res.msg)
+                      _this.edgeInitialized.inputEdgeSelect = []
+                    }
+                  }).catch(err => {
+                    this.error(err)
+                  })
+                } else if (sourceP.lo == 3 && this.$util.trim(sourceP.parentId)) {
+                  _this.edgeInitialized.lo = 3
+                  _this.edgeInitialized.inputEdge = 'treeSelect'
+                  _this.edgeInitialized.itemId = sourceP.itemId
+                  _this.edgeInitialized.val = sourceP.val
+                  _this.edgeInitialized.display = sourceP.display
+                  _this.edgeInitialized.parentId = sourceP.parentId
+                  let paramsData = { id: sourceP.itemId }
+                  paramsData.val = sourceP.val
+                  paramsData.display = sourceP.display
+                  paramsData.parentId = sourceP.parentId
+                  coreRuleNodeSelectColId(paramsData).then(res => {
+                    if (res.code == '200') {
+                      _this.edgeInitialized.inputEdgeSelect = []
+                      _this.edgeInitialized.viewSelect = []
+                      for (let key in res.rows) {
+                        _this.edgeInitialized.inputEdgeSelect.push({
+                          key: res.rows[key][sourceP.val],
+                          title: res.rows[key][sourceP.display]
+                        })
+                        _this.edgeInitialized.viewSelect.push({
+                          key: res.rows[key][sourceP.val],
+                          title: res.rows[key][sourceP.display]
+                        })
+                      }
+                    } else {
+                      this.warn(res.msg)
+                      _this.edgeInitialized.inputEdgeSelect = []
+                    }
+                  }).catch(err => {
+                    this.error(err)
+                  })
+                  let listData = paramsData
+                  if (ev.item.model.assertValList) {
+                    listData.valueList = ev.item.model.assertValList
+                  } else {
+                    listData.valueList = []
+                    ev.item.model.assertValList = []
                   }
-                  if (sourceP.colDbType == 1) {
-                    this.edgeInitialized.inValueEdge = 'number'
-                  } else if (sourceP.colDbType == 2) {
-                    this.edgeInitialized.inValueEdge == 'time'
-                  } else if (sourceP.colDbType == 3) {
-                    this.edgeInitialized.inValueEdge = 'text'
-                  }
+                  coreRuleNodeSelectColId(listData).then(res => {
+                    if (res.code == '200') {
+                      let resData = []
+                      for (let key in res.rows) {
+                        resData.push({ key: res.rows[key][sourceP.val], title: res.rows[key][sourceP.display] })
+                      }
+                      this.edgeInitialized.viewSelect.push(...resData)
+                      this.edgeInitialized.viewSelect = Array.from(new Set(this.edgeInitialized.viewSelect))
+                    } else {
+                      this.warn(res.msg)
+                    }
+                  }).catch(err => {
+                    this.error(err)
+                  })
+                }
+                if (sourceP.colDbType == '1') {
+                  this.edgeInitialized.inValueEdge = 'number'
+                } else if (sourceP.colDbType == '2') {
+                  this.edgeInitialized.inValueEdge = 'time'
+                } else if (sourceP.colDbType == '3') {
+                  this.edgeInitialized.inValueEdge = 'text'
+                }
               }
               setTimeout(() => {
                 _this.selectEdge.id = ev.item.model.id
@@ -958,11 +968,6 @@
                 _this.selectEdge.assertVal = ev.item.model.assertVal
                 _this.selectEdge.assertValList = ev.item.model.assertValList
                 _this.selectEdge.dataDrilling = ev.item.model.dataDrilling
-                _this.selectEdge.rearCondition = ev.item.model.rearCondition
-                _this.selectEdge.calculation = ev.item.model.calculation
-                _this.selectEdge.formula = ev.item.model.formula
-                _this.selectEdge.calculated = ev.item.model.calculated
-                _this.selectEdge.isRepeat = ev.item.model.isRepeat
                 _this.selectEdge.assertVal1 = ev.item.model.assertVal1
                 _this.selectEdge.ro = ev.item.model.ro
                 _this.selectEdge.roSymbol = ev.item.model.roSymbol
@@ -1011,15 +1016,15 @@
               ev.cancel = true
             }
             //起始节点不能直接连接分支节点
-            if(ev.source.model.shape =='flow-circle-start' && ev.target.model.shape =='model-image-branch'){
-            ev.cancel = true
+            if (ev.source.model.shape == 'flow-circle-start' && ev.target.model.shape == 'model-image-branch') {
+              ev.cancel = true
             }
             //分支节点可以有多个接入节点，但输出节点只有一个
-            if(ev.target.model.shape =='model-image-branch'){
-              for(let key in ev.target.getEdges()){
-                  if(ev.target.getEdges()[key].target.model.shape =='model-image-branch'){
+            if (ev.target.model.shape == 'model-image-branch') {
+              for (let key in ev.target.getEdges()) {
+                if (ev.target.getEdges()[key].target.model.shape == 'model-image-branch') {
                   ev.cancel = true
-               }
+                }
               }
             }
             //目标和源都是同一个模块 禁用
@@ -1055,33 +1060,33 @@
       },
       //校验数据
       verifyFlow(status) {
-        this.submitStatus = true;
-        let data = this.flow.save();
-        if (this.$util.trim(data.nodes) ==null && this.$util.trim(data.edges) == null){
-          if(status.status){
-            this.warn('未选择节点!');
+        this.submitStatus = true
+        let data = this.flow.save()
+        if (this.$util.trim(data.nodes) == null && this.$util.trim(data.edges) == null) {
+          if (status.status) {
+            this.warn('未选择节点!')
           }
-          this.submitStatus = false;
+          this.submitStatus = false
           return
         }
         if (data.nodes.filter(item => item.shape == 'flow-circle-start').length == 0) {
-           if(status.status){
-          this.warn('起点不存在!');
-           }
-          this.submitStatus = false;
+          if (status.status) {
+            this.warn('起点不存在!')
+          }
+          this.submitStatus = false
           return
         }
-        if (this.$util.trim(data.edges) == null){
-           if(status.status){
-          this.warn('节点未连线!');
-           }
-          this.submitStatus = false;
+        if (this.$util.trim(data.edges) == null) {
+          if (status.status) {
+            this.warn('节点未连线!')
+          }
+          this.submitStatus = false
           return
         }
-        let list = [];
-        if (data.edges){
-          list = data.nodes.concat(data.edges);
-        } else{
+        let list = []
+        if (data.edges) {
+          list = data.nodes.concat(data.edges)
+        } else {
           list = data.nodes
         }
         for (let key in list) {
@@ -1093,82 +1098,102 @@
           }
           list[key].disOrder = list[key].index
           list[key].ruleId = this.ruleId
-          list[key].verdictType = Number(list[key].verdictType)
+          list[key].verdictType = list[key].verdictType
         }
         let indexData = this.getNodeTreeData(list)
         let i = 0
-        let nodeTree = this.recursiveNodeTree(indexData, '', i);
-        this.verifyTree(nodeTree, data.nodes, data.edges,status);
-        if (this.submitStatus && status.status){
-          this.success('校验成功');
+        let nodeTree = this.recursiveNodeTree(indexData, '', i)
+        this.verifyTree(nodeTree, data.nodes, data.edges, status)
+        if (this.submitStatus && status.status) {
+          this.success('校验成功')
         }
       },
 
       //校验数据
-      verifyTree(nodeTree, nodes, edges,status) {
+      verifyTree(nodeTree, nodes, edges, status) {
         for (let key in nodeTree) {
-          if (nodeTree[key].type == 'edge'&& this.submitStatus == true) {
-            if(this.judgeEdge(nodeTree[key], nodes,status)==false)
-              this.submitStatus = false;
+          if (nodeTree[key].type == 'edge' && this.submitStatus == true) {
+            if (this.judgeEdge(nodeTree[key], nodes, status) == false)
+              this.submitStatus = false
           }
           if (nodeTree[key].type == 'node' && this.submitStatus == true) {
-           if(this.judgeNode(nodeTree[key], edges,status)==false)
-             this.submitStatus = false;
+            if (this.judgeNode(nodeTree[key], edges, status) == false)
+              this.submitStatus = false
           }
           if (nodeTree[key].childNodes) {
-            this.verifyTree(nodeTree[key].childNodes, nodes, edges,status)
+            this.verifyTree(nodeTree[key].childNodes, nodes, edges, status)
           }
         }
       },
       //判断线的父节点类型
-      judgeEdge(edge, nodes,status) {
+      judgeEdge(edge, nodes, status) {
         for (let i in nodes) {
           if (nodes[i].id == edge.pid) {
-            if (nodes[i].shape == 'model-rect-attribute' ) {
-              if (nodes[i].lo == 3){
-                if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.ro) == null || this.$util.trim(edge.assertValList) == null) {
-                  if(status.status){
-                    this.warn('请输入线段值');
+            if (nodes[i].shape == 'model-rect-attribute') {
+              if (nodes[i].lo == 3) {
+                let valueList = null
+                if (this.$util.trim(node.rearCondition) != null) {
+                  valueList = 1
+                } else {
+                  valueList = this.$util.trim(edge.assertValList)
+                }
+                if (this.$util.trim(edge.label) == null || this.$util.trim(edge.ro) == null || valueList == null) {
+                  if (status.status) {
+                    this.warn('请输入线段值')
                   }
                   this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-                  this.submitStatus = false;
+                  this.submitStatus = false
                   return false
                 }
-              } else if(nodes[i].lo == 2){
-                if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.assertVal) == null || this.$util.trim(edge.assertVal1) == null) {
-                  if(status.status){
-                  this.warn('请输入线段值');
+              } else if (nodes[i].lo == 2) {
+                let value, value1 = null
+                if (this.$util.trim(node.rearCondition) != null) {
+                  value = 1
+                  value1 = 1
+                } else {
+                  value = this.$util.trim(edge.assertVal)
+                  value1 = this.$util.trim(edge.assertVal1)
+                }
+                if (this.$util.trim(edge.label) == null || value == null || value1 == null) {
+                  if (status.status) {
+                    this.warn('请输入线段值')
                   }
                   this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-                  this.submitStatus = false;
+                  this.submitStatus = false
                   return false
                 }
-              }else if(nodes[i].lo == 1){
-                 if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.assertVal) == null|| this.$util.trim(edge.ro) == null) {
-              if(status.status){
-                  this.warn('请输入线段值');
+              } else if (nodes[i].lo == 1) {
+                let value = null
+                if (this.$util.trim(node.rearCondition) != null) {
+                  value = 1
+                } else {
+                  value = this.$util.trim(edge.assertVal)
+                }
+                if (this.$util.trim(edge.label) == null || value == null || this.$util.trim(edge.ro) == null) {
+                  if (status.status) {
+                    this.warn('请输入线段值')
                   }
                   this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-                  this.submitStatus = false;
+                  this.submitStatus = false
                   return false
                 }
               }
             } else if (nodes[i].shape == 'flow-rhombus-if') {
-              if (this.$util.trim(edge.label) == null|| this.$util.trim(edge.assertVal) == null) {
-               if(status.status){
-                  this.warn('请输入线段值');
-                  }
+              if (this.$util.trim(edge.label) == null || this.$util.trim(edge.assertVal) == null) {
+                if (status.status) {
+                  this.warn('请输入线段值')
+                }
                 this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-                this.submitStatus = false;
+                this.submitStatus = false
                 return false
               }
             } else if (nodes[i].shape == 'model-image-branch') {
               if (this.$util.trim(edge.label) == null) {
-              if(status.status){
-                  this.warn('请输入线段值');
-                  }
+                if (status.status) {
+                  this.warn('请输入线段值')
+                }
                 this.flow.update(edge.id, { style: { stroke: '#1890ff', lineWidth: 3 } })
-                this.submitStatus = false;
+                this.submitStatus = false
                 return false
               }
             }
@@ -1176,58 +1201,74 @@
         }
       },
       //判断节点父节点
-      judgeNode(node, edges,status) {
+      judgeNode(node, edges, status) {
         // let pids = node.pid.split(',');
         // for (let key in edges) {
-          // for (let i in pids){
-            // if (edges[key].id == pids[i]) {
-              if (node.shape == 'model-rect-attribute'){
-                if (this.$util.trim(node.itemId) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0){
-                  if(status.status){
-                  this.warn('属性节点未完善或缺少结论节点和上级节点');
-                  }
-                    // this.flow.update(node.id, { fill: 'red'})  
-                  this.submitStatus = false;
-                  return false
-                }
-              }else if (node.shape == 'model-image-branch' ){
-                if (this.$util.trim(node.label) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0){
-                   if(status.status){
-                  this.warn('分支节点或缺少结论节点和上级节点');
-                   }
-                  this.submitStatus = false;
-                  return false
-                }
-              }else if (node.shape == 'flow-rhombus-if'){
-                if (node.lo == 3){
-                  if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null  ||this.$util.trim(node.childNodes) == null || node.pid.length == 0){
-                     if(status.status){
-                    this.warn('条件节点或缺少结论节点和上级节点');
-                     }
-                    this.submitStatus = false;
-                    return false
-                  }
-                } else{
-                  if ( this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.assertVal) == null||  this.$util.trim(node.childNodes) == null || node.pid.length == 0){
-                     if(status.status){
-                    this.warn('条件节点或缺少结论节点和上级节点');
-                     }
-                    this.submitStatus = false;
-                    return false
-                  }
-                }
-              }else if (node.shape == 'model-card-conclusion'){
-                if (this.$util.trim(node.inAccordanceWith) == null || this.$util.trim(node.levels) == null || (this.$util.trim(node.message) == null || this.$util.trim(node.suggest) == null || this.$util.trim(node.verdictType) == null || node.pid.length == 0)){
-                   if(status.status){
-                  this.warn('结论节点未完善或缺少上级节点');
-                   }
-                  this.flow.update(node.id, {isSelected:false})
-                  this.submitStatus = false;
-                  return false
-                }
+        // for (let i in pids){
+        // if (edges[key].id == pids[i]) {
+        if (node.shape == 'model-rect-attribute') {
+          if (this.$util.trim(node.itemId) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0) {
+            if (status.status) {
+              this.warn('属性节点未完善或缺少结论节点和上级节点')
+            }
+            // this.flow.update(node.id, { fill: 'red'})
+            this.submitStatus = false
+            return false
+          }
+        } else if (node.shape == 'model-image-branch') {
+          if (this.$util.trim(node.label) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0) {
+            if (status.status) {
+              this.warn('分支节点或缺少结论节点和上级节点')
+            }
+            this.submitStatus = false
+            return false
+          }
+        } else if (node.shape == 'flow-rhombus-if') {
+          if (node.lo == 3) {
+            let valueList = null
+            if (this.$util.trim(node.rearCondition) != null) {
+              valueList = 1
+            } else {
+              valueList = this.$util.trim(node.assertValList)
+            }
+            if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0 || valueList == null) {
+              if (status.status) {
+                this.warn('条件节点或缺少结论节点和上级节点')
               }
-            // }
-          // }
+              this.submitStatus = false
+              return false
+            }
+          } else {
+            let value = null
+            if (this.$util.trim(node.rearCondition) != null) {
+              value = 1
+            } else {
+              value = this.$util.trim(node.assertVal)
+            }
+            if (this.$util.trim(node.itemId) == null || this.$util.trim(node.ro) == null
+              || value == null || this.$util.trim(node.childNodes) == null
+              || node.pid.length == 0) {
+              if (status.status) {
+                this.warn('条件节点或缺少结论节点和上级节点')
+              }
+              this.submitStatus = false
+              return false
+            }
+          }
+        } else if (node.shape == 'model-card-conclusion') {
+          if (this.$util.trim(node.inAccordanceWith) == null || this.$util.trim(node.levels) == null
+            || (this.$util.trim(node.message) == null || this.$util.trim(node.suggest) == null
+              || this.$util.trim(node.verdictType) == null || node.pid.length == 0)) {
+            if (status.status) {
+              this.warn('结论节点未完善或缺少上级节点')
+            }
+            this.flow.update(node.id, { isSelected: false })
+            this.submitStatus = false
+            return false
+          }
+        }
+        // }
+        // }
         // }
       },
       /**
@@ -1235,11 +1276,11 @@
        */
       saveFlow() {
         let data = this.flow.save()
-        let list = [];
-        if (data.edges){
-           list = data.nodes.concat(data.edges);
-        }else {
-          list = data.nodes;
+        let list = []
+        if (data.edges) {
+          list = data.nodes.concat(data.edges)
+        } else {
+          list = data.nodes
         }
         for (let key in list) {
           delete list[key].childNodes
@@ -1249,13 +1290,13 @@
             list[key].pid = list[key].source
           }
           list[key].disOrder = list[key].index
-          list[key].ruleId = this.$route.params.id;
-          list[key].verdictType = Number(list[key].verdictType)
+          list[key].ruleId = this.$route.params.id
+          list[key].verdictType = list[key].verdictType
           list[key].precondition = Number(list[key].precondition)
           list[key].itemId = Number(list[key].itemId)
-          delete  list[key].index
+          delete list[key].index
         }
-        coreRuleNodeUpdate({ ruleNodeVOS: list,status:'0',ruleId:this.$route.params.id  }).then(res => {
+        coreRuleNodeUpdate({ ruleNodeVOS: list, status: '0', ruleId: this.$route.params.id }).then(res => {
           if (res.code == '200') {
             this.success('保存成功')
           } else {
@@ -1269,14 +1310,14 @@
       /**
        * @description: 提交流图数据
        */
-      submitFlow(){
-        this.verifyStatus = false;
-        let data = this.flow.save();
-        let list = [];
-        if (data.edges){
-          list = data.nodes.concat(data.edges);
-        }else {
-          list = data.nodes;
+      submitFlow() {
+        this.verifyStatus = false
+        let data = this.flow.save()
+        let list = []
+        if (data.edges) {
+          list = data.nodes.concat(data.edges)
+        } else {
+          list = data.nodes
         }
         for (let key in list) {
           delete list[key].childNodes
@@ -1286,13 +1327,13 @@
             list[key].pid = list[key].source
           }
           list[key].disOrder = list[key].index
-          list[key].verdictType = Number(list[key].verdictType)
-          list[key].ruleId = this.$route.params.id;
-          delete  list[key].index
+          list[key].verdictType = list[key].verdictType
+          list[key].ruleId = this.$route.params.id
+          delete list[key].index
         }
-        this.verifyFlow({status:false});
-        if ( this.submitStatus){
-          coreRuleNodeUpdate({ ruleNodeVOS: list,status:'1',ruleId:this.$route.params.id}).then(res => {
+        this.verifyFlow({ status: false })
+        if (this.submitStatus) {
+          coreRuleNodeUpdate({ ruleNodeVOS: list, status: '1', ruleId: this.$route.params.id }).then(res => {
             if (res.code == '200') {
               this.success('提交成功')
             } else {
@@ -1301,32 +1342,32 @@
           }).catch(err => {
             this.error(err)
           })
-        } else{
+        } else {
           this.warn('流程图未完善不能提交，可以保存')
         }
 
       },
 
       //复制规则
-      copyRule(){
-        this.modal.visible = true;
+      copyRule() {
+        this.modal.visible = true
       },
       //选择规则
-      ruleModalChange(value){
-        this.ruleModalId = ''+value.key;
+      ruleModalChange(value) {
+        this.ruleModalId = '' + value.key
       },
       //保存复制规则
-      modalOk(){
-        let _this = this;
-        this.modal.visible = false;
-        _this.flow.remove();
-        setTimeout(()=>{
-          this.getNodeData({ruleId:this.ruleModalId})
-        },0)
+      modalOk() {
+        let _this = this
+        this.modal.visible = false
+        _this.flow.remove()
+        setTimeout(() => {
+          this.getNodeData({ ruleId: this.ruleModalId })
+        }, 0)
       },
       //取消复制规则
-      modalCancel(){
-        this.modal.visible = false;
+      modalCancel() {
+        this.modal.visible = false
       },
       getNodePids(edges, id) {
         let pids = []
@@ -1366,11 +1407,11 @@
         return `${val}%`
       },
 
-      getDataList(params={}){
-        if (params.ruleId == null){
+      getDataList(params = {}) {
+        if (params.ruleId == null) {
           params.ruleId = this.$route.params.id
           this.ruleId = this.$route.params.id
-        }else {
+        } else {
           this.ruleId = params.ruleId
         }
         this.$axios({
@@ -1381,11 +1422,12 @@
           if (res.code == '200') {
             this.titleData.name = res.data.name
             this.titleData.status = res.data.status ? '启用' : '停用'
-            this.titleData.type = res.data.type ==1 ? '系统':null
+            this.titleData.type = res.data.type == 1 ? '系统' : null
             this.titleData.visible = res.data.type == 1 ? false : true
             this.titleData.updateTime = res.data.updateTime
-            this.titleData.type2 = res.data.type2;
-          }else {
+            this.titleData.updateBy = res.data.updateBy
+            this.titleData.type2 = res.data.type2
+          } else {
             this.warn(res.msg)
           }
         }).catch(err => {
@@ -1397,11 +1439,12 @@
       /**
        * @description:获取节点数据
        */
-      getNodeData(params={}) {
-        if (params.ruleId == null){
+      getNodeData(params = {}) {
+        this.spinning = true
+        if (params.ruleId == null) {
           params.ruleId = this.$route.params.id
           this.ruleId = this.$route.params.id
-        }else {
+        } else {
           this.ruleId = params.ruleId
         }
         this.$axios({
@@ -1410,6 +1453,7 @@
           data: params
         }).then(res => {
           if (res.code == '200') {
+            this.spinning = false
             let edgesData = res.data.ruleCableVOS
             let nodeData = res.data.ruleNodeVOS
             let edges = []
@@ -1465,7 +1509,7 @@
                 suggest: nodeData[key].suggest,
                 sourcename: nodeData[key].sourcename,
                 inAccordanceWith: nodeData[key].inAccordanceWith,
-                verdictType: '' + nodeData[key].verdictType,
+                verdictType: nodeData[key].verdictType,
                 restrictionType: nodeData[key].restrictionType,
                 ro: nodeData[key].ro,
                 lo: nodeData[key].lo,
@@ -1474,20 +1518,20 @@
                 handleType: nodeData[key].handleType,
                 itemName: nodeData[key].itemName,
                 itemId: nodeData[key].itemId,
-                precondition:nodeData[key].precondition,
-                dataDrilling:nodeData[key].dataDrilling,
-                rearCondition:nodeData[key].rearCondition,
-                calculation:nodeData[key].calculation,
-                formula:nodeData[key].formula,
-                calculated:nodeData[key].calculated,
-                isRepeat:nodeData[key].isRepeat,
+                precondition: nodeData[key].precondition,
+                dataDrilling: nodeData[key].dataDrilling,
+                rearCondition: nodeData[key].rearCondition,
+                calculation: nodeData[key].calculation,
+                formula: nodeData[key].formula,
+                calculated: nodeData[key].calculated,
+                isRepeat: nodeData[key].isRepeat,
                 assertVal: nodeData[key].assertVal,
                 assertValList: nodeData[key].assertValList,
                 assertVal1: nodeData[key].assertVal1,
                 size: nodeSize,
-                val:nodeData[key].ruleDatasourceVal,
-                display:nodeData[key].ruleDatasourceDisplay,
-                parentId:nodeData[key].ruleDatasourceParentId,
+                val: nodeData[key].ruleDatasourceVal,
+                display: nodeData[key].ruleDatasourceDisplay,
+                parentId: nodeData[key].ruleDatasourceParentId,
                 y: y,
                 x: x
               })
@@ -1512,37 +1556,29 @@
                 roSymbol: edgesData[key].roSymbol,
                 assertVal: edgesData[key].assertVal,
                 assertValList: edgesData[key].assertValList,
-                dataDrilling:edgesData[key].dataDrilling,
-                rearCondition:edgesData[key].rearCondition,
-                calculation:edgesData[key].calculation,
-                formula:edgesData[key].formula,
-                calculated:edgesData[key].calculated,
-                isRepeat:edgesData[key].isRepeat,
+                dataDrilling: edgesData[key].dataDrilling,
+                rearCondition: edgesData[key].rearCondition,
                 assertVal1: edgesData[key].assertVal1,
                 targetAnchor: 0,
-                val:edgesData[key].ruleDatasourceVal,
-                display:edgesData[key].ruleDatasourceDisplay,
-                parentId:edgesData[key].ruleDatasourceParentId,
                 type: 'edge'
               })
             }
             let list = nodes.concat(edges)
             let indexData = this.getNodeTreeData(list)
-
             let i = 0
-            this.pieChartData = {};
+            this.pieChartData = {}
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
-
-
             this.flow.read(JSON.parse(temp))
           } else {
             this.warn(res.msg)
+            this.spinning = false
           }
         }).catch(err => {
           console.log(err)
+          this.spinning = false
           this.error(err)
         })
       },
@@ -1588,8 +1624,8 @@
         let newNodeData = []
         let yHeight = 1
         for (let key in this.pieChartData) {
-          let data = this.pieChartData[key];
-          let yLength = data.length / 2;
+          let data = this.pieChartData[key]
+          let yLength = data.length / 2
           for (let i in data) {
             if (data[i].x && data[i].y) {
               data[i].x = data[i].x
@@ -1615,7 +1651,7 @@
                   data[i].y = -(yLength - i) * 250
                   data[i].yaxis = -(yLength - i) * 250
                 }
-                data[i].x = key  * 180
+                data[i].x = key * 180
               }
             }
           }
@@ -1627,7 +1663,7 @@
         for (let key in newNodeData) {
           if (keys.indexOf(newNodeData[key].id) == -1) {
             keys.push(newNodeData[key].id)
-            delete  newNodeData[key].childNodes
+            delete newNodeData[key].childNodes
             nodes.push(newNodeData[key])
           }
         }
@@ -1662,52 +1698,52 @@
       },
 
       //
-      addRuleData(){
-        this.$refs.addRule.drugForm.resetFields();
-        setTimeout(()=>{
-          this.$refs.addRule.drugForm.setFieldsValue({type2:1})
-        },0)
-        this.addVisible = true;
+      addRuleData() {
+        this.$refs.addRule.drugForm.resetFields()
+        setTimeout(() => {
+          this.$refs.addRule.drugForm.setFieldsValue({ type2: 1 })
+        }, 0)
+        this.addVisible = true
       },
       //新增规则
-      addRuleOk(data){
+      addRuleOk(data) {
         this.$refs.addRule.drugForm.validateFields((err, values) => {
             if (!err) {
-              let params = {};
-              if (values.name){
-                params.name = values.name;
-                params.type2 = values.type2;
-              }else{
+              let params = {}
+              if (values.name) {
+                params.name = values.name
+                params.type2 = values.type2
+              } else {
                 params.name = data.label
                 params.limitedItemid = data.key
-                params.type2 = values.type2;
+                params.type2 = values.type2
               }
-              this.addVisible = false;
+              this.addVisible = false
               this.$axios({
                 url: this.api.coreRuleUpdate,
                 method: 'post',
                 data: params
               }).then(res => {
                 if (res.code == '200') {
-                  let _this = this;
-                  this.success(res.msg);
-                  this.addVisible = false;
+                  let _this = this
+                  this.success(res.msg)
+                  this.addVisible = false
                   this.$router.push({
                     name: 'flowChartEditor',
-                    params:{id:res.data.id,type:res.data.type},
+                    params: { id: res.data.id, type: res.data.type }
                   })
-                  _this.flow.remove();
-                  setTimeout(()=>{
-                    this.getNodeData({ruleId:res.data.id})
-                    this.getDataList({ruleId:res.data.id});
-                  },0)
+                  _this.flow.remove()
+                  setTimeout(() => {
+                    this.getNodeData({ ruleId: res.data.id })
+                    this.getDataList({ ruleId: res.data.id })
+                  }, 0)
                 } else {
-                  this.warn(res.msg);
-                  this.addVisible = false;
+                  this.warn(res.msg)
+                  this.addVisible = false
                 }
               }).catch(err => {
-                this.error(err);
-                this.addVisible = false;
+                this.error(err)
+                this.addVisible = false
               })
             }
           }
@@ -1715,14 +1751,14 @@
       },
 
       //取消新增规则
-      addRuleCancel(){
-        this.addVisible = false;
+      addRuleCancel() {
+        this.addVisible = false
       },
-      getCoreFactAllStart(){
+      getCoreFactAllStart() {
         coreFactColAll({}).then(res => {
           if (res.code == '200') {
-            let indexData = this.dealAllStartTree(res.rows);
-            this.CoreFactAllTree = this.dealNodeTree(indexData, 'undefined');
+            let indexData = this.dealAllStartTree(res.rows)
+            this.CoreFactAllTree = this.dealNodeTree(indexData, 'undefined')
           } else {
             this.warn(res.msg)
           }
@@ -1731,37 +1767,37 @@
         })
       },
       //处理模型字段
-      dealAllStartTree(list){
+      dealAllStartTree(list) {
         let indexData = {}
         for (let key in list) {
           let children = indexData[list[key].pid]
           if (children instanceof Array) {
             children.push({
-              title:list[key].colName,
-              value:''+list[key].id,
-              key:''+list[key].id,
-              disabled:list[key].isleaf? true:false,
-              id:list[key].id,
-              pid:''+list[key].pid,
-              lo:list[key].lo,
-              colDbType:list[key].colDbType,
+              title: list[key].colName,
+              value: '' + list[key].id,
+              key: '' + list[key].id,
+              disabled: list[key].isleaf ? true : false,
+              id: list[key].id,
+              pid: '' + list[key].pid,
+              lo: list[key].lo,
+              colDbType: list[key].colDbType
 
             })
           } else {
             children = [{
-              title:list[key].colName,
-              value:''+list[key].id,
-              key:''+list[key].id,
-              disabled:list[key].isleaf? true:false,
-              id:list[key].id,
-              pid:''+list[key].pid,
-              lo:list[key].lo,
-              colDbType:list[key].colDbType,
+              title: list[key].colName,
+              value: '' + list[key].id,
+              key: '' + list[key].id,
+              disabled: list[key].isleaf ? true : false,
+              id: list[key].id,
+              pid: '' + list[key].pid,
+              lo: list[key].lo,
+              colDbType: list[key].colDbType
             }]
           }
           indexData[list[key].pid] = children
         }
-        return indexData;
+        return indexData
       },
       dealNodeTree(indexData, pid) {
         let children = indexData[pid]
@@ -1773,42 +1809,26 @@
         }
         return children
       },
-      getPrePidData(id,data){
-        for(let key in data){
-          if (id == data[key].id){
-            this.prePid = data[key].pid;
-            return;
-          }else{
-            this.getPrePidData(id,data[key].children)
+      getPrePidData(id, data) {
+        for (let key in data) {
+          if (id == data[key].id) {
+            this.prePid = data[key].pid
+            return
+          } else {
+            this.getPrePidData(id, data[key].children)
           }
         }
       },
-      getPreData(pid,data){
-        if (this.$util.trim(pid)){
-          for(let key in data){
-            if (pid == data[key].id){
+      getPreData(pid, data) {
+        if (this.$util.trim(pid) && pid == 15) {
+          for (let key in data) {
+            if (pid == data[key].id) {
               return data[key]
             }
           }
-        } else{
+        } else {
           return []
         }
-      },
-
-      dealValTree(data, pid) {
-        var items = []
-        for (var key in data) {
-          var item = data[key]
-          if (pid == item.PID) {
-            items.push({
-              title: item.NAME,
-              value: item.ID,
-              key: item.ID,
-              children: this.dealValTree(data, item.ID)
-            })
-          }
-        }
-        return items
       },
     }
   }

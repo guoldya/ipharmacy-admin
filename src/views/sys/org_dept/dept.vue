@@ -61,7 +61,7 @@
                                 placeholder="请输入..."
                                 v-decorator="[
                                 'code',
-                                {rules: [{ required: true, message: '请输入部门编码' },{ message: '请勿输入汉字空格且15个字符以内', pattern: /^\w{1,15}$/}]}
+                                {rules: [{ required: true, message: '请输入部门编码' },{ message: '请勿输入汉字空格且15个字符以内', pattern:  /^[^[\u4e00-\u9fa5\s]{1,15}]*$/}]}
                                 ]"
                         />
                     </a-form-item>
@@ -147,6 +147,7 @@
             }
         },
         mounted(){
+             sessionStorage.setItem('val',this.$route.params.orgId)
             this.getOrgData();
             this.getDeptData({ orgId:this.$route.params.orgId,deptId:this.$route.params.deptId });
             this.init();

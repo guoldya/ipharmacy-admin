@@ -9,7 +9,7 @@
           </a>
         </div>
         <div class="desc">
-          {{desc}}
+<!--          {{desc}}-->
         </div>
       </div>
       <route-view></route-view>

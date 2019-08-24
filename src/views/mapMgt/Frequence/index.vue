@@ -47,6 +47,7 @@
             @showSizeChange="pageChangeSize"
             @change="pageChange"
             size="small"
+            :pageSize="pageSize"
           ></a-pagination>
         </a-spin>
       </a-card>
@@ -182,7 +183,7 @@ export default {
         similarDrugDataUrl: '/sys/hisFrequence/selectSimilarDicFrequencePage',
         mapUrl: 'sys/dicFrequenceMapper/insert',
         dicDrugSelectList: 'sys/dicFrequence/selectDicFrequenceByKeyword',
-         orgUrl: '/sys/sysOrgs/selectList'
+        orgUrl: '/sys/sysOrgs/selectList'
       },
       loading: false,
       columnscheckdtl: [
@@ -202,7 +203,8 @@ export default {
       isShow: true,
       drugAllList: [],
       isActive: true,
-       orgData: []
+      orgData: [],
+       searchdata:{ orgId: this.$store.state.user.account.info.orgId }
     }
   },
   computed: {
@@ -235,7 +237,7 @@ export default {
   mounted() {
     this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
     this.getData()
-     this.getOrgData()
+    this.getOrgData()
   },
   methods: {
     // 搜索
@@ -390,52 +392,51 @@ export default {
       }
       if (Object.keys(this.MData).length == 0) {
         this.$message.info('请添加知识库数据')
-      }
-      else{
-      this.loading = true
-      this.$axios({
-        url: this.api.mapUrl,
-        method: 'post',
-        data: params
-      })
-        .then(res => {
-          if (res.code == '200') {
-            this.success('对码成功', () => {
-              this.NData = {}
-              this.MData = {}
-              this.similarData = []
-              let param = {
+      } else {
+        this.loading = true
+        this.$axios({
+          url: this.api.mapUrl,
+          method: 'post',
+          data: params
+        })
+          .then(res => {
+            if (res.code == '200') {
+              this.success('对码成功', () => {
+                this.NData = {}
+                this.MData = {}
+                this.similarData = []
+                let param = {
                   pageSize: this.pageSize,
-                  offset:(this.current - 1) * this.pageSize
+                  offset: (this.current - 1) * this.pageSize
                 }
                 Object.assign(param, this.$refs.searchPanel.form.getFieldsValue())
-                this.getData(
-                  param
-                )
+                this.getData(param)
+                this.loading = false
+                this.isActive = true
+                this.remark = ''
+              })
+            } else {
               this.loading = false
-              this.isActive = true
-              this.remark = ''
-            })
-          } else {
+              this.warn(res.msg)
+            }
+          })
+          .catch(err => {
             this.loading = false
-            this.warn(res.msg)
-          }
-        })
-        .catch(err => {
-          this.loading = false
-          this.error(err)
-        })
+            this.error(err)
+          })
       }
     },
     //点击取消
     clickCancel() {
       this.MData = {}
-      this.remark=''
+      this.remark = ''
     },
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.pageSize = 20
+       this.searchdata=this.$refs.searchPanel.form.getFieldsValue()
+      // this.pageSize = 20
+      params.pageSize = this.pageSize
       params.offset = 0
       this.current = 1
       this.getData(params)
@@ -446,24 +447,24 @@ export default {
       // this.getData({ pageSize: 20, offset: 0 })
       this.$refs.searchPanel.form.resetFields(['frequenceName', 'isCurrent', []])
       let params = { pageSize: 20, offset: 0 }
-        this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
+      this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
       this.getData(params)
+      this.searchdata={orgId: this.$store.state.user.account.info.orgId}
     },
     //页码size change事件
     pageChangeSize(page, pageSize) {
       this.pageSize = pageSize
-      this.current = 1
-      let params = { offset: 0, pageSize: pageSize }
-      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      let params = { offset: (page-1)*pageSize, pageSize: pageSize }
+      Object.assign(params, this.searchdata)
       this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
       this.current = page
       let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
-      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      Object.assign(params,  this.searchdata)
       this.getData(params)
     },
     //页码跳转
@@ -481,7 +482,7 @@ export default {
       params.pageSize = size
       this.getSimilarData(params)
     },
-     // 机构选取
+    // 机构选取
     getOrgData(obj = {}) {
       this.$axios({
         url: this.api.orgUrl,
@@ -511,7 +512,7 @@ export default {
         }
       })
       return tree
-    },
+    }
   }
 }
 </script>

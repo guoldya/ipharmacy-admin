@@ -48,6 +48,7 @@
             @showSizeChange="pageChangeSize"
             @change="pageChange"
             size="small"
+            :pageSize='pageSize'
           ></a-pagination>
         </a-spin>
       </a-card>
@@ -161,6 +162,7 @@
 </template>
 <script>
 import debounce from 'lodash/debounce'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   data() {
     this.handleSearch = debounce(this.handleSearch, 800)
@@ -210,7 +212,8 @@ export default {
       icdname: '',
       icdname: '',
       drugAllList: [],
-      orgData: []
+      orgData: [],
+      searchdata: { orgId: this.$store.state.user.account.info.orgId }
     }
   },
   computed: {
@@ -399,14 +402,12 @@ export default {
                 this.NData = {}
                 this.MData = {}
                 this.similarData = []
-               let param = {
+                let param = {
                   pageSize: this.pageSize,
-                  offset:(this.current - 1) * this.pageSize
+                  offset: (this.current - 1) * this.pageSize
                 }
                 Object.assign(param, this.$refs.searchPanel.form.getFieldsValue())
-                this.getData(
-                  param
-                )
+                this.getData(param)
                 this.loading = false
                 this.isActive = true
                 this.icdname = ''
@@ -425,12 +426,13 @@ export default {
     //点击取消
     clickCancel() {
       this.MData = {}
-      this.icdname=''
+      this.icdname = ''
     },
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-      params.pageSize = 20
+      this.searchdata=this.$refs.searchPanel.form.getFieldsValue()
+      params.pageSize = this.pageSize
       params.offset = 0
       this.current = 1
       this.getData(params)
@@ -439,24 +441,26 @@ export default {
     resetForm() {
       this.$refs.searchPanel.form.resetFields(['icdName', 'isCurrent', []])
       let params = { pageSize: 20, offset: 0 }
-        this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
+      this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
+      this.pageSize=20
       this.getData(params)
+       this.searchdata={orgId: this.$store.state.user.account.info.orgId}
     },
     //页码size change事件
     pageChangeSize(page, pageSize) {
       this.pageSize = pageSize
       this.current = 1
       let params = { offset: 0, pageSize: pageSize }
-      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      Object.assign(params, this.searchdata)
       this.getData(params)
     },
     //页码跳转事件
     pageChange(page, pageSize) {
       this.current = page
       let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
-      Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
+      Object.assign(params, this.searchdata)
       this.getData(params)
     },
     //页码跳转

@@ -52,12 +52,12 @@
         showQuickJumper
         :total="total"
         class="pnstyle"
-        :defaultPageSize="pageSize"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
         size="small"
         v-model="current"
+        :pageSize='pageSize'
       ></a-pagination>
     </a-spin>
   </a-card>
@@ -92,7 +92,8 @@ export default {
       ],
       levelColor: '#ffffff',
       dataSource: [],
-      current: 1
+      current: 1,
+      searchdata:{}
     }
   },
   computed: {
@@ -126,6 +127,7 @@ export default {
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
+      this.searchdata=this.$refs.searchPanel.form.getFieldsValue()
       params.pageSize = this.pageSize
       this.current=1
       params.offset = 0
@@ -133,7 +135,10 @@ export default {
     },
     //重置
     resetForm() {
+      this.searchdata={}
       this.$refs.searchPanel.form.resetFields()
+      this.curent=1
+      this.pageSize=10
       this.getData({ pageSize: 10, offset: 0 })
     },
     getData(params = { pageSize: 10, offset: 0 }) {
@@ -160,14 +165,14 @@ export default {
     },
     pageChange(page, pageSize) {
       this.curent=page
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params = this.searchdata
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getData(params)
     },
     pageChangeSize(page, pageSize) {
       this.pageSize=pageSize
-      let params = this.$refs.searchPanel.form.getFieldsValue()
+      let params = this.searchdata
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
       this.getData(params)
