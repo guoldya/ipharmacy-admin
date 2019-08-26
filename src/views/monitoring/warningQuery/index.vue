@@ -13,7 +13,7 @@
           />
         </li>
         <li v-for="item in dateList" :key="item.name"
-            :class="{listStyle : listStyle == item.date}"  tabindex="0" v-on:click="getRangePicker(item)">{{item.name}}</li>
+            :class="{listStyle : listStyle == item.date}"   v-on:click="getRangePicker(item)">{{item.name}}</li>
       </ul>
     </a-card>
     <a-row class="margin-top-5">
@@ -364,7 +364,7 @@
     float: right;
     padding-right: 20px;
     padding-left: 20px;
-    line-height: 32px;
+    line-height: 35px;
   }
 
   .ulList li:hover {

@@ -135,7 +135,7 @@
           :total="total"
           class="pnstyle"
           v-model="current"
-          :defaultPageSize="10"
+          :pageSize="pageSize"
           @showSizeChange="clientSizeChange"
           @change="customerPageChange"
           size="small"
@@ -218,6 +218,7 @@ export default {
       //页码初始化
       total: 2,
       current: 1,
+      pageSize:10,
       //已分配科室
       dis: false,
       Modal: {
@@ -422,6 +423,7 @@ export default {
     },
     //重置
     resetForm() {
+      this.pageSize = 10;
       this.$refs.searchPanel.form.resetFields()
       //this.fetchYJSMapData(params)
       this.fetchYJSMapData({ pageSize: 10, offset: 0 })
@@ -435,6 +437,7 @@ export default {
     },
     //更改一页多少数据
     clientSizeChange(current, size) {
+      this.pageSize = size;
       this.current = 1
       let params = {}
       params.pageSize = size

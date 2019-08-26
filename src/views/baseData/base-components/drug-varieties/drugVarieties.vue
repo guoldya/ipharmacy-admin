@@ -47,7 +47,6 @@
                 showQuickJumper
                 :total="variety.total"
                 class="pnstyle"
-                :defaultPageSize="pageSize"
                 :pageSizeOptions="['10', '20','50']"
                 @showSizeChange="varietiesPageSize"
                 @change="varietiesPageChange"
@@ -257,6 +256,7 @@ export default {
         },
         //重置
         varietiesResetForm() {
+          this.$emit( 'updateDisable',true);
             this.current   = 1
             this.$refs.searchPanel.form.resetFields()
             this.pageChangeFilter = {}

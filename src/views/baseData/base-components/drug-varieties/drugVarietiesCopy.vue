@@ -264,6 +264,7 @@ export default {
     },
     //重置
     varietiesResetForm() {
+      this.$emit( 'updateDisable',true);
       this.currents = 1
       this.pageSize=10
       this.$refs.searchPanel.form.resetFields()

@@ -5,8 +5,15 @@
                 <detailHeader :userName="userName" :tagList="tagList" :userInfo="userInfo" :diag="diag"></detailHeader>
 
         <a-card class="margin-top-10">
+          <div class="disFlex">
+              <span class="font-bold fontSize16"><a-icon type="export" />患者入院药学评估</span>
+              <span>
+                <a-button><a-icon type="arrow-left" />返回</a-button>
+                <a-button class="margin-left-5" type='primary'>打印预览</a-button>
+                <a-button class="margin-left-5" type='primary'>保存</a-button>
+              </span>
+          </div>
           <header class="record">
-            <a-icon type="export" />患者入院药学评估
           </header>
           <a-divider />
           <h3 class="record">基本信息</h3>
@@ -93,9 +100,14 @@
           <h3 class="record">Morisky用药依从性评价</h3>
           <a-divider />
           <!-- 第三个表单 -->
-          <a-form>
-            <div >
-                <a-button  :style="{'float':'right'}" type='primary'>评估标准</a-button>
+          <a-form :form='form'>
+            <div>
+              <a-popover title="评估标准" placement="leftTop">
+                  <template slot="content">
+                    <div>prompt text</div>
+                  </template>
+                    <a-button  :style="{'float':'right'}"  type="primary">评估标准</a-button>
+                </a-popover>
             </div>
             <div :style="{clear:'both'}"></div>
             <a-form-item :label-col="{ span:3 }"
@@ -107,149 +119,93 @@
                     :key="index"
                   >{{op.text}}</a-radio>
                 </a-radio-group>
-
-              </a-form-item>
+            </a-form-item>
 
           </a-form>
           
           <div class="disFlex">
-            <span class="record"><h3>疾病因素评估</h3></span>
+            <span class="record titleH3">疾病因素评估</span>
             <span>
-            <a-button type="primary">增加评分项</a-button>
+            <a-button class="greenBg"><a-icon type="plus" />增加评分项</a-button>
             </span>
           </div>
           <a-divider />
           <!-- 第四个表单 -->
-          <div id="components-form-demo-advanced-search" class="enterhosptial">
-            <a-form class="ant-advanced-search-form" :form="form">
-              <a-form-item label="肝功能" class="texts">
-                <a-radio-group v-decorator="[ 'liver']">
+          <a-form :form='form'>
+            <a-form-item :label-col="{ span:3 }"
+                    :wrapper-col="{ span:21 }" v-for="(list,i) in formItemFour" :key="i" :label="list.label">
+                 <a-radio-group v-decorator="[ list.label,{initialValue: 1}]" buttonStyle="solid">
                   <a-radio
-                    v-for="(op,index) in this.enum.liver"
+                    v-for="(op,index) in list.radioItem"
                     :value="op.id"
                     :key="index"
-                  >{{op.text}}</a-radio>
+                  >{{op.text}} </a-radio>
                 </a-radio-group>
-                <a-button type="primary" style="float:right">评估标准</a-button>
+                <a-popover :title="list.label+'评估标准'" @visibleChange="e=>visibleChange(e,i)" placement="leftTop">
+                  <template slot="content">
+                    <evaluationTooltip :index="standardIndex"></evaluationTooltip>
+                  </template>
+                    <a-button  :style="{'float':'right'}"  type="primary">评估标准</a-button>
+                </a-popover>
+                
               </a-form-item>
-              <a-form-item label="肾功能" class="texts">
-                <a-radio-group v-decorator="[ 'renal']">
-                  <a-radio
-                    v-for="(op,index) in this.enum.renal"
-                    :value="op.id"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-                <a-button type="primary" style="float:right">评估标准</a-button>
-              </a-form-item>
-              <a-form-item label="心功能" class="texts">
-                <a-radio-group v-decorator="[ 'heart']">
-                  <a-radio
-                    v-for="(op,index) in this.enum.heart"
-                    :value="op.id"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-                <a-button type="primary" style="float:right">评估标准</a-button>
-              </a-form-item>
-              <a-form-item label="DVT" class="texts">
-                <a-radio-group v-decorator="[ 'dvt']">
-                  <a-radio
-                    v-for="(op,index) in this.enum.dvt"
-                    :value="op.id"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-                <a-button type="primary" style="float:right">评估标准</a-button>
-              </a-form-item>
-            </a-form>
-          </div>
-          <h3 class="record">既往用药评估水平</h3>
+          </a-form>
+          <h3 class="record">既往用药了解程度</h3>
           <a-divider />
           <!-- 第五个表单 -->
-          <div id="components-form-demo-advanced-search" class="enterhosptial">
-            <a-form class="ant-advanced-search-form" :form="form">
-              <a-form-item label="适应症" class="texts">
-                <a-radio-group v-decorator="[ 'liver']">
+          <a-form :form='form'>
+            <a-form-item :label-col="{ span:3 }"
+                    :wrapper-col="{ span:21 }" v-for="(list,i) in formItemFive" :key="i" :label="list.label">
+                 <a-radio-group v-decorator="[ list.label,{initialValue: 1}]" buttonStyle="solid">
                   <a-radio
-                    v-for="(op,index) in this.enum.druglevel"
+                    v-for="(op,index) in list.radioItem"
                     :value="op.id"
                     :key="index"
-                  >{{op.text}}</a-radio>
+                  >{{op.text}} </a-radio>
                 </a-radio-group>
               </a-form-item>
-              <a-form-item label="用法用量" class="texts">
-                <a-radio-group v-decorator="[ 'spec']">
-                  <a-radio
-                    v-for="(op,index) in this.enum.druglevel"
-                    :value="op.id"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-              </a-form-item>
-              <a-form-item label="注意事项" class="texts">
-                <a-radio-group v-decorator="[ 'warn']">
-                  <a-radio
-                    v-for="(op,index) in this.enum.druglevel"
-                    :value="op.id"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-              </a-form-item>
-              <a-form-item label="不良反应" class="texts">
-                <a-radio-group v-decorator="[ 'act']">
-                  <a-radio
-                    v-for="(op,index) in this.enum.druglevel"
-                    :value="op.id"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-              </a-form-item>
-              <a-form-item label="自我药疗效果" class="texts">
-                <a-radio-group v-decorator="[ 'grade']">
-                  <a-radio
-                    v-for="(op,index) in this.enum.druglevel"
-                    :value="op.id"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-              </a-form-item>
-              <a-row :gutter="24">
-                <a-col v-for="item in enddata" :key="item.title" :span="12">
-                  <a-form-item :label="`${item.title}`">
-                    <a-input
-                      v-decorator="[
-                `${item.name}`,
-                {
-                  rules: [{
-                    required: !item.require ,
-                    message: 'Input something!',
-                  }],
-                }
-              ]"
-                      :placeholder="`请输入${item.title}`"
+              <a-row>
+                <a-col :span=12 class="evalDoctor">
+                  <a-form-item :label-col="{ span:6 }"
+                    :wrapper-col="{ span:9 }" label="评估药师">
+                    <div class="disFlex">
+                        <a-input v-decorator="['evalDoctor']" />
+                    <a-button type="primary" class="margin-left-5" size="small">签名</a-button>
+                    </div>
+                    
+                  </a-form-item>
+                </a-col>
+                <a-col :span=12>
+                  <a-form-item :label-col="{ span:3 }"
+                    :wrapper-col="{ span:21 }" label="评估时间">
+                    <a-date-picker  v-decorator="['date']"
+                      format="YYYY-MM-DD HH:mm:ss"
+                      :disabledDate="disabledDate"
+                      :disabledTime="disabledDateTime"
+                      :showTime="{ defaultValue: moment('00:00:00', 'HH:mm:ss') }"
                     />
                   </a-form-item>
                 </a-col>
               </a-row>
-            </a-form>
-          </div>
+          </a-form>
           <a-divider />
         </a-card>
       </a-col>
     </a-row>
     <FooterToolBar>
       <a-button @click="backTo" class="margin-left-5">返回</a-button>
-      <a-button @click="adds" type="primary" style="margin-left: 5px">新增</a-button>
       <a-button type="primary" class="margin-left-5" @click="handleSubmit">保存</a-button>
     </FooterToolBar>
   </div>
 </template>
 <script>
-import FooterToolBar from '@/components/FooterToolbar'
+import FooterToolBar from '@/components/FooterToolbar';
+import moment from 'moment';
+import evaluationTooltip from '@/my-components/evaluationTooltip/evaluationTooltip'
 export default {
   components: {
-    FooterToolBar
+    FooterToolBar,
+    evaluationTooltip
   },
   name: 'index',
   data() {
@@ -445,7 +401,83 @@ export default {
                       { id: 3, text: '较差' },
                     ]
                 },
-            ]
+            ],
+
+            formItemFour:[
+              {label:'肝功能',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '正常' },
+                      { id: 2, text: 'child-pugn A级' },
+                      { id: 3, text: 'child-pugn B级' },
+                      { id: 4, text: 'child-pugn C级' },
+                    ]
+                },
+                {label:'肾功能',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '正常' },
+                      { id: 2, text: '轻度不全' },
+                      { id: 3, text: '中度不全' },
+                      { id: 4, text: '重度不全' },
+                      { id: 5, text: '肾衰竭' },
+                    ]
+                },
+                {label:'心功能',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: 'I级' },
+                      { id: 2, text: 'II级（轻度心衰）' },
+                      { id: 3, text: 'III级（中度心衰）' },
+                      { id: 4, text: 'IV重度心衰' },
+                    ]
+                },
+                {label:'DVT',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '无危险' },
+                      { id: 2, text: '低危（<10%）'},
+                      { id: 3, text: '中危（11-40%）' },
+                      { id: 4, text: '高危（>41%）' },
+                    ]
+                },
+                
+            ],
+            formItemFive:[
+              {label:'适应症',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '好' },
+                      { id: 2, text: '较好' },
+                      { id: 3, text: '一般' },
+                      { id: 4, text: '较差' },
+                      { id: 5, text: '不理解' },
+                    ]
+                },
+                {label:'用法用量',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '好' },
+                      { id: 2, text: '较好' },
+                      { id: 3, text: '一般' },
+                      { id: 4, text: '较差' },
+                      { id: 5, text: '不理解' },
+                    ]
+                },
+                {label:'注意事项',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '好' },
+                      { id: 2, text: '较好' },
+                      { id: 3, text: '一般' },
+                      { id: 4, text: '较差' },
+                      { id: 5, text: '不理解' },
+                    ]
+                },
+                {label:'不良反应',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '好' },
+                      { id: 2, text: '较好' },
+                      { id: 3, text: '一般' },
+                      { id: 4, text: '较差' },
+                      { id: 5, text: '不理解' },
+                    ]
+                },
+                {label:'自我药疗效果',type:'radio',val:"enterHospital",radioItem:[
+                      { id: 1, text: '好' },
+                      { id: 2, text: '较好' },
+                      { id: 3, text: '一般' },
+                      { id: 4, text: '较差' },
+                      { id: 5, text: '不理解' },
+                    ]
+                },
+            ],
+            standardIndex:null,
     }
   },
   computed: {
@@ -495,6 +527,31 @@ export default {
   mounted() {},
   destroyed() {},
   methods: {
+    moment,
+    range(start, end) {
+      const result = [];
+      for (let i = start; i < end; i++) {
+        result.push(i);
+      }
+      return result;
+    },
+
+    disabledDate(current) {
+      // Can not select days before today and today
+      return current && current < moment().endOf('day');
+    },
+
+    disabledDateTime() {
+      return {
+        disabledHours: () => this.range(0, 24).splice(4, 20),
+        disabledMinutes: () => this.range(30, 60),
+        disabledSeconds: () => [55, 56],
+      };
+    },
+    visibleChange(e,index){
+      console.log(e,index);
+      this.standardIndex=index;
+    },
     onAllergyChanege (e) {
             this.defaultValueAllergy=e.target.value;
             console.log('radio checked', e.target.value)
@@ -531,6 +588,16 @@ export default {
                 text-align: right;
                 float: right;
             }
+        }
+        .titleH3{
+            font-size: 16px;
+            margin-top: 0;
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 500;
+        }
+        .evalDoctor .ant-form-item{
+          display: flex;
+          align-items: center;
         }
 .detailCont {
   .enterhosptial {

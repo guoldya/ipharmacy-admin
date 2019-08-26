@@ -22,7 +22,7 @@
         showQuickJumper
         :total="total"
         class="pnstyle"
-        :defaultPageSize="pageSize"
+        :pageSize="pageSize"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
@@ -133,6 +133,7 @@
         this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize, planId: this.planId })
       },
       pageChangeSize(page, pageSize) {
+        this.pageSize = pageSize;
         this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize, planId: this.planId })
       }
     }

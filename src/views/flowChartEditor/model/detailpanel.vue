@@ -524,11 +524,12 @@
         this.selectNode.assertVal = null
         this.selectNode.assertValList = []
         let params = extra.selectedNodes[0].data.props
+        console.log(params,'2233')
         let _this = this
         _this.selectNode.itemId = params.id
         if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
           this.boxInitialized.inputType = 'select'
-          this.boxInitialized.itemId = '' + params.id
+          this.boxInitialized.itemId = params.id
           coreRuleNodeSelectColId({ id: params.id }).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = []
@@ -547,11 +548,10 @@
           })
         } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
           this.boxInitialized.inputType = 'treeSelect'
-          this.boxInitialized.itemId = '' + params.id
+          this.boxInitialized.itemId = params.id
           this.boxInitialized.val = params.val
           this.boxInitialized.display = params.display
           this.boxInitialized.parentId = params.parentId
-          this.boxInitialized.itemId = params.itemId
           coreRuleNodeSelectColId({id: params.id, val:params.val, display:params.display, parentId:params.parentId}).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = []
@@ -653,11 +653,11 @@
         } else if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
           this.edgeInitialized.inputEdge = 'select'
           this.edgeId = params.id
-          this.edgeInitialized.itemId = '' + params.id
+          this.edgeInitialized.itemId = params.id
         } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
           this.edgeInitialized.inputEdge = 'treeSelect'
           this.edgeId = params.id
-          this.edgeInitialized.itemId = '' + params.id
+          this.edgeInitialized.itemId = params.id
         }
         //线上计算条件处理
         this.preDetailData = []
@@ -987,7 +987,7 @@
             let params = {}
             params.parentId = _this.boxInitialized.parentId
             params.parentValue = treeNode.dataRef.key
-            params.id = _this.boxInitialized.itemId
+            params.id =  _this.boxInitialized.itemId
             coreRuleNodeSelectColId(params).then(res => {
               if (res.code == '200') {
                 treeNode.dataRef.children = []
