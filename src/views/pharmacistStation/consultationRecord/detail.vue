@@ -1,50 +1,32 @@
 <template>
   <div class="consultation">
     <a-row>
-      <a-col v-if="!isNew" :span="5" class="timeListCard">
-        <a-card>
-          <a-input-search placeholder="输入要查询日期" @search="onSearch"/>
-          <a-list size="large" bordered :dataSource="data">
-            <a-list-item slot="renderItem" slot-scope="item, index" @click="clickList(item)">{{item}}</a-list-item>
-          </a-list>
-        </a-card>
+      <a-col  v-if="!addStatus" :xl="8" :xxl="5">
+          <dateList :date="date"></dateList>
       </a-col>
-      <a-col :span="isNew ? 24:19" class="padding-left-5">
-        <a-card>
-          <header>
-            <span>梁汉文</span>
-            <a-tag color="#2db7f5">95279527</a-tag>
-            <a-tag color="blue">心</a-tag>
-            <a-tag color="#108ee9">肝</a-tag>
-            <a-tag color="#87d068">肺</a-tag>
-          </header>
-          <aside class="people">
-            <span>男</span>
-            <a-divider type="vertical"/>
-            <span>35岁</span>
-            <a-divider type="vertical"/>
-            <span>皮肤科&nbsp;五病区/2床</span>
-            <a-divider type="vertical"/>
-            <span>医护：唐伯虎/秋香</span>
-            <a-divider type="vertical"/>
-            <span>入院日期：2017-4-8</span>
-          </aside>
-        </a-card>
+      <a-col :xxl="page===JSON.stringify('look')&&!addStatus?19:24" :xl="page===JSON.stringify('look')&&!addStatus?16:24"  class="padding-left-5">
+        <detailHeader :userName="userName" :tagList="tagList" :userInfo="userInfo" :diag="diag"></detailHeader>
+        
         <a-card class="margin-top-5">
-          <header class="record">
-            <a-icon type="book"/>
-            <span class="font-bold fontSize16">会诊记录</span>
-          </header>
-          <a-form>
+          <div class="disFlex">
+            <span class="font-bold fontSize16"><a-icon type="book"/> 会诊记录</span>
+            <span>
+              <a-button @click="backTo"><a-icon type="arrow-left" />返回</a-button>
+              <a-button type="primary" class="margin-left-5" @click="adds" v-if="!addStatus">新增</a-button>
+              <a-button type="primary" @click="handleSubmit" class="margin-left-5">提交</a-button>
+            </span>
+          </div>
+
+          <a-form :form='form'>
             <a-row>
-            <a-form-item
-              class="margin-top-10"
-              style="width: 350px;"
-              v-bind="consultationItemLayout"
-              label="会诊时间"
-            >
-              <a-date-picker  format="YYYY-MM-DD HH:mm"/>
-            </a-form-item>
+              <a-form-item
+                class="margin-top-10"
+                style="width: 350px;"
+                v-bind="consultationItemLayout"
+                label="会诊时间"
+              >
+                <a-date-picker  v-decorator="['date']" format="YYYY-MM-DD HH:mm"/>
+              </a-form-item>
             </a-row>
             <a-row>
               <a-col :span="12" class="font-bold  fontSize16 lineHeight">会诊信息</a-col>
@@ -55,25 +37,18 @@
             </a-row>
             <a-divider/>
             <a-row>
-              <a-form-item label="病史、用药史概要及病程记录" class="record">
-                <a-textarea v-decorator="['defcode1']" placeholder="病史、用药史概要及病程记录" :rows="4"/>
-              </a-form-item>
-              <a-form-item label="主要医疗或药学问题"  class="record">
-                <a-textarea v-decorator="['defcode2']" placeholder="主要医疗或药学问题" :rows="4"/>
-              </a-form-item>
-              <a-form-item label="药学会诊(讨论)意见和建议"  class="record">
-                <a-textarea v-decorator="['defcode3']" placeholder="药学会诊(讨论)意见和建议" :rows="4"/>
-              </a-form-item>
-              <a-form-item label="遗留问题、解决方式及随访情况"  class="record">
-                <a-textarea v-decorator="['defcode4']" placeholder="遗留问题、解决方式及随访情况" :rows="4"/>
-              </a-form-item>
+              <a-col>
+                <a-form-item v-for="(list,i) in formItem" :key="i" :label="list.label">
+                    <a-textarea :autosize="{ minRows: 4}" v-decorator="[list.val]"/>
+                  </a-form-item>
+              </a-col>
             </a-row>
           </a-form>
         </a-card>
       </a-col>
     </a-row>
 
-    <FooterToolBar
+    <!-- <FooterToolBar
       :style="{ width: isSideMenu() && isDesktop() ? `calc(100% - ${sidebarOpened ? 256 : 80}px)` : '100%'}"
     >
       <a-button
@@ -87,7 +62,7 @@
         type="primary"
         style="margin-left: 5px"
         :loading="loading"
-        v-if="!isNew"
+        v-if="!addStatus"
       >新增
       </a-button>
       <a-button
@@ -97,7 +72,7 @@
         :loading="loading"
       >保存
       </a-button>
-    </FooterToolBar>
+    </FooterToolBar> -->
   </div>
 </template>
 <script>
@@ -114,6 +89,25 @@
     name: 'index',
     data() {
       return {
+        userName:'梁汉文',
+        tagList:[
+            {tag:'91084654',color:'#40a9ff'},
+            {tag:'肝',color:'#40a9ff'},
+            {tag:'肾',color:'#58C7CF'},
+            {tag:'心',color:'#B497EE'},
+
+        ],
+        userInfo:{
+            sex:'男',
+            age:'35岁'  ,
+            dept:'皮肤科',
+            stage:' 5病区/2床',
+            docNurse:'胡清/黄晶锐',
+            date:'2019-08-05'
+        },
+        diag:'过敏性皮炎',
+        date: ['2014-5-6', '2014-5-7', '2014-5-7', '2014-5-7', '2014-5-7'],
+
         api:{
           updateUrl:'sys/update',
         },
@@ -130,12 +124,31 @@
         form: this.$form.createForm(this),
         data: ['2014-5-6', '2014-5-7', '2014-5-7', '2014-5-7', '2014-5-7'],
         loading: false,
-        isNew:false,
+        addStatus:false,
+        formItem:[
+          {label:'病史、用药史概要及病程记录',val:'defcode2'},
+          {label:'主要医疗或药学问题',val:'defcode3'},
+          {label:'药学会诊(讨论)意见和建议',val:'defcode4'},
+          {label:'遗留问题、解决方式及随访情况',val:'defcode5'},
+        ],
       }
     },
-    computed: {},
+    computed:{
+      page(){
+        return sessionStorage.getItem('childPage')
+      }
+    },
+
+    created() {},
 
     mounted() {
+      if(this.page===JSON.stringify('add')){
+        document.title=document.title.split('会')[0]+'会诊记录新增';
+        this.addStatus=true;
+    }else if(this.page===JSON.stringify('look')){
+        document.title=document.title.split('会')[0]+'会诊记录详情';
+        this.addStatus=false;
+    }
     },
     methods: {
       moment,
@@ -147,36 +160,26 @@
       },
       //新增
       adds() {
-        this.isNew = true;
+        this.addStatus = true;
 
       },
-      submit(e) {
-        e.preventDefault();
+      backTo() {
+        if(this.page===JSON.stringify('look')&&this.addStatus){
+          this.addStatus=false;
+        }else{
+          this.$router.push({
+            name: 'consultationRecordIndex',
+          })
+        }
+      },
+      handleSubmit(e) {
+        e.preventDefault()
         this.form.validateFields((err, values) => {
           if (!err) {
-              this.$axios({
-                url: this.api.updateUrl,
-                method: 'post',
-                data: values
-              }).then(res => {
-                if (res.code == '200') {
-                  this.success(res.msg)
-                  this.backTo()
-                } else {
-                  this.warn(res.msg)
-                }
-              })
-                .catch(err => {
-                  this.error(err)
-                })
+            console.log(values);
           }
         })
       },
-      backTo() {
-        this.$router.push({
-          name: 'consultationRecordIndex'
-        })
-      }
     }
   }
 </script>
@@ -239,12 +242,5 @@
     .ant-form label{
       font-size: 16px;
     }
-    .timeListCard{
-      .ant-card-body {
-        padding: 5px;
-        zoom: 1;
-      }
-    }
-
   }
 </style>

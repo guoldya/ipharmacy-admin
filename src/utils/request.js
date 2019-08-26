@@ -106,6 +106,7 @@ const err = (error) => {
 
 // request interceptor 在发送请求之前做某件事
 service.interceptors.request.use(config => {
+  //config.headers['name'] ='yyj'
   const token = Vue.ls.get(ACCESS_TOKEN)
   if (token) {
     config.headers['Authorization'] = token// 让每个请求携带自定义 token 请根据实际情况自行修改
