@@ -5,6 +5,7 @@ const { Flow } = G6Editor;
 Flow.registerNode(
     'model-card-conclusion',
     {
+      label:'结束',
       levels:'',
       itemId:null,
       inAccordanceWith: null,

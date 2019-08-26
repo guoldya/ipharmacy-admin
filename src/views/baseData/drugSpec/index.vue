@@ -15,15 +15,15 @@
       </a-col> -->
       <a-col :xl="24" :xxl="24">
         <a-card title="药品品种">
-       
           <drugVarieties
             :variety="variety"
             :disable="disable"
             :clickRow="clickRow"
+            @updateDisable="updateDisable"
           ></drugVarieties>
         </a-card>
         <a-card class="margin-top-5" title="药品字典">
-          <drugDictionary :dictionary="dictionary"></drugDictionary>
+          <drugDictionary :dictionary="dictionary"  :defaultPage="defaultPage" @updateDefaultPage="updatePage" ></drugDictionary>
         </a-card>
       </a-col>
     </a-row>
@@ -67,7 +67,8 @@
           loading: false
         },
         toxicologyData: [],
-        current: 1
+        current: 1,
+        defaultPage:0,
       }
     },
     mounted() {
@@ -76,19 +77,17 @@
     },
  
     methods: {
-      //左侧点击事件
-      // onSelect(selectedKeys, e) {
-      //   this.classification.disable = true
-      //   this.nodeData = e.node.dataRef
-      //   this.variety.categoryId = e.node.dataRef.key
-      //   if (this.variety.categoryId) {
-      //     this.getVarietiesData({ categoryId: this.variety.categoryId })
-      //     this.dictionary.drugDictionaryData = []
-      //     this.dictionary.disable = true
-      //     this.dictionary.total = 0
-      //   }
-      //   this.disable = false
-      // },
+      updateDisable(data){
+        this.disable = data;
+        this.dictionary.drugDictionaryData = []
+        this.dictionary.total = 0
+        this.dictionary.loading = false
+        this.dictionary.disable = true
+        this.dictionary.varietyCode = null
+      },
+      updatePage(data){
+        this.defaultPage = data.defaultPage
+      },
       getVarietiesData(params = {}) {
          if(params.offset==0){
           this.current=1
@@ -114,6 +113,7 @@
  
       //品种网格列点击事件
       clickRow(row, event, column) {
+        this.defaultPage = 10
         this.varietyCode = row.varietyCode
         this.dictionary.disable = false
         this.dictionary.varietyCode = row.varietyCode

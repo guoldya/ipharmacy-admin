@@ -44,13 +44,12 @@
           showQuickJumper
           :total="dictionary.total"
           class="pnstyle"
-          :defaultPageSize="pageSize"
+          :pageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="pageChangeSize"
           @change="pageChange"
           size="small"
           v-model="current"
-          :pageSize="pageSize"
         ></a-pagination>
       </a-spin>
     </a-spin>
@@ -184,11 +183,7 @@ import debounce from 'lodash/debounce'
 
 export default {
   name: 'drugDictionary',
-  props: {
-    dictionary: {
-      Object
-    }
-  },
+  props: ['dictionary', 'defaultPage'],
   data() {
     this.handleComposition = debounce(this.handleComposition, 500)
     return {
@@ -234,18 +229,29 @@ export default {
       isshow: true
     }
   },
+  watch:{
+    defaultPage(newValue,oldValue) {
+      if (newValue == 10){
+        this.pageSize = 10;
+      }
+    }
+  },
   mounted() {
     this.getDosageList()
     this.getDrugComposition()
   },
   methods: {
     pageChangeSize(page, pageSize) {
-      this.current = 1
+      this.pageSize = pageSize;
       this.getDictionary({
         offset: (page - 1) * pageSize,
         pageSize: pageSize,
         varietyCode: this.dictionary.varietyCode
       })
+      let data = {
+        defaultPage: this.pageSize
+      };
+      this.$emit( 'updateDefaultPage',data);
     },
     pageChange(page, pageSize) {
       this.getDictionary({
@@ -351,7 +357,6 @@ export default {
         params.status = '1'
       }
       params.drugCode = data.drugCode
-      console.log(params)
       this.$axios({
         url: this.api.statusUpdate,
         method: 'post',
@@ -359,12 +364,12 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            if (data.status == '1') {
-              this.success('停用成功')
-            } else {
-              this.success('启用成功')
-            }
-            this.getDictionary({ varietyCode: this.dictionary.varietyCode })
+            this.success(res.msg)
+            let pageFilter = {};
+            pageFilter.offset = (this.current-1)*this.pageSize;
+            pageFilter.pageSize = this.pageSize;
+            pageFilter.varietyCode =  this.dictionary.varietyCode;
+            this.getDictionary(pageFilter)
           } else {
             if (data.status == '1') {
               this.warn('停用失败')
@@ -394,7 +399,6 @@ export default {
           for (let key in values.auxiliary) {
             values.dicDrugcompositionVOList.push({ compositionId: values.auxiliary[key], compositionStatus: '0' })
           }
-          console.log(values)
           this.$axios({
             url: this.api.dicDrugUpdate,
             method: 'post',

@@ -195,7 +195,7 @@
                     :total="total"
                     class="pnstyle"
                     v-model="current"
-                    :defaultPageSize="pageSize"
+                    :pageSize="pageSize"
                     :pageSizeOptions="['10', '20','50']"
                     @showSizeChange="clientSizeChange"
                     @change="customerPageChange"
@@ -579,6 +579,7 @@ export default {
         },
         //重置
         resetForm() {
+          this.pageSize = 10;
             this.pageChangeFilter = {}
             this.$refs.searchPanel.form.resetFields()
             if (this.buttonText != '开始审方') {

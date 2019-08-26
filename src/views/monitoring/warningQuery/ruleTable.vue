@@ -45,7 +45,7 @@
       
         :total="total"
         class="pnstyle"
-        :defaultPageSize="pageSize"
+        :pageSize="pageSize"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
@@ -124,7 +124,8 @@
       resetForm() {
         this.searchData = {}
         this.$refs.searchPanel.form.resetFields()
-        this.getData({ pageSize: this.pageSize, offset: 0 })
+        this.pageSize = 10;
+        this.getData({ pageSize: 10, offset: 0 })
       },
       getData(params = {}) {
         this.loading = true
@@ -165,6 +166,7 @@
         this.getData(params)
       },
       pageChangeSize(page, pageSize) {
+        this.pageSize = pageSize;
         let params = this.searchData
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize

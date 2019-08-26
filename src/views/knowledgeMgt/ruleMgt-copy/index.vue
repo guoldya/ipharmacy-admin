@@ -75,10 +75,9 @@
         <a-pagination
           showSizeChanger
           showQuickJumper
-      
           :total="total"
           class="pnstyle"
-          :defaultPageSize="pageSize"
+          :pageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="pageChangeSize"
           @change="pageChange"
@@ -390,6 +389,7 @@
         let params = {}
         this.current = 1
         this.$refs.searchPanel.form.resetFields()
+        this.pageSize  = 10;
         params.pageSize = this.pageSize
         params.offset = 0
         this.getPageData(params)
@@ -576,7 +576,6 @@
       },
       //页面数change事件
       pageChangeSize(page, pageSize) {
-        this.current = 1
         let params = this.pageChangeFilter
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize

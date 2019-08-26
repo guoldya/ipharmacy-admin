@@ -40,7 +40,7 @@
         showQuickJumper
         :total="dictionary.total"
         class="pnstyle"
-        :defaultPageSize="pageSize"
+        :pageSize="pageSize"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
@@ -198,11 +198,7 @@
 import debounce from 'lodash/debounce'
 export default {
   name: 'drugDictionary',
-  props: {
-    dictionary: {
-      Object
-    }
-  },
+  props: ['dictionary', 'defaultPage'],
   data() {
     this.handleComposition = debounce(this.handleComposition, 500)
     return {
@@ -248,7 +244,15 @@ export default {
       editData: {},
       selectMainList: [],
       selectCompositionList: [],
-      currents: 1
+      currents: 1,
+      pageSize:10,
+    }
+  },
+  watch:{
+    defaultPage(newValue,oldValue) {
+      if (newValue == 10){
+        this.pageSize = 10;
+      }
     }
   },
   mounted() {
@@ -260,12 +264,16 @@ export default {
     // tab点击事件
     changeKey() {},
     pageChangeSize(page, pageSize) {
-      this.currents = 1
+      this.pageSize = pageSize;
       this.getDictionary({
         offset: (page - 1) * pageSize,
         pageSize: pageSize,
         varietyCode: this.dictionary.varietyCode
-      })
+      });
+      let data = {
+        defaultPage: this.pageSize
+      };
+      this.$emit( 'updateDefaultPage',data);
     },
     pageChange(page, pageSize) {
       this.getDictionary({
