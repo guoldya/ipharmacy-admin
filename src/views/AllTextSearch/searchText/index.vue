@@ -8,6 +8,7 @@
       <a-divider />
      <a-col class="seach-body">
           <a-input-search placeholder="请输入药品名称" @search="onSearch" enterButton="搜索" size="large" />
+       <a-spin size="large" :spinning="spinning"  tip="加载中  ...">
           <header v-if="status" class="warn">暂无数据</header>
           <div class="content" v-for="item in dataList">
             <!-- <a
@@ -24,15 +25,20 @@
               @click="goTo(item)"
             ></a>
             <a class="drugname" v-else v-html="item.drugnames" @click="goTo(item)"></a>
+
             <p class="search-detail">
+
               <template v-for="(value, key) in item">
                 <span v-if="key!='drugnames'&&key!='drugcode'">
                   <span class="detail-title">&nbsp;{{keysName[key]}}：</span>
                   <span v-html="value"></span>
                 </span>
               </template>
+
             </p>
+
           </div>
+       </a-spin>
           <footer class="jiewei">
             <a-pagination
               :hideOnSinglePage='ishow'
@@ -61,6 +67,7 @@ export default {
       api: {
         selectDrug: 'sys/dicPackageinsert/selectPackageinsertByEsPage'
       },
+      spinning:false,
       dataList: [],
       keysName: {
         drugcode: '药品编码',
@@ -107,6 +114,7 @@ export default {
      this.onSearch(value)
     },
     onSearch(value) {
+      this.spinning = true;
       this.value = value
       this.current=1
       let param = { keyword: value, pageNo: 1, pageSize: 10 }
@@ -117,6 +125,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
+            this.spinning = false;
             res.rows&&(this.ishow=true)
             this.dataList = res.rows
             this.total = res.total
@@ -127,10 +136,12 @@ export default {
                 this.status = false
             }
           } else {
+            this.spinning = false;
             this.warn(res.msg)
           }
         })
         .catch(err => {
+          this.spinning = false;
           this.error(err)
         })
     },

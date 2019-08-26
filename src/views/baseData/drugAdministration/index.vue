@@ -52,7 +52,6 @@
         :total="total"
         v-model="currents"
         class="pnstyle"
-        :defaultPageSize="pageSize"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
@@ -87,7 +86,7 @@
         showQuickJumper
         :total="total1"
         class="pnstyle"
-        :defaultPageSize="pageSize"
+        :pageSize="pageSize1"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="drugPageChangeSize"
         @change="drugPageChange"
@@ -231,7 +230,8 @@ export default {
       total1: null,
       pageSize: 10,
       currents: 1,
-      searchData: {}
+      searchData: {},
+      pageSize1:10
     }
   },
   mounted() {
@@ -259,6 +259,10 @@ export default {
   methods: {
     //搜索
     search() {
+      this.drugData =[];
+      this.total1 = 0
+      this.pageSize1 = 10
+      this.classData = {}
       this.searchData = this.$refs.searchPanel.form.getFieldsValue()
       let params = this.$refs.searchPanel.form.getFieldsValue()
       params.pageSize = this.pageSize
@@ -268,6 +272,10 @@ export default {
     //重置
     resetForm() {
       this.searchData = {}
+      this.drugData =[];
+      this.total1 = 0
+      this.pageSize1 = 10
+      this.classData = {}
       this.$refs.searchPanel.form.resetFields()
       this.pageSize = 10
       this.getData({ pageSize: this.pageSize, offset: 0 })
@@ -374,6 +382,7 @@ export default {
       this.getClassDrugData()
     },
     getClassDrugData(params = {}) {
+      this.spinLoading = true;
       params.id = this.classData.id
       this.$axios({
         url: this.api.specDrugPageById,
@@ -381,14 +390,17 @@ export default {
         data: params
       })
         .then(res => {
+          this.spinLoading = false;
           if (res.code == '200') {
             this.drugData = res.rows
             this.total1 = res.total
           } else {
+            this.spinLoading = false;
             this.warn(res.msg)
           }
         })
         .catch(err => {
+          this.spinLoading = false;
           this.error(err)
         })
     },
@@ -523,6 +535,7 @@ export default {
         })
     },
     drugPageChangeSize(page, pageSize) {
+      this.pageSize1 = pageSize;
       this.getClassDrugData({ offset: (page - 1) * pageSize, pageSize: pageSize })
     },
     drugPageChange(page, pageSize) {

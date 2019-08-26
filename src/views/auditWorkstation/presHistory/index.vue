@@ -49,10 +49,9 @@
             <a-pagination
                 showSizeChanger
                 showQuickJumper
-              
                 :total="total"
                 class="pnstyle"
-                :defaultPageSize="pageSize"
+                :pageSize="pageSize"
                 :pageSizeOptions="['10', '20','50']"
                 @showSizeChange="pageChangeSize"
                 @change="pageChange"
@@ -106,7 +105,7 @@ export default {
             items: [{ text: '查看', showtip: false, click: this.checkReviewResouce }],
             levelColor: '#ffffff',
             dataSource: [],
-            dateFormat: 'YYYY-MM-DD HH:mm',
+            dateFormat: 'YYYY-MM-DD',
             dateList: [],
             searchDate: [],
             searchData: { searchDate: this.dateList }
@@ -118,7 +117,7 @@ export default {
                 {
                     name: '审核时间',
                     dataField: 'searchDate',
-                    type: 'range-picker-detail'
+                    type: 'range-picker'
                 },
                 {
                     name: '来源',
@@ -168,8 +167,6 @@ export default {
             var year = dataValue.getFullYear()
             var month = dataValue.getMonth() + 1
             var day = dataValue.getDate()
-            var hours = dataValue.getHours() - 1 //小时
-            var mines = dataValue.getMinutes() //分
             if (month < 10) {
                 month = '0' + month
             }
@@ -181,11 +178,11 @@ export default {
                 }
             }
             this.dateList = [
-                year + '-' + month + '-' + '01' + ' ' + hours + ':' + mines,
-                year + '-' + month + '-' + day + ' ' + hours + ':' + mines
+                year + '-' + month + '-' + '01' ,
+                year + '-' + month + '-' + day
             ]
-            var stime = moment(year + '-' + month + '-' + '01' + ' ' + hours + ':' + mines, this.dateFormat) //开始时间
-            var etime = moment(year + '-' + month + '-' + day + ' ' + hours + ':' + mines, this.dateFormat) //结束时间
+            var stime = moment(year + '-' + month + '-' + '01' , this.dateFormat) //开始时间
+            var etime = moment(year + '-' + month + '-' + day  , this.dateFormat) //结束时间
             var pars = [stime, etime]
             return pars
         },
@@ -195,8 +192,8 @@ export default {
             if (params.searchDate) {
               if (params.searchDate.length>0) {
                 params.searchDate = [
-                  params.searchDate[0].format('YYYY-MM-DD HH:mm'),
-                  params.searchDate[1].format('YYYY-MM-DD HH:mm')
+                  params.searchDate[0].format('YYYY-MM-DD'),
+                  params.searchDate[1].format('YYYY-MM-DD')
                 ]
               }
             }else{
@@ -219,7 +216,7 @@ export default {
             this.$refs.searchPanel.form.resetFields()
             this.searchData = {}
             let params = {}
-             this.pageSize=20
+            this.pageSize=20
             params.pageSize =this.pageSize
             params.offset = 0;
             this.getData(params)
@@ -256,8 +253,8 @@ export default {
             params.offset = (page - 1) * pageSize
             if (params.searchDate) {
                 params.searchDate = [
-                    params.searchDate[0].format('YYYY-MM-DD HH:mm'),
-                    params.searchDate[1].format('YYYY-MM-DD HH:mm')
+                    params.searchDate[0].format('YYYY-MM-DD'),
+                    params.searchDate[1].format('YYYY-MM-DD')
                 ]
             }
             this.getData(params)
@@ -267,8 +264,8 @@ export default {
             let params = this.$refs.searchPanel.form.getFieldsValue(['searchDate', []])
             if (params.searchDate) {
                 params.searchDate = [
-                    params.searchDate[0].format('YYYY-MM-DD HH:mm'),
-                    params.searchDate[1].format('YYYY-MM-DD HH:mm')
+                    params.searchDate[0].format('YYYY-MM-DD'),
+                    params.searchDate[1].format('YYYY-MM-DD')
                 ]
             }
             params.offset = (page - 1) * pageSize

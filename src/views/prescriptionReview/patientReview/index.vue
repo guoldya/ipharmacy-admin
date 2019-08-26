@@ -94,7 +94,7 @@
           :total="total"
           class="pnstyle"
           v-model="current"
-          :defaultPageSize="10"
+          :pageSize="pageSize"
           @showSizeChange="pageChangeSize"
           @change="pageChange"
           size="small"
@@ -416,7 +416,7 @@ export default {
     },
     // 改变页码
     pageChange(page, pageSize) {
-      this.curent = page
+      // this.curent = page
       let params = this.searchData
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize

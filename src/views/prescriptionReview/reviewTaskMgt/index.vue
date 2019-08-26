@@ -100,12 +100,11 @@
                     </el-table-column>
                 </el-table>
                 <a-pagination
-                  
                     :total="total"
                     showSizeChanger
                     v-model="current"
                     class="pnstyle"
-                    :defaultPageSize="pageSize"
+                    :pageSize="pageSize"
                     :pageSizeOptions="['10', '20','50']"
                     @showSizeChange="sizeChange"
                     @change="pageChange"
@@ -142,12 +141,11 @@
                     </el-table-column>
                 </el-table>
                 <a-pagination
-                  
                     :total="bmTotal"
                     showSizeChanger
                     v-model="bmCurrent"
                     class="pnstyle"
-                    :defaultPageSize="10"
+                    :pageSize="bmPageSize"
                     :pageSizeOptions="['10', '20','50']"
                     @showSizeChange="bmSizeChange"
                     @change="bmPageChange"
@@ -212,7 +210,9 @@ export default {
                 { itemCount: 0, item: '问题点评', itemColors: '#ff6781' }
             ],
           searchData:{},
-          pageSize:10
+          pageSize:10,
+          bmPageSize:10,
+          recordId:'',
         }
     },
     computed: {
@@ -298,6 +298,7 @@ export default {
             this.current=1
             this.pageSize=10
             params.pageSize = this.pageSize;
+            this.bmPageSize = 10;
             this.getData(params)
         },
         pageChange(page, size) {
@@ -424,7 +425,12 @@ export default {
         },
         //table点击事件
         rowClick(row) {
-            this.getbmData({ recordId: row.recordId })
+            this.recordId = row.recordId
+            let params = {}
+            params.recordId = row.recordId;
+            params.pageSize = this.bmPageSize;
+            params.offset = (this.bmCurrent-1)*this.bmPageSize
+            this.getbmData(params)
         },
         getbmData(obj = {}) {
             this.bmSpinning = true
@@ -450,17 +456,20 @@ export default {
         },
 
         bmSizeChange(current, size) {
-            this.bmCurrent = 1
-            let params = this.getFormData()
+            this.bmPageSize = size;
+            // this.bmCurrent = 1
+            let params = {}
             params.offset = (current - 1) * size
-            params.pageSize = size
-            this.getData(params)
+            params.pageSize = size;
+            params.recordId = this.recordId;
+            this.getbmData(params)
         },
         bmPageChange(page, size) {
-            let params = this.getFormData()
+            let params = {}
             params.offset = (page - 1) * size
             params.pageSize = size
-            this.getData(params)
+            params.recordId = this.recordId;
+            this.getbmData(params)
         },
         //过滤
         taskScope(data) {
