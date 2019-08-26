@@ -217,7 +217,7 @@ export const asyncRouterMap = [
                 meta: { title: '全文检索', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/AllTextSearch/searchText/detail/:indexId',
+                path: '/AllTextSearch/searchText/detail',
                 name: 'searchTextDetail',
                 hidden: true,
                 component: () => import('@/views/AllTextSearch/searchText/detail.vue'),
@@ -714,7 +714,7 @@ export const asyncRouterMap = [
                 meta: { title: '科室维护', index: true }
               },
               {
-                path: '/sys/org_dept/dept/:deptId/:orgId',
+                path: '/sys/org_dept/dept/:deptId/:orgId/:index',
                 name: 'deptDetail',
                 hidden: true,
                 component: () => import('@/views/sys/org_dept/dept.vue'),

@@ -130,7 +130,7 @@
               >{{op.text}}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol" v-if="ishiden">
             <a-radio-group v-decorator="[ 'status']">
               <a-radio v-for="(op,index) in status" :value="op.id" :key="index">{{op.text}}</a-radio>
             </a-radio-group>
@@ -178,7 +178,8 @@ export default {
       treedata: [],
       lists: [],
       onlyRead: false,
-      shows: true
+      shows: true,
+      ishiden:true
     }
   },
   created() {
@@ -277,6 +278,9 @@ export default {
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
+              if(reqArr.colType==1){
+                this.ishiden=false
+              }
               let { id, pie, colType, colName, colZySql,colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
                 formData = {
                   id,

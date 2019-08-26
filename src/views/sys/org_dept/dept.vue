@@ -148,6 +148,7 @@
         },
         mounted(){
              sessionStorage.setItem('val',this.$route.params.orgId)
+              sessionStorage.setItem('index',this.$route.params.index)
             this.getOrgData();
             this.getDeptData({ orgId:this.$route.params.orgId,deptId:this.$route.params.deptId });
             this.init();

@@ -32,21 +32,21 @@
 
 <script>
   import echarts from 'echarts'
-  // import heatMap from './heatMap'
-  // import dashboard from './dashboard'
-  // import automaticPass from './automaticPass'
-  // import countText from './countText'
-  // import oneRank from  './rankLevel/oneRank'
-  // import twoRank from  './rankLevel/twoRank'
+  import heatMap from './heatMap'
+  import dashboard from './dashboard'
+  import automaticPass from './automaticPass'
+  import countText from './countText'
+  import oneRank from  './rankLevel/oneRank'
+  import twoRank from  './rankLevel/twoRank'
   import radarMap from './radarMap'
   export default {
     components: {
-      // 'HeatMap': heatMap,
-      // 'Dashboard':dashboard,
-      // 'automaticPass':automaticPass,
-      // 'countText': countText,
-      // 'oneRank': oneRank,
-      // 'twoRank': twoRank,
+      'HeatMap': heatMap,
+      'Dashboard':dashboard,
+      'automaticPass':automaticPass,
+      'countText': countText,
+      'oneRank': oneRank,
+      'twoRank': twoRank,
       'radarMap': radarMap,
     },
     name: 'eChartFlow',
