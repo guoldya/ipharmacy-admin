@@ -11,10 +11,10 @@
             </span>
       <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
         <a-menu-item key="0">
-          <router-link :to="{ name: 'center' }">
+<!--          <router-link :to="{ name: 'center' }">-->
             <a-icon type="user"/>
             <span>个人中心</span>
-          </router-link>
+<!--          </router-link>-->
         </a-menu-item>
         <a-menu-item key="1">
           <router-link :to="{ name: 'settings' }">

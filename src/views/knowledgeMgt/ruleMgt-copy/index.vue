@@ -249,6 +249,7 @@
     data() {
       this.handleSearch = debounce(this.handleSearch, 800)
       this.searchCoreRule = debounce(this.searchCoreRule, 800)
+      this.handleCategory =  debounce(this.handleCategory, 800)
       return {
         api:{
           updateStatus:'sys/coreRule/updateStatus'
@@ -488,6 +489,7 @@
         coreRuleGroupSpec({ keyword: value })
           .then(res => {
             if (res.code == '200') {
+              this.coreRule = []
               for (let key in res.rows) {
                 this.coreRule.push({ id: '' + res.rows[key].id, specName: res.rows[key].specName })
               }

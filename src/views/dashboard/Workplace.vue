@@ -244,10 +244,8 @@
 
 <style lang="less" scoped>
   .project-list {
-
     .card-title {
       font-size: 0;
-
       a {
         color: rgba(0, 0, 0, 0.85);
         margin-left: 12px;

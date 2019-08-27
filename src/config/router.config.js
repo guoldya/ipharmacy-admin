@@ -310,7 +310,7 @@ export const asyncRouterMap = [
           },
           {
             path: '/auditWorkstation/presOutpatient/detail',
-            name: 'presOutpatientDetail',
+            name: 'presOutpatientDetailPage',
             component: RouteView,
             hidden: true,
             meta: { title: '门诊审方详情', multistage: true },

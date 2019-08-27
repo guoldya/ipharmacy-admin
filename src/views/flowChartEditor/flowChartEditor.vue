@@ -64,6 +64,7 @@
   import './nodemode/model-image-branch' //图片包含
   import './nodemode/model-rect'
   import './nodemode/model-rect-attribute' //属性
+  import moment from 'moment'
 
   //控件模块加载
   import contextmenu from './model/contextmenu'
@@ -192,7 +193,9 @@
           name: null,
           updateTime: null,
           visible: null,
-          updateBy: null
+          updateBy: null,
+          loading:false,
+          submitLoading:false,
         },
         //属性框初始化
         boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', nodeTreeData: {}, viewSelect: [] },
@@ -213,7 +216,8 @@
         CoreFactAllTree: [],
         prePid: null,
         preData: [],
-        judgePreData: []
+        judgePreData: [],
+        isCopy:'0',
       }
     },
     mounted() {
@@ -422,11 +426,7 @@
       },
       selectNodeItemId(newValue, oldValue) {
         if (newValue != oldValue) {
-          if (newValue) {
-            this.flow.update(this.selectNode.id, { itemId: newValue })
-          } else {
-            this.flow.update(this.selectNode.id, { itemId: newValue })
-          }
+          this.flow.update(this.selectNode.id, { itemId: newValue })
         }
       },
       selectNodePrecondition(newValue, oldValue) {
@@ -582,6 +582,7 @@
     },
 
     methods: {
+      moment,
       autoZoom() {
         //自动跳转自适应画布
         for (let key in this.toolbar.commands) {
@@ -731,9 +732,8 @@
                     if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
                       _this.preData = []
                     } else {
-                      _this.preData.push(this.getPreData(this.prePid, this.CoreFactAllTree))
+                        _this.preData = this.getPreData(this.prePid, this.CoreFactAllTree)
                     }
-
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
@@ -853,7 +853,7 @@
               if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
                 _this.judgePreData = []
               } else {
-                _this.judgePreData.push(this.getPreData(this.prePid, this.CoreFactAllTree))
+                  _this.judgePreData = this.getPreData(this.prePid, this.CoreFactAllTree)
               }
               break
             case 'edge':
@@ -1132,7 +1132,7 @@
             if (nodes[i].shape == 'model-rect-attribute') {
               if (nodes[i].lo == 3) {
                 let valueList = null
-                if (this.$util.trim(node.rearCondition) != null) {
+                if (this.$util.trim(edge.rearCondition) != null) {
                   valueList = 1
                 } else {
                   valueList = this.$util.trim(edge.assertValList)
@@ -1147,7 +1147,7 @@
                 }
               } else if (nodes[i].lo == 2) {
                 let value, value1 = null
-                if (this.$util.trim(node.rearCondition) != null) {
+                if (this.$util.trim(edge.rearCondition) != null) {
                   value = 1
                   value1 = 1
                 } else {
@@ -1164,7 +1164,7 @@
                 }
               } else if (nodes[i].lo == 1) {
                 let value = null
-                if (this.$util.trim(node.rearCondition) != null) {
+                if (this.$util.trim(edge.rearCondition) != null) {
                   value = 1
                 } else {
                   value = this.$util.trim(edge.assertVal)
@@ -1202,16 +1202,11 @@
       },
       //判断节点父节点
       judgeNode(node, edges, status) {
-        // let pids = node.pid.split(',');
-        // for (let key in edges) {
-        // for (let i in pids){
-        // if (edges[key].id == pids[i]) {
         if (node.shape == 'model-rect-attribute') {
           if (this.$util.trim(node.itemId) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0) {
             if (status.status) {
               this.warn('属性节点未完善或缺少结论节点和上级节点')
             }
-            // this.flow.update(node.id, { fill: 'red'})
             this.submitStatus = false
             return false
           }
@@ -1267,14 +1262,12 @@
             return false
           }
         }
-        // }
-        // }
-        // }
       },
       /**
        * @description: 保存流图数据
        */
       saveFlow() {
+        this.titleData.loading = true;
         let data = this.flow.save()
         let list = []
         if (data.edges) {
@@ -1296,14 +1289,17 @@
           list[key].itemId = Number(list[key].itemId)
           delete list[key].index
         }
-        coreRuleNodeUpdate({ ruleNodeVOS: list, status: '0', ruleId: this.$route.params.id }).then(res => {
+        coreRuleNodeUpdate({ ruleNodeVOS: list, status: '0', ruleId: this.$route.params.id,isCopy:this.isCopy }).then(res => {
           if (res.code == '200') {
+            this.titleData.loading = false;
             this.success('保存成功')
           } else {
-            this.warn(res.msg)
+            this.titleData.loading = false;
+            this.warn(res.msg);
           }
         }).catch(err => {
-          this.error(err)
+          this.titleData.loading = false;
+          this.error(err);
         })
         localStorage.setItem('test', JSON.stringify(this.flow.save()))
       },
@@ -1311,6 +1307,7 @@
        * @description: 提交流图数据
        */
       submitFlow() {
+        this.titleData.submitLoading = true;
         this.verifyStatus = false
         let data = this.flow.save()
         let list = []
@@ -1333,17 +1330,21 @@
         }
         this.verifyFlow({ status: false })
         if (this.submitStatus) {
-          coreRuleNodeUpdate({ ruleNodeVOS: list, status: '1', ruleId: this.$route.params.id }).then(res => {
+          coreRuleNodeUpdate({ ruleNodeVOS: list, status: '1', ruleId: this.$route.params.id,isCopy:this.isCopy }).then(res => {
             if (res.code == '200') {
+              this.titleData.submitLoading = false;
               this.success('提交成功')
             } else {
+              this.titleData.submitLoading = false;
               this.warn(res.msg)
             }
           }).catch(err => {
+            this.titleData.submitLoading = false;
             this.error(err)
           })
         } else {
           this.warn('流程图未完善不能提交，可以保存')
+          this.titleData.submitLoading = false;
         }
 
       },
@@ -1360,6 +1361,7 @@
       modalOk() {
         let _this = this
         this.modal.visible = false
+        this.isCopy = '1'
         _this.flow.remove()
         setTimeout(() => {
           this.getNodeData({ ruleId: this.ruleModalId })
@@ -1424,7 +1426,9 @@
             this.titleData.status = res.data.status ? '启用' : '停用'
             this.titleData.type = res.data.type == 1 ? '系统' : null
             this.titleData.visible = res.data.type == 1 ? false : true
-            this.titleData.updateTime = res.data.updateTime
+
+            let dealDate = moment(res.data.updateTime, 'YYYY-MM-DD hh:ss')
+            this.titleData.updateTime =  dealDate.format('YYYY-MM-DD hh:ss')
             this.titleData.updateBy = res.data.updateBy
             this.titleData.type2 = res.data.type2
           } else {
@@ -1822,8 +1826,8 @@
       getPreData(pid, data) {
         if (this.$util.trim(pid) && pid == 15) {
           for (let key in data) {
-            if (pid == data[key].id) {
-              return data[key]
+            if (pid == data[key].id ) {
+              return data[key].children
             }
           }
         } else {
