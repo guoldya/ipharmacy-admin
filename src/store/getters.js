@@ -15,7 +15,7 @@ const getters = {
   userInfo: state => state.user.account.info,
   userId: state=> state.user.account.id,
   addRouters: state => state.permission.addRouters,
-  names:state => {return '年龄'+state.text.age}
+  age:state => {return '年龄'+state.text.age}
 }
 
 export default getters

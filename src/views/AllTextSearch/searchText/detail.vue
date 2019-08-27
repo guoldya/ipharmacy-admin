@@ -23,15 +23,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      newname: 'names'
+      newname: 'age'
     }),
-    // 这是提供的两块语法糖，可以直接$store.getters.
-    // mapState({
-       
-    // })
+   
   },
   mounted() {
+     console.log(this.$store.state)
     this.$store.state.text.name='tony' 
+    // 这里不会影响Name,反而会影响子组件的值，data并不能监听的到
   },
   methods: {}
 }
