@@ -101,29 +101,6 @@ export default {
   mounted() {
     this.getData({indexId:this.$route.params.indexId})
     let _this = this
-    // if (this.$route.query) {
-    //     let data = this.$route.query.row
-    //    this.resultTypeFormatter(data.resultType)
-    //   _this.fromData = {
-    //       englishName: data.englishName,
-    //       indexId: data.indexId,
-    //       isCalc: data.isCalc,
-    //       isPrivacy: data.isPrivacy,
-    //       limitHigh: data.limitHigh,
-    //       limitLow: data.limitLow,
-    //       limitValue: data.limitValue,
-    //       resultType: data.resultType,
-    //       spellcode: data.spellcode,
-    //       testItemCode: data.testItemCode,
-    //       testItemName: data.testItemName,
-    //       testItemCode: data.testItemCode,
-    //       testItemType: data.testItemType,
-    //       unit: data.unit,
-    //       wbcode: data.wbcode,
-    //       testItemClass:data.testItemClass,
-    //       formUla: data.formUla
-    //     }
-    // }
   },
   methods: {  
     backTo() {

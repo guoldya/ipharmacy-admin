@@ -509,7 +509,7 @@ export default {
     //过滤时间
     changeTime(time) {
       if (time) {
-        return time.prescDate.replace(/(:\d{2})$/, '')
+        return time.prescDate.slice(0,16)
       }
     },
     // 过滤性别
