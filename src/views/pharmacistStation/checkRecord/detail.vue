@@ -61,7 +61,7 @@ export default {
           date:'2019-08-05'
       },
       diag:'过敏性皮炎',
-      date: ['2014-5-6', '2014-5-7', '2014-5-7', '2014-5-7', '2014-5-7'],
+      dateList:[],
       form: this.$form.createForm(this),
       formItem:[
         {label:'患者主诉',type:'date',val:'date'},
@@ -75,7 +75,10 @@ export default {
   computed:{
       page(){
         return sessionStorage.getItem('childPage')
-      }
+      },
+      date(){
+        return this.getDateList()
+      },
   },
 
   created() {},
@@ -91,6 +94,9 @@ export default {
   },
   destroyed() {},
   methods: {
+      getDateList() {
+        return this.dateList=['2000-11-11','2000-12-12'];
+      },
       // 搜索
       onSearch() {},
       // 查询

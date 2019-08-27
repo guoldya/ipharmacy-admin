@@ -50,6 +50,7 @@
         :pageSize="pageSize"
       ></a-pagination>
     </a-spin>
+    <chatModal  ref="chatModal" ></chatModal> 
   </a-card>
 </template>
 
@@ -83,7 +84,7 @@
         items: [
           { text: '查看',  showtip: false, click: this.medicalEducationAdd, status: '1' },
           { text: '删除', color: 'red', showtip: true, tip: '确认删除吗？', click: this.delete, status: '1' },
-          { text: '打印',  showtip: false, click: this.edits, status: '' },
+          { text: '打印',  showtip: false, click: this.print, status: '' },
 
         ],
       }
@@ -161,15 +162,17 @@
       },
       //搜索
       search() {
-        let params = this.$refs.searchPanel.form.getFieldsValue();
-        this.searchData =  this.$refs.searchPanel.form.getFieldsValue();
-        if (params.time) {
-            params.startTime = params.time[0].format('YYYY-MM-DD');
-            params.endTime = params.time[1].format('YYYY-MM-DD');
-        }
-        console.log(params)
-        params.pageSize = this.pageSize
-        params.offset = 0;
+          this.$refs.chatModal.showModal()
+
+        // let params = this.$refs.searchPanel.form.getFieldsValue();
+        // this.searchData =  this.$refs.searchPanel.form.getFieldsValue();
+        // if (params.time) {
+        //     params.startTime = params.time[0].format('YYYY-MM-DD');
+        //     params.endTime = params.time[1].format('YYYY-MM-DD');
+        // }
+        // console.log(params)
+        // params.pageSize = this.pageSize
+        // params.offset = 0;
         // this.getData(params)
       },
       //重置
@@ -191,7 +194,7 @@
         this.getData(params)
         this.pageSize=pageSize
       },
-      edits(data) {
+      print(data) {
         //console.log(data)
         data.msg = 'old'
         this.$router.push({
@@ -199,7 +202,6 @@
           params:{ indexId:data.row.indexId ,}
         })
       },
-
       //枚举
       testItemTypeFormatter(data) {
         let levelText
