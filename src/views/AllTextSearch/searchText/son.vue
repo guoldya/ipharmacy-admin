@@ -24,12 +24,7 @@ export default {
   methods: {
       clic(){
           this.$store.state.text.name='james'
-        //    if(this.$store.state.text.name=='green'){
-        //       this.$store.state.text.name='james'
-        //   }
-        //   if(this.$store.state.text.name=='james'){
-        //       this.$store.state.text.name='green'
-        //   }
+          this.$store.state.text.age='29' 
       }
   }
 }
