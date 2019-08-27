@@ -95,10 +95,10 @@ export default {
                     title: '结论',
                     value: 'reviewVerdict',
                     align: 'center',
-                    width: 100,
+                    width: 80,
                     format: this.reviewVerdictFormatter
                 },
-                { title: '通过类型', value: 'passType', align: 'center', format: this.passTypeFormatter },
+                { title: '通过类型', value: 'passType', align: 'center', width: 100,format: this.passTypeFormatter },
                 { title: '审核人', value: 'reviewDocName', width: 100 },
                 { title: '审核时间', value: 'reviewTime', width: 150 }
             ],

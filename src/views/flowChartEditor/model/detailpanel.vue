@@ -60,7 +60,6 @@
               :treeData="CoreFactAllTree"
               v-model="selectNode.itemId"
               treeDefaultExpandAll
-              class="nodeSelect"
               @select="coreFactTreeChange">
             </a-tree-select>
           </a-form-item>
@@ -94,16 +93,18 @@
               </a-select>
             </a-form-item>
             <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-              <a-tree-select
+              <a-select
                 size="small"
                 :allowClear="true"
                 :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                :treeData="judgePreDetailData"
                 v-model="selectNode.rearCondition"
                 @change="rearChange"
-                placeholder="默认按当前数据行"
-                class="nodeSelect">
-              </a-tree-select>
+                placeholder="默认按当前数据行">
+                <a-select-option  v-for="(item,index) in judgePreDetailData" :value="item.key"
+                                 :title="item.title" :key="index">
+                  {{item.title}}
+                </a-select-option>
+              </a-select>
             </a-form-item>
             <a-form-item v-if="!selectNode.rearCondition" label="条件值" :label-col="{ span: 5 }"
                          :wrapper-col="{ span: 19 }">
@@ -181,32 +182,38 @@
            v-if="selectNode.shape == 'flow-rhombus-if' || selectNode.shape =='model-rect-attribute'">
         <a-form>
           <a-form-item label="范围" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-tree-select
+            <a-select
               v-if="selectNode.shape == 'flow-rhombus-if'"
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="judgePreDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
               class="nodeSelect"
               @select="nodePreSelect"
               @change="nodePreChange"
             >
-            </a-tree-select>
-            <a-tree-select
+              <a-select-option  v-for="(item,index) in judgePreDetailData" :value="item.key"
+                                :title="item.title" :key="index">
+                {{item.title}}
+              </a-select-option>
+            </a-select>
+            <a-select
               v-if="selectNode.shape =='model-rect-attribute'"
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="preDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
               class="nodeSelect"
               @select="nodePreSelect"
               @change="nodePreChange"
             >
-            </a-tree-select>
+              <a-select-option  v-for="(item,index) in preDetailData" :value="item.key"
+                                :title="item.title" :key="index">
+                {{item.title}}
+              </a-select-option>
+            </a-select>
           </a-form-item>
           <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select
@@ -286,16 +293,19 @@
             </a-select>
           </a-form-item>
           <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-tree-select
+            <a-select
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="preDetailData"
               v-model="selectEdge.rearCondition"
               @change="nodeRearChange"
               placeholder="默认按当前数据行"
               treeDefaultExpandAll>
-            </a-tree-select>
+              <a-select-option  v-for="(item,index) in preDetailData" :value="item.key"
+                                :title="item.title" :key="index">
+                {{item.title}}
+              </a-select-option>
+            </a-select>
           </a-form-item>
 
           <a-form-item v-if="!selectEdge.rearCondition" label="条件值" :label-col="{ span: 5 }"
@@ -351,10 +361,9 @@
             <a-date-picker v-else-if="edgeInitialized.lo==1 && edgeInitialized.colDbType=='2'" size="small"
                            :defaultValue="selectEdge.assertVal? moment(selectEdge.assertVal, 'YYYY-MM-DD'): null"
                            @change="edgeDatePick"></a-date-picker>
-            <a-range-picker v-else-if="edgeInitialized.lo==2 && edgeInitialized.colDbType=='2'" size="small"
-                            @change="edgeRangePick"
-                            :defaultValue="selectEdge.assertVal ? [moment(selectEdge.assertVal,  'YYYY-MM-DD'), moment(this.selectEdge.assertVal1,  'YYYY-MM-DD')]: null"
-                            v-model="selectEdge.assertVal"></a-range-picker>
+            <a-range-picker v-else-if="edgeInitialized.lo==2 && edgeInitialized.colDbType ==2"
+                            :defaultValue="selectEdge.assertVal? [moment(selectEdge.assertVal,  'YYYY-MM-DD'), moment(selectEdge.assertVal1,  'YYYY-MM-DD')]:null"
+                            @change="edgeRangePick" size="small"></a-range-picker>
             <a-input v-else size="small"></a-input>
           </a-form-item>
           <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect' && edgeInitialized.lo ==3 && !selectEdge.rearCondition"
@@ -524,7 +533,6 @@
         this.selectNode.assertVal = null
         this.selectNode.assertValList = []
         let params = extra.selectedNodes[0].data.props
-        console.log(params,'2233')
         let _this = this
         _this.selectNode.itemId = params.id
         if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
@@ -597,7 +605,7 @@
         //处理节点上计算条件数据
         for (let key in this.CoreFactAllTree) {
           if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
-            this.judgePreDetailData.push(this.CoreFactAllTree[key])
+            this.judgePreDetailData=this.CoreFactAllTree[key].children
           }
         }
       },
@@ -642,7 +650,6 @@
         _this.selectNode.colDbType = params.colDbType
         _this.selectNode.itemId = params.id
         _this.selectNode.precondition = null
-        _this.selectNode.lo = params.lo
         _this.selectNode.val = params.val
         _this.selectNode.display = params.display
         _this.selectNode.parentId = params.parentId
@@ -663,7 +670,7 @@
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
           if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
-            this.preDetailData.push(this.CoreFactAllTree[key])
+            this.preDetailData =this.CoreFactAllTree[key].children
           }
         }
       },
@@ -837,7 +844,12 @@
         let _this = this;
         _this.selectNode.lo = value
         _this.selectNode.ro = 7
-        if (value ==3){
+        if (value == 1){
+          _this.selectNode.assertVal = null
+        }else if(value == 2){
+          _this.selectNode.assertVal = null
+          _this.selectNode.assertVal1 = null
+        }else if (value ==3){
           if (_this.boxInitialized.parentId){
             _this.boxInitialized.inputType ='treeSelect'
           }else{
@@ -850,7 +862,12 @@
         this.selectEdge.lo = value
         this.selectEdge.ro = 7
         this.edgeInitialized.lo = value
-        if (value ==3){
+        if (value == 1){
+          this.selectEdge.assertVal = null
+        }else if(value == 2){
+          this.selectEdge.assertVal = null
+          this.selectEdge.assertVal1 = null
+        }else if (value ==3){
           if (this.edgeInitialized.parentId){
             this.edgeInitialized.inputEdge ='treeSelect'
           }else{
