@@ -270,17 +270,6 @@
 </template>
 
 <script>
-import {
-  coreRuleTypeSelect,
-  coreRuleTypePage,
-  coreRuleTypeUpdate,
-  coreRuleTypeDelete,
-  coreRuleSelectKeyword,
-  coreRuleGroupSpec,
-  coreRuleUpdate,
-  coreRuleDelete,
-  coreRuleCategoryKeyword
-} from '@/api/login'
 import debounce from 'lodash/debounce'
 
 export default {
@@ -289,6 +278,17 @@ export default {
     this.handleSearch = debounce(this.handleSearch, 800)
     this.searchCoreRule = debounce(this.searchCoreRule, 800)
     return {
+      api:{
+        coreRuleTypeSelect:'/sys/coreRuleType/selectTypePid',
+        coreRuleTypePage:'/sys/coreRule/selectPage',
+        coreRuleTypeUpdate:'/sys/coreRuleType/update',
+        coreRuleTypeDelete:'/sys/coreRuleType/delete',
+        coreRuleSelectKeyword:'/sys/coreRule/selectDrugKeyword',
+        coreRuleUpdate:'/sys/coreRule/update',
+        coreRuleDelete:'/sys/coreRule/delete',
+        coreRuleGroupSpec: '/sys/coreRule/coreGroupingSpec',
+        coreRuleCategoryKeyword:'/sys/coreRule/selectCategoryKeyword',
+      },
       loadedKeys: ['1', '2'],
       //树形机构数据
       gData: [],
@@ -458,7 +458,11 @@ export default {
         setTimeout(() => {
           let params = {}
           params.typePid = treeNode.dataRef.key
-          coreRuleTypeSelect(params)
+          this.$axios({
+            url:this.api.coreRuleTypeSelect,
+            method:'put',
+            data:params,
+          })
             .then(res => {
               if (res.code == '200') {
                 treeNode.dataRef.children = []
@@ -496,7 +500,11 @@ export default {
       let params = {}
       params.typePid = -1
       this.loading = true
-      coreRuleTypeSelect(params)
+      this.$axios({
+        url:this.api.coreRuleTypeSelect,
+        method:'put',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             this.dealData(res.rows)
@@ -555,7 +563,11 @@ export default {
     deleteTreeNode() {
       if (this.selectNode) {
         let params = { id: this.selectNode.key }
-        coreRuleTypeDelete(params)
+        this.$axios({
+          url:this.api.coreRuleTypeDelete,
+          method:'delete',
+          data:params,
+        })
           .then(res => {
             if (res.code == '200') {
               this.success(res.msg)
@@ -602,7 +614,11 @@ export default {
         params.name = data.title
       }
       this.Modal.visible = false
-      coreRuleTypeUpdate(params)
+      this.$axios({
+        url:this.api.coreRuleTypeUpdate,
+        method:'post',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             if (this.Modal.modalTitle == '编辑分类') {
@@ -661,7 +677,11 @@ export default {
 
     //药品select列
     coreRuleSelect(params = {}) {
-      coreRuleSelectKeyword(params)
+      this.$axios({
+        url:this.api.coreRuleSelectKeyword,
+        method:'post',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             this.selectDrug = res.rows
@@ -675,7 +695,11 @@ export default {
     },
     //药品分类列
     coreRuleCategory(params = {}) {
-      coreRuleCategoryKeyword(params)
+      this.$axios({
+        url:this.api.coreRuleCategoryKeyword,
+        method:'put',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             this.selectCategory = res.rows
@@ -689,7 +713,11 @@ export default {
     },
     //药品组select列
     coreRuleGroup(params = {}) {
-      coreRuleGroupSpec(params)
+      this.$axios({
+        url:this.api.coreRuleGroupSpec,
+        method:'put',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             for (let key in res.rows) {
@@ -706,7 +734,11 @@ export default {
     },
     //药品选择列搜索
     handleSearch(value) {
-      coreRuleSelectKeyword({ keyword: value })
+      this.$axios({
+        url:this.api.coreRuleSelectKeyword,
+        method:'post',
+        data:{ keyword: value },
+      })
         .then(res => {
           if (res.code == '200') {
             this.selectDrug = res.rows
@@ -720,7 +752,11 @@ export default {
     },
     //药品分类搜索
     handleCategory(value) {
-      coreRuleCategoryKeyword({ keyword: value })
+      this.$axios({
+        url:this.api.coreRuleCategoryKeyword,
+        method:'put',
+        data:{ keyword: value },
+      })
         .then(res => {
           if (res.code == '200') {
             this.selectCategory = res.rows
@@ -734,7 +770,11 @@ export default {
     },
     //药品组搜索
     searchCoreRule(value) {
-      coreRuleGroupSpec({ keyword: value })
+      this.$axios({
+        url:this.api.coreRuleGroupSpec,
+        method:'put',
+        data:{ keyword: value },
+      })
         .then(res => {
           if (res.code == '200') {
             for (let key in res.rows) {
@@ -772,7 +812,11 @@ export default {
           params.type = this.selectNode.type
           params.type2 = this.selectNode.type2
           params.typeId = this.selectNode.key
-          coreRuleUpdate(params)
+          this.$axios({
+            url:this.api.coreRuleUpdate,
+            method:'put',
+            data:params,
+          })
             .then(res => {
               if (res.code == '200') {
                 this.getPageData()
@@ -799,7 +843,11 @@ export default {
     getPageData(params = {}) {
       params.typeId = this.typeIds
       this.loadingTable = true
-      coreRuleTypePage(params)
+      this.$axios({
+        url:this.api.coreRuleTypePage,
+        method:'put',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             if (params.offset == 0) {
@@ -852,7 +900,11 @@ export default {
       let params = {}
       params.id = row.id
       params.status = val
-      coreRuleUpdate(params)
+      this.$axios({
+        url:this.api.coreRuleUpdate,
+        method:'put',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             this.success('操作成功', () => {
@@ -868,10 +920,13 @@ export default {
     },
     //操作删除
     del(value) {
-      console.log(value)
       let params = {}
       params.id = value.id
-      coreRuleDelete(params)
+      this.$axios({
+        url:this.api.coreRuleDelete,
+        method:'delete',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             this.success(res.msg, () => {

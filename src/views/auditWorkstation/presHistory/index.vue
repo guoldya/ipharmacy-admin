@@ -36,7 +36,7 @@
                                     </template>
                                     <a-tag
                                         :color="op.levelColor"
-                                        style="cursor: default; white-space:nowrap; "
+                                        style="cursor: default; white-space:nowrap;"
                                     >{{op.levelName}}</a-tag>
                                 </a-tooltip>
                             </span>
@@ -63,8 +63,6 @@
 
 <script>
 import moment from 'moment'
-import { connect } from 'net'
-import { constants } from 'fs'
 
 export default {
     name: 'index',

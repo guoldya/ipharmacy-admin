@@ -22,6 +22,7 @@ import 'babel-polyfill' // polyfill
 import { Table, TableColumn, Card, Tag, Collapse, CollapseItem, Scrollbar, Tooltip,Progress } from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局
 import vcolorpicker from 'vcolorpicker'
+import chatModal from '@/components/chatModal/chatModal'
 
 //业务相关组件
 import msgHandler from '@/comm-msg/msg-handler.js'
@@ -64,6 +65,8 @@ Vue.use(msgHandler)//统一错误处理
 Vue.use(VueAxios, router)
 
 
+
+
 Vue.config.productionTip = false
 // 当前环境
 Vue.prototype.$env = process.env.NODE_ENV
@@ -87,6 +90,8 @@ Vue.component('opcol', opcol)
 Vue.component('detailHeader', detailHeader)
 Vue.component('treeSelect',treeSelect)
 Vue.component('dateList', dateList)
+Vue.component('chatModal', chatModal)
+
 
 new Vue({
     router,

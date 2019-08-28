@@ -77,7 +77,6 @@
   </a-card>
 </template>
 <script>
-  import { reviewAuditlevelUpdate } from '@/api/login'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
 
   export default {
@@ -86,7 +85,8 @@
       return {
         api: {
           selectOne: 'sys/reviewAuditlevel/selectOne',
-          levelInsert: 'sys/reviewAuditlevel/insert'
+          levelInsert: 'sys/reviewAuditlevel/insert',
+          reviewAuditlevelUpdate:'/sys/reviewAuditlevel/update',
         },
         spinning: false,
         labelCol: {
@@ -188,7 +188,11 @@
                   this.error(err)
                 })
             } else {
-              reviewAuditlevelUpdate(values).then(res => {
+              this.$axios({
+                url: this.api.reviewAuditlevelUpdate,
+                method: 'post',
+                data: values
+              }).then(res => {
                 if (res.code == '200') {
                   this.success('保存成功!')
                   this.backTo()

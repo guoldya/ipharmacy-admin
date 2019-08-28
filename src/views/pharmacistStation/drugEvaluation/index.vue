@@ -6,7 +6,11 @@
 
         <a-card class="margin-top-10">
           <div class="disFlex">
-              <span class="font-bold fontSize16"><a-icon type="export" />患者入院药学评估</span>
+              <span class="font-bold fontSize16">
+                <a-icon type="export" /> 
+                <span>患者入院药学评估</span> 
+                <a-button class="margin-left-5" type='primary'>选择模板</a-button>
+              </span>
               <span>
                 <a-button><a-icon type="arrow-left" />返回</a-button>
                 <a-button class="margin-left-5" type='primary'>打印预览</a-button>
