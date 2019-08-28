@@ -328,7 +328,6 @@
     </div>
 </template>
 <script>
-import { selectTribunalRecord } from '@/api/login'
 import countText from '../component/count-text'
 import prescriptionTabs from '../component/prescription-tabs'
 import { setTimeout } from 'timers'
@@ -353,6 +352,7 @@ export default {
                 updateReviewList: 'sys/reviewOrderissue/updateReviewOrderissueList',
                 selectPlanInPlanCount: 'sys/reviewPlanorder/selectUsingPlanInPlanorderCount',
                 orgUrl: '/sys/sysOrgs/selectList',
+              selectTribunalRecord:'/sys/reviewOrderissue/selectTribunalRecord',
             },
             labelCol: {
                 xs: { span: 24 },
@@ -610,7 +610,11 @@ export default {
         //获取数据
         fetchYJSMapData(params = {}) {
             this.loading = true
-            selectTribunalRecord(params)
+            this.$axios({
+              url:this.api.selectTribunalRecord,
+              method:'put',
+              data:params,
+            })
                 .then(res => {
                     if (res.code == '200') {
                         this.dataSource = this.$dateFormat(res.rows, ['submitTime'])

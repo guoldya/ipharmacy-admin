@@ -165,7 +165,6 @@ import detailCheck from './detailCheck.vue'
 import jodgeStation from './jodgeStation.vue'
 import docAdvices from './docAdvices.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
-import { selectOutDetail } from '@/api/login'
 import { mapActions } from 'vuex'
 const DetailListItem = DetailList.Item
 export default {

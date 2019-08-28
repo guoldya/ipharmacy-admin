@@ -74,14 +74,6 @@
   import toolbar from './model/toolbar'
   import ruleModal from './model/ruleModal'
   import addRule from './model/addRule'
-  import {
-    coreRuleNodeSelectOne,
-    coreRuleNodeUpdate,
-    reviewAuditlevelSelect,
-    coreRuleNodeSelectColId,
-    coreFactColAll
-  } from '@/api/login'
-
   export default {
     name: 'g6e',
     props: {
@@ -102,7 +94,11 @@
         api: {
           RuleNodeAndRuleCable: 'sys/coreRuleNode/selectRuleNodeAndRuleCable',
           selectRuleContent: 'sys/coreRuleNode/selectRuleContent',
-          coreRuleUpdate: '/sys/coreRule/update'
+          coreRuleUpdate: '/sys/coreRule/update',
+          coreRuleNodeUpdate:'/sys/coreRuleNode/update',
+          reviewAuditlevelSelect:'/sys/reviewAuditlevel/selectUsingList',
+          coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
+          coreFactColAll:'/sys/coreFactCol/selectAllUsing',
         },
         spinning: false,
         ruleId: null,
@@ -195,7 +191,6 @@
           visible: null,
           updateBy: null,
           loading:false,
-          submitLoading:false,
         },
         //属性框初始化
         boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', nodeTreeData: {}, viewSelect: [] },
@@ -752,7 +747,11 @@
                       }
                       paramsNodeData.val = params.val
                       paramsNodeData.display = params.display
-                      coreRuleNodeSelectColId(paramsNodeData).then(res => {
+                      this.$axios({
+                        url:this.api.  coreRuleNodeSelectColId,
+                        method:'put',
+                        data: paramsNodeData,
+                      }).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = []
                           for (let key in res.rows) {
@@ -778,7 +777,11 @@
                       paramsNodeData.val = params.val
                       paramsNodeData.display = params.display
                       paramsNodeData.parentId = params.parentId
-                      coreRuleNodeSelectColId(paramsNodeData).then(res => {
+                      this.$axios({
+                        url:this.api.  coreRuleNodeSelectColId,
+                        method:'put',
+                        data: paramsNodeData,
+                      }).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = []
                           this.boxInitialized.viewSelect = []
@@ -799,9 +802,19 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                      let listData = paramsNodeData
-                      listData.valueList = ev.item.model.assertValList
-                      coreRuleNodeSelectColId(listData).then(res => {
+                      let listData = {}
+                      listData.id = params.itemId
+                      listData.val = params.val
+                      listData.display = params.display
+                      listData.parentId = params.parentId
+                      if (params.assertValList) {
+                        listData.valueList = params.assertValList
+                      }
+                      this.$axios({
+                        url:this.api.  coreRuleNodeSelectColId,
+                        method:'put',
+                        data: listData,
+                      }).then(res => {
                         if (res.code == '200') {
                           let resData = []
                           for (let key in res.rows) {
@@ -881,7 +894,11 @@
                     paramsData.val = sourceP.val
                     paramsData.display = sourceP.display
                   }
-                  coreRuleNodeSelectColId(paramsData).then(res => {
+                  this.$axios({
+                    url:this.api.  coreRuleNodeSelectColId,
+                    method:'put',
+                    data: paramsData,
+                  }).then(res => {
                     if (res.code == '200') {
                       _this.edgeInitialized.inputEdgeSelect = []
                       for (let key in res.rows) {
@@ -908,7 +925,11 @@
                   paramsData.val = sourceP.val
                   paramsData.display = sourceP.display
                   paramsData.parentId = sourceP.parentId
-                  coreRuleNodeSelectColId(paramsData).then(res => {
+                  this.$axios({
+                    url:this.api.  coreRuleNodeSelectColId,
+                    method:'put',
+                    data: paramsData,
+                  }).then(res => {
                     if (res.code == '200') {
                       _this.edgeInitialized.inputEdgeSelect = []
                       _this.edgeInitialized.viewSelect = []
@@ -929,14 +950,22 @@
                   }).catch(err => {
                     this.error(err)
                   })
-                  let listData = paramsData
+                  let listData = {}
+                  listData.id = sourceP.itemId
+                  listData.val = sourceP.val
+                  listData.display = sourceP.display
+                  listData.parentId = sourceP.parentId
                   if (ev.item.model.assertValList) {
                     listData.valueList = ev.item.model.assertValList
                   } else {
                     listData.valueList = []
                     ev.item.model.assertValList = []
                   }
-                  coreRuleNodeSelectColId(listData).then(res => {
+                  this.$axios({
+                    url:this.api.  coreRuleNodeSelectColId,
+                    method:'put',
+                    data: listData,
+                  }).then(res => {
                     if (res.code == '200') {
                       let resData = []
                       for (let key in res.rows) {
@@ -1289,7 +1318,11 @@
           list[key].itemId = Number(list[key].itemId)
           delete list[key].index
         }
-        coreRuleNodeUpdate({ ruleNodeVOS: list, status: '0', ruleId: this.$route.params.id,isCopy:this.isCopy }).then(res => {
+        this.$axios({
+          url: this.api.coreRuleNodeUpdate,
+          method: 'post',
+          data: { ruleNodeVOS: list, status: '0', ruleId: this.$route.params.id,isCopy:this.isCopy }
+        }).then(res => {
           if (res.code == '200') {
             this.titleData.loading = false;
             this.success('保存成功')
@@ -1307,7 +1340,7 @@
        * @description: 提交流图数据
        */
       submitFlow() {
-        this.titleData.submitLoading = true;
+        this.titleData.loading = true;
         this.verifyStatus = false
         let data = this.flow.save()
         let list = []
@@ -1330,21 +1363,25 @@
         }
         this.verifyFlow({ status: false })
         if (this.submitStatus) {
-          coreRuleNodeUpdate({ ruleNodeVOS: list, status: '1', ruleId: this.$route.params.id,isCopy:this.isCopy }).then(res => {
+          this.$axios({
+            url:this.api.coreRuleNodeUpdate,
+            method:'post',
+            data:{ ruleNodeVOS: list, status: '1', ruleId: this.$route.params.id,isCopy:this.isCopy }
+          }).then(res => {
             if (res.code == '200') {
-              this.titleData.submitLoading = false;
+              this.titleData.loading = false;
               this.success('提交成功')
             } else {
-              this.titleData.submitLoading = false;
+              this.titleData.loading = false;
               this.warn(res.msg)
             }
           }).catch(err => {
-            this.titleData.submitLoading = false;
+            this.titleData.loading = false;
             this.error(err)
           })
         } else {
           this.warn('流程图未完善不能提交，可以保存')
-          this.titleData.submitLoading = false;
+          this.titleData.loading = false;
         }
 
       },
@@ -1691,7 +1728,11 @@
       },
 
       getReviewLevel() {
-        reviewAuditlevelSelect({}).then(res => {
+        this.$axios({
+          url:this.api.reviewAuditlevelSelect,
+          method:'put',
+          data:{}
+        }).then(res => {
           if (res.code == '200') {
           } else {
             this.warn(res.msg)
@@ -1759,7 +1800,11 @@
         this.addVisible = false
       },
       getCoreFactAllStart() {
-        coreFactColAll({}).then(res => {
+        this.$axios({
+          url:this.api.coreFactColAll,
+          method:'put',
+          data:{}
+        }).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows)
             this.CoreFactAllTree = this.dealNodeTree(indexData, 'undefined')

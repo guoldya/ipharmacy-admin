@@ -17,6 +17,7 @@
               :treeData="treedata"
               placeholder="请选择"
               @select="treeDataSelect"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
               v-decorator="[
                 'id',
                 {
@@ -32,6 +33,7 @@
               :treeData="treedata"
               placeholder="请选择"
               @select="treeDataSelect"
+              :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
               v-decorator="[
                 'id',
                 {
@@ -97,7 +99,8 @@
             <a-alert message="在oracle数据库中建议值、显示名称，父级值大写" banner/>
           </a-form-item>
           <a-form-item :wrapper-col="{ span: 24, offset: 10 }">
-            <a-button type="primary" @click="handleSubmit">保存</a-button>
+<!--            <a-button  @click="handleSubmit">校验</a-button>-->
+            <a-button type="primary" :loading="loading"  @click="handleSubmit">保存</a-button>
             <a-button class="margin-left-20" @click="backTo">取消</a-button>
           </a-form-item>
         </a-form>
@@ -106,7 +109,6 @@
   </div>
 </template>
 <script>
-  import { reviewAuditlevelUpdate } from '@/api/login'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
 
   export default {
@@ -118,8 +120,9 @@
           updt: 'sys/coreRuleDatasource/update',
           dataFrom: 'sys/coreDbDatasource/selectList',
           selectTitlesList: 'sys/coreFactCol/selectListNonHaveRuleDb',
-          insert: 'sys/coreRuleDatasource/insert'
-        },
+          insert: 'sys/coreRuleDatasource/insert',
+          checkSqlName:'sys/coreRuleDatasource/superSqlAndSuperName'
+    },
         spinning: false,
         labelCol: {
           xs: { span: 8 },
@@ -140,7 +143,8 @@
         lists: [],
         treedata: [],
         isedit: true,
-        valueDisabled: false
+        valueDisabled: false,
+        loading:false,
       }
     },
     computed: {},
@@ -273,7 +277,31 @@
       },
 
       handleSubmit(e) {
+        this.loading = true;
         e.preventDefault()
+        let fieldsData = this.form.getFieldsValue();
+        let checkData = {};
+        checkData.sqlText = fieldsData.sqlText;
+        checkData.val = fieldsData.val;
+        checkData.display = fieldsData.display;
+        checkData.parentId = fieldsData.parentId;
+        this.$axios({
+          url: this.api.checkSqlName,
+          method: 'post',
+          data: checkData
+        })  .then(res => {
+          if (res.code == '200') {
+            this.submitForm();
+          } else {
+            this.loading = false;
+            this.warn(res.msg)
+          }
+        })
+      },
+
+      //submit
+      submitForm(){
+        this.loading = true;
         this.form.validateFields((err, values) => {
           if (!err) {
             let urls
@@ -285,13 +313,16 @@
             })
               .then(res => {
                 if (res.code == '200') {
+                  this.loading = false;
                   this.success(res.msg)
                   this.backTo()
                 } else {
+                  this.loading = false;
                   this.warn(res.msg)
                 }
               })
               .catch(err => {
+                this.loading = false;
                 this.error(err)
               })
           }

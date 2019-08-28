@@ -35,7 +35,7 @@
       <a-button shape="circle"  :loading="titleData.loading"  v-if="titleData.visible" class="operating buttonIcon icon-font action action-baocun" style="color: #52c41a;font-size: 16px"  icon="cloud-upload"   @click="saveFlow"/>
 <!--      <i  v-if="titleData.visible" class="operating icon-font action action-baocun"  title="保存" style="color: #52c41a"  @click="saveFlow" ></i>-->
 <!--      <i  v-if="titleData.visible" class="operating icon-font action action-tijiao2" style="color: #2eabff"  title="提交"  @click="submitFlow" ></i>-->
-      <a-button shape="circle"  :loading="titleData.submitLoading" v-if="titleData.visible" class="operating buttonIcon icon-font action action-baocun" style="color: #2eabff;font-size: 16px"  icon="upload"   @click="submitFlow"/>
+      <a-button shape="circle"  :loading="titleData.loading" v-if="titleData.visible" class="operating buttonIcon icon-font action action-baocun" style="color: #2eabff;font-size: 16px"  icon="upload"   @click="submitFlow"/>
     </div>
     <div class="rightButton" style="text-align:right;">
       <a-row>

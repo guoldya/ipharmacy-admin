@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import { selectSysOrgs } from '@/api/login'
 import treeTable from '@/components/tree-table/treeTable.vue'
 
 export default {
@@ -34,7 +33,8 @@ export default {
         return {
             api: {
                 selectClassListWithMoreParam: '/sys/dicBase/selectClassListWithMoreParam',
-                selectOrgUpdate: 'sys/sysOrgs/updateStatus'
+                selectOrgUpdate: 'sys/sysOrgs/updateStatus',
+              selectSysOrgs:'/sys/sysOrgs/selectList',
             },
             loading: false,
             total: 10,
@@ -144,8 +144,11 @@ export default {
         getData(params = { pageSize: 100000, offset: 0 }) {
             this.loading = true
             // params.orderId = 1
-            selectSysOrgs(params)
-                .then(res => {
+            this.$axios({
+              url:this.api.selectSysOrgs,
+              method:'put',
+              data:params,
+            }).then(res => {
                     if (res.code == '200') {
                         this.dataSource = this.getDataChildren(res.rows, undefined)
                         this.loading = false
