@@ -3,7 +3,7 @@
   <div class="allSearch">
     <h2>{{newname}}</h2>
     <p>{{Name}}</p>
-    <h5></h5>
+    <h5>{{toyname}}</h5>
     <Son></Son>
   </div>
 </template>
@@ -23,9 +23,10 @@ export default {
   },
   computed: {
     ...mapGetters({
-      newname: 'age'
+      newname: 'age',
+      toyname:'text/names'
     }),
-   
+   // toyname这里要根据作域来拿，mutation这些也是一样的
   },
   mounted() {
      console.log(this.$store.state)
