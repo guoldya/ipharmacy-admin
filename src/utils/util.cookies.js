@@ -24,7 +24,9 @@ cookies.set = function (name = 'default', value = '', cookieSetting = {}) {
 cookies.get = function (name = 'default') {
   return Cookies.get(`admin-${setting.releases.version}-${name}`)
 }
-
+cookies.gets=function (name = 'default') {
+  return Cookies.get(`${name}`)
+}
 /**
  * @description 拿到 cookie 全部的值
  */

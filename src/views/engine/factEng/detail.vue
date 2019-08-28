@@ -145,7 +145,6 @@
   </div>
 </template>
 <script>
-import { reviewAuditlevelUpdate } from '@/api/login'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 
 export default {
@@ -205,7 +204,7 @@ export default {
     search() {
       console.log('ddd')
     },
-    // 选择框事件
+    // 选择框事件 有上级编号，隐藏下面三个输入框
     onchange(value) {
       this.shows = value == undefined ? true : false
     },

@@ -212,7 +212,6 @@ import detailCheck from '../../auditWorkstation/presHospitalized/detailCheck'
 import docAdvices from './docAdvices.vue'
 import rewviewGrade from './rewviewGrade.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
-import { selectOutDetail } from '@/api/login'
 import { mapActions } from 'vuex'
 const DetailListItem = DetailList.Item
 export default {

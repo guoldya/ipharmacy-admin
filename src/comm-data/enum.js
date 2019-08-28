@@ -271,6 +271,16 @@ const Enum = {
     { id: 4, text: '小于等于',title: '≤'  },
     { id: 5, text: '大于',title: '>'  },
     { id: 6, text: '大于等于',title: '≥'  },
+  ],
+  allCondition:[
+    { id: 1, text: '等于',title: '=' },
+    { id: 2, text: '不等于',title: '≠'  },
+    { id: 3, text: '小于' ,title: '<' },
+    { id: 4, text: '小于等于',title: '≤'  },
+    { id: 5, text: '大于',title: '>'  },
+    { id: 6, text: '大于等于',title: '≥'  },
+    { id: 7, text: '包含',title: '包含'  },
+    { id: 8, text: '不包含',title: '不包含'  },
   ]
 }
 export default Enum

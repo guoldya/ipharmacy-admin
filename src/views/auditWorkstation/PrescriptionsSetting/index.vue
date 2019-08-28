@@ -94,6 +94,7 @@
           notPlan:'sys/reviewPlan/selectPersonsNotInPlan',
           inPlan:'sys/reviewPlan/selectPersonsInPlan',
           insertPersonsToPlan:'sys/reviewPlan/insertPersonsToPlan',
+          reviewPlanPage:'/sys/reviewPlan/selectPage',
         },
         loading: false,
         total: 10,
@@ -190,7 +191,11 @@
           this.current=1
         }
         // params.orderId = 1
-        reviewPlanPage(params).then(res => {
+        this.$axios({
+          url:this.api.reviewPlanPage,
+          method:'put',
+          data:params,
+        }).then(res => {
           if (res.code == '200') {
             this.dataSource = this.$dateFormat(res.rows,['createDate']);
             this.total = res.total

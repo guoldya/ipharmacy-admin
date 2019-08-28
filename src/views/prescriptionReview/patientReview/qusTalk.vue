@@ -45,7 +45,6 @@
   </div>
 </template>
 <script>
-import { selectOutDetail } from '@/api/login'
 export default {
   props: {
     visidId: {
@@ -72,7 +71,8 @@ export default {
         selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
         reviewTemplateUpdate: 'sys/reviewTemplate/update',
         selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
-        baseData: 'sys/reviewOrderissue/selectReviewOrderissueDetail'
+        baseData: 'sys/reviewOrderissue/selectReviewOrderissueDetail',
+        selectOutDetail:'sys/reviewOrderissue/selectTribunalRecordDetail',
       },
       loading: false,
       templateText: '',
@@ -144,8 +144,11 @@ export default {
     },
     //右边预判情况基础数据
     getDetailData(params = {}) {
-      selectOutDetail(params)
-        .then(res => {
+      this.$axios({
+        url: this.api.selectOutDetail,
+        method: 'put',
+        data: params
+      }).then(res => {
           if (res.code == '200') {
             if (res.data && res.data.length) {
               this.leftData = res.data

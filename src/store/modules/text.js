@@ -5,5 +5,10 @@ export default {
     names: state => {
       return state.age + 'ddd'
     }
+  },
+  mutations:{
+    decrement(state){
+      state.age++
+    }
   }
 }

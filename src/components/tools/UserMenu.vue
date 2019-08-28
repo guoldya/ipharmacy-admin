@@ -91,7 +91,7 @@
         const that = this
         this.$confirm({
           title: '提示',
-          content: '真的要注销登录吗 ?',
+          content: '真的要注销登录吗?',
           onOk() {
             return that
               .Logout({})

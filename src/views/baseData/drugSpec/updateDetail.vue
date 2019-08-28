@@ -338,7 +338,6 @@
               this.drugDetail = res.data
               this.getFormData()
             } else {
-              console.log(1)
               this.form.setFieldsValue({ drugNames: this.$route.params.drugName })
             }
           } else {
