@@ -1,16 +1,17 @@
 import Vue from 'vue'
 import router from './router'
 import store from './store'
-import {toDefaultPage, getRouterObjByName, openNewPage} from '@/utils/misc'
-import {asyncRouterMap, constantRouterMap} from '@/config/router.config'
+import { toDefaultPage, getRouterObjByName, openNewPage } from '@/utils/misc'
+import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { ACCESS_TOKEN,IS_LOCK } from '@/store/mutation-types'
+import { ACCESS_TOKEN, IS_LOCK } from '@/store/mutation-types'
 import util from '@/utils/util.js'
-import {setSessionStore,getSessionStore,removeSessionStore} from  '@utils/storage.js'
+import { setSessionStore, getSessionStore, removeSessionStore } from '@utils/storage.js'
+
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['login', 'register', 'registerResult','lock'] // 不重定向白名单
+const whiteList = ['login', 'register', 'registerResult', 'lock'] // 不重定向白名单
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
@@ -28,12 +29,35 @@ router.beforeEach((to, from, next) => {
         path: '/user/lock'
       })
       NProgress.done()
+    } else if (to.path == '/404') {
+      next()
     } else {
       if (to.path === '/user/login') {
         next({ path: '/dashboard/workplace' })
         NProgress.done()
       } else {
-        next()
+        let state = []
+        let nextPath = ''
+        let toPath = to.path
+        if (localStorage.rightsMenus) {
+          state = JSON.parse(localStorage.rightsMenus)
+        }
+        for (let key in state) {
+          if (toPath.indexOf(state[key].path) > 1 || toPath == '/dashboard/workplace') {
+            nextPath = to.path
+            break
+          } else {
+            nextPath = '/404'
+          }
+        }
+        if (nextPath == '/404') {
+          next({
+            path: '/404'
+          })
+        } else {
+          next()
+        }
+        NProgress.done()
       }
     }
   } else {
@@ -49,27 +73,27 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to) => {
-    //判断是否有索引页，replace
-    const curRouterObj = getRouterObjByName(asyncRouterMap[0].children, to.name);
-    //如果有子节点，并且为index
-    if (curRouterObj && curRouterObj.children) {
-        let len = curRouterObj.children.length;
-        let i = 0;
-        //打开索引页
-        while (i <len) {
-            if (curRouterObj.children[i].meta && curRouterObj.children[i].meta.index) {
-                router.replace({
-                    name: curRouterObj.children[i].name,
-                    //path :curRouterObj.children[i].path
-                });
-                break;
-            }
-            i++;
-        }
+  //判断是否有索引页，replace
+  const curRouterObj = getRouterObjByName(asyncRouterMap[0].children, to.name)
+  //如果有子节点，并且为index
+  if (curRouterObj && curRouterObj.children) {
+    let len = curRouterObj.children.length
+    let i = 0
+    //打开索引页
+    while (i < len) {
+      if (curRouterObj.children[i].meta && curRouterObj.children[i].meta.index) {
+        router.replace({
+          name: curRouterObj.children[i].name
+          //path :curRouterObj.children[i].path
+        })
+        break
+      }
+      i++
     }
-    openNewPage(router.app, to);
-    NProgress.done() // finish progress bar
-    util.title(to.meta.title)
+  }
+  openNewPage(router.app, to)
+  NProgress.done() // finish progress bar
+  util.title(to.meta.title)
 })
 
 /**
@@ -86,31 +110,145 @@ router.afterEach((to) => {
  *  @see https://github.com/sendya/ant-design-pro-vue/pull/53
  */
 const action = Vue.directive('action', {
-    bind: function(el, binding, vnode) {
-        const actionName = binding.arg
-        const roles = store.getters.roles
-        const permissionId = vnode.context.$route.meta.permission
-        let actions = []
-        roles.permissions.forEach(p => {
-            if (p.permissionId != permissionId) {
-                return
-            }
-            actions = p.actionList
-        })
-        if (actions.indexOf(actionName) < 0) {
-            setTimeout(() => {
-                if (el.parentNode == null) {
-                    el.style.display = 'none'
-                }
-                else {
-                    el.parentNode.removeChild(el)
-                }
-            }, 10)
-
+  bind: function(el, binding, vnode) {
+    const actionName = binding.arg
+    const roles = store.getters.roles
+    const permissionId = vnode.context.$route.meta.permission
+    let actions = []
+    roles.permissions.forEach(p => {
+      if (p.permissionId != permissionId) {
+        return
+      }
+      actions = p.actionList
+    })
+    if (actions.indexOf(actionName) < 0) {
+      setTimeout(() => {
+        if (el.parentNode == null) {
+          el.style.display = 'none'
+        } else {
+          el.parentNode.removeChild(el)
         }
+      }, 10)
+
     }
+  }
+})
+
+const modalDrag = Vue.directive('modalDrag', {
+
+  bind(el, binding, vnode, oldVnode) {
+
+    //弹框可拉伸最小宽高
+
+    let minWidth = 400
+
+    let minHeight = 300
+
+    //初始非全屏
+
+    let isFullScreen = false
+
+    //当前宽高
+
+    let nowWidth = 0
+
+    let nowHight = 0
+
+    //当前顶部高度
+
+    let nowMarginTop = 0
+
+    //获取弹框头部（这部分可双击全屏）
+
+    const dialogHeaderEl = el.querySelector('.ant-modal-header')
+
+    //弹窗
+
+    const dragDom = el.querySelector('.ant-modal')
+    console.log(dialogHeaderEl)
+    console.log(dragDom)
+
+
+    //给弹窗加上overflow auto；不然缩小时框内的标签可能超出dialog；
+
+    dragDom.style.overflow = 'auto'
+
+    //清除选择头部文字效果
+
+    //dialogHeaderEl.onselectstart = new Function("return false");
+
+    //头部加上可拖动cursor
+
+    dialogHeaderEl.style.cursor = 'move'
+
+    // 获取原有属性 ie dom元素.currentStyle 火狐谷歌 window.getComputedStyle(dom元素, null);
+
+    const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null)
+
+    let moveDown = (e) => {
+
+      // 鼠标按下，计算当前元素距离可视区的距离
+
+      const disX = e.clientX - dialogHeaderEl.offsetLeft
+
+      const disY = e.clientY - dialogHeaderEl.offsetTop
+
+      // 获取到的值带px 正则匹配替换
+
+      let styL, styT
+
+      // 注意在ie中 第一次获取到的值为组件自带50% 移动之后赋值为px
+
+      if (sty.left.includes('%')) {
+
+        styL = +document.body.clientWidth * (+sty.left.replace(/\%/g, '') / 100)
+
+        styT = +document.body.clientHeight * (+sty.top.replace(/\%/g, '') / 100)
+
+      } else {
+
+        styL = +sty.left.replace(/\px/g, '')
+
+        styT = +sty.top.replace(/\px/g, '')
+
+      }
+
+
+      document.onmousemove = function(e) {
+
+        // 通过事件委托，计算移动的距离
+
+        const l = e.clientX - disX
+
+        const t = e.clientY - disY
+
+        // 移动当前元素
+
+        dragDom.style.left = `${l + styL}px`
+
+        dragDom.style.top = `${t + styT}px`
+
+        //将此时的位置传出去
+
+        //binding.value({x:e.pageX,y:e.pageY})
+
+      }
+
+      document.onmouseup = function(e) {
+
+        document.onmousemove = null
+
+        document.onmouseup = null
+
+      }
+
+    }
+
+    dialogHeaderEl.onmousedown = moveDown
+  }
 })
 
 export {
-    action
+  action,
+  modalDrag
 }

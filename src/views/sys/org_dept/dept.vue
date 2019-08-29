@@ -201,7 +201,7 @@
             },
             cancel(){
                 this.$router.push({
-                    name: 'org_dept'
+                    name: 'deptIndex'
                 })
             },
             handleSubmit(e){

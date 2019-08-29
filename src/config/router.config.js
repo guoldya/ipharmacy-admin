@@ -499,7 +499,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: '/baseData/drugSpec',
-            name: 'DrugSpec',
+            name: 'drugSpec',
             component: RouteView,
             meta: { title: '药品字典管理', multistage: true },
             children: [
@@ -541,24 +541,17 @@ export const asyncRouterMap = [
             ]
           },
           {
-            path: '/baseData/question',
-            name: 'questions',
+            path: '/baseData/drugClassification',
+            name: 'drugClassification',
             component: RouteView,
             meta: { title: '药品分类管理', multistage: true },
             children: [
               {
-                path: '/baseData/question/index',
-                name: 'baseDataQuestion',
-                component: () => import('@/views/baseData/question/index.vue'),
+                path: '/baseData/drugClassification/index',
+                name: 'drugClassificationIndex',
+                component: () => import('@/views/baseData/drugClassification/index.vue'),
                 meta: { title: '药品分类管理', hiddenHeaderContent: true, index: true }
               },
-              {
-                path: '/baseData/question/detailBaseClass/:code/',
-                name: 'baseDataQuestionDetail',
-                hidden: true,
-                component: () => import('@/views/baseData/question/detail.vue'),
-                meta: { title: '分类详情', hiddenHeaderContent: true, detail: true }
-              }
             ]
           },
           {
@@ -682,7 +675,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: '/sys/org',
-            name: 'org_org_route',
+            name: 'org',
             component: RouteView,
             meta: { title: '机构维护', keepAlive: false, multistage: true },
             children: [
@@ -703,13 +696,13 @@ export const asyncRouterMap = [
           },
           {
             path: '/sys/org_dept',
-            name: 'org_dept_route',
+            name: 'org_dept',
             component: RouteView,
             meta: { title: '科室维护', keepAlive: false, multistage: true },
             children: [
               {
                 path: '/sys/org_dept/index',
-                name: 'org_dept',
+                name: 'deptIndex',
                 component: () => import('@/views/sys/org_dept/org_dept.vue'),
                 meta: { title: '科室维护', index: true }
               },
@@ -724,13 +717,13 @@ export const asyncRouterMap = [
           },
           {
             path: '/sys/org_user',
-            name: 'org_user_route',
+            name: 'org_user',
             component: RouteView,
             meta: { title: '人员维护', keepAlive: false, multistage: true },
             children: [
               {
                 path: '/sys/org_user/index',
-                name: 'org_user',
+                name: 'userIndex',
                 component: () => import('@/views/sys/org_user/user.vue'),
                 meta: { title: '人员维护', index: true }
               },
@@ -1220,9 +1213,6 @@ export const asyncRouterMap = [
               },
             ]
           },
-          
-
-          
         ]
       },
     ]
@@ -1318,6 +1308,7 @@ export const constantRouterMap = [
   },
   {
     path: '/404',
+    name: '404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
 ]

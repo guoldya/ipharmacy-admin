@@ -7,6 +7,7 @@
       @cancel="cancel"
       :width="550"
       :visible="visibled"
+      class="valueListModal"
     >
         <el-table
           class=" width-100"
@@ -78,7 +79,7 @@
     },
     mounted() {
       this.getData();
-      console.log(this.fullData)
+      console.log(this.assertValList)
     },
     methods: {
       getData(params={}){
@@ -122,25 +123,25 @@
           if (data.key == this.assertValList[i]){
             this.assertValList.splice(i,1);
             //删除
-            this.$axios({
-              url: this.api.delUrl,
-              method: 'DELETE',
-              data: params
-            })
-              .then(res => {
-                if (res.code == '200') {
-                  this.success(res.msg);
-                  let list = {}
-                  list.offset = (this.current - 1) *  this.pageSize
-                  list.pageSize = this.pageSize
-                  this.getData(list)
-                } else {
-                  this.warn(res.msg)
-                }
-              })
-              .catch(err => {
-                this.error(err)
-              })
+            // this.$axios({
+            //   url: this.api.delUrl,
+            //   method: 'DELETE',
+            //   data: params
+            // })
+            //   .then(res => {
+            //     if (res.code == '200') {
+            //       this.success(res.msg);
+            //       let list = {}
+            //       list.offset = (this.current - 1) *  this.pageSize
+            //       list.pageSize = this.pageSize
+            //       this.getData(list)
+            //     } else {
+            //       this.warn(res.msg)
+            //     }
+            //   })
+            //   .catch(err => {
+            //     this.error(err)
+            //   })
           }
         }
         this.$forceUpdate()
@@ -149,6 +150,8 @@
   }
 </script>
 
-<style scoped>
-
+<style>
+  .valueListModal  .ant-modal-body{
+    padding: 0px !important;
+  }
 </style>

@@ -1,3 +1,44 @@
+#EmojiPicker{
+  background-color: #fff !important;
+}
+#Categories{
+  text-align: left;
+  background-color: #f6f6f6 !important;
+}
+#Categories .category{
+  text-align: left;
+  flex: 0;
+  margin-right: 4px
+}
+#Categories .category:nth-of-type(n+3){
+  display: none
+}
+.chatModal .ant-upload-list{
+  display: none ;
+}
+.chatModal .ant-modal-title:before{
+  content: "";
+  background: url(../assets/testImg.png) no-repeat;
+  background-size: 100%;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  margin-right: 5px;
+  border-radius: 50%;
+  box-shadow: 0 0 2px 1px #dddddd;
+}
+.chatModal .ant-modal-title{
+   text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.chatModal .ant-modal-body{
+  padding: 0
+}
+.container-search{
+  display: none !important;
+}
 .primary{
   color: #1890FF
 }

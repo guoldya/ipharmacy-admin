@@ -67,6 +67,7 @@ Vue.use(VueAxios, router)
 
 
 
+
 Vue.config.productionTip = false
 // 当前环境
 Vue.prototype.$env = process.env.NODE_ENV
