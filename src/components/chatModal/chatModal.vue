@@ -13,21 +13,23 @@
        @cancel="handleCancel"
       :destroyOnClose='true'
     >
-     <template slot="footer">
-        
-      </template>
       <a-row >
           <a-col :span="16" class="leftCol">
                 <div class="chatContent"  ref="box">
-                    <div v-for="(item,i) in chatContent" :class="item.sendContent?'sendContent':'acceptContent'" :key="i">
+                    <div v-for="(item,i) in chatContent" :class="item.sendContent||item.sendImg?'sendContent':'acceptContent'" :key="i">
                          <a-popover 
-                        :arrowPointAtCenter='true' 
                          :getPopupContainer="getPopupContainer" 
                          :visible="true"
-                          :placement="item.sendContent?'left':'right'"
+                         :destroyTooltipOnHide='true'
+                         :arrowPointAtCenter='true'
+                          :placement="item.sendContent||item.sendImg?'left':'right'"
                           >
                              <template slot="content">
-                                <span v-html="item.sendContent"> </span>
+                                <span v-if="!item.sendImg" v-html="item.sendContent"> </span>
+                                <span v-else>
+                                 <img class="img" v-for="(url,i) in imageUrl" :key="i" :src="url" />
+                                </span>
+
                                 <span>{{item.acceptContent}}</span>
                              </template>
                             <img class="userPhoto" src="@/assets/testImg.png" alt="">
@@ -36,30 +38,37 @@
                 </div>
             <a-divider/>
             <!-- 表情 -->
-            <a-popover placement="top" trigger="click">
+            <a-popover placement="top" 
+             @visibleChange="visibleChange" trigger="click" :visible="selectEmojiStatus"
+            >
                 <template slot="content">
-                    <VEmojiPicker  :pack="pack" @select="selectEmoji" />
+                    <VEmojiPicker :pack="pack" @select="selectEmoji" />
                 </template>
                 <a-icon class="fontSize20" type="smile" />
             </a-popover>
 
-                <a-upload class="margin-left-5"
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                listType="picture"
-                :fileList="fileList"
-                
-                @change="handleChange"
+             <a-upload  class="margin-left-5"
+                    listType="picture"
+                    :showUploadList="false"
+                    :action="action"
+            
+                    @change="handleChange"
                 >
                     <a-icon class="fontSize20" type="picture" />
                 </a-upload>
 
-
               <div class="chatInputBorder">
+                  <!--  v-html="txtContent"  @input="txtContent=$event.target.innerHTML"-->
                 <div class="textarea" @keyup.enter="handleOk" 
-                v-html="txtContent" @input="txtContent=$event.target.innerHTML"  contenteditable="true">
-                <img class="img" v-for="(url,i) in previewImage" :key="i" :src="url" />
-
+               @input="inputChange"  v-if="txtContent" v-html="txtContent" contenteditable="true">
                 </div>
+
+                <div class="textarea" @keyup.enter="handleOk" 
+               @input="inputChange" v-else contenteditable="true">
+                <img class="img" v-for="(url,i) in previewImage" :key="i" :src="url" />
+                <!-- <span v-html="txtContent"></span> -->
+                </div>
+
                   <!-- <a-textarea @keyup.enter="handleOk" v-model="txtContent" autoFocus >
                   </a-textarea> -->
               </div>
@@ -84,7 +93,11 @@
 <script>
 import VEmojiPicker from 'v-emoji-picker';
 import packData from 'v-emoji-picker/data/emojis.json';
-
+function getBase64 (img, callback) {
+  const reader = new FileReader()
+  reader.addEventListener('load', () => callback(reader.result))
+  reader.readAsDataURL(img)
+}
 export default {
     name:"selectDoctorAdvice",
     props: {
@@ -92,11 +105,13 @@ export default {
     },
   data() {
     return {
-        loading:false,
+          loading:false,
+      imageUrl: '',
+        action:'https://www.mocky.io/v2/5cc8019d300000980a055e76',///api/sys/upload/image
       previewImage: [],
+      imgUrl:[],
       fileList: [],
      acceptChat:['我不晓得','嗯要不得','ok','还钱','嗯很好很好'],
-      loading:false,
       modalData:[],
       visible:false,
       pack: [],
@@ -105,7 +120,8 @@ export default {
       sendContent:[],
       acceptContent:[],
       //监听是否发送消息
-      sendStatus:''
+      sendStatus:'',
+      selectEmojiStatus:false,
     }
   },
   computed: {
@@ -132,28 +148,34 @@ export default {
       
     },
   methods: {
-      handleCancel () {
+    handleChange (info) {
+        if (info.file.status === 'done') {
+            getBase64(info.file.originFileObj, (imageUrl) => {
+                this.previewImage.push(imageUrl);
+            })
+        }
+    },
+    visibleChange(val){
+        this.selectEmojiStatus=val;
+      },
+    inputChange(e){
+        this.txtContent=e.target.innerHTML;
+    },
+    handleCancel () {
       this.previewVisible = false
     },
-    
-    handleChange ({ fileList }) {
-      this.fileList = fileList;
-      if(fileList[0].url || fileList[0].thumbUrl){
-        this.previewImage.push(fileList[0].url || fileList[0].thumbUrl);
-      }
-      console.log(this.previewImage)
-    },
-      getPopupContainer (trigger) {
+    //tooltip渲染到父元素
+    getPopupContainer (trigger) {
         return trigger.parentElement
-        },
+    },
       //随机整数
     random(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     },
     selectEmoji(emoji) {
-      console.log(emoji);
-      this.EmojVisible=false;  
-      this.txtContent+=emoji.emoji;
+        //选择表情之后关闭popover
+       this.selectEmojiStatus=false;
+       this.txtContent+=emoji.emoji;
     },
    showModal() {
       this.visible = true
@@ -162,10 +184,24 @@ export default {
       this.visible = false;
     },
     handleOk(e) {
-      console.log(e);
+      this.selectEmojiStatus=false;
+      if(this.previewImage.length>0){
+        this.imageUrl=this.previewImage;
+      }
+      if(this.txtContent){
       this.chatContent.push({sendContent:this.txtContent});
-    //   this.txtContent="";
       this.sendStatus=this.random(0, 5);
+
+      }
+      if(this.imageUrl.length>0&&!this.txtContent&&this.previewImage.length>0){
+        this.chatContent.push({sendImg:this.imageUrl});
+      this.sendStatus=this.random(0, 5);
+
+      }
+      this.txtContent="";
+      this.previewImage=[];
+      console.log(this.chatContent);
+      
 
     //   this.visible = false
     },
@@ -183,7 +219,7 @@ export default {
                 padding: 12px;
                 outline: 0;
                 word-wrap: break-word;
-                overflow: hidden;
+                overflow: auto;
          }
         .img{
             height: 80px;
@@ -203,6 +239,8 @@ export default {
          .chatContent{
              height: 160px;
              overflow: auto;
+             position: relative;
+             overflow-x: hidden;
              .sendContent{
                 text-align: right;
                 margin-bottom: 20px;
