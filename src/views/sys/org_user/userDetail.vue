@@ -419,7 +419,7 @@
             },
             cancel(){
                 this.$router.push({
-                    name:'org_user'
+                    name:'userIndex'
                 })
             },
             submit(){

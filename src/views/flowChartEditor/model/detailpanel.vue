@@ -144,7 +144,7 @@
                   :selectChange="nodeTreeSelectChange"
                   :treeSelect="nodeTreeSelected"
                   :loadData="nodeTreeLoadData"
-                  :loadedKeys="nodeLoadedKeys"
+                  :loadedKeys="boxInitialized.loadedKeys"
                   :load="nodeTreeLoad"
                   :selectedKeys="selectNode.assertValList"
                   :selectSearch="nodeTreeSelectSearch"
@@ -350,7 +350,7 @@
                 :selectChange="edgeTreeSelectChange"
                 :treeSelect="edgeTreeSelected"
                 :loadData="edgeTreeLoadData"
-                :loadedKeys="edgeLoadedKeys"
+                :loadedKeys="edgeInitialized.loadedKeys"
                 :load="edgeTreeLoad"
                 :selectedKeys="selectEdge.assertValList"
                 :selectSearch="edgeTreeSelectSearch"
@@ -448,8 +448,6 @@
         initialized: {},
         edgeSelectOpen: false,
         nodeSelectOpen: false,
-        nodeLoadedKeys: [],
-        edgeLoadedKeys: [],
       }
     },
     watch: {
@@ -900,6 +898,7 @@
         this.selectEdge.lo = value
         this.selectEdge.ro = 7
         this.edgeInitialized.lo = value
+        this.selectEdge.assertValList = []
         if (value == 1){
           this.selectEdge.assertVal = null
         }else if(value == 2){
@@ -984,11 +983,11 @@
       },
       //线上树形结构异步加完成事件
       edgeTreeLoad(loadedKeys, expanded) {
-        this.edgeLoadedKeys = loadedKeys
+        this.edgeInitialized.loadedKeys = loadedKeys
       },
       //线树形搜索框事件
       edgeTreeSelectSearch(value) {
-        this.edgeLoadedKeys = []
+        this.edgeInitialized.loadedKeys = []
         let _this = this
         let params = {}
         params.id = _this.edgeInitialized.itemId
@@ -1096,11 +1095,11 @@
       },
       //节点异步加载完成事件
       nodeTreeLoad(loadedKeys, expanded) {
-        this.nodeLoadedKeys = loadedKeys
+        this.boxInitialized.loadedKeys  = loadedKeys
       },
       //节点树形搜索框事件
       nodeTreeSelectSearch(value) {
-        this.nodeLoadedKeys = []
+        this.boxInitialized.loadedKeys = []
         let _this = this
         let params = {}
         params.id = this.boxInitialized.itemId

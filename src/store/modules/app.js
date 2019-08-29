@@ -114,6 +114,7 @@ const app = {
             else {
                 routers.forEach((router,index)=>{
                     let item1 = router;
+                    console.log(router,'2233')
                     let ret1 = state.rightsMenus.find((value, index, arr) => {
                         return value.path == item1.name;
                     });
