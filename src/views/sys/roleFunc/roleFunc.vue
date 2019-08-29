@@ -99,6 +99,7 @@
                 let ids = [], modules = [], params = {}
                 this.selectKeys.forEach(item => {
                     if (item.length > 2) {
+                      console.log(item,'item');
                         if (ids.indexOf(item.slice(0, 2)) < 0) {
                             ids.push(item.slice(0, 2))
                         }

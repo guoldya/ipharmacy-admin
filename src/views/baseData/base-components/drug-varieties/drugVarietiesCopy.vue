@@ -8,7 +8,7 @@
     </Searchpanel>
     <div class="margin-top-10">
       <a-input-group compact>
-        <a-select style="width:400px" v-if="disable" :disabled="true" class="readOnlyInput">
+        <a-select style="width:400px" v-if="disable" :showArrow="false" :disabled="true" class="readOnlyInput">
           <a-select-option
             v-for="(item,index) in this.drugAllList"
             :value="item.varietyCode"

@@ -193,8 +193,8 @@
           loading:false,
         },
         //属性框初始化
-        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', nodeTreeData: {}, viewSelect: [] },
-        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', edgeTreeData: {}, viewSelect: [] },
+        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', nodeTreeData: {}, viewSelect: [],loadedKeys:[] },
+        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', edgeTreeData: {}, viewSelect: [],loadedKeys:[]  },
         pieChartData: {},
         getEdgesData: [],
         //modal属性
@@ -773,6 +773,7 @@
                       this.boxInitialized.val = params.val
                       this.boxInitialized.display = params.display
                       this.boxInitialized.parentId = params.parentId
+                      this.boxInitialized.loadedKeys = []
                       let paramsNodeData = { id: params.itemId }
                       paramsNodeData.val = params.val
                       paramsNodeData.display = params.display
@@ -921,6 +922,7 @@
                   _this.edgeInitialized.val = sourceP.val
                   _this.edgeInitialized.display = sourceP.display
                   _this.edgeInitialized.parentId = sourceP.parentId
+                  _this.edgeInitialized.loadedKeys = []
                   let paramsData = { id: sourceP.itemId }
                   paramsData.val = sourceP.val
                   paramsData.display = sourceP.display

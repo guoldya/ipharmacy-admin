@@ -193,7 +193,8 @@ export default {
         selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
         reviewTemplateUpdate: 'sys/reviewTemplate/update',
         selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
-        baseData: 'sys/reviewOrderissue/selectReviewOrderissueDetail'
+        baseData: 'sys/reviewOrderissue/selectReviewOrderissueDetail',
+        selectOutDetail: 'sys/reviewOrderissue/selectTribunalRecordDetail',
       },
       loading: false,
       templateText: '',
@@ -265,7 +266,11 @@ export default {
     },
     //右边预判情况基础数据
     getDetailData(params={}) {
-      selectOutDetail(params)
+      this.$axios({
+        url:this.api.selectOutDetail,
+        method:'put',
+        data:params,
+      })
         .then(res => {
           if (res.code == '200') {
             this.leftData = res.data
