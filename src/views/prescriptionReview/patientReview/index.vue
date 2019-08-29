@@ -268,7 +268,7 @@ export default {
                   this.error(err)
                 })
             }
-            if (this.alldatasouce == undefined) {
+            if (this.alldatasouce == undefined||this.alldatasouce.length==0) {
               this.buttonType = 'primary'
               this.show = false
               this.rewButoon = '自动点评'

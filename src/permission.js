@@ -56,7 +56,7 @@ router.afterEach((to) => {
         let len = curRouterObj.children.length;
         let i = 0;
         //打开索引页
-        while (i < len) {
+        while (i <len) {
             if (curRouterObj.children[i].meta && curRouterObj.children[i].meta.index) {
                 router.replace({
                     name: curRouterObj.children[i].name,

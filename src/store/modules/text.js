@@ -7,8 +7,16 @@ export default {
     }
   },
   mutations:{
-    decrement(state){
-      state.age++
-    }
+    decrement:(state)=>{
+      setTimeout(() => {
+        state.age++
+      }, 1000)  
+    },
+    reduces(state){
+      state.age--
+      setTimeout(() => {
+        state.age--
+      }, 2000)  
+    },
   }
 }

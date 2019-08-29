@@ -3,7 +3,7 @@
   <div class="allSearch">
     <p>哈哈</p>
     <p>{{this.$store.state.text.name}}</p>
-    <a-button type="primary" @click="clic">点击</a-button>
+    <a-button type="primary" @click="decrement">点击</a-button>
   </div>
 </template>
 
@@ -22,12 +22,9 @@ export default {
   methods: {
     clic() {
       this.$store.commit('text/decrement')
-      if (this.primaryColor !== '#F5222D') {
-        this.$store.dispatch('preference/ToggleColor', '#F5222D')
-        this.$store.dispatch('preference/save')
-        updateTheme('#F5222D')
-      }
-    }
+       this.$store.commit('text/reduces')
+    },
+     ...mapMutations({decrement:'text/decrement'}),
   }
 }
 </script>

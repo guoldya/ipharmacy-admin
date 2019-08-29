@@ -147,10 +147,10 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">剂量系数：</a-col>
           <a-col :span="8">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="N" />
+            <a-input-number :min="1" size="small" @change="nchange" v-model="MData.n" />
           </a-col>
           <a-Col :span="8" class="td-content">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="M" />
+            <a-input-number :min="1" size="small" @change="nchange" v-model="MData.m" />
           </a-Col>
         </a-row>
 
