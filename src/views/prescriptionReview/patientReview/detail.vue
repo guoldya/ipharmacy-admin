@@ -326,6 +326,7 @@ export default {
               this.RecordDelData = res.data
               this.leftData = res.data
               this.$store.state.drugList = this.leftData.clinicPrescVOList[0].prescVOList
+               this.$store.state.prescNumStr= this.RecordDelData.prescNumStr
             }
           } else {
             this.allLoading = false
@@ -488,7 +489,8 @@ export default {
             this.visId = this.$route.params.visId
             this.patientId = res.data.patientId
             this.$store.state.drugList = this.RecordDelData.clinicOrderList
-            console.log(this.$store.state.drugList)
+            this.$store.state.prescNumStr= this.RecordDelData.prescNumStr
+           
           } else {
             this.warn(res.msg)
           }
@@ -572,7 +574,7 @@ export default {
     },
     cancle() {
      let comefrom=JSON.parse(sessionStorage.getItem('patinRew')).resouce
-      console.log(comefrom)
+     
       if(comefrom=='grade'){
  this.$router.push({
         name: 'reviewTaskMgt'

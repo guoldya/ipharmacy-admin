@@ -3,7 +3,8 @@
   <div class="allSearch">
     <p>哈哈</p>
     <p>{{this.$store.state.text.name}}</p>
-    <a-button type="primary" @click="decrement">点击</a-button>
+    <a-button type="primary" @click="decrement">提高</a-button>
+       <a-button type="primary" @click="reduces">下降</a-button>
   </div>
 </template>
 
@@ -24,7 +25,7 @@ export default {
       this.$store.commit('text/decrement')
        this.$store.commit('text/reduces')
     },
-     ...mapMutations({decrement:'text/decrement'}),
+     ...mapMutations({decrement:'text/decrement',reduces:'text/reduces'}),
   }
 }
 </script>

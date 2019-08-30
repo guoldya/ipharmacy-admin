@@ -11,7 +11,7 @@ import ua from './modules/ua'
 import text from './modules/text'
 import getters from './getters'
 Vue.use(Vuex)
-const state = {routerData:{},drugList:[],drugId:'',proslist:[],status:'2',sessiondata:null}
+const state = {routerData:{},drugList:[],drugId:'',proslist:[],status:'2',sessiondata:null,prescNumStr:''}
 export default new Vuex.Store({
   modules: {
     db,

@@ -136,7 +136,7 @@ export default {
         // { title: '操作', prop: 'action', align: 'left' }
       ],
       loading: false,
-      total: 2,
+      total: 1,
       current: 1,
       dataSource: [],
       id: 1,
@@ -410,6 +410,7 @@ export default {
     // 重置数据
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
+      this.searchData={}
       this.pageSize=10
       this.current=1
       this.getformData({ pageSize: 10, offset: 0 })
@@ -446,7 +447,7 @@ export default {
       }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
       let obj = { visId: data.visId, maxSubmitNo: !!data.submitNo ? data.submitNo : '2' }
-      console.log(obj)
+     
       this.$router.push({
         name: 'patientReviewDetail',
         params: obj

@@ -207,6 +207,9 @@ export default {
             params.pageSize = this.pageSize
             params.offset = 0;
             this.dateList = params.searchDate
+            if(params.searchDate.length==0){
+                delete params.searchDate
+            }
             this.getData(params)
         },
         //重置
