@@ -18,6 +18,8 @@ import './core/use'
 import '@/permission' // vue 权限控制
 import '@/utils/filter' // vue 全局 filter  
 import 'babel-polyfill' // polyfill
+import '@/directives'
+
 //组件相关
 import { Table, TableColumn, Card, Tag, Collapse, CollapseItem, Scrollbar, Tooltip,Progress } from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局

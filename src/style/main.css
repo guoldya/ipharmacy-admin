@@ -13,7 +13,14 @@
 #Categories .category:nth-of-type(n+3){
   display: none
 }
-
+.chatModal .img{
+  height: 80px;
+  width: 80px;
+  margin-right: 5px;
+}
+.chatModal .ant-popover{
+  max-width: 400px !important;
+}
 .chatModal .ant-modal-title:before{
   content: "";
   background: url(../assets/testImg.png) no-repeat;
