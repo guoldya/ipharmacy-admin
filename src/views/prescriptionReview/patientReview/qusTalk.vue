@@ -22,7 +22,7 @@
     <a-card
       class="margin-top-10 antCard"
       v-for="(op,index) in rightData "
-      v-if="op.status"
+        v-if="op.status"
       :style="{'borderColor':op.borderColor}"
       :key="index"
     >
@@ -54,15 +54,11 @@ export default {
       type: String
     }
   },
-  watch: {
-    visidId: function() {
-      console.log(this.visidId, 'dddddddddddd')
-      this.getDetailData({ visId: this.visidId, submitNo: this.submitNos, reviewResouce: 2 })
-      this.getRecord({ visId: this.visidId, submitNo: this.submitNos })
-      this.getTemplate({ visId: this.visidId, submitNo: this.submitNos })
-      this.basedata({ visId: this.visidId, submitNo: this.submitNos })
-    }
-  },
+  // watch: {
+  //   visidId: function() {
+  //     this.getDetailData({ visId: this.visidId, submitNo: this.submitNos, reviewResouce: 2 })
+  //   }
+  // },
 
   data() {
     return {
@@ -71,8 +67,8 @@ export default {
         selectReviewTemplateDetail: 'sys/reviewTemplate/selectReviewTemplateDetail',
         reviewTemplateUpdate: 'sys/reviewTemplate/update',
         selectWithVisId: 'sys/reviewOrderissue/selectInterventionRecordWithVisId',
-        baseData: 'sys/reviewOrderissue/selectReviewOrderissueDetail',
-        selectOutDetail:'sys/reviewOrderissue/selectTribunalRecordDetail',
+        // baseData: 'sys/reviewOrderissue/selectReviewOrderissueDetail',
+        selectOutDetail: 'sys/reviewOrderissue/selectOrderissueListMaxSubmitNoByVisIdAndPrescNum'
       },
       loading: false,
       templateText: '',
@@ -93,10 +89,17 @@ export default {
     }
   },
   mounted() {
-    this.getDetailData({ visId: this.visidId, submitNo: this.submitNos, reviewResouce: 2 })
-    this.getRecord({ visId: this.visidId, submitNo: this.submitNos })
-    this.getTemplate({ visId: this.visidId, submitNo: this.submitNos })
-    this.basedata({ visId: this.visidId, submitNo: this.submitNos })
+    let arr=[]
+  if(this.$store.state.prescNumStr){
+     arr=this.$store.state.prescNumStr.split(',')
+  }
+    this.getDetailData({
+      visId: this.visidId,
+      prescNumList:arr,
+      planScope: JSON.parse(sessionStorage.getItem('patinRew')).planScope
+    })
+    // this.getRecord({ visId: this.visidId, submitNo: this.submitNos })
+    // this.getTemplate({ visId: this.visidId, submitNo: this.submitNos })
   },
   methods: {
     // 传值给父组件
@@ -148,20 +151,22 @@ export default {
         url: this.api.selectOutDetail,
         method: 'put',
         data: params
-      }).then(res => {
+      })
+        .then(res => {
           if (res.code == '200') {
-            if (res.data && res.data.length) {
+            if (res.data) {
+              console.log('ttt')
               this.leftData = res.data
               this.rightData = this.leftData.reviewOrderissueVOList
               this.tagsData = this.leftData.levelTotalsList
               this.dealTagsData(this.tagsData)
               this.deal(this.rightData)
               // this.$emit('listStatus', 'ddddd')
-              this.leftData.clinicPrescVOList.forEach((item, index) => {
-                if (item.auditingStatus !== '1') {
-                  this.auditStatus = false
-                }
-              })
+              // this.leftData.clinicPrescVOList.forEach((item, index) => {
+              //   if (item.auditingStatus !== '1') {
+              //     this.auditStatus = false
+              //   }
+              // })
               this.$emit('saveStatus', this.auditStatus)
             }
           } else {

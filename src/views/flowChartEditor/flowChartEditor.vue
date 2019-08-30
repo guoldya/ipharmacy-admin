@@ -99,6 +99,7 @@
           reviewAuditlevelSelect:'/sys/reviewAuditlevel/selectUsingList',
           coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
           coreFactColAll:'/sys/coreFactCol/selectAllUsing',
+          judgeUrl:'sys/coreRuleNode/selectColSqlValuePage',
         },
         spinning: false,
         ruleId: null,
@@ -515,6 +516,8 @@
         }
       },
       selectNodeRoParentId(newValue, oldValue) {
+        console.log(newValue)
+        console.log(oldValue)
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { parentId: newValue })
         }
@@ -583,7 +586,6 @@
         for (let key in this.toolbar.commands) {
           let item = this.toolbar.commands[key]
           if (item.dataset && item.dataset.command == 'autoZoom') {
-
             const event = new MouseEvent('click', {
               view: window,
               bubbles: true,
@@ -719,6 +721,9 @@
                     _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
                     _this.selectNode.isRepeat = model.isRepeat != null ? model.isRepeat : shape.isRepeat
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
+                    _this.selectNode.val = model.val != null ? model.val : shape.val
+                    _this.selectNode.display = model.display != null ? model.display : shape.display
+                    _this.selectNode.parentId = model.parentId != null ? model.parentId : shape.parentId
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.prePid = []
@@ -736,6 +741,7 @@
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
                       this.boxInitialized.inputType = 'scopeInput'
+                      console.log(params,'params')
                     } else if (params.lo == 3 && !this.$util.trim(params.parentId)) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
@@ -768,6 +774,7 @@
                         this.error(err)
                       })
                     } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
+                      console.log(params,'params')
                       this.boxInitialized.inputType = 'treeSelect'
                       this.boxInitialized.itemId = params.itemId
                       this.boxInitialized.val = params.val
@@ -851,6 +858,9 @@
                     _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
                     _this.selectNode.isRepeat = model.isRepeat != null ? model.isRepeat : shape.isRepeat
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
+                    _this.selectNode.val = model.val != null ? model.val : shape.val
+                    _this.selectNode.display = model.display != null ? model.display : shape.display
+                    _this.selectNode.parentId = model.parentId != null ? model.parentId : shape.parentId
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.selectNode.assertVal = model.assertVal != null ? model.assertVal : shape.assertVal

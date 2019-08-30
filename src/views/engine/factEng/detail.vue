@@ -42,9 +42,10 @@
               >{{op.colName}}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol" >
             <a-select
-              :disabled="onlyRead"
+             class="readOnlyInput"
+              :disabled="true"
               v-decorator="[ 'colType',{
                   rules: [{
                     required: true,
@@ -350,12 +351,12 @@ export default {
 .ant-select-tree {
   height: 500px;
 }
-.ant-select-disabled .ant-select-selection {
-  border: 1px solid #c4c4c4;
-  background-color: #ffff;
-  cursor: default;
-  color: rgba(0, 0, 0, 0.65);
-}
+// .ant-select-disabled .ant-select-selection {
+//   border: 1px solid #c4c4c4;
+//   background-color: #ffff;
+//   cursor: default;
+//   color: rgba(0, 0, 0, 0.65);
+// }
 .factContent {
   .btn {
     margin: 0 5px;

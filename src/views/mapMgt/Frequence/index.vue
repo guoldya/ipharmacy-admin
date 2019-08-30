@@ -147,7 +147,7 @@
             showSizeChanger
             v-model="similarCurrent"
             class="pnstyle"
-            :defaultPageSize="10"
+            :pageSize="pageSizes"
             :pageSizeOptions="['10', '20','50']"
             @showSizeChange="similarSizeChange"
             @change="similarPageChange"
@@ -204,7 +204,8 @@ export default {
       drugAllList: [],
       isActive: true,
       orgData: [],
-       searchdata:{ orgId: this.$store.state.user.account.info.orgId }
+      searchdata: { orgId: this.$store.state.user.account.info.orgId },
+      pageSizes: 10
     }
   },
   computed: {
@@ -299,6 +300,7 @@ export default {
     },
     //点击第左边的table列事件
     clickLeftRow(row) {
+      this.pageSizes =10
       this.remark = ''
       this.isShow = true
       this.isActive = false
@@ -434,7 +436,7 @@ export default {
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-       this.searchdata=this.$refs.searchPanel.form.getFieldsValue()
+      this.searchdata = this.$refs.searchPanel.form.getFieldsValue()
       // this.pageSize = 20
       params.pageSize = this.pageSize
       params.offset = 0
@@ -451,12 +453,12 @@ export default {
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
       this.getData(params)
-      this.searchdata={orgId: this.$store.state.user.account.info.orgId}
+      this.searchdata = { orgId: this.$store.state.user.account.info.orgId }
     },
     //页码size change事件
     pageChangeSize(page, pageSize) {
       this.pageSize = pageSize
-      let params = { offset: (page-1)*pageSize, pageSize: pageSize }
+      let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
       Object.assign(params, this.searchdata)
       this.getData(params)
     },
@@ -464,7 +466,7 @@ export default {
     pageChange(page, pageSize) {
       this.current = page
       let params = { offset: (page - 1) * pageSize, pageSize: pageSize }
-      Object.assign(params,  this.searchdata)
+      Object.assign(params, this.searchdata)
       this.getData(params)
     },
     //页码跳转
@@ -472,11 +474,13 @@ export default {
       let params = {}
       params.frequenceName = this.frequenceName
       params.offset = (page - 1) * size
+      params.pageSize=this.pageSizes
       this.getSimilarData(params)
     },
     //页码数的改变
     similarSizeChange(current, size) {
-      this.current = 1
+      //his.current = 1
+      this.pageSizes = size
       let params = {}
       params.frequenceName = this.frequenceName
       params.pageSize = size

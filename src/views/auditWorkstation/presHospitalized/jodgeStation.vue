@@ -178,7 +178,6 @@ export default {
   },
   watch:{
  visidId: function() {
-  // console.log(this.visidId,'dddddddddddd')
   this.getDetailData({visId:this.visidId,submitNo:this.submitNos,reviewResouce:2})
     this.getRecord({visId:this.visidId,submitNo:this.submitNos})
     this.getTemplate({visId:this.visidId,submitNo:this.submitNos})

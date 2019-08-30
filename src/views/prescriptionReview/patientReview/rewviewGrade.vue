@@ -202,7 +202,7 @@ export default {
     this.getDrugList()
     this.getprobleList({ filterId: JSON.parse(sessionStorage.getItem('patinRew')).filterId })
     //console.log(this.value)
-    console.log('eeee')
+  
   },
   computed: {},
   mounted() {},
