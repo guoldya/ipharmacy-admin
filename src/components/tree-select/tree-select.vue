@@ -11,7 +11,7 @@
       @search="selectSearch"
       :maxTagCount="3"
     >
-      <span slot="maxTagPlaceholder" @click="treeMoreTag">查看更多</span>
+      <span slot="maxTagPlaceholder" class="primary" @click="treeMoreTag">查看更多</span>
       <a-select-option v-for="item in optionData" :key="item.key">
         {{item.title}}
       </a-select-option>
@@ -25,7 +25,7 @@
       ref="content">
       <a-tree
         multiple
-        style="maxHeight:300px;overflow-y:auto;"
+        style="maxHeight:250px;overflow-y:auto;"
         :autoExpandParent="false"
         :treeData="treeData"
         @select="treeSelect"
@@ -177,7 +177,7 @@
 
   .content {
     width: 100%;
-    max-height: px(300);
+    max-height: 280px;
     overflow-y: scroll;
     border-radius: 4px;
     /*margin-top: 2px;*/
@@ -185,7 +185,7 @@
     left: 0;
     background-color: white;
     box-shadow: 0 0 20px 2px #ccc;
-    z-index: 2;
+    z-index: 4;
   }
 
   .content::-webkit-scrollbar {
