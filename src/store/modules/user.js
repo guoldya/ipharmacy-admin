@@ -100,8 +100,8 @@ const user = {
                                         return value.path == item3.name;
                                       })
                                       if (ret3){
-                                        let gradnsonMenu = Object.assign({}, item3);
-                                        sonMenu.children.push(gradnsonMenu);
+                                        let grandsonMenu = Object.assign({}, item3);
+                                        sonMenu.children.push(grandsonMenu);
                                       }
                                     }
                                   }

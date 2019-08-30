@@ -399,6 +399,7 @@
       :fullData="fullData"
       :initialized="initialized"
       :assertValList="valueList"
+      @assertValListUpdate="assertValListUpdate"
     />
 
   </div>
@@ -539,14 +540,21 @@
         this.dicBaseTreeData = treeData
       },
       coreFactTreeChange(value, node, extra) {
+        this.selectNode.parentId = null;
         this.selectNode.precondition = null
         this.selectNode.assertVal1 = null
         this.selectNode.assertVal = null
         this.selectNode.assertValList = []
+        this.boxInitialized.inputSelectData = []
+
         let params = extra.selectedNodes[0].data.props
         let _this = this
         _this.selectNode.itemId = params.id
+        this.selectNode.val = params.val
+        this.selectNode.display = params.display
+        this.selectNode.parentId = params.parentId
         if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
+
           this.boxInitialized.inputType = 'select'
           this.boxInitialized.itemId = params.id
           this.$axios({
@@ -1217,7 +1225,14 @@
       },
 
 
-
+      assertValListUpdate(){
+        console.log(this.valueList,'valuelist');
+        console.log(this.fullData,'fullData');
+        console.log(this.initialized,'initialized');
+        // if (this.fullData.sourceType == 'model-rect-attribute'){
+        //   this.selectEdge.assertValList = this.valueList;
+        // }
+      },
       modalCancel() {
         this.modalVisible = false
       },

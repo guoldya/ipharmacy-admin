@@ -99,7 +99,6 @@
                 let ids = [], modules = [], params = {}
                 this.selectKeys.forEach(item => {
                     if (item.length > 2) {
-                      console.log(item,'item');
                         if (ids.indexOf(item.slice(0, 2)) < 0) {
                             ids.push(item.slice(0, 2))
                         }
@@ -269,17 +268,29 @@
             myPower(data, list) {
                 let myPowerArr = []
                 list.forEach(item => {
-                    let parent, son = []
+                    let parent, son = [],grandson =[]
                     data.forEach(i => {
-                        if (i.moduleId.length > 2) {
-                            if (i.moduleId.slice(0, 2) == item.moduleId) {
+                        if (i.moduleId.length > 2 && i.parentId == item.moduleId) {
+                            // if (i.parentId == item.moduleId) {
                                 son.push(i.moduleId)
+                            // }
+                        }else if (i.moduleId.length == 2 && i.parentId == item.moduleId) {
+                          item.children.forEach(ii =>{
+                            for (let key in data ){
+                              if (ii.children.length>0 && data[key].parentId == ii.moduleId){
+                                grandson.push(data[key].moduleId)
+                                console.log(data[key])
+                              }
                             }
+                            if (ii.children.length == grandson.length){
+                              myPowerArr.push(ii.moduleId)
+                            }
+                            myPowerArr = myPowerArr.concat(grandson)
+                          })
                         }
                     })
                     if (item.children.length == son.length) {
                         myPowerArr.push(item.moduleId)
-
                     }
                     myPowerArr = myPowerArr.concat(son)
                 })
