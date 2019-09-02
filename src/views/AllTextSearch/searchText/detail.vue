@@ -29,7 +29,7 @@ export default {
    // toyname这里要根据作域来拿，mutation这些也是一样的
   },
   mounted() {
-     console.log(this.$store.state)
+     //console.log(this.$store.state)
     this.$store.state.text.name='tony' 
     // 这里不会影响Name,反而会影响子组件的值，data并不能监听的到
   },

@@ -210,7 +210,8 @@ export default {
         status: data.status,
         prescDate: data.prescDate,
         prescDocName: data.prescDocName,
-        resouce:'grade'
+        resouce:'grade',
+        recordId:data.recordId
       }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
       let obj = { visId: data.visId, maxSubmitNo: !!data.submitNo ? data.submitNo : '2' }

@@ -574,10 +574,11 @@ export default {
     },
     cancle() {
      let comefrom=JSON.parse(sessionStorage.getItem('patinRew')).resouce
-     
+     let recordId=JSON.parse(sessionStorage.getItem('patinRew')).recordId
       if(comefrom=='grade'){
  this.$router.push({
-        name: 'reviewTaskMgt'
+        // name: 'reviewTaskMgt'
+       path: `/prescriptionReview/reviewTaskMgt/detail/${recordId}`,
       })
       }
      else{
