@@ -279,7 +279,6 @@
                             for (let key in data ){
                               if (ii.children.length>0 && data[key].parentId == ii.moduleId){
                                 grandson.push(data[key].moduleId)
-                                console.log(data[key])
                               }
                             }
                             if (ii.children.length == grandson.length){

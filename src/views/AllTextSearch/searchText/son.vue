@@ -18,6 +18,7 @@ export default {
   },
   computed: {},
   mounted() {
+     console.log(Promise)
     //this.$store.state.text.name='tony'
   },
   methods: {
