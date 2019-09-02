@@ -1,9 +1,9 @@
 <template>
-  <div>
-    <a-modal 
-    v-modalDrag
+  <div  ref="chatBox" v-modalDrag>
+    <a-modal
+      
       title="张三"
-      :visible="visible"
+      :visible.sync="visible"
       :maskClosable="false"
       :width="900"
        class="chatModal"
@@ -11,9 +11,9 @@
        :mask='false'
        :footer="null"
        @cancel="handleCancel"
-      :destroyOnClose='true'
+      :getContainer="() => $refs.chatBox"
     >
-      <a-row >
+      <a-row  >
           <a-col :span="16" class="leftCol">
                 <div class="chatContent"  ref="box">
                     <div v-for="(item,i) in chatContent" :class="item.sendContent||item.sendImg?'sendContent':'acceptContent'" :key="i">
@@ -26,13 +26,15 @@
                           >
                              <template slot="content">
                                 <span v-if="!item.sendImg" v-html="item.sendContent"> </span>
-                                <span v-else>
-                                 <img class="img" v-for="(url,i) in imageUrl" :key="i" :src="url" />
+                                <span v-else class="img"  v-html="item.sendImg">
+                                 <!-- <img class="img" v-for="(url,i) in imageUrl"   :src="url" /> -->
                                 </span>
 
                                 <span>{{item.acceptContent}}</span>
                              </template>
-                            <img class="userPhoto" src="@/assets/testImg.png" alt="">
+                             <!-- <div> -->
+                                <img class="userPhoto" src="@/assets/testImg.png" alt="">
+                             <!-- </div> -->
                         </a-popover>
                     </div>
                 </div>
@@ -59,14 +61,17 @@
 
               <div class="chatInputBorder">
                   <!--  v-html="txtContent"  @input="txtContent=$event.target.innerHTML"-->
-                <div class="textarea" @keyup.enter="handleOk" 
-               @input="inputChange"  v-if="txtContent" v-html="txtContent" contenteditable="true">
-                </div>
+                <!-- <div class="textarea" ref="divE1" @keyup.enter="handleOk" 
+                    @input="inputChange"  v-if="txtContent" v-html="txtContent" contenteditable="true">
+                </div> -->
+
+                <a-textarea class="a_textarea"  @keyup.enter="handleOk" v-if="previewImage.length===0" v-model="txtContent" autoFocus >
+                  </a-textarea>
 
                 <div class="textarea" @keyup.enter="handleOk" 
-               @input="inputChange" v-else contenteditable="true">
-                <img class="img" v-for="(url,i) in previewImage" :key="i" :src="url" />
-                <!-- <span v-html="txtContent"></span> -->
+               @input="inputChange" v-if="previewImage.length>0" contenteditable="true">
+                <span v-if="txtContent" v-html="txtContent"></span>
+                <img class="img"  v-for="(url,i) in previewImage" :key="i" :src="url" />
                 </div>
 
                   <!-- <a-textarea @keyup.enter="handleOk" v-model="txtContent" autoFocus >
@@ -91,8 +96,10 @@
   </div>
 </template>
 <script>
+//表情插件
 import VEmojiPicker from 'v-emoji-picker';
 import packData from 'v-emoji-picker/data/emojis.json';
+//拖拽插件
 function getBase64 (img, callback) {
   const reader = new FileReader()
   reader.addEventListener('load', () => callback(reader.result))
@@ -105,15 +112,15 @@ export default {
     },
   data() {
     return {
-          loading:false,
-      imageUrl: '',
-        action:'https://www.mocky.io/v2/5cc8019d300000980a055e76',///api/sys/upload/image
+      loading:false,
+      imageUrl: [],
+      newImgUrl:'',
+      action:'https://www.mocky.io/v2/5cc8019d300000980a055e76',///api/sys/upload/image
       previewImage: [],
-      imgUrl:[],
       fileList: [],
      acceptChat:['我不晓得','嗯要不得','ok','还钱','嗯很好很好'],
       modalData:[],
-      visible:false,
+      visible:true,
       pack: [],
       txtContent:'',
       chatContent:[],
@@ -122,23 +129,25 @@ export default {
       //监听是否发送消息
       sendStatus:'',
       selectEmojiStatus:false,
+      el:null
     }
   },
   computed: {
     },
   components: {
-    VEmojiPicker
+    VEmojiPicker,
   },
   mounted() {
-      this.pack=packData.splice(5,30);
+      var _this = this;
+
+      _this.pack=packData.splice(5,30);
+      
+        
   },
   watch: {
       //监听list,当有修改的时候进行div的屏幕滚动，确保能看到最新的聊天
       sendStatus() {
         let that = this;
-         setTimeout(() => {
-             this.chatContent.push({acceptContent:this.acceptChat[this.random(0, 5)]});
-        }, 1000);
         setTimeout(() => {
           that.$refs.box.scrollTop = that.$refs.box.scrollHeight;
         }, 0);
@@ -152,17 +161,16 @@ export default {
         if (info.file.status === 'done') {
             getBase64(info.file.originFileObj, (imageUrl) => {
                 this.previewImage.push(imageUrl);
+                this.newImgUrl += `<img src="${imageUrl}"  class="img" />`;
             })
         }
     },
     visibleChange(val){
         this.selectEmojiStatus=val;
       },
-    inputChange(e){
+    inputChange(e,i){
         this.txtContent=e.target.innerHTML;
-    },
-    handleCancel () {
-      this.previewVisible = false
+        console.log(this.txtContent,'txtContent')
     },
     //tooltip渲染到父元素
     getPopupContainer (trigger) {
@@ -175,34 +183,46 @@ export default {
     selectEmoji(emoji) {
         //选择表情之后关闭popover
        this.selectEmojiStatus=false;
-       this.txtContent+=emoji.emoji;
+        this.txtContent+=emoji.emoji;
     },
    showModal() {
-      this.visible = true
+      this.visible = true;
+       this.$nextTick(()=>{
+        console.log(this.$refs.chatBox)
+      })
     },
+    
     handleCancel(e) {
-      this.visible = false;
+    //   this.visible = false;
+    this.$emit('search',true)
     },
     handleOk(e) {
       this.selectEmojiStatus=false;
       if(this.previewImage.length>0){
-        this.imageUrl=this.previewImage;
+           this.imageUrl=this.previewImage;
+          for(let k in this.previewImage){
+        //       //push 为了imgUrl不覆盖之前所选图片
+            // this.imageUrl.push(this.previewImage[k]);
+          }
       }
       if(this.txtContent){
-      this.chatContent.push({sendContent:this.txtContent});
-      this.sendStatus=this.random(0, 5);
-
+        this.chatContent.push({sendContent:this.txtContent});
+        this.sendStatus=this.random(0, 5);
       }
-      if(this.imageUrl.length>0&&!this.txtContent&&this.previewImage.length>0){
-        this.chatContent.push({sendImg:this.imageUrl});
-      this.sendStatus=this.random(0, 5);
-
-      }
-      this.txtContent="";
-      this.previewImage=[];
-      console.log(this.chatContent);
       
-
+      if(this.imageUrl.length>0&&this.previewImage.length>0){
+        this.chatContent.push({sendImg:this.newImgUrl});
+      }
+          //有文字、表情、图片就发过来消息
+          if(this.txtContent || this.previewImage.length>0){
+             this.chatContent.push({acceptContent:this.acceptChat[this.random(0, 5)]});
+          }
+      this.sendStatus=this.random(0, 5);
+      this.txtContent="";
+       this.newImgUrl="";
+      this.previewImage=[];
+      console.log(this.chatContent,'chatContent')
+      
     //   this.visible = false
     },
   }
@@ -210,10 +230,12 @@ export default {
 </script>
 <style scoped lang='less'>
      .chatModal{
-         
+         .a_textarea{
+             height:113px
+         }
          .textarea {
                 box-sizing: border-box;
-                height: 75px;
+                height: 110px;
                 margin-left: auto;
                 margin-right: auto;
                 padding: 12px;
@@ -221,11 +243,7 @@ export default {
                 word-wrap: break-word;
                 overflow: auto;
          }
-        .img{
-            height: 80px;
-            width: 80px;
-            margin-right: 5px;
-         }
+        
          .userPhoto{
              width: 30px;
              height: 30px;
@@ -237,24 +255,33 @@ export default {
             margin: 10px 0 !important
         }
          .chatContent{
-             height: 160px;
+             height: 275px;
              overflow: auto;
+             display: grid;
+                grid-gap: 20px;
+            // grid-template-rows :100px 100px;
              position: relative;
              overflow-x: hidden;
              .sendContent{
                 text-align: right;
-                margin-bottom: 20px;
+                position: relative;
+                display: flex;
+                align-items: center;
+                flex-direction: row-reverse;
              }
              .acceptContent{
                 text-align: left;
-                margin-bottom: 20px;
+                position: relative;
+                // display: flex;
+                // align-items: center;
+
              }
          }
          .leftCol{
              padding: 12px;
          }
          .rightCol{
-            height: 333px;
+            height: 484px;
             background-color: #e8e8e8;
             border-radius: 2px;
             padding: 12px;
