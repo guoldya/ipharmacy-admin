@@ -1084,7 +1084,7 @@
                 treeNode.dataRef.children = []
                 for (let i in res.rows) {
                   treeNode.dataRef.children.push({
-                    key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
+                    key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display],
                   })
                   _this.boxInitialized.viewSelect.push(... treeNode.dataRef.children);
                   _this.boxInitialized.viewSelect = Array.from(new Set( _this.boxInitialized.viewSelect))
