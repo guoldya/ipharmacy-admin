@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="userDetail">
         <a-card>
             <a-spin tip="加载中..." :spinning="spinning">
                 <a-form :form="form">
@@ -77,13 +77,24 @@
                                     label="人员编码"
                             >
                                 <a-input
-                                        :disabled="formData.code? true:false"
-                                        placeholder="请输入..."
-                                        v-decorator="[
+                                  v-if="formData.code? true:false"
+                                  :disabled="formData.code? true:false"
+                                  class="readOnlyInput"
+                                  placeholder="请输入..."
+                                  v-decorator="[
                                 'code',
                                 {rules: [{ required: true, message: '请输入人员编码' },{ max:20,message:'最多20个字' },{ message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/},],initialValue: formData.code}
                                 ]"
                                 />
+                              <a-input
+                                v-else
+                                :disabled="formData.code? true:false"
+                                placeholder="请输入..."
+                                v-decorator="[
+                                'code',
+                                {rules: [{ required: true, message: '请输入人员编码' },{ max:20,message:'最多20个字' },{ message: '请勿输入汉字或空格', pattern: /^[^[\u4e00-\u9fa5\s]{1,}]*$/},],initialValue: formData.code}
+                                ]"
+                              />
                             </a-form-item>
                         </a-col>
                         <a-col :span="col">
@@ -341,7 +352,8 @@
                     status:'1',
                     prescRight:'0',
                     outpAntibacterial:'1',
-                    hospAntibacterial:'1'
+                    hospAntibacterial:'1',
+                    orgId:'1'
                 },
                 loading:false
             }
@@ -373,25 +385,25 @@
                     }).then(res => {
                         if (res.code == '200') {
                             let that = this;
-                            this.getDeptData(res.data.orgId);
-                            this.formData = JSON.parse(JSON.stringify(res.data));
-
-                            console.log(this.formData,'form')
-                            this.formData.birthday = moment(res.data.birthday,'YYYY-MM-DD');
-                            let obj = {
-                                    url: this.$config.img_base_url + res.data.signPic,
-                                    status: 'done',
-                                    uid: '-1',
-                                    name:res.data.signPic,
-                                    fileName:res.data.signPic
-                                };
-                                console.log(obj)
-                            if(res.data.signPic){
+                            if (res.data){
+                              this.getDeptData(res.data.orgId);
+                              this.formData = JSON.parse(JSON.stringify(res.data));
+                              this.formData.birthday = moment(res.data.birthday,'YYYY-MM-DD');
+                              let obj = {
+                                url: this.$config.img_base_url + res.data.signPic,
+                                status: 'done',
+                                uid: '-1',
+                                name:res.data.signPic,
+                                fileName:res.data.signPic
+                              };
+                              if(res.data.signPic){
                                 setTimeout(()=>{
-                                    that.$refs.upload.fileList = [obj];
-                                    that.$refs.upload.imgArr = [obj];
+                                  that.$refs.upload.fileList = [obj];
+                                  that.$refs.upload.imgArr = [obj];
                                 })
+                              }
                             }
+
                             this.spinning = false;
                         } else {
                             this.spinning = false;
@@ -402,6 +414,8 @@
                         this.error(err);
                     })
                 }
+
+
             },
             validPhone(rule, value, callback){
                 if(value){
@@ -463,7 +477,6 @@
                 })
             },
             getOrgData(obj = {}) {
-                obj.status='1'
                 this.$axios({
                     url: this.api.orgUrl,
                     method: 'put',
@@ -481,13 +494,18 @@
             getOrgTreeData(data, pid) {
                 let tree = [];
                 data.forEach(item => {
-                    let row = item;
-                    row.key = item.orgId;
-                    row.value = item.orgId;
-                    if (pid == item.parentId) {
-                        row.children = this.getOrgTreeData(data, item.orgId)
-                        tree.push(row)
-                    }
+                  let row = item;
+                  row.key = item.orgId;
+                  row.value = item.orgId;
+                  if (item.status == 0){
+                    row.disabled = true
+                  }else {
+                    row.disabled = false
+                  }
+                  if (pid == item.parentId) {
+                    row.children = this.getOrgTreeData(data, item.orgId)
+                    tree.push(row)
+                  }
                 })
                 return tree
             },
@@ -495,7 +513,7 @@
                 this.$axios({
                     url: this.api.deptUrl,
                     method: 'put',
-                    data: { orgId:val,status:'1' }
+                    data: { orgId:val}
                 }).then(res => {
                     if (res.code == '200') {
                         this.deptData = this.getDeptTreeData(res.rows, undefined)
@@ -512,6 +530,11 @@
                     let row = item;
                     row.key = item.deptId;
                     row.value = item.deptId;
+                    if (item.status == 0){
+                      row.disabled = true
+                    } else{
+                      row.disabled = false;
+                    }
                     if (pid == item.parentId) {
                         row.children = this.getDeptTreeData(data, item.deptId)
                         tree.push(row)
@@ -567,3 +590,11 @@
         }
     }
 </script>
+<style>
+  .userDetail li.ant-select-tree-treenode-disabled > span:not(.ant-select-tree-switcher),
+  li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper,
+  li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper span {
+    color: rgba(0, 0, 0, 0.65) !important;
+    cursor: not-allowed;
+  }
+</style>

@@ -1628,11 +1628,6 @@
 
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
             let nodesData = this.getDealPieChart()
-
-            let treeData = nodesData.concat(edgeData)
-            console.log(treeData,'treeData')
-            console.log(this.dealTreeList(treeData,'undefined'),'2233')
-            console.log(this.sonsTree(treeData))
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
             // for (let key in this.pieChartData){
@@ -1909,33 +1904,6 @@
         }
       },
 
-
-      dealTreeList(data,pid){
-        let items = []
-        for (let key in data) {
-          if (data[key].pid == pid) {
-            this.dealTreeList(data, data[key].id)
-            items.push(data[key])
-          }
-        }
-        return items
-      },
-
-      sonsTree(arr,id){
-        let temp = [],lev=0;
-        let forFn = function(arr, id,lev){
-          for (let i = 0; i < arr.length; i++) {
-            let item = arr[i];
-            if (item.pid==id) {
-              item.lev=lev;
-              temp.push(item);
-              forFn(arr,item.id,lev+1);
-            }
-          }
-        };
-        forFn(arr, id,lev);
-        return temp;
-      }
     }
   }
 </script>

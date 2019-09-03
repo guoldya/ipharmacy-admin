@@ -504,10 +504,15 @@ export default {
 
     //查看药品说明书
     lookDetail(data) {
-      this.$router.push({
+      // this.$router.push({
+      //   name: 'drugSpecDetail',
+      //   params: { drugCode: data.drugCode }
+      // })
+      let newPage = this.$router.resolve({
         name: 'drugSpecDetail',
         params: { drugCode: data.drugCode }
       })
+      window.open(newPage.href, '_blank')
     },
     //编辑说明书
     editInstruct(data) {

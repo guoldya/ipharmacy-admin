@@ -526,21 +526,6 @@ export const asyncRouterMap = [
             ]
           },
           {
-            path: '/baseData/instructionManual',
-            name: 'instructionManual',
-            component: RouteView,
-            hidden: true,
-            meta: { title: '药品说明书', multistage: true },
-            children: [
-              {
-                path: '/baseData/drugSpec/detail/:drugCode/',
-                name: 'drugSpecDetail',
-                component: () => import('@/views/baseData/drugSpec/detail.vue'),
-                meta: { title: '药品说明书', hiddenHeaderContent: true, index: true }
-              }
-            ]
-          },
-          {
             path: '/baseData/drugClassification',
             name: 'drugClassification',
             component: RouteView,
@@ -619,6 +604,7 @@ export const asyncRouterMap = [
           }
         ]
       },
+
 
       // test
       {
@@ -1299,6 +1285,19 @@ export const constantRouterMap = [
         path: 'eChartFlow',
         name: 'eChartFlow',
         component: () => import('@/views/eCharts/eChartFlow')
+      }
+    ]
+  },
+  {
+    path: '/baseData/instructionManual',
+    name: 'instructionManual',
+    component: BlankLayout,
+    children: [
+      {
+        path: '/baseData/drugSpec/detail/:drugCode/',
+        name: 'drugSpecDetail',
+        component: () => import('@/views/baseData/drugSpec/detail.vue'),
+        meta: { title: '药品说明书' }
       }
     ]
   },

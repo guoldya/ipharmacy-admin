@@ -1,0 +1,10 @@
+option java_package = "com.lianggzone.netty.proto.request";
+option java_outer_classname = "RequestSubscribeProtocols";
+
+     message RequestSubscribeProtocol {
+     message Subscribes {
+      	    required string TopicId=1;//名称
+      	    required uint32 TopicType=2;//类型 1订阅 2取消
+     }
+     repeated Subscribes ArraySubscribe = 1;
+ }
