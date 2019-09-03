@@ -150,8 +150,12 @@ export default {
       pageSize: 10,
       planDetail: {},
       headData: {},
-      planScope:''
+      planScope:'',
+      recordId:null
     }
+  },
+  created(){
+   this.recordId=this.$route.params.recordId
   },
   computed: {
     list() {
@@ -211,7 +215,7 @@ export default {
         prescDate: data.prescDate,
         prescDocName: data.prescDocName,
         resouce:'grade',
-        recordId:data.recordId
+        recordId: this.recordId
       }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
       let obj = { visId: data.visId, maxSubmitNo: !!data.submitNo ? data.submitNo : '2' }
