@@ -468,6 +468,7 @@ export default {
       let params = {}
       params.icdName = this.icdnames
       params.offset = (page - 1) * size
+      params.pageSize=size
       this.getSimilarData(params)
     },
     //页码数的改变

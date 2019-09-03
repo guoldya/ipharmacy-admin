@@ -142,7 +142,14 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">规格：</a-col>
           <a-col :span="8">{{NData.spec}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.spec}}</a-Col>
+          <a-Col :span="8" class="td-content">
+            <a-tooltip placement="topLeft" style="cursor: pointer;">
+              <template slot="title">
+                <span>{{MData.spec}}</span>
+              </template>
+              {{MData.spec}}
+            </a-tooltip>
+          </a-Col>
         </a-row>
         <a-row class="box">
           <a-col :span="6" class="textRight">剂量系数：</a-col>
@@ -458,7 +465,7 @@ export default {
       let arrs = Object.keys(this.MData)
       if (this.M != 1 && this.N != 1) {
         this.$message.info('计量系数必有一个值为1!')
-        return 
+        return
       }
       if (arrs.length == 0) {
         this.$message.info('请添加知识库数据!')
@@ -543,6 +550,7 @@ export default {
       params.drugName = this.MData.drugName
       params.producedBy = this.MData.producedBy
       params.offset = (page - 1) * size
+      params.pageSize = size
       this.getSimilarData(params)
     },
     //页码数的改变
@@ -632,6 +640,10 @@ export default {
     .textRight {
       text-align: right;
       color: rgba(0, 0, 0, 0.85);
+      .spec {
+        overflow: hidden;
+        white-space: nowrap;
+      }
     }
     .box {
       line-height: 35px;

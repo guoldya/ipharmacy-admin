@@ -48,7 +48,7 @@
             @showSizeChange="pageChangeSize"
             @change="pageChange"
             size="small"
-            :pageSize='pageSize'
+            :pageSize="pageSize"
           ></a-pagination>
         </a-spin>
       </a-card>
@@ -204,7 +204,7 @@ export default {
       drugAllList: [],
       isActive: true,
       orgData: [],
-       searchdata: { orgId: this.$store.state.user.account.info.orgId }
+      searchdata: { orgId: this.$store.state.user.account.info.orgId }
     }
   },
   computed: {
@@ -306,7 +306,7 @@ export default {
       this.isCurrent = row.isCurrent
       this.NData = row
       this.MData = {}
-       this.isShow = true
+      this.isShow = true
       if (this.NData.isCurrent == '0') {
         this.getSimilarData(params)
       } else {
@@ -327,7 +327,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.similarData = res.rows
-
             this.similarTotal = res.total
             this.similarSpin = false
           } else {
@@ -367,7 +366,7 @@ export default {
     clickRightRow(row) {
       this.MData = row
       this.disable = false
-       this.isShow = true
+      this.isShow = true
       this.name = this.MData.name
     },
     //点击确定的处理事件
@@ -397,14 +396,12 @@ export default {
                 this.MData = {}
                 this.similarData = []
                 this.name = ''
-               let param = {
+                let param = {
                   pageSize: this.pageSize,
                   offset: (this.current - 1) * this.pageSize
                 }
                 Object.assign(param, this.$refs.searchPanel.form.getFieldsValue())
-                this.getData(
-                  param
-                )
+                this.getData(param)
                 this.loading = false
                 this.isActive = true
               })
@@ -422,12 +419,12 @@ export default {
     //点击取消
     clickCancel() {
       this.MData = {}
-      this.name=''
+      this.name = ''
     },
     //搜索
     search() {
       let params = this.$refs.searchPanel.form.getFieldsValue()
-       this.searchdata=this.$refs.searchPanel.form.getFieldsValue()
+      this.searchdata = this.$refs.searchPanel.form.getFieldsValue()
       params.pageSize = 20
       params.offset = 0
       this.current = 1
@@ -440,12 +437,12 @@ export default {
       // this.current = 1
       this.$refs.searchPanel.form.resetFields(['name', 'isCurrent', []])
       let params = { pageSize: 20, offset: 0 }
-        this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
+      this.$refs.searchPanel.form.setFieldsValue({ orgId: this.$store.state.user.account.info.orgId })
       Object.assign(params, this.$refs.searchPanel.form.getFieldsValue())
       this.current = 1
-      this.pageSize=20
+      this.pageSize = 20
       this.getData(params)
-      this.searchdata={orgId: this.$store.state.user.account.info.orgId}
+      this.searchdata = { orgId: this.$store.state.user.account.info.orgId }
     },
     //页码size change事件
     pageChangeSize(page, pageSize) {
@@ -467,6 +464,7 @@ export default {
       let params = {}
       params.icdName = this.icdnames
       params.offset = (page - 1) * size
+      params.pageSize = size
       this.getSimilarData(params)
     },
     //页码数的改变
