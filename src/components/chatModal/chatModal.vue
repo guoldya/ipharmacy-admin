@@ -69,12 +69,13 @@
                 </a-upload>
 
               <div class="chatInputBorder">
-                <a-textarea class="a_textarea"  @keyup.enter="handleOk" v-if="previewImage.length===0" v-model="txtContent" autoFocus >
+                <a-textarea class="a_textarea" id="a_textarea" @keyup.enter="handleOk" v-if="previewImage.length===0" v-model="txtContent" autoFocus >
                   </a-textarea>
-                <div class="textarea" v-if="previewImage.length>0"  
-                 @input="inputChange" v-html="txtContent" contenteditable="true">
-                 <!-- <span ></span> -->
-                <!-- <img class="img"  v-for="(url,i) in previewImage" :key="i" :src="url" /> -->
+                <div class="textarea" id="textarea" @input="handleInput"  v-if="previewImage.length>0" 
+                 @keyup.enter="handleOk"  ref="divE1" contenteditable="true"
+                >  
+                  <span v-html="emoji"></span>
+                  <!-- <img class="img"  v-for="(url,i) in previewImage" :key="i" :src="url" /> -->
                 </div>
               </div>
               <div :style="{'text-align':'right'}">
@@ -112,9 +113,9 @@ export default {
     },
   data() {
     return {
+      inputLock:true,
       loading:false,
       imageUrl: [],
-      newImgUrl:'',
       action:'https://www.mocky.io/v2/5cc8019d300000980a055e76',///api/sys/upload/image
       previewImage: [],
       fileList: [],
@@ -129,7 +130,9 @@ export default {
       //监听是否发送消息
       sendStatus:'',
       selectEmojiStatus:false,
-      el:null
+      el:null,
+      emoji:"",
+      content: ''
     }
   },
   computed: {
@@ -141,6 +144,8 @@ export default {
   mounted() {
       var _this = this;
       _this.pack=packData.splice(5,30);
+      // this.$refs.divE1.addEventListener('click',(e)=>{
+      // })
       
   },
   watch: {
@@ -153,48 +158,88 @@ export default {
         //加setTimeout的原因：由于vue采用虚拟dom，
         //每次生成新的消息时获取到的div的scrollHeight的值是生成新消息之前的值，所以造成每次都是最新的那条消息被隐藏掉了
       },
-      
     },
   methods: {
-      changeCursor(obj){
-        if (window.getSelection) { //ie11 10 9 ff safari
-            obj.focus(); //解决ff不获取焦点无法定位问题
-            var range = window.getSelection(); //创建range
-            range.selectAllChildren(obj); //range 选择obj下所有子内容
-            range.collapseToEnd(); //光标移至最后
-        } else if (document.selection) { //ie10 9 8 7 6 5
-            var range = document.selection.createRange(); //创建选择对象
-            //var range = document.body.createTextRange();
-            range.moveToElementText(obj); //range定位到obj
-            range.collapse(false); //光标移至最后
-            range.select();
-        }
+     handleInput($event){
+      this.txtContent = $event.target.innerHTML;
+      // this.emoji= $event.target.innerHTML;
+      this.$nextTick(()=>{
+        // this.changeCursor($event.target,this.txtContent)
+      })
+    },
+      changeCursor(tId,tag){
+        // if (window.getSelection) { //ie11 10 9 ff safari
+        //     obj.focus(); //解决ff不获取焦点无法定位问题
+        //     var range = window.getSelection(); //创建range
+        //     range.selectAllChildren(obj); //range 选择obj下所有子内容
+        //     range.collapseToEnd(); //光标移至最后
+        // } else if (document.selection) { //ie10 9 8 7 6 5
+        //     var range = document.selection.createRange(); //创建选择对象
+        //     //var range = document.body.createTextRange();
+        //     range.moveToElementText(obj); //range定位到obj
+        //     range.collapse(false); //光标移至最后
+        //     range.select();
+        // }
+        //IE support
+        var subst ;
+        //IE  
+        if(document.selection) {  
+          var theSelection = document.selection.createRange().text;  
+          if(!theSelection) { theSelection=tag}  
+          tId.focus();  
+          if(theSelection.charAt(theSelection.length - 1) == " "){  
+          theSelection = theSelection.substring(0, theSelection.length - 1);  
+          document.selection.createRange().text = theSelection+ " ";  
+        } else {  
+          document.selection.createRange().text = theSelection;  
+        }  
+  
+        }  
+        // Mozilla  
+        else if(tId.selectionStart || tId.selectionStart == '0'){  
+
+          var startPos = tId.selectionStart;  
+          var endPos = tId.selectionEnd;  
+          var myText = (tId.value).substring(startPos, endPos);  
+          if(!myText) { myText=tag;}  
+          if(myText.charAt(myText.length - 1) == " "){ // exclude ending space char, if any  
+          subst = myText.substring(0, (myText.length - 1))+ " ";  
+        } else {  
+          subst = myText;  
+        }  
+          tId.value = tId.value.substring(0, startPos) + subst + tId.value.substring(endPos, tId.value.length);  
+          tId.focus();  
+          var cPos=startPos+(myText.length);  
+          tId.selectionStart=cPos;  
+          tId.selectionEnd=cPos;  
+        }  
+        // All others  
+        else{  
+          tId.value+=tag;  
+          tId.focus();  
+        }  
+        if (tId.createTextRange) tId.caretPos = document.selection.createRange().duplicate(); 
+        this.txtContent=tId.value;
+        this.emoji = tId.value
+
       },
     handleChange (info) {
         if (info.file.status === 'done') {
             getBase64(info.file.originFileObj, (imageUrl) => {
                 this.previewImage.push(imageUrl);
-                this.txtContent += `<img src="${imageUrl}"  class="img"/>`
-                this.newImgUrl += `<img src="${imageUrl}"  class="img"/>`;
+                // this.emoji=this.txtContent;
+                // this.txtContent += `<img src="${imageUrl}"  class="img"/>`;
+                // this.emoji += `<img src="${imageUrl}"  class="img"/>`;
+                //在光标指定位置处插入图片
+                let img=`<img src="${imageUrl}"  class="img"/>`;
+                let el=document.getElementById('textarea')||document.getElementById('a_textarea');
+                this.changeCursor(el,img)
             })
         }
     },
     visibleChange(val){
         this.selectEmojiStatus=val;
       },
-    inputChange(e,i){
-      console.log(e)
-        this.txtContent=e.target.innerHTML;
-        this.$nextTick(()=>{
-
-          // this.changeCursor(e.target)
-        })
-       
-    },
-    //tooltip渲染到父元素
-    getPopupContainer (trigger) {
-        return trigger.parentElement    
-    },
       //随机整数
     random(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
@@ -202,7 +247,11 @@ export default {
     selectEmoji(emoji) {
         //选择表情之后关闭popover
        this.selectEmojiStatus=false;
-        this.txtContent+=emoji.emoji;
+        // this.txtContent+=emoji.emoji; 
+        this.emoji=this.txtContent;
+        //在光标指定位置处插入表情
+        let el=document.getElementById('textarea')||document.getElementById('a_textarea');
+        this.changeCursor(el,emoji.emoji)
     },
    showModal() {
       this.visible = true;
@@ -226,8 +275,11 @@ export default {
         }
         this.sendStatus=this.random(0, 5);
         this.txtContent="";
-        this.newImgUrl="";
         this.previewImage=[];
+        this.emoji="";
+        if(document.getElementsByClassName('textarea').length>0){
+          document.getElementsByClassName('textarea')[0].children[0].innerText="";
+        }
         console.log(this.chatContent,'chatContent')
     //   this.visible = false
     },
