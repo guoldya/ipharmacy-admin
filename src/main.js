@@ -46,7 +46,9 @@ import { Icon } from 'ant-design-vue'
 import opcol from '@/my-components/opcol/opcol.vue'
 import api from '@/api/index'
 import gante from "@/components/gante/gante"
-
+//proto
+import protoRoot from '@/my-components/proto/proto'
+import uuid from 'uuid'
 
 Vue.use(gante)
 //引入一个表格
@@ -65,8 +67,8 @@ Vue.use(Tooltip)
 Vue.use(Progress)
 Vue.use(msgHandler)//统一错误处理
 Vue.use(VueAxios, router)
-
-
+Vue.use(protoRoot)
+Vue.use(uuid)
 
 
 

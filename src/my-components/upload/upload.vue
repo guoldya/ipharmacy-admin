@@ -43,7 +43,6 @@
             },
             handleChange ({file, fileList}) {
                 this.fileList = fileList;
-                console.log(file, fileList)
                 let imgUrls = []
                 fileList.forEach((file,index) => {
                     if (file.response && file.response.code === '200') {
