@@ -142,15 +142,22 @@
         <a-row class="box">
           <a-col :span="6" class="textRight">规格：</a-col>
           <a-col :span="8">{{NData.spec}}</a-col>
-          <a-Col :span="8" class="td-content">{{MData.spec}}</a-Col>
+          <a-Col :span="8" class="td-content">
+            <a-tooltip placement="topLeft" style="cursor: pointer;">
+              <template slot="title">
+                <span>{{MData.spec}}</span>
+              </template>
+              {{MData.spec}}
+            </a-tooltip>
+          </a-Col>
         </a-row>
         <a-row class="box">
           <a-col :span="6" class="textRight">剂量系数：</a-col>
           <a-col :span="8">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="N" />
+            <a-input-number :min="1" size="small" @change="nchange" v-model="MData.n" />
           </a-col>
           <a-Col :span="8" class="td-content">
-            <a-input-number :min="1" size="small" @change="nchange" v-model="M" />
+            <a-input-number :min="1" size="small" @change="mchange" v-model="MData.m" />
           </a-Col>
         </a-row>
 
@@ -365,20 +372,19 @@ export default {
         this.getSimilarData(params)
       } else {
         this.MData = row.dicDrugMapperVO
+        this.N = this.MData.n
+        this.M = this.MData.m
         this.drugName = this.MData.drugName
         this.drugselval = this.MData.drugName
         this.getSimilarData(params)
       }
     },
     nchange(val) {
-      if (val > 1) {
-        this.M = 1
-      }
+      this.N = val
+      console.log(this.n)
     },
     mchange(val) {
-      if (val > 1) {
-        this.N = 1
-      }
+      this.M = val
     },
     //右边部分数据的获取
     getSimilarData(params = {}) {
@@ -457,6 +463,10 @@ export default {
       params.N = this.N
       this.loading = true
       let arrs = Object.keys(this.MData)
+      if (this.M != 1 && this.N != 1) {
+        this.$message.info('计量系数必有一个值为1!')
+        return
+      }
       if (arrs.length == 0) {
         this.$message.info('请添加知识库数据!')
       } else {
@@ -540,6 +550,7 @@ export default {
       params.drugName = this.MData.drugName
       params.producedBy = this.MData.producedBy
       params.offset = (page - 1) * size
+      params.pageSize = size
       this.getSimilarData(params)
     },
     //页码数的改变
@@ -629,6 +640,10 @@ export default {
     .textRight {
       text-align: right;
       color: rgba(0, 0, 0, 0.85);
+      .spec {
+        overflow: hidden;
+        white-space: nowrap;
+      }
     }
     .box {
       line-height: 35px;

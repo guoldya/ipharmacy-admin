@@ -1,16 +1,17 @@
 import Vue from 'vue'
 import router from './router'
 import store from './store'
-import {toDefaultPage, getRouterObjByName, openNewPage} from '@/utils/misc'
-import {asyncRouterMap, constantRouterMap} from '@/config/router.config'
+import { toDefaultPage, getRouterObjByName, openNewPage } from '@/utils/misc'
+import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { ACCESS_TOKEN,IS_LOCK } from '@/store/mutation-types'
+import { ACCESS_TOKEN, IS_LOCK } from '@/store/mutation-types'
 import util from '@/utils/util.js'
-import {setSessionStore,getSessionStore,removeSessionStore} from  '@utils/storage.js'
+import { setSessionStore, getSessionStore, removeSessionStore } from '@utils/storage.js'
+
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['login', 'register', 'registerResult','lock'] // 不重定向白名单
+const whiteList = ['login', 'register', 'registerResult', 'lock'] // 不重定向白名单
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
@@ -28,12 +29,35 @@ router.beforeEach((to, from, next) => {
         path: '/user/lock'
       })
       NProgress.done()
+    } else if (to.path == '/404') {
+      next()
     } else {
       if (to.path === '/user/login') {
         next({ path: '/dashboard/workplace' })
         NProgress.done()
       } else {
-        next()
+        let state = []
+        let nextPath = ''
+        let toPath = to.path
+        if (localStorage.rightsMenus) {
+          state = JSON.parse(localStorage.rightsMenus)
+        }
+        for (let key in state) {
+          if (toPath.indexOf(state[key].path) > 1 || toPath == '/dashboard/workplace') {
+            nextPath = to.path
+            break
+          } else {
+            nextPath = '/404'
+          }
+        }
+        if (nextPath == '/404') {
+          next({
+            path: '/404'
+          })
+        } else {
+          next()
+        }
+        NProgress.done()
       }
     }
   } else {
@@ -49,27 +73,27 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to) => {
-    //判断是否有索引页，replace
-    const curRouterObj = getRouterObjByName(asyncRouterMap[0].children, to.name);
-    //如果有子节点，并且为index
-    if (curRouterObj && curRouterObj.children) {
-        let len = curRouterObj.children.length;
-        let i = 0;
-        //打开索引页
-        while (i < len) {
-            if (curRouterObj.children[i].meta && curRouterObj.children[i].meta.index) {
-                router.replace({
-                    name: curRouterObj.children[i].name,
-                    //path :curRouterObj.children[i].path
-                });
-                break;
-            }
-            i++;
-        }
+  //判断是否有索引页，replace
+  const curRouterObj = getRouterObjByName(asyncRouterMap[0].children, to.name)
+  //如果有子节点，并且为index
+  if (curRouterObj && curRouterObj.children) {
+    let len = curRouterObj.children.length
+    let i = 0
+    //打开索引页
+    while (i < len) {
+      if (curRouterObj.children[i].meta && curRouterObj.children[i].meta.index) {
+        router.replace({
+          name: curRouterObj.children[i].name
+          //path :curRouterObj.children[i].path
+        })
+        break
+      }
+      i++
     }
-    openNewPage(router.app, to);
-    NProgress.done() // finish progress bar
-    util.title(to.meta.title)
+  }
+  openNewPage(router.app, to)
+  NProgress.done() // finish progress bar
+  util.title(to.meta.title)
 })
 
 /**
@@ -86,31 +110,29 @@ router.afterEach((to) => {
  *  @see https://github.com/sendya/ant-design-pro-vue/pull/53
  */
 const action = Vue.directive('action', {
-    bind: function(el, binding, vnode) {
-        const actionName = binding.arg
-        const roles = store.getters.roles
-        const permissionId = vnode.context.$route.meta.permission
-        let actions = []
-        roles.permissions.forEach(p => {
-            if (p.permissionId != permissionId) {
-                return
-            }
-            actions = p.actionList
-        })
-        if (actions.indexOf(actionName) < 0) {
-            setTimeout(() => {
-                if (el.parentNode == null) {
-                    el.style.display = 'none'
-                }
-                else {
-                    el.parentNode.removeChild(el)
-                }
-            }, 10)
-
+  bind: function(el, binding, vnode) {
+    const actionName = binding.arg
+    const roles = store.getters.roles
+    const permissionId = vnode.context.$route.meta.permission
+    let actions = []
+    roles.permissions.forEach(p => {
+      if (p.permissionId != permissionId) {
+        return
+      }
+      actions = p.actionList
+    })
+    if (actions.indexOf(actionName) < 0) {
+      setTimeout(() => {
+        if (el.parentNode == null) {
+          el.style.display = 'none'
+        } else {
+          el.parentNode.removeChild(el)
         }
-    }
-})
+      }, 10)
 
+    }
+  }
+})
 export {
-    action
+  action
 }

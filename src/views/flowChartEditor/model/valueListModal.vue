@@ -7,10 +7,11 @@
       @cancel="cancel"
       :width="550"
       :visible="visibled"
+      class="valueListModal"
     >
         <el-table
           class=" width-100"
-          :data="dataSource"
+          :data="dataSource.slice((current-1)*pageSize,current*pageSize)"
           ref="table"
           height="375"
         >
@@ -37,7 +38,7 @@
         <a-pagination
           :total="total"
           class="pnstyle"
-          :defaultPageSize="pageSize"
+          :pageSize="pageSize"
           @change="pageChange"
           size="small"
           v-model="current"
@@ -62,7 +63,8 @@
       return {
         api:{
           pageUrl:'sys/coreRuleNode/selectColSqlValuePage',
-          delUrl:'sys/coreRuleNode/deleteCoreRuleColValues'
+          delUrl:'sys/coreRuleNode/deleteCoreRuleColValues',
+          coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
         },
         loading:false,
         dataSource:[],
@@ -78,13 +80,14 @@
     },
     mounted() {
       this.getData();
-      console.log(this.fullData)
     },
     methods: {
       getData(params={}){
+        // params.display = this.initialized.display;
         params.id = this.initialized.itemId;
         params.val = this.initialized.val;
-        params.ruleNodeId = this.fullData.id;
+        // params.parentId = this.initialized.parentId;
+        params.valueList = this.assertValList;
         this.$axios({
           url: this.api.pageUrl,
           method: 'put',
@@ -108,47 +111,35 @@
           })
       },
       pageChange(page, pageSize) {
+        console.log(this.dataSource,'2233')
         let params = {}
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize
-        this.getData(params)
       },
       del(data){
-        console.log(data);
         let params = {};
         params.coreRuleNodeId = this.fullData.id;
         params.value  = data.key;
         for(let i in this.assertValList){
           if (data.key == this.assertValList[i]){
             this.assertValList.splice(i,1);
-            //删除
-            this.$axios({
-              url: this.api.delUrl,
-              method: 'DELETE',
-              data: params
-            })
-              .then(res => {
-                if (res.code == '200') {
-                  this.success(res.msg);
-                  let list = {}
-                  list.offset = (this.current - 1) *  this.pageSize
-                  list.pageSize = this.pageSize
-                  this.getData(list)
-                } else {
-                  this.warn(res.msg)
-                }
-              })
-              .catch(err => {
-                this.error(err)
-              })
           }
         }
+        for (let ii in this.dataSource){
+          if (data.key == this.dataSource[ii].key){
+            this.dataSource.splice(ii,1);
+          }
+        }
+        this.total=this.dataSource.length
+        this.$emit( 'assertValListUpdate',true);
         this.$forceUpdate()
       }
     }
   }
 </script>
 
-<style scoped>
-
+<style>
+  .valueListModal  .ant-modal-body{
+    padding: 0px !important;
+  }
 </style>

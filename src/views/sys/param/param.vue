@@ -290,14 +290,14 @@
                 })
             },
             pageChange(page, size) {
-                let params = this.$refs.searchPanel.form.getFieldsValue();
+                let params =this.searchData;
                 params.offset = (page - 1) * size;
                 params.pageSize = size;
                 this.getData(params)
             },
             sizeChange(current, size) {
               this.pageSize = size;
-                let params = this.$refs.searchPanel.form.getFieldsValue();
+                let params =this.searchData;
                 params.pageSize = size;
                 params.offset = (current-1)*size;
                 this.getData(params)

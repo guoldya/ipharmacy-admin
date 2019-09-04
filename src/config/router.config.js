@@ -217,7 +217,7 @@ export const asyncRouterMap = [
                 meta: { title: '全文检索', hiddenHeaderContent: true, index: true }
               },
               {
-                path: '/AllTextSearch/searchText/detail/:indexId',
+                path: '/AllTextSearch/searchText/detail',
                 name: 'searchTextDetail',
                 hidden: true,
                 component: () => import('@/views/AllTextSearch/searchText/detail.vue'),
@@ -310,7 +310,7 @@ export const asyncRouterMap = [
           },
           {
             path: '/auditWorkstation/presOutpatient/detail',
-            name: 'presOutpatientDetail',
+            name: 'presOutpatientDetailPage',
             component: RouteView,
             hidden: true,
             meta: { title: '门诊审方详情', multistage: true },
@@ -499,7 +499,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: '/baseData/drugSpec',
-            name: 'DrugSpec',
+            name: 'drugSpec',
             component: RouteView,
             meta: { title: '药品字典管理', multistage: true },
             children: [
@@ -526,39 +526,17 @@ export const asyncRouterMap = [
             ]
           },
           {
-            path: '/baseData/instructionManual',
-            name: 'instructionManual',
-            component: RouteView,
-            hidden: true,
-            meta: { title: '药品说明书', multistage: true },
-            children: [
-              {
-                path: '/baseData/drugSpec/detail/:drugCode/',
-                name: 'drugSpecDetail',
-                component: () => import('@/views/baseData/drugSpec/detail.vue'),
-                meta: { title: '药品说明书', hiddenHeaderContent: true, index: true }
-              }
-            ]
-          },
-          {
-            path: '/baseData/question',
-            name: 'questions',
+            path: '/baseData/drugClassification',
+            name: 'drugClassification',
             component: RouteView,
             meta: { title: '药品分类管理', multistage: true },
             children: [
               {
-                path: '/baseData/question/index',
-                name: 'baseDataQuestion',
-                component: () => import('@/views/baseData/question/index.vue'),
+                path: '/baseData/drugClassification/index',
+                name: 'drugClassificationIndex',
+                component: () => import('@/views/baseData/drugClassification/index.vue'),
                 meta: { title: '药品分类管理', hiddenHeaderContent: true, index: true }
               },
-              {
-                path: '/baseData/question/detailBaseClass/:code/',
-                name: 'baseDataQuestionDetail',
-                hidden: true,
-                component: () => import('@/views/baseData/question/detail.vue'),
-                meta: { title: '分类详情', hiddenHeaderContent: true, detail: true }
-              }
             ]
           },
           {
@@ -604,8 +582,8 @@ export const asyncRouterMap = [
             ]
           },
           {
-            path: '/baseData/groupingSpec',
-            name: 'groupingSpec',
+            path: '/baseData/drugAdministration',
+            name: 'drugAdministration',
             component: RouteView,
             meta: { title: '药品分组维护', multistage: true },
             children: [
@@ -627,6 +605,7 @@ export const asyncRouterMap = [
         ]
       },
 
+
       // test
       {
         path: '/testPage',
@@ -636,37 +615,43 @@ export const asyncRouterMap = [
         meta: { title: '测试', icon: 'check-circle-o', permission: ['result'] },
         children: [
           {
-            path: '/test/test',
-            name: 'test',
+            path: '/testPage/testOne',
+            name: 'testOne',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/test'),
             meta: { title: '测试页面', hiddenHeaderContent: true, permission: ['result'] }
           },
           {
-            path: '/test/gridLayOut',
+            path: '/testPage/testTwo',
+            name: 'testTwo',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/test1'),
+            meta: { title: '测试页面二', hiddenHeaderContent: true, permission: ['result'] }
+          },
+          {
+            path: '/testPage/gridLayOut',
             name: 'gridLayOut',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
             meta: { title: '拖拽测试', hiddenHeaderContent: true, permission: ['result'] }
           },
           {
-            path: '/test/combineTest',
+            path: '/testPage/combineTest',
             name: 'combineTest',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTest'),
             meta: { title: '合并测试', permission: ['result'] }
           },
           {
-            path: '/test/combineTwo',
+            path: '/testPage/combineTwo',
             name: 'combineTwo',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
             meta: { title: '合并测试2', permission: ['result'] }
           },
           {
-            path: '/test/combineThree',
+            path: '/testPage/combineThree',
             name: 'combineThree',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineThree'),
             meta: { title: '合并测试3', permission: ['result'] }
           },
           {
-            path: '/test/picCropper',
+            path: '/testPage/picCropper',
             name: 'picCropper',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/picCropper'),
             meta: { title: '图片剪裁', permission: ['result'] }
@@ -682,7 +667,7 @@ export const asyncRouterMap = [
         children: [
           {
             path: '/sys/org',
-            name: 'org_org_route',
+            name: 'org',
             component: RouteView,
             meta: { title: '机构维护', keepAlive: false, multistage: true },
             children: [
@@ -703,18 +688,18 @@ export const asyncRouterMap = [
           },
           {
             path: '/sys/org_dept',
-            name: 'org_dept_route',
+            name: 'org_dept',
             component: RouteView,
             meta: { title: '科室维护', keepAlive: false, multistage: true },
             children: [
               {
                 path: '/sys/org_dept/index',
-                name: 'org_dept',
+                name: 'deptIndex',
                 component: () => import('@/views/sys/org_dept/org_dept.vue'),
                 meta: { title: '科室维护', index: true }
               },
               {
-                path: '/sys/org_dept/dept/:deptId/:orgId',
+                path: '/sys/org_dept/dept/:deptId/:orgId/:index',
                 name: 'deptDetail',
                 hidden: true,
                 component: () => import('@/views/sys/org_dept/dept.vue'),
@@ -724,13 +709,13 @@ export const asyncRouterMap = [
           },
           {
             path: '/sys/org_user',
-            name: 'org_user_route',
+            name: 'org_user',
             component: RouteView,
             meta: { title: '人员维护', keepAlive: false, multistage: true },
             children: [
               {
                 path: '/sys/org_user/index',
-                name: 'org_user',
+                name: 'userIndex',
                 component: () => import('@/views/sys/org_user/user.vue'),
                 meta: { title: '人员维护', index: true }
               },
@@ -1220,9 +1205,6 @@ export const asyncRouterMap = [
               },
             ]
           },
-          
-
-          
         ]
       },
     ]
@@ -1306,6 +1288,19 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/baseData/instructionManual',
+    name: 'instructionManual',
+    component: BlankLayout,
+    children: [
+      {
+        path: '/baseData/drugSpec/detail/:drugCode/',
+        name: 'drugSpecDetail',
+        component: () => import('@/views/baseData/drugSpec/detail.vue'),
+        meta: { title: '药品说明书' }
+      }
+    ]
+  },
 
 
   {
@@ -1318,6 +1313,7 @@ export const constantRouterMap = [
   },
   {
     path: '/404',
+    name: '404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
 ]

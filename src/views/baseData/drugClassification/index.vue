@@ -17,12 +17,12 @@
       <a-col :xl="19" :xxl="19" class="kindDic">
         <div class="kinds">
           <a-card title="药品品种">
-            <drugVarieties :variety="variety" :disable="disable" :clickRow="clickRow"></drugVarieties>
+            <drugVarieties :variety="variety" :disable="disable" :clickRow="clickRow" @updateDisable="updateDisable"></drugVarieties>
           </a-card>
         </div>
         <div class="dic">
           <div title="药品字典" class="margin-top-10">
-            <drugDictionary :dictionary="dictionary"></drugDictionary>
+            <drugDictionary :dictionary="dictionary" :defaultPage="defaultPage" @updateDefaultPage="updatePage"></drugDictionary>
           </div>
         </div>
       </a-col>
@@ -68,7 +68,8 @@ export default {
         lineData:[]
       },
       toxicologyData: [],
-      current: 1
+      current: 1,
+      defaultPage:0,
     }
   },
   mounted() {
@@ -77,6 +78,19 @@ export default {
   },
 
   methods: {
+    updateDisable(data){
+      this.defaultPage = 10
+      this.disable = data;
+      this.dictionary.drugDictionaryData = []
+      this.dictionary.total = 0
+      this.dictionary.loading = false
+      this.dictionary.disable = true
+      this.dictionary.varietyCode = null
+      this.dictionary.lineData = []
+    },
+    updatePage(data){
+      this.defaultPage = data.defaultPage
+    },
     //左侧点击事件
     onSelect(selectedKeys, e) {
       if (e.node.dataRef.categoryType == '1') {
@@ -86,7 +100,6 @@ export default {
         this.classification.disable = true
       }
       this.nodeData = e.node.dataRef
-      console.log(this.nodeData, 'nodeData')
       this.variety.categoryId = e.node.dataRef.key
       if (this.variety.categoryId) {
         this.getVarietiesData({ categoryId: this.variety.categoryId })
@@ -109,7 +122,6 @@ export default {
           if (res.code == '200') {
             this.variety.drugVarietyData = res.rows
             this.variety.total = res.total
-            // console.log(this.variety.drugVarietyData[0].linkType)
           } else {
             this.warn(res.msg)
           }
@@ -121,6 +133,7 @@ export default {
 
     //品种网格列点击事件
     clickRow(row, event, column) {
+      this.defaultPage = 10
       this.varietyCode = row.varietyCode
       this.dictionary.disable = false
       this.dictionary.varietyCode = row.varietyCode
@@ -156,7 +169,6 @@ export default {
         .then(res => {
           if (res.code == '200') {
             this.dictionary.lineData = res.rows
-            console.log(res.rows)
           } else {
             this.warn(res.msg)
           }

@@ -127,7 +127,9 @@ export default {
       current: 1,
       orgId: '1',
       deptId: null,
-      deptButton: true
+      deptButton: true,
+      oldData:[],
+      index:0
     }
   },
   destroyed() {
@@ -135,12 +137,14 @@ export default {
   },
   mounted() {
     this.getData()
+      
+      
   },
   methods: {
     editDept(row) {
       this.$router.push({
         name: 'deptDetail',
-        params: { deptId: row.deptId, orgId: row.orgId }
+        params: { deptId: row.deptId, orgId: row.orgId ,index: this.index}
       })
     },
     delDept(row) {
@@ -197,7 +201,7 @@ export default {
     addDept() {
       this.$router.push({
         name: 'deptDetail',
-        params: { deptId: 0, orgId: this.orgId }
+        params: { deptId: 0, orgId: this.orgId,index: this.index}
       })
     },
     addDeptUser() {
@@ -222,7 +226,9 @@ export default {
     orgCurrentChange(val) {
       if (val) {
         this.orgId = val.orgId
+        this.index = val.index
         sessionStorage.setItem('val', this.orgId)
+        sessionStorage.setItem('index', this.index)
         this.deptButton = false
         this.getDeptData({ orgId: val.orgId })
       } else {
@@ -268,6 +274,16 @@ export default {
       })
       return tree
     },
+     setCurrent() {
+       let srt = sessionStorage.getItem('index')
+       if(srt){
+           this.$refs.orgTable.$refs.multipleTable.setCurrentRow(this.oldData[srt])
+       }
+       else{
+           this.$refs.orgTable.$refs.multipleTable.setCurrentRow(this.oldData[0])
+       }
+      
+      },
     getData(obj = {}) {
       this.loading = true
       this.$axios({
@@ -277,7 +293,13 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.dataSource = this.getDataChildren(res.rows, undefined)
+             this.oldData=res.rows
+             this.oldData.forEach((item,index)=>{
+                  item.index=index
+             })
+            this.dataSource = this.getDataChildren(this.oldData, undefined)
+            console.log(this.dataSource)
+             this.setCurrent()
             let srt = sessionStorage.getItem('val')
             if (srt) {
               this.getDeptData({ orgId: srt })

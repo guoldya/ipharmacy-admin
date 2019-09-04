@@ -75,10 +75,9 @@
         <a-pagination
           showSizeChanger
           showQuickJumper
-      
           :total="total"
           class="pnstyle"
-          :defaultPageSize="pageSize"
+          :pageSize="pageSize"
           :pageSizeOptions="['10', '20','50']"
           @showSizeChange="pageChangeSize"
           @change="pageChange"
@@ -229,17 +228,6 @@
 </template>
 
 <script>
-  import {
-    coreRuleTypeSelect,
-    coreRuleTypePage,
-    coreRuleTypeUpdate,
-    coreRuleTypeDelete,
-    coreRuleSelectKeyword,
-    coreRuleGroupSpec,
-    coreRuleUpdate,
-    coreRuleDelete,
-    coreRuleCategoryKeyword
-  } from '@/api/login'
   import debounce from 'lodash/debounce'
   import moment from 'moment'
   export default {
@@ -250,9 +238,16 @@
     data() {
       this.handleSearch = debounce(this.handleSearch, 800)
       this.searchCoreRule = debounce(this.searchCoreRule, 800)
+      this.handleCategory =  debounce(this.handleCategory, 800)
       return {
         api:{
-          updateStatus:'sys/coreRule/updateStatus'
+          updateStatus:'sys/coreRule/updateStatus',
+          coreRuleTypePage:'/sys/coreRule/selectPage',
+          coreRuleSelectKeyword:'/sys/coreRule/selectDrugKeyword',
+          coreRuleGroupSpec: '/sys/coreRule/coreGroupingSpec',
+          coreRuleUpdate:'/sys/coreRule/update',
+          coreRuleDelete:'/sys/coreRule/delete',
+          coreRuleCategoryKeyword:'/sys/coreRule/selectCategoryKeyword',
         },
         loadedKeys: ['1', '2'],
         //树形机构数据
@@ -390,6 +385,7 @@
         let params = {}
         this.current = 1
         this.$refs.searchPanel.form.resetFields()
+        this.pageSize  = 10;
         params.pageSize = this.pageSize
         params.offset = 0
         this.getPageData(params)
@@ -412,7 +408,11 @@
 
       //药品select列
       coreRuleSelect(params = {}) {
-        coreRuleSelectKeyword(params)
+        this.$axios({
+          url:this.api.coreRuleSelectKeyword,
+          method:'put',
+          data:params
+        })
           .then(res => {
             if (res.code == '200') {
               this.selectDrug = res.rows
@@ -426,7 +426,11 @@
       },
       //药品分类列
       coreRuleCategory(params = {}) {
-        coreRuleCategoryKeyword(params)
+        this.$axios({
+          url:this.api.coreRuleCategoryKeyword,
+          method:'put',
+          data:params
+        })
           .then(res => {
             if (res.code == '200') {
               this.selectCategory = res.rows
@@ -441,7 +445,11 @@
       //药品组select列
       coreRuleGroup(params = {}) {
         this.coreRule = []
-        coreRuleGroupSpec(params)
+        this.$axios({
+          url:this.api.coreRuleGroupSpec,
+          method:'put',
+          data:params
+        })
           .then(res => {
             if (res.code == '200') {
               for (let key in res.rows) {
@@ -457,7 +465,11 @@
       },
       //药品选择列搜索
       handleSearch(value) {
-        coreRuleSelectKeyword({ keyword: value })
+        this.$axios({
+          url:this.api.coreRuleSelectKeyword,
+          method:'put',
+          data:{ keyword: value }
+        })
           .then(res => {
             if (res.code == '200') {
               this.selectDrug = res.rows
@@ -471,7 +483,11 @@
       },
       //药品分类搜索
       handleCategory(value) {
-        coreRuleCategoryKeyword({ keyword: value })
+        this.$axios({
+          url:this.api.coreRuleCategoryKeyword,
+          method:'put',
+          data:{ keyword: value }
+        })
           .then(res => {
             if (res.code == '200') {
               this.selectCategory = res.rows
@@ -485,9 +501,14 @@
       },
       //药品组搜索
       searchCoreRule(value) {
-        coreRuleGroupSpec({ keyword: value })
+        this.$axios({
+          url:this.api.coreRuleGroupSpec,
+          method:'put',
+          data:{ keyword: value }
+        })
           .then(res => {
             if (res.code == '200') {
+              this.coreRule = []
               for (let key in res.rows) {
                 this.coreRule.push({ id: '' + res.rows[key].id, specName: res.rows[key].specName })
               }
@@ -522,7 +543,11 @@
               params.limitedItemid = this.ruleName.key
               params.type2 = values.type2
             }
-            coreRuleUpdate(params)
+            this.$axios({
+              url:this.api.coreRuleUpdate,
+              method:'post',
+              data:params
+            })
               .then(res => {
                 if (res.code == '200') {
                   let params = {};
@@ -558,7 +583,11 @@
             params.updateTime=  [this.paramsData.startDate,this.paramsData.endDate];
           }
         }
-        coreRuleTypePage(params)
+        this.$axios({
+          url:this.api.coreRuleTypePage,
+          method: 'put',
+          data:params
+        })
           .then(res => {
             if (res.code == '200') {
               this.loadData = this.$dateFormat(res.rows, ['updateTime'])
@@ -576,7 +605,6 @@
       },
       //页面数change事件
       pageChangeSize(page, pageSize) {
-        this.current = 1
         let params = this.pageChangeFilter
         params.offset = (page - 1) * pageSize
         params.pageSize = pageSize
@@ -648,8 +676,11 @@
         if(value.status ==1){
           this.warn('请停用后再删除')
         }else{
-          coreRuleDelete(params)
-            .then(res => {
+          this.$axios({
+            url: this.api.coreRuleDelete,
+            method: 'delete',
+            data: params
+          }).then(res => {
               if (res.code == '200') {
                 this.success(res.msg, () => {
                   let data =this.pageChangeFilter;

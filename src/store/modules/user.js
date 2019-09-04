@@ -91,7 +91,20 @@ const user = {
                                 })
                                 if (ret2) {
                                     let sonMenu = Object.assign({}, item2)
-                                    routerMenu.children.push(sonMenu)
+                                    routerMenu.children.push(sonMenu);
+                                  if (item2.children){
+                                    sonMenu.children = [];
+                                    for (let iii in item2.children){
+                                      let item3 = item2.children[iii]
+                                      let ret3 = state.rightsMenus.find((value,index,arr)=>{
+                                        return value.path == item3.name;
+                                      })
+                                      if (ret3){
+                                        let grandsonMenu = Object.assign({}, item3);
+                                        sonMenu.children.push(grandsonMenu);
+                                      }
+                                    }
+                                  }
                                 }
                             }
                         }
@@ -158,7 +171,6 @@ const user = {
                     if(res.code == '200'){
                         const result = res.data;
                         util.cookies.set('user', userInfo.account);
-                       // util.cookies.set('age', 'ddd');
                         this.commit('setUserModuleList',result.modules);
                         await dispatch('SetAccountInfo', {
                             name: result.users.account,
@@ -172,7 +184,7 @@ const user = {
                         // 用户登录后从持久化数据加载一系列个性化的设置
                         await dispatch('LoadPerfenence')
                         // 用户登录后从持久化数据加载一系列的设置
-                        await dispatch('page/openedLoad')
+                        await dispatch('page/openedLoad');
                         resolve()
                     }else{
                         reject(res.msg)

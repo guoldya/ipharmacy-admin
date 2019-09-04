@@ -6890,11 +6890,6 @@ joi@^13.0.0:
     isemail "3.x.x"
     topo "3.x.x"
 
-jquery@^3.4.0:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
-  integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
-
 js-base64@^2.1.9, js-base64@^2.5.1:
   version "2.5.1"
   resolved "http://registry.npm.taobao.org/js-base64/download/js-base64-2.5.1.tgz#1efa39ef2c5f7980bb1784ade4a8af2de3291121"
@@ -11168,6 +11163,13 @@ uuid@^3.0.1, uuid@^3.3.2:
   version "3.3.2"
   resolved "http://registry.npm.taobao.org/uuid/download/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
 
+v-emoji-picker@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/v-emoji-picker/-/v-emoji-picker-1.1.6.tgz#7b83bffbe56d9fb26b84d29355871e06033108b6"
+  integrity sha512-4UQlMeqEE2EGnqK654H5CeahEsgt3Y5iqmSbA8XTglAlx4a37LkJ0e3XN524KEEwQUV54dR3OdTkBi7l1BoVYw==
+  dependencies:
+    vue "^2.6.10"
+
 validate-npm-package-license@^3.0.1:
   version "3.0.4"
   resolved "http://registry.npm.taobao.org/validate-npm-package-license/download/validate-npm-package-license-3.0.4.tgz#fc91f6b9c7ba15c857f4cb2c5defeec39d4f410a"
@@ -11363,6 +11365,11 @@ vue-template-es2015-compiler@^1.9.0:
 vue@^2.5.17, vue@^2.5.3:
   version "2.5.17"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.17.tgz#0f8789ad718be68ca1872629832ed533589c6ada"
+
+vue@^2.6.10:
+  version "2.6.10"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
+  integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
 
 vuex@^3.0.1:
   version "3.0.1"

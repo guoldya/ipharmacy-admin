@@ -28,12 +28,14 @@
       <!-- <a href="https://www.yuque.com/antv/g6-editor">G6-Editor 文档</a> -->
       <!--<a href="javascript:void(0); " @click="saveFlow">保存节点信息</a>-->
       <span class="separator"></span>
-      <i v-if="titleData.visible" class="operating icon-font action action-xinzeng"  title="新增" @click="addRuleData" ></i>
-      <i  v-if="titleData.visible" class="operating icon-font action action-fuzhi1"  title="复制规则"  @click="copyRule" ></i>
-      <i  v-if="titleData.visible" class="operating icon-font action action-xiaoyan2"  title="校验"  @click="verifyFlow({status:true})" ></i>
+      <i  v-if="titleData.visible" class="operating actionIcon icon-font action action-xinzeng"  title="新增" @click="addRuleData" ></i>
+      <i  v-if="titleData.visible" class="operating actionIcon icon-font action action-fuzhi1"  title="复制规则"  @click="copyRule" ></i>
+      <i  v-if="titleData.visible" class="operating actionIcon icon-font action action-xiaoyan2"  title="校验"  @click="verifyFlow({status:true})" ></i>
       <span class="separator"></span>
-      <i  v-if="titleData.visible" class="operating icon-font action action-baocun"  title="保存" style="color: #52c41a"  @click="saveFlow" ></i>
-      <i  v-if="titleData.visible" class="operating icon-font action action-tijiao2" style="color: #2eabff"  title="提交"  @click="submitFlow" ></i>
+      <a-button shape="circle"  :loading="titleData.loading"  v-if="titleData.visible" class="operating buttonIcon icon-font action action-baocun" style="color: #52c41a;font-size: 16px"  icon="cloud-upload"   @click="saveFlow"/>
+<!--      <i  v-if="titleData.visible" class="operating icon-font action action-baocun"  title="保存" style="color: #52c41a"  @click="saveFlow" ></i>-->
+<!--      <i  v-if="titleData.visible" class="operating icon-font action action-tijiao2" style="color: #2eabff"  title="提交"  @click="submitFlow" ></i>-->
+      <a-button shape="circle"  :loading="titleData.loading" v-if="titleData.visible" class="operating buttonIcon icon-font action action-baocun" style="color: #2eabff;font-size: 16px"  icon="upload"   @click="submitFlow"/>
     </div>
     <div class="rightButton" style="text-align:right;">
       <a-row>
@@ -160,14 +162,18 @@
     height: 35px;
     margin: 0px 6px;
     border-radius: 2px;
-    padding-left: 4px;
     display: inline-block;
     border: 1px solid rgba(2, 2, 2, 0);
   }
-  .toolbar .operating:nth-of-type(1) {
-    margin-left: 24px;
+  .toolbar  .actionIcon{
+    padding-left: 4px;
   }
-
+  .buttonIcon ::selection{
+    background-color: #ffffff;
+  }
+  .toolbar .operating:nth-of-type(1) {
+    /*margin-left: 24px;*/
+  }
   .toolbar .operating:hover {
     cursor: pointer;
     border: 1px solid #e9e9e9;

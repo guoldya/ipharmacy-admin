@@ -94,7 +94,7 @@
           :total="total"
           class="pnstyle"
           v-model="current"
-          :defaultPageSize="10"
+          :pageSize="pageSize"
           @showSizeChange="pageChangeSize"
           @change="pageChange"
           size="small"
@@ -136,7 +136,7 @@ export default {
         // { title: '操作', prop: 'action', align: 'left' }
       ],
       loading: false,
-      total: 2,
+      total: 1,
       current: 1,
       dataSource: [],
       id: 1,
@@ -268,7 +268,7 @@ export default {
                   this.error(err)
                 })
             }
-            if (this.alldatasouce == undefined) {
+            if (this.alldatasouce == undefined||this.alldatasouce.length==0) {
               this.buttonType = 'primary'
               this.show = false
               this.rewButoon = '自动点评'
@@ -410,13 +410,14 @@ export default {
     // 重置数据
     resetForm() {
       this.$refs.searchPanel.form.resetFields()
+      this.searchData={}
       this.pageSize=10
       this.current=1
       this.getformData({ pageSize: 10, offset: 0 })
     },
     // 改变页码
     pageChange(page, pageSize) {
-      this.curent = page
+      // this.curent = page
       let params = this.searchData
       params.offset = (page - 1) * pageSize
       params.pageSize = pageSize
@@ -446,7 +447,7 @@ export default {
       }
       sessionStorage.setItem('patinRew', JSON.stringify(objData))
       let obj = { visId: data.visId, maxSubmitNo: !!data.submitNo ? data.submitNo : '2' }
-      console.log(obj)
+     
       this.$router.push({
         name: 'patientReviewDetail',
         params: obj
@@ -509,7 +510,7 @@ export default {
     //过滤时间
     changeTime(time) {
       if (time) {
-        return time.prescDate.replace(/(:\d{2})$/, '')
+        return time.prescDate.slice(0,16)
       }
     },
     // 过滤性别

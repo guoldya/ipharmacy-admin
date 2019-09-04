@@ -7,7 +7,7 @@ Flow.registerNode(
     {
       label: null,
       field: '',
-      itemId:null,
+      itemId:'',
       prototypes:'',
       // 设置锚点
       anchor: [

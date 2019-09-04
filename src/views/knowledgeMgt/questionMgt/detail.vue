@@ -7,23 +7,20 @@
     </div>
     <a-form :form="form" @submit="handleSubmit">
       <a-form-item label="上级目录" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-tree-select
+        <a-select
           :treeData="treedata"
           placeholder="请选择"
           allowClear
           v-decorator="[ 'parentId', ]"
-        ></a-tree-select>
+        >
+          <a-select-option
+          v-for="(item,index) in treedata"
+          :value="item.id"
+          :key="index">
+            {{item.name}}
+          </a-select-option>
+        </a-select>
       </a-form-item>
-      <!--      <a-form-item label="问题序号" :label-col="labelCol" :wrapper-col="wrapperCol">-->
-      <!--        <a-input-->
-      <!--          class="readOnlyInput"-->
-      <!--          :disabled="true"-->
-      <!--          v-decorator="[-->
-      <!--                'id',-->
-      <!--              ]"-->
-      <!--          placeholder="<系统自动生成>"-->
-      <!--        />-->
-      <!--      </a-form-item>-->
       <a-form-item label="问题编码" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-input
           v-if="disable"
@@ -93,7 +90,6 @@
   </a-card>
 </template>
 <script>
-import { reviewAuditlevelUpdate } from '@/api/login'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 
 export default {
@@ -279,7 +275,7 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.treedata = this.getDataChildrens(res.rows, undefined)
+            this.treedata = res.rows
             this.loading = false
           } else {
             this.loadingTable = false

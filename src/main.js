@@ -18,10 +18,13 @@ import './core/use'
 import '@/permission' // vue 权限控制
 import '@/utils/filter' // vue 全局 filter  
 import 'babel-polyfill' // polyfill
+import '@/directives'
+
 //组件相关
 import { Table, TableColumn, Card, Tag, Collapse, CollapseItem, Scrollbar, Tooltip,Progress } from 'element-ui'
 import { GridLayout, GridItem } from 'vue-grid-layout' // [ 可选组件 ] 网格布局
 import vcolorpicker from 'vcolorpicker'
+import chatModal from '@/components/chatModal/chatModal'
 
 //业务相关组件
 import msgHandler from '@/comm-msg/msg-handler.js'
@@ -43,7 +46,9 @@ import { Icon } from 'ant-design-vue'
 import opcol from '@/my-components/opcol/opcol.vue'
 import api from '@/api/index'
 import gante from "@/components/gante/gante"
-
+//proto
+import protoRoot from '@/my-components/proto/proto'
+import uuid from 'uuid'
 
 Vue.use(gante)
 //引入一个表格
@@ -62,6 +67,9 @@ Vue.use(Tooltip)
 Vue.use(Progress)
 Vue.use(msgHandler)//统一错误处理
 Vue.use(VueAxios, router)
+Vue.use(protoRoot)
+Vue.use(uuid)
+
 
 
 Vue.config.productionTip = false
@@ -87,6 +95,8 @@ Vue.component('opcol', opcol)
 Vue.component('detailHeader', detailHeader)
 Vue.component('treeSelect',treeSelect)
 Vue.component('dateList', dateList)
+Vue.component('chatModal', chatModal)
+
 
 new Vue({
     router,

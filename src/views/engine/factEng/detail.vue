@@ -42,9 +42,10 @@
               >{{op.colName}}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol" >
             <a-select
-              :disabled="onlyRead"
+             class="readOnlyInput"
+              :disabled="true"
               v-decorator="[ 'colType',{
                   rules: [{
                     required: true,
@@ -130,7 +131,7 @@
               >{{op.text}}</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-form-item label="状态" :label-col="labelCol" :wrapper-col="wrapperCol" v-if="ishiden">
             <a-radio-group v-decorator="[ 'status']">
               <a-radio v-for="(op,index) in status" :value="op.id" :key="index">{{op.text}}</a-radio>
             </a-radio-group>
@@ -145,7 +146,6 @@
   </div>
 </template>
 <script>
-import { reviewAuditlevelUpdate } from '@/api/login'
 import ATextarea from 'ant-design-vue/es/input/TextArea'
 
 export default {
@@ -178,7 +178,8 @@ export default {
       treedata: [],
       lists: [],
       onlyRead: false,
-      shows: true
+      shows: true,
+      ishiden:true
     }
   },
   created() {
@@ -204,7 +205,7 @@ export default {
     search() {
       console.log('ddd')
     },
-    // 选择框事件
+    // 选择框事件 有上级编号，隐藏下面三个输入框
     onchange(value) {
       this.shows = value == undefined ? true : false
     },
@@ -277,6 +278,9 @@ export default {
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
+              if(reqArr.colType==1){
+                this.ishiden=false
+              }
               let { id, pie, colType, colName, colZySql,colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
                 formData = {
                   id,
@@ -347,12 +351,12 @@ export default {
 .ant-select-tree {
   height: 500px;
 }
-.ant-select-disabled .ant-select-selection {
-  border: 1px solid #c4c4c4;
-  background-color: #ffff;
-  cursor: default;
-  color: rgba(0, 0, 0, 0.65);
-}
+// .ant-select-disabled .ant-select-selection {
+//   border: 1px solid #c4c4c4;
+//   background-color: #ffff;
+//   cursor: default;
+//   color: rgba(0, 0, 0, 0.65);
+// }
 .factContent {
   .btn {
     margin: 0 5px;

@@ -212,7 +212,6 @@ import detailCheck from '../../auditWorkstation/presHospitalized/detailCheck'
 import docAdvices from './docAdvices.vue'
 import rewviewGrade from './rewviewGrade.vue'
 import { mixin, mixinDevice } from '@/utils/mixin'
-import { selectOutDetail } from '@/api/login'
 import { mapActions } from 'vuex'
 const DetailListItem = DetailList.Item
 export default {
@@ -310,9 +309,9 @@ export default {
   },
   mounted() {
     this.routerData = this.$route.params
-     let data = JSON.parse(sessionStorage.getItem('patinRew'))
+    let data = JSON.parse(sessionStorage.getItem('patinRew'))
     if (this.planScope == 2) {
-      this.getRecordDelData({ visid: this.$route.params.visId, reviewResouce: Number(data.planScope) })
+      this.getRecordDelData({ visId: data.visId, submitNo: data.submitNo, reviewResouce: Number(data.planScope) })
     }
     if (this.planScope == 1) {
       let params = { visId: data.visId, submitNo: data.submitNo, reviewResouce: Number(data.planScope) }
@@ -323,10 +322,11 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            if (res.data!=null) { 
+            if (res.data != null) {
               this.RecordDelData = res.data
               this.leftData = res.data
               this.$store.state.drugList = this.leftData.clinicPrescVOList[0].prescVOList
+               this.$store.state.prescNumStr= this.RecordDelData.prescNumStr
             }
           } else {
             this.allLoading = false
@@ -353,7 +353,6 @@ export default {
         reviewProblemVOList.push(item)
       })
       Object.assign(params, { reviewProblemVOList: reviewProblemVOList })
-      console.log(params)
       this.$axios({
         url: this.api.rewviewupdate,
         method: 'post',
@@ -485,10 +484,13 @@ export default {
           if (res.code == '200') {
             this.RecordDelData = res.data
             this.docDatas = res.data.clinicOrderList
-            this.$store.state.drugList = this.docData
+            //this.$store.state.drugList = this.docData
             this.docDatasCopy = this.docDatas
             this.visId = this.$route.params.visId
             this.patientId = res.data.patientId
+            this.$store.state.drugList = this.RecordDelData.clinicOrderList
+            this.$store.state.prescNumStr= this.RecordDelData.prescNumStr
+           
           } else {
             this.warn(res.msg)
           }
@@ -571,9 +573,19 @@ export default {
         })
     },
     cancle() {
-      this.$router.push({
+     let comefrom=JSON.parse(sessionStorage.getItem('patinRew')).resouce
+     let recordId=JSON.parse(sessionStorage.getItem('patinRew')).recordId
+      if(comefrom=='grade'){
+ this.$router.push({
+        // name: 'reviewTaskMgt'
+       path: `/prescriptionReview/reviewTaskMgt/detail/${recordId}`,
+      })
+      }
+     else{
+        this.$router.push({
         name: 'patientReviewIndex'
       })
+     }
     },
 
     changeKey(key) {
@@ -646,9 +658,9 @@ export default {
 </script>
 
 <style  lang="less">
-.ant-pro-footer-toolbar{
-    z-index: 10
-  }
+.ant-pro-footer-toolbar {
+  z-index: 10;
+}
 .detailPres {
   .patientDetail {
     margin: 5px;

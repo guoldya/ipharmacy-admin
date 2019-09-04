@@ -1,0 +1,13 @@
+option java_package = "com.lianggzone.netty.proto.response";
+option java_outer_classname = "ResponseMessageProtocols";
+
+ message ResponseMessageProtocol {
+     required string Id = 1;//消息ID
+     required string Time= 2;//消息时间
+     required string From = 3;//来源ID
+     required string To = 4;//目标ID
+     required uint32 Type = 5;//消息类型 1IM消息 2推送消息
+     required uint32 BusinessType = 6;//业务消息类型  业务系统自行定义
+     required string Content = 7;//消息内容
+     required uint32 Status = 8;//消息状态 1未读 1已读
+ }

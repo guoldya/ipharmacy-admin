@@ -1,169 +1,30 @@
 <template>
     <div>
-        <a-select
-                dropdownMatchSelectWidth
-                showSearch
-                placeholder="请选择"
-                optionFilterProp="children"
-                optionLabelProp="title"
-                style="width: 500px"
-                @focus="handleFocus"
-                @blur="handleBlur"
-                @change="handleChange"
-                :filterOption="false"
-                @dropdownVisibleChange="dropdownChange"
-                @search="fetchResult"
-                @dropdownRender="dropdownRender"
-                @select="select"
-        >
-            <a-select-option
-                    v-for="item in demoData"
-                    :key="item.value"
-                    :title="item.label"
-                    :value="item.value">
-                <span style="float: left" v-html="item.text"></span>
-                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value}}</span>
-            </a-select-option>
-            <a-select-option disabled key="all" class="show-all">
-                <a
-                        href="https://www.google.com/search?q=antd"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                >
-                    查看所有结果
-                </a>
-            </a-select-option>
-        </a-select>
+      <iframe
+        src="http://192.168.0.22:5002/share.html#share/dashboard?shareInfo=DA1C3E7DAF7EC46FDC39861F361C78B7517FC6CEF4F1ED425FFF75A2CB7527D3ABD4F0725AF12462EE9485E57D523401556AE9591B6399BF11E83D7A3B7004A0EDF9D7C5D6016052610CE824FE74E5C9A71EE4A19AF913039B7B03AA1EB7BFA51456B5FBCAF282D3E95BEF815198FB049A2475F9F21D08B3422D1A95FC0AD30299A61F03801710C5C8947648890D7B5713E96248E066F0B88675E3516E729EC99EDCBA7E39113F4B6ED45CA526675E9F5B7FF810953B282778523B18A51C0601D5DB31F514E64C225AED42334AE02316BA5FCD7252EC298DCF08CDD2C6ABF2589A46EC33802772A59E144537EB324A3EEEAC9B59BD921134786EF3A9B2B3A080&type=dashboard"
+        frameborder="0" height="800"  width="100%" scrolling="no" id="mainIframe" onload="changeFrameHeight()"></iframe>
     </div>
 </template>
 
 <script>
-    const demoData= [{
-        value: '选项1',
-        label: '黄金糕黄',
-        text:"黄金糕黄"
-    }, {
-        value: '选项2',
-        label: '双皮奶',
-        text:"双皮奶"
-    }, {
-        value: '选项3',
-        label: '蚵仔煎',
-        text:"蚵仔煎"
-    }, {
-        value: '选项4',
-        label: '龙须面',
-        text:"龙须面"
-    }, {
-        value: '选项5',
-        label: '北京烤鸭',
-        text:"北京烤鸭"
-    }];
-    const demoData2= [{
-        value: '选项2',
-        label: '双皮奶'
-    }];
 
 
     export default {
-        data() {
-            this.data = demoData;
-            return {
-                demoData,
-                jsonData:JSON.stringify(demoData)
-            }
-        },
-        methods: {
-            handleChange (value,option) {
-                console.log(`selected ${value}`)
-                //console.log(`option ${option}`)
-            },
-            handleBlur() {
-                //console.log('blur');
-            },
-            handleFocus() {
-                //console.log('focus');
-            },
-            fetchResult (value) {
-                const PinyinMatch = require('pinyin-match')
-                if (value)
-                {
-                    this.demoData = JSON.parse(this.jsonData);
-                    this.copyData =[];
-                    this.copyData= this.data.concat();
-                    //console.log(this.copyData)
-                    var result = []
-                    this.copyData.forEach(i=>{
-                        i.text = i.label
-                        var m = PinyinMatch.match(i.label,value)
-                        if (m)
-                        {
-                            console.log(`m ${m}`)
-                            i.text = this.hightlight(i.text,m[0],m[1])
-                            result.push(i)
-                        }
-                    })
-                    this.demoData = result;
-                }
-                else
-                {
-                    this.demoData= JSON.parse(this.jsonData);
-                }
-            },
-            dropdownChange(open)
-            {
-                console.log(`open ${open}`);
-            },
-            select(value,option)
-            {
-                this.demoData= JSON.parse(this.jsonData);
-            },
-            filterOption(input, option) {
-                //  console.log('option')
-                // console.log(option.componentOptions)
-                // console.log('chilren')
-                //  console.log(option.componentOptions.children[0])
+      methods:{
+        changeFrameHeight(){
+          var ifm= document.getElementById("mainIframe");
+          ifm.height=document.documentElement.clientHeight;
+          window.οnresize=function(){
+            changeFrameHeight();
 
-                console.log(`option ${option}`)
-                //const PinyinMatch = require('pinyin-match');
-                if (input)
-                {
-                    // var markInstance = new Mark(document.querySelector(".context"))
-                    // console.log(markInstance)
-                    // markInstance.unmark({
-                    //   done: function(){
-                    //     markInstance.mark(input)
-                    //   }
-                    // })
-
-                    // $('.context').unmark({
-                    //   done: function() {
-                    //     $('.context').mark(input)
-                    //   }
-                    // })
-
-
-
-                    //console.log(option.componentOptions.children[0].elm.innerHTML)
-                }
-                //return option.componentOptions.children[0].data.attrs.spellcode.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            },
-            dropdownRender(menuVode,props)
-            {
-                console.log(`menuVode ${menuVode}`);
-                console.log(`props ${props}`);
-            },
-            hightlight(str, start ,end) {
-                return str.substring(0, start) + '<span class="highlight">' + str.substring(start, end + 1) + '</span>' + str.substring(end + 1)
-            }
-
+          }
         }
+      }
+
     }
 </script>
 
 <style>
-    .highlight {
-        background-color: yellow;
-    }
+
 
 </style>

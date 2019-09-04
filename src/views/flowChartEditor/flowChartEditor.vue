@@ -51,6 +51,7 @@
 <script>
   //import HeadInfo from '@/components/tools/HeadInfo'
   import G6Editor from '@antv/g6-editor'
+  import G6 from '@antv/g6'
   import { setTimeout } from 'timers'
 
   //图形模块加载
@@ -64,6 +65,7 @@
   import './nodemode/model-image-branch' //图片包含
   import './nodemode/model-rect'
   import './nodemode/model-rect-attribute' //属性
+  import moment from 'moment'
 
   //控件模块加载
   import contextmenu from './model/contextmenu'
@@ -73,14 +75,6 @@
   import toolbar from './model/toolbar'
   import ruleModal from './model/ruleModal'
   import addRule from './model/addRule'
-  import {
-    coreRuleNodeSelectOne,
-    coreRuleNodeUpdate,
-    reviewAuditlevelSelect,
-    coreRuleNodeSelectColId,
-    coreFactColAll
-  } from '@/api/login'
-
   export default {
     name: 'g6e',
     props: {
@@ -101,7 +95,12 @@
         api: {
           RuleNodeAndRuleCable: 'sys/coreRuleNode/selectRuleNodeAndRuleCable',
           selectRuleContent: 'sys/coreRuleNode/selectRuleContent',
-          coreRuleUpdate: '/sys/coreRule/update'
+          coreRuleUpdate: '/sys/coreRule/update',
+          coreRuleNodeUpdate:'/sys/coreRuleNode/update',
+          reviewAuditlevelSelect:'/sys/reviewAuditlevel/selectUsingList',
+          coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
+          coreFactColAll:'/sys/coreFactCol/selectAllUsing',
+          judgeUrl:'sys/coreRuleNode/selectColSqlValuePage',
         },
         spinning: false,
         ruleId: null,
@@ -192,11 +191,12 @@
           name: null,
           updateTime: null,
           visible: null,
-          updateBy: null
+          updateBy: null,
+          loading:false,
         },
         //属性框初始化
-        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', nodeTreeData: {}, viewSelect: [] },
-        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', edgeTreeData: {}, viewSelect: [] },
+        boxInitialized: { inputSelectData: [], inputType: 'input', inValueType: '', nodeTreeData: {}, viewSelect: [],loadedKeys:[] },
+        edgeInitialized: { inputEdgeSelect: [], inputEdge: 'input', inValueEdge: '', edgeTreeData: {}, viewSelect: [],loadedKeys:[]  },
         pieChartData: {},
         getEdgesData: [],
         //modal属性
@@ -213,7 +213,8 @@
         CoreFactAllTree: [],
         prePid: null,
         preData: [],
-        judgePreData: []
+        judgePreData: [],
+        isCopy:'0',
       }
     },
     mounted() {
@@ -422,11 +423,7 @@
       },
       selectNodeItemId(newValue, oldValue) {
         if (newValue != oldValue) {
-          if (newValue) {
-            this.flow.update(this.selectNode.id, { itemId: newValue })
-          } else {
-            this.flow.update(this.selectNode.id, { itemId: newValue })
-          }
+          this.flow.update(this.selectNode.id, { itemId: newValue })
         }
       },
       selectNodePrecondition(newValue, oldValue) {
@@ -520,6 +517,8 @@
         }
       },
       selectNodeRoParentId(newValue, oldValue) {
+        console.log(newValue)
+        console.log(oldValue)
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { parentId: newValue })
         }
@@ -582,12 +581,12 @@
     },
 
     methods: {
+      moment,
       autoZoom() {
         //自动跳转自适应画布
         for (let key in this.toolbar.commands) {
           let item = this.toolbar.commands[key]
           if (item.dataset && item.dataset.command == 'autoZoom') {
-
             const event = new MouseEvent('click', {
               view: window,
               bubbles: true,
@@ -723,6 +722,9 @@
                     _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
                     _this.selectNode.isRepeat = model.isRepeat != null ? model.isRepeat : shape.isRepeat
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
+                    _this.selectNode.val = model.val != null ? model.val : shape.val
+                    _this.selectNode.display = model.display != null ? model.display : shape.display
+                    _this.selectNode.parentId = model.parentId != null ? model.parentId : shape.parentId
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.prePid = []
@@ -731,9 +733,8 @@
                     if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
                       _this.preData = []
                     } else {
-                      _this.preData.push(this.getPreData(this.prePid, this.CoreFactAllTree))
+                        _this.preData = this.getPreData(this.prePid, this.CoreFactAllTree)
                     }
-
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
@@ -741,6 +742,7 @@
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
                       this.boxInitialized.inputType = 'scopeInput'
+                      console.log(params,'params')
                     } else if (params.lo == 3 && !this.$util.trim(params.parentId)) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
@@ -752,7 +754,11 @@
                       }
                       paramsNodeData.val = params.val
                       paramsNodeData.display = params.display
-                      coreRuleNodeSelectColId(paramsNodeData).then(res => {
+                      this.$axios({
+                        url:this.api.  coreRuleNodeSelectColId,
+                        method:'put',
+                        data: paramsNodeData,
+                      }).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = []
                           for (let key in res.rows) {
@@ -769,16 +775,22 @@
                         this.error(err)
                       })
                     } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
+                      console.log(params,'params')
                       this.boxInitialized.inputType = 'treeSelect'
                       this.boxInitialized.itemId = params.itemId
                       this.boxInitialized.val = params.val
                       this.boxInitialized.display = params.display
                       this.boxInitialized.parentId = params.parentId
+                      this.boxInitialized.loadedKeys = []
                       let paramsNodeData = { id: params.itemId }
                       paramsNodeData.val = params.val
                       paramsNodeData.display = params.display
                       paramsNodeData.parentId = params.parentId
-                      coreRuleNodeSelectColId(paramsNodeData).then(res => {
+                      this.$axios({
+                        url:this.api.  coreRuleNodeSelectColId,
+                        method:'put',
+                        data: paramsNodeData,
+                      }).then(res => {
                         if (res.code == '200') {
                           this.boxInitialized.inputSelectData = []
                           this.boxInitialized.viewSelect = []
@@ -799,9 +811,19 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                      let listData = paramsNodeData
-                      listData.valueList = ev.item.model.assertValList
-                      coreRuleNodeSelectColId(listData).then(res => {
+                      let listData = {}
+                      listData.id = params.itemId
+                      listData.val = params.val
+                      listData.display = params.display
+                      listData.parentId = params.parentId
+                      if (params.assertValList) {
+                        listData.valueList = params.assertValList
+                      }
+                      this.$axios({
+                        url:this.api.  coreRuleNodeSelectColId,
+                        method:'put',
+                        data: listData,
+                      }).then(res => {
                         if (res.code == '200') {
                           let resData = []
                           for (let key in res.rows) {
@@ -837,6 +859,9 @@
                     _this.selectNode.calculated = model.calculated != null ? model.calculated : shape.calculated
                     _this.selectNode.isRepeat = model.isRepeat != null ? model.isRepeat : shape.isRepeat
                     _this.selectNode.itemName = model.itemName != null ? model.itemName : shape.itemName
+                    _this.selectNode.val = model.val != null ? model.val : shape.val
+                    _this.selectNode.display = model.display != null ? model.display : shape.display
+                    _this.selectNode.parentId = model.parentId != null ? model.parentId : shape.parentId
                     _this.selectNode.ro = model.ro != null ? model.ro : shape.ro
                     _this.selectNode.lo = model.lo != null ? model.lo : shape.lo
                     _this.selectNode.assertVal = model.assertVal != null ? model.assertVal : shape.assertVal
@@ -853,7 +878,7 @@
               if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
                 _this.judgePreData = []
               } else {
-                _this.judgePreData.push(this.getPreData(this.prePid, this.CoreFactAllTree))
+                  _this.judgePreData = this.getPreData(this.prePid, this.CoreFactAllTree)
               }
               break
             case 'edge':
@@ -881,7 +906,11 @@
                     paramsData.val = sourceP.val
                     paramsData.display = sourceP.display
                   }
-                  coreRuleNodeSelectColId(paramsData).then(res => {
+                  this.$axios({
+                    url:this.api.  coreRuleNodeSelectColId,
+                    method:'put',
+                    data: paramsData,
+                  }).then(res => {
                     if (res.code == '200') {
                       _this.edgeInitialized.inputEdgeSelect = []
                       for (let key in res.rows) {
@@ -904,11 +933,16 @@
                   _this.edgeInitialized.val = sourceP.val
                   _this.edgeInitialized.display = sourceP.display
                   _this.edgeInitialized.parentId = sourceP.parentId
+                  _this.edgeInitialized.loadedKeys = []
                   let paramsData = { id: sourceP.itemId }
                   paramsData.val = sourceP.val
                   paramsData.display = sourceP.display
                   paramsData.parentId = sourceP.parentId
-                  coreRuleNodeSelectColId(paramsData).then(res => {
+                  this.$axios({
+                    url:this.api.  coreRuleNodeSelectColId,
+                    method:'put',
+                    data: paramsData,
+                  }).then(res => {
                     if (res.code == '200') {
                       _this.edgeInitialized.inputEdgeSelect = []
                       _this.edgeInitialized.viewSelect = []
@@ -929,14 +963,22 @@
                   }).catch(err => {
                     this.error(err)
                   })
-                  let listData = paramsData
+                  let listData = {}
+                  listData.id = sourceP.itemId
+                  listData.val = sourceP.val
+                  listData.display = sourceP.display
+                  listData.parentId = sourceP.parentId
                   if (ev.item.model.assertValList) {
                     listData.valueList = ev.item.model.assertValList
                   } else {
                     listData.valueList = []
                     ev.item.model.assertValList = []
                   }
-                  coreRuleNodeSelectColId(listData).then(res => {
+                  this.$axios({
+                    url:this.api.  coreRuleNodeSelectColId,
+                    method:'put',
+                    data: listData,
+                  }).then(res => {
                     if (res.code == '200') {
                       let resData = []
                       for (let key in res.rows) {
@@ -1132,7 +1174,7 @@
             if (nodes[i].shape == 'model-rect-attribute') {
               if (nodes[i].lo == 3) {
                 let valueList = null
-                if (this.$util.trim(node.rearCondition) != null) {
+                if (this.$util.trim(edge.rearCondition) != null) {
                   valueList = 1
                 } else {
                   valueList = this.$util.trim(edge.assertValList)
@@ -1147,7 +1189,7 @@
                 }
               } else if (nodes[i].lo == 2) {
                 let value, value1 = null
-                if (this.$util.trim(node.rearCondition) != null) {
+                if (this.$util.trim(edge.rearCondition) != null) {
                   value = 1
                   value1 = 1
                 } else {
@@ -1164,7 +1206,7 @@
                 }
               } else if (nodes[i].lo == 1) {
                 let value = null
-                if (this.$util.trim(node.rearCondition) != null) {
+                if (this.$util.trim(edge.rearCondition) != null) {
                   value = 1
                 } else {
                   value = this.$util.trim(edge.assertVal)
@@ -1202,16 +1244,11 @@
       },
       //判断节点父节点
       judgeNode(node, edges, status) {
-        // let pids = node.pid.split(',');
-        // for (let key in edges) {
-        // for (let i in pids){
-        // if (edges[key].id == pids[i]) {
         if (node.shape == 'model-rect-attribute') {
           if (this.$util.trim(node.itemId) == null || this.$util.trim(node.childNodes) == null || node.pid.length == 0) {
             if (status.status) {
               this.warn('属性节点未完善或缺少结论节点和上级节点')
             }
-            // this.flow.update(node.id, { fill: 'red'})
             this.submitStatus = false
             return false
           }
@@ -1267,14 +1304,12 @@
             return false
           }
         }
-        // }
-        // }
-        // }
       },
       /**
        * @description: 保存流图数据
        */
       saveFlow() {
+        this.titleData.loading = true;
         let data = this.flow.save()
         let list = []
         if (data.edges) {
@@ -1296,14 +1331,21 @@
           list[key].itemId = Number(list[key].itemId)
           delete list[key].index
         }
-        coreRuleNodeUpdate({ ruleNodeVOS: list, status: '0', ruleId: this.$route.params.id }).then(res => {
+        this.$axios({
+          url: this.api.coreRuleNodeUpdate,
+          method: 'post',
+          data: { ruleNodeVOS: list, status: '0', ruleId: this.$route.params.id,isCopy:this.isCopy }
+        }).then(res => {
           if (res.code == '200') {
+            this.titleData.loading = false;
             this.success('保存成功')
           } else {
-            this.warn(res.msg)
+            this.titleData.loading = false;
+            this.warn(res.msg);
           }
         }).catch(err => {
-          this.error(err)
+          this.titleData.loading = false;
+          this.error(err);
         })
         localStorage.setItem('test', JSON.stringify(this.flow.save()))
       },
@@ -1311,6 +1353,7 @@
        * @description: 提交流图数据
        */
       submitFlow() {
+        this.titleData.loading = true;
         this.verifyStatus = false
         let data = this.flow.save()
         let list = []
@@ -1333,17 +1376,25 @@
         }
         this.verifyFlow({ status: false })
         if (this.submitStatus) {
-          coreRuleNodeUpdate({ ruleNodeVOS: list, status: '1', ruleId: this.$route.params.id }).then(res => {
+          this.$axios({
+            url:this.api.coreRuleNodeUpdate,
+            method:'post',
+            data:{ ruleNodeVOS: list, status: '1', ruleId: this.$route.params.id,isCopy:this.isCopy }
+          }).then(res => {
             if (res.code == '200') {
+              this.titleData.loading = false;
               this.success('提交成功')
             } else {
+              this.titleData.loading = false;
               this.warn(res.msg)
             }
           }).catch(err => {
+            this.titleData.loading = false;
             this.error(err)
           })
         } else {
           this.warn('流程图未完善不能提交，可以保存')
+          this.titleData.loading = false;
         }
 
       },
@@ -1360,6 +1411,7 @@
       modalOk() {
         let _this = this
         this.modal.visible = false
+        this.isCopy = '1'
         _this.flow.remove()
         setTimeout(() => {
           this.getNodeData({ ruleId: this.ruleModalId })
@@ -1424,7 +1476,9 @@
             this.titleData.status = res.data.status ? '启用' : '停用'
             this.titleData.type = res.data.type == 1 ? '系统' : null
             this.titleData.visible = res.data.type == 1 ? false : true
-            this.titleData.updateTime = res.data.updateTime
+
+            let dealDate = moment(res.data.updateTime, 'YYYY-MM-DD hh:ss')
+            this.titleData.updateTime =  dealDate.format('YYYY-MM-DD hh:ss')
             this.titleData.updateBy = res.data.updateBy
             this.titleData.type2 = res.data.type2
           } else {
@@ -1564,14 +1618,25 @@
               })
             }
             let list = nodes.concat(edges)
+
             let indexData = this.getNodeTreeData(list)
+
             let i = 0
             this.pieChartData = {}
             let nodeTree = this.recursiveNodeTree(indexData, 'undefined', i)
+
+
             let edgeData = this.getNodesData(nodeTree, [], 'edge')
             let nodesData = this.getDealPieChart()
             var temp = JSON.stringify({ edges: edgeData, nodes: nodesData })
             this.flow.read(JSON.parse(temp))
+            // for (let key in this.pieChartData){
+            //   if (key>3){
+            //     for (let i in this.pieChartData[key]){
+            //       this.graph.remove(this.pieChartData[key][i].id)
+            //     }
+            //   }
+            // }
           } else {
             this.warn(res.msg)
             this.spinning = false
@@ -1687,7 +1752,11 @@
       },
 
       getReviewLevel() {
-        reviewAuditlevelSelect({}).then(res => {
+        this.$axios({
+          url:this.api.reviewAuditlevelSelect,
+          method:'put',
+          data:{}
+        }).then(res => {
           if (res.code == '200') {
           } else {
             this.warn(res.msg)
@@ -1755,9 +1824,13 @@
         this.addVisible = false
       },
       getCoreFactAllStart() {
-        coreFactColAll({}).then(res => {
+        this.$axios({
+          url:this.api.coreFactColAll,
+          method:'put',
+          data:{}
+        }).then(res => {
           if (res.code == '200') {
-            let indexData = this.dealAllStartTree(res.rows)
+            let indexData = this.dealAllStartTree(res.rows);
             this.CoreFactAllTree = this.dealNodeTree(indexData, 'undefined')
           } else {
             this.warn(res.msg)
@@ -1822,14 +1895,15 @@
       getPreData(pid, data) {
         if (this.$util.trim(pid) && pid == 15) {
           for (let key in data) {
-            if (pid == data[key].id) {
-              return data[key]
+            if (pid == data[key].id ) {
+              return data[key].children
             }
           }
         } else {
           return []
         }
       },
+
     }
   }
 </script>

@@ -3,7 +3,8 @@
     <a-spin tip="加载中..." :spinning="loadings">
       <el-table
         class="margin-top-10"
-        :data="pageInPlanData" border
+        :data="dataSource"
+        border
         :highlight-current-row="true">
         <el-table-column fixed="right" label="操作" :width="100" align="center" v-if="true">
           <template slot-scope="scope">
@@ -22,7 +23,7 @@
         showQuickJumper
         :total="total"
         class="pnstyle"
-        :defaultPageSize="pageSize"
+        :pageSize="pageSize"
         :pageSizeOptions="['10', '20','50']"
         @showSizeChange="pageChangeSize"
         @change="pageChange"
@@ -40,7 +41,7 @@
       pageInPlanData: {
         Array
       },
-      loading: {
+      reviewPlanPage: {
         Boolean
       },
       planId: {
@@ -51,6 +52,9 @@
       },
       pages:{
         Number
+      },
+      loading:{
+        Boolean
       }
     },
     name: 'assignDoctorIndex',
@@ -61,7 +65,7 @@
           deleteP: 'sys/reviewPlan/deleteByPlanIdAndPersonId'
         },
         spinning: false,
-        loadings:null,
+        loadings:false,
         dataSource: [],
         total: 1,
         curent: 1,
@@ -86,7 +90,11 @@
       },
       loading(){
         this.loadings=this.loading
+      },
+      pageInPlanData(){
+        this.dataSource=this.pageInPlanData
       }
+
     },
     methods: {
       getData(params = {}) {
@@ -98,7 +106,7 @@
         }).then(res => {
           if (res.code == '200') {
             this.loadings = false
-            this.pageInPlanData = res.rows 
+            this.dataSource = res.rows
           } else {
             this.loadings = false
             this.warn(res.msg)
@@ -120,7 +128,11 @@
           .then(res => {
             if (res.code == '200') {
               this.success('删除成功!')
-              this.getData({ planId: this.planId })
+              let list = {};
+              list.offset = (this.current - 1) * this.pageSize
+              list.pageSize = this.pageSize;
+              list.planId = this.planId;
+              this.getData(list)
             } else {
               this.warn(res.msg)
             }
@@ -130,10 +142,19 @@
           })
       },
       pageChange(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: this.pageSize, planId: this.planId })
+        let params = {};
+        params.offset = (page-1)*pageSize;
+        params.pageSize = pageSize;
+        params.planId = this.planId;
+        this.getData(params)
       },
       pageChangeSize(page, pageSize) {
-        this.getData({ offset: (page - 1) * pageSize, pageSize: pageSize, planId: this.planId })
+        this.pageSize = pageSize;
+        let params = {};
+        params.offset = (page - 1) * pageSize
+        params.pageSize = pageSize;
+        params.planId = this.planId;
+        this.getData(params)
       }
     }
   }

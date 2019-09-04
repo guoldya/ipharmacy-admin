@@ -36,7 +36,7 @@
                   </a-select>
                 </span>
                 <span>
-                  <a-button type="primary"><a-icon type="plus" />选择医嘱</a-button>
+                  <a-button type="primary" @click="selectDoctorAdvice"><a-icon type="plus" />选择医嘱</a-button>
                   <a-button type="primary" class="margin-left-5"><a-icon type="plus"/>选择药品</a-button>
                   <!-- <a-button type="primary" class="margin-left-5"  v-if="page===JSON.stringify('add')"><a-icon type="plus" />选择既往住院教育药品</a-button> -->
                 </span>
@@ -88,11 +88,12 @@
             </a-card>
           </a-col>
       </a-row>
-      
+      <selectDoctorAdvice ref="selectDoctorAdvice" ></selectDoctorAdvice>
     </div>
 </template>
 
 <script>
+  import selectDoctorAdvice from './selectDoctorAdvice'
   export default {
     name: 'medicalEducationAdd',
     data(){
@@ -151,6 +152,9 @@
         eduContent:""
       }
     },
+    components:{
+      selectDoctorAdvice
+    },
     computed:{
       page(){
         return sessionStorage.getItem('childPage')
@@ -166,6 +170,9 @@
     },
     
     methods:{
+      selectDoctorAdvice(){
+        this.$refs.selectDoctorAdvice.showModal()
+      },
       save(){
         console.log(this.eduContent)
       },

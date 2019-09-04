@@ -6,7 +6,7 @@
     <a-card class="margin-top-5">
       <Searchpanel ref="searchPanel" :list="list">
         <div slot="control">
-          <a-button type="primary" @click="search">查询</a-button>
+          <a-button type="primary" @click="search(showModal)">查询</a-button>
           <a-button class="margin-left-5" @click="resetForm">重置</a-button>
         </div>
       </Searchpanel>
@@ -114,6 +114,7 @@
         </el-collapse>
       </div>
     </a-card>
+    <chatModal @search="search" v-if="showModal" ref="chatModal" ></chatModal> 
   </div>
 </template>
 
@@ -129,6 +130,7 @@
     },
     data() {
       return {
+        showModal:false,
         countText: [
           { itemCount: 0, item: '在院', itemColors: '#4586ff' },
           { itemCount: 0, item: '特级监护', itemColors: '#2dc89f' },
@@ -157,9 +159,13 @@
       }
     },
     methods: {
-      search() {
+      search(val) {
+        console.log(val)
+        this.showModal=!val;
 
+        // this.$refs.chatModal.showModal();
       },
+
       resetForm() {
 
       },
@@ -172,50 +178,3 @@
 </script>
 
 <style lang="less">
-  .fontSize24 {
-    font-size: 24px;
-  }
-
-  .fontSize16 {
-    font-size: 16px;
-  }
-  .fontSize14 {
-    font-size: 14px;
-  }
-
-  .fontSize32 {
-    font-size: 28px;
-  }
-
-  .aRow {
-    padding-left: 30px;
-    line-height: 28px;
-  }
-
- .wardMain .ant-card-body {
-    padding: 0px 0px !important;
-  }
-  .pageCard :hover {
-      .icon {
-         display: inline-block;
-    }
-    background-color: #F4F9FE;
-  }
-  .icon {
-    display: none;
-    margin-right: 5px;
-    font-size: 10px;
-    color: #5281FB;
-    height: 29px;
-    width: 29px;
-    text-align: center;
-    background-color: #DCE5FD;
-  }
-  .icon:hover{
-    color: #5281FB;
-    /*margin-right: 5px;*/
-    text-align: center;
-    background-color: #DCE5FD;
-    cursor: pointer;
-  }
-</style>

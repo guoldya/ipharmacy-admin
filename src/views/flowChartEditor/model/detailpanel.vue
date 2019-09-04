@@ -60,7 +60,6 @@
               :treeData="CoreFactAllTree"
               v-model="selectNode.itemId"
               treeDefaultExpandAll
-              class="nodeSelect"
               @select="coreFactTreeChange">
             </a-tree-select>
           </a-form-item>
@@ -94,16 +93,18 @@
               </a-select>
             </a-form-item>
             <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-              <a-tree-select
+              <a-select
                 size="small"
                 :allowClear="true"
                 :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-                :treeData="judgePreDetailData"
                 v-model="selectNode.rearCondition"
                 @change="rearChange"
-                placeholder="默认按当前数据行"
-                class="nodeSelect">
-              </a-tree-select>
+                placeholder="默认按当前数据行">
+                <a-select-option  v-for="(item,index) in judgePreDetailData" :value="item.key"
+                                 :title="item.title" :key="index">
+                  {{item.title}}
+                </a-select-option>
+              </a-select>
             </a-form-item>
             <a-form-item v-if="!selectNode.rearCondition" label="条件值" :label-col="{ span: 5 }"
                          :wrapper-col="{ span: 19 }">
@@ -119,7 +120,7 @@
                   v-model="selectNode.assertValList"
                   showSearch
                   mode="multiple"
-                  @search="searchSelect"
+                  @search="searchNodeSelect"
                   :defaultActiveFirstOption="false"
                   :showArrow="false"
                   :filterOption="false"
@@ -143,7 +144,7 @@
                   :selectChange="nodeTreeSelectChange"
                   :treeSelect="nodeTreeSelected"
                   :loadData="nodeTreeLoadData"
-                  :loadedKeys="nodeLoadedKeys"
+                  :loadedKeys="boxInitialized.loadedKeys"
                   :load="nodeTreeLoad"
                   :selectedKeys="selectNode.assertValList"
                   :selectSearch="nodeTreeSelectSearch"
@@ -181,32 +182,38 @@
            v-if="selectNode.shape == 'flow-rhombus-if' || selectNode.shape =='model-rect-attribute'">
         <a-form>
           <a-form-item label="范围" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-tree-select
+            <a-select
               v-if="selectNode.shape == 'flow-rhombus-if'"
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="judgePreDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
               class="nodeSelect"
               @select="nodePreSelect"
               @change="nodePreChange"
             >
-            </a-tree-select>
-            <a-tree-select
+              <a-select-option  v-for="(item,index) in judgePreDetailData" :value="item.key"
+                                :title="item.title" :key="index">
+                {{item.title}}
+              </a-select-option>
+            </a-select>
+            <a-select
               v-if="selectNode.shape =='model-rect-attribute'"
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="preDetailData"
               v-model="selectNode.precondition"
               placeholder="默认按当前数据行"
               class="nodeSelect"
               @select="nodePreSelect"
               @change="nodePreChange"
             >
-            </a-tree-select>
+              <a-select-option  v-for="(item,index) in preDetailData" :value="item.key"
+                                :title="item.title" :key="index">
+                {{item.title}}
+              </a-select-option>
+            </a-select>
           </a-form-item>
           <a-form-item label="方式" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
             <a-select
@@ -276,7 +283,7 @@
             </a-select>
           </a-form-item>
           <a-form-item label="条件关系" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-select size="small" v-model="selectEdge.ro" @select="selectEdgeRo">
+            <a-select size="small" v-model="selectEdge.ro" @select="edgeSelectRo">
               <a-select-option v-if="selectEdge.lo==1" v-for="(item,index) in this.enum.condition" :value="item.id"
                                :title="item.title" :key="index">
                 {{item.text}}
@@ -286,16 +293,19 @@
             </a-select>
           </a-form-item>
           <a-form-item label="计算条件" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }">
-            <a-tree-select
+            <a-select
               size="small"
               :allowClear="true"
               :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
-              :treeData="preDetailData"
               v-model="selectEdge.rearCondition"
               @change="nodeRearChange"
               placeholder="默认按当前数据行"
               treeDefaultExpandAll>
-            </a-tree-select>
+              <a-select-option  v-for="(item,index) in preDetailData" :value="item.key"
+                                :title="item.title" :key="index">
+                {{item.title}}
+              </a-select-option>
+            </a-select>
           </a-form-item>
 
           <a-form-item v-if="!selectEdge.rearCondition" label="条件值" :label-col="{ span: 5 }"
@@ -340,7 +350,7 @@
                 :selectChange="edgeTreeSelectChange"
                 :treeSelect="edgeTreeSelected"
                 :loadData="edgeTreeLoadData"
-                :loadedKeys="edgeLoadedKeys"
+                :loadedKeys="edgeInitialized.loadedKeys"
                 :load="edgeTreeLoad"
                 :selectedKeys="selectEdge.assertValList"
                 :selectSearch="edgeTreeSelectSearch"
@@ -351,10 +361,9 @@
             <a-date-picker v-else-if="edgeInitialized.lo==1 && edgeInitialized.colDbType=='2'" size="small"
                            :defaultValue="selectEdge.assertVal? moment(selectEdge.assertVal, 'YYYY-MM-DD'): null"
                            @change="edgeDatePick"></a-date-picker>
-            <a-range-picker v-else-if="edgeInitialized.lo==2 && edgeInitialized.colDbType=='2'" size="small"
-                            @change="edgeRangePick"
-                            :defaultValue="selectEdge.assertVal ? [moment(selectEdge.assertVal,  'YYYY-MM-DD'), moment(this.selectEdge.assertVal1,  'YYYY-MM-DD')]: null"
-                            v-model="selectEdge.assertVal"></a-range-picker>
+            <a-range-picker v-else-if="edgeInitialized.lo==2 && edgeInitialized.colDbType ==2"
+                            :defaultValue="selectEdge.assertVal? [moment(selectEdge.assertVal,  'YYYY-MM-DD'), moment(selectEdge.assertVal1,  'YYYY-MM-DD')]:null"
+                            @change="edgeRangePick" size="small"></a-range-picker>
             <a-input v-else size="small"></a-input>
           </a-form-item>
           <a-form-item v-if="edgeInitialized.inputEdge =='treeSelect' && edgeInitialized.lo ==3 && !selectEdge.rearCondition"
@@ -390,6 +399,7 @@
       :fullData="fullData"
       :initialized="initialized"
       :assertValList="valueList"
+      @assertValListUpdate="assertValListUpdate"
     />
 
   </div>
@@ -397,7 +407,6 @@
 </template>
 
 <script>
-  import { reviewAuditlevelSelect, dicBaseSelectClassList, coreFactColAll, coreRuleNodeSelectColId } from '@/api/login'
   import debounce from 'lodash/debounce'
   import moment from 'moment'
   import valueListModal from './valueListModal'
@@ -408,12 +417,18 @@
       'valueListModal': valueListModal
     },
     data() {
-      this.searchSelect = debounce(this.searchSelect, 500)
+      this.searchNodeSelect = debounce(this.searchNodeSelect, 500)
       this.searchEdge = debounce(this.searchEdge, 500)
       this.edgeTreeSelectSearch = debounce(this.edgeTreeSelectSearch, 500)
       this.nodeTreeSelectSearch = debounce(this.nodeTreeSelectSearch, 500)
 
       return {
+        api:{
+          reviewAuditlevelSelect:'/sys/reviewAuditlevel/selectUsingList',
+          dicBaseSelectClassList:'/sys/dicBase/selectClassList',
+          coreFactColAll:'/sys/coreFactCol/selectAllUsing',
+          coreRuleNodeSelectColId:'/sys/coreRuleNode/selectColId',
+        },
         levelData: [],
         dicBaseTreeData: [],
         CoreFactAllTree: [],
@@ -434,8 +449,6 @@
         initialized: {},
         edgeSelectOpen: false,
         nodeSelectOpen: false,
-        nodeLoadedKeys: [],
-        edgeLoadedKeys: [],
       }
     },
     watch: {
@@ -466,7 +479,11 @@
         this.selectNode.sourcename = option.componentOptions.propsData.title
       },
       getReviewLevel() {
-        reviewAuditlevelSelect({}).then(res => {
+        this.$axios({
+          url:this.api.reviewAuditlevelSelect,
+          method:'put',
+          data:{}
+        }).then(res => {
           if (res.code == '200') {
             this.levelData = res.rows
           } else {
@@ -481,7 +498,11 @@
         this.selectNode.levels = '' + option.componentOptions.propsData.value
       },
       getSelectClassList() {
-        dicBaseSelectClassList({ codeClass: '7', status: '1' }).then(res => {
+        this.$axios({
+          url:this.api. dicBaseSelectClassList,
+          method:'put',
+          data:{ codeClass: '7', status: '1' }
+        }).then(res => {
           if (res.code == '200') {
             this.dealClassTree(res.rows)
           } else {
@@ -519,17 +540,28 @@
         this.dicBaseTreeData = treeData
       },
       coreFactTreeChange(value, node, extra) {
+        this.selectNode.parentId = null;
         this.selectNode.precondition = null
         this.selectNode.assertVal1 = null
         this.selectNode.assertVal = null
         this.selectNode.assertValList = []
+        this.boxInitialized.inputSelectData = []
+
         let params = extra.selectedNodes[0].data.props
         let _this = this
         _this.selectNode.itemId = params.id
+        this.selectNode.val = params.val
+        this.selectNode.display = params.display
+        this.selectNode.parentId = params.parentId
         if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
+
           this.boxInitialized.inputType = 'select'
-          this.boxInitialized.itemId = '' + params.id
-          coreRuleNodeSelectColId({ id: params.id }).then(res => {
+          this.boxInitialized.itemId = params.id
+          this.$axios({
+            url:this.api.coreRuleNodeSelectColId,
+            method:'put',
+            data:{ id: params.id }
+          }).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = []
               for (let key in res.rows) {
@@ -547,12 +579,15 @@
           })
         } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
           this.boxInitialized.inputType = 'treeSelect'
-          this.boxInitialized.itemId = '' + params.id
+          this.boxInitialized.itemId = params.id
           this.boxInitialized.val = params.val
           this.boxInitialized.display = params.display
           this.boxInitialized.parentId = params.parentId
-          this.boxInitialized.itemId = params.itemId
-          coreRuleNodeSelectColId({id: params.id, val:params.val, display:params.display, parentId:params.parentId}).then(res => {
+          this.$axios({
+            url:this.api.coreRuleNodeSelectColId,
+            method:'put',
+            data:{id: params.id, val:params.val, display:params.display, parentId:params.parentId}
+          }).then(res => {
             if (res.code == '200') {
               this.boxInitialized.inputSelectData = []
               this.boxInitialized.viewSelect = []
@@ -597,7 +632,7 @@
         //处理节点上计算条件数据
         for (let key in this.CoreFactAllTree) {
           if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
-            this.judgePreDetailData.push(this.CoreFactAllTree[key])
+            this.judgePreDetailData=this.CoreFactAllTree[key].children
           }
         }
       },
@@ -606,14 +641,18 @@
         this.selectNode.ro = value
       },
       //枚举时搜索下拉框
-      searchSelect(value) {
+      searchNodeSelect(value) {
         let _this = this;
         let params = {}
         params.keyword = value
         params.val = _this.boxInitialized.val
         params.display = _this.boxInitialized.display
         params.parentId = _this.boxInitialized.parentId
-        coreRuleNodeSelectColId(params).then(res => {
+        this.$axios({
+          url:this.api.coreRuleNodeSelectColId,
+          method:'put',
+          data:params
+        }).then(res => {
           if (res.code == '200') {
             this.boxInitialized.inputSelectData = res.rows
           } else {
@@ -628,7 +667,7 @@
       lineCondition(value, option) {
         this.selectEdge.label = option.componentOptions.propsData.title
       },
-      selectEdgeRo(value, option) {
+      edgeSelectRo(value, option) {
         this.edgeCondition = option.componentOptions.propsData.title
         this.selectEdge.ro = value
         this.selectEdge.label = this.edgeCondition + this.edgeConditionValue + this.edgeConditionValue1
@@ -642,7 +681,6 @@
         _this.selectNode.colDbType = params.colDbType
         _this.selectNode.itemId = params.id
         _this.selectNode.precondition = null
-        _this.selectNode.lo = params.lo
         _this.selectNode.val = params.val
         _this.selectNode.display = params.display
         _this.selectNode.parentId = params.parentId
@@ -653,17 +691,17 @@
         } else if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
           this.edgeInitialized.inputEdge = 'select'
           this.edgeId = params.id
-          this.edgeInitialized.itemId = '' + params.id
+          this.edgeInitialized.itemId = params.id
         } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
           this.edgeInitialized.inputEdge = 'treeSelect'
           this.edgeId = params.id
-          this.edgeInitialized.itemId = '' + params.id
+          this.edgeInitialized.itemId = params.id
         }
         //线上计算条件处理
         this.preDetailData = []
         for (let key in this.CoreFactAllTree) {
           if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
-            this.preDetailData.push(this.CoreFactAllTree[key])
+            this.preDetailData =this.CoreFactAllTree[key].children
           }
         }
       },
@@ -676,15 +714,20 @@
       //线上选择框change事件
       assertValEdge(value, option) {
         this.selectEdge.lo = 3
-        if (!this.edgeCondition) {
-          this.edgeCondition = this.selectEdge.roSymbol
-        }
-        for (let key in option) {
-          if (key < 1) {
-            this.edgeConditionValue = option[0].componentOptions.propsData.title
+        for (let key in this.enum.allCondition) {
+          if(this.selectEdge.ro == this.enum.allCondition[key].id){
+            this.edgeCondition = this.enum.allCondition[key].title
           }
         }
-        this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
+        if (option.length==0){
+          this.selectEdge.label = this.edgeCondition
+        } else if (option.length ==1) {
+          this.edgeConditionValue = option[0].componentOptions.propsData.title
+          this.selectEdge.label = this.edgeCondition + this.edgeConditionValue
+        }else {
+          this.edgeConditionValue = option[0].componentOptions.propsData.title
+          this.selectEdge.label = this.edgeCondition + this.edgeConditionValue+'...'
+        }
       },
       //线上选择框搜索
       searchEdge(value) {
@@ -693,7 +736,11 @@
         params.id = this.edgeInitialized.itemId
         params.val = this.edgeInitialized.val
         params.name = this.edgeInitialized.display
-        coreRuleNodeSelectColId(params).then(res => {
+        this.$axios({
+          url:this.api.coreRuleNodeSelectColId,
+          method:'put',
+          data:params
+        }).then(res => {
           if (res.code == '200') {
             this.edgeInitialized.inputEdgeSelect = res.rows
           } else {
@@ -717,7 +764,11 @@
       },
       //获取模型数据
       getCoreFactAllStart() {
-        coreFactColAll({}).then(res => {
+        this.$axios({
+          url:this.api.coreFactColAll,
+          method:'put',
+          data:{}
+        }).then(res => {
           if (res.code == '200') {
             let indexData = this.dealAllStartTree(res.rows)
             this.CoreFactAllTree = this.recursiveNodeTree(indexData, undefined)
@@ -837,7 +888,12 @@
         let _this = this;
         _this.selectNode.lo = value
         _this.selectNode.ro = 7
-        if (value ==3){
+        if (value == 1){
+          _this.selectNode.assertVal = null
+        }else if(value == 2){
+          _this.selectNode.assertVal = null
+          _this.selectNode.assertVal1 = null
+        }else if (value ==3){
           if (_this.boxInitialized.parentId){
             _this.boxInitialized.inputType ='treeSelect'
           }else{
@@ -850,7 +906,13 @@
         this.selectEdge.lo = value
         this.selectEdge.ro = 7
         this.edgeInitialized.lo = value
-        if (value ==3){
+        this.selectEdge.assertValList = []
+        if (value == 1){
+          this.selectEdge.assertVal = null
+        }else if(value == 2){
+          this.selectEdge.assertVal = null
+          this.selectEdge.assertVal1 = null
+        }else if (value ==3){
           if (this.edgeInitialized.parentId){
             this.edgeInitialized.inputEdge ='treeSelect'
           }else{
@@ -865,11 +927,28 @@
        */
       edgeTreeSelectChange(value) {
         this.selectEdge.assertValList = value
+        if (value.length ==0){
+          this.selectEdge.label = this.edgeCondition
+        }
       },
       edgeTreeSelected(value, option) {
-        this.selectEdge.assertValList = value
-        this.edgeConditionValue = option.selectedNodes[0].data.props.title
-        this.selectEdge.label = this.edgeCondition +this.edgeConditionValue
+        if (!this.edgeCondition ){
+          for (let key in this.enum.allCondition) {
+            if(this.selectEdge.ro == this.enum.allCondition[key].id){
+              this.edgeCondition = this.enum.allCondition[key].title
+            }
+          }
+        }
+        this.selectEdge.assertValList = value;
+        if (option.selectedNodes.length ==0){
+          this.selectEdge.label = this.edgeCondition
+        }else if (option.selectedNodes.length ==1){
+          this.edgeConditionValue = option.selectedNodes[0].data.props.title
+          this.selectEdge.label = this.edgeCondition +this.edgeConditionValue
+        }else  if (option.selectedNodes.length >1){
+          this.edgeConditionValue = option.selectedNodes[0].data.props.title
+          this.selectEdge.label = this.edgeCondition +this.edgeConditionValue+'...'
+        }
       },
       //线上树形结构异步加载事件
       edgeTreeLoadData(treeNode) {
@@ -884,7 +963,11 @@
             params.parentId = _this.edgeInitialized.parentId
             params.parentValue = treeNode.dataRef.key
             params.id = _this.edgeInitialized.itemId
-            coreRuleNodeSelectColId(params).then(res => {
+            this.$axios({
+              url:this.api.coreRuleNodeSelectColId,
+              method:'put',
+              data:params
+            }).then(res => {
               if (res.code == '200') {
                 treeNode.dataRef.children = []
                 for (let i in res.rows) {
@@ -908,11 +991,11 @@
       },
       //线上树形结构异步加完成事件
       edgeTreeLoad(loadedKeys, expanded) {
-        this.edgeLoadedKeys = loadedKeys
+        this.edgeInitialized.loadedKeys = loadedKeys
       },
       //线树形搜索框事件
       edgeTreeSelectSearch(value) {
-        this.edgeLoadedKeys = []
+        this.edgeInitialized.loadedKeys = []
         let _this = this
         let params = {}
         params.id = _this.edgeInitialized.itemId
@@ -920,7 +1003,11 @@
         params.parentId = _this.edgeInitialized.parentId
         params.name = _this.edgeInitialized.display
         params.keyword = value
-        coreRuleNodeSelectColId(params).then(res => {
+        this.$axios({
+          url:this.api.coreRuleNodeSelectColId,
+          method:'put',
+          data:params
+        }).then(res => {
           if (res.code == '200') {
             _this.edgeInitialized.inputEdgeSelect = []
             for (let i in res.rows) {
@@ -987,13 +1074,17 @@
             let params = {}
             params.parentId = _this.boxInitialized.parentId
             params.parentValue = treeNode.dataRef.key
-            params.id = _this.boxInitialized.itemId
-            coreRuleNodeSelectColId(params).then(res => {
+            params.id =  _this.boxInitialized.itemId
+            this.$axios({
+              url:this.api.coreRuleNodeSelectColId,
+              method:'put',
+              data:params
+            }).then(res => {
               if (res.code == '200') {
                 treeNode.dataRef.children = []
                 for (let i in res.rows) {
                   treeNode.dataRef.children.push({
-                    key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display]
+                    key: res.rows[i][_this.boxInitialized.val], title: res.rows[i][_this.boxInitialized.display],
                   })
                   _this.boxInitialized.viewSelect.push(... treeNode.dataRef.children);
                   _this.boxInitialized.viewSelect = Array.from(new Set( _this.boxInitialized.viewSelect))
@@ -1012,11 +1103,11 @@
       },
       //节点异步加载完成事件
       nodeTreeLoad(loadedKeys, expanded) {
-        this.nodeLoadedKeys = loadedKeys
+        this.boxInitialized.loadedKeys  = loadedKeys
       },
       //节点树形搜索框事件
       nodeTreeSelectSearch(value) {
-        this.nodeLoadedKeys = []
+        this.boxInitialized.loadedKeys = []
         let _this = this
         let params = {}
         params.id = this.boxInitialized.itemId
@@ -1024,7 +1115,11 @@
         params.parentId = this.boxInitialized.parentId
         params.name = this.boxInitialized.display
         params.keyword = value
-        coreRuleNodeSelectColId(params).then(res => {
+        this.$axios({
+          url:this.api.coreRuleNodeSelectColId,
+          method:'put',
+          data:params
+        }).then(res => {
           if (res.code == '200') {
             _this.boxInitialized.inputSelectData = []
             for (let i in res.rows) {
@@ -1130,7 +1225,14 @@
       },
 
 
-
+      assertValListUpdate(){
+        console.log(this.valueList,'valuelist');
+        console.log(this.fullData,'fullData');
+        console.log(this.initialized,'initialized');
+        // if (this.fullData.sourceType == 'model-rect-attribute'){
+        //   this.selectEdge.assertValList = this.valueList;
+        // }
+      },
       modalCancel() {
         this.modalVisible = false
       },
