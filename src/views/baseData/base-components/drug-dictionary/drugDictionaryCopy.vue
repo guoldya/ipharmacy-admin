@@ -1,197 +1,198 @@
 <template>
-  <a-tabs defaultActiveKey="1" size="small" class="width-100" @change="changeKey">
-    <a-tab-pane tab="药品字典" key="1">
-     <div>
-    <!-- <a-button type="primary"  @click="addDictionary">新增药品</a-button> -->
-    <a-spin tip="加载中..." :spinning="loading">
-      <el-table
-        ref="table"
-        :data="dictionary.drugDictionaryData"
-        border
-        style="width:100%"
-        :highlight-current-row="true"
-      >
-        <el-table-column
-          :show-overflow-tooltip="true"
-          v-for="item in columns"
-          :key="item.value"
-          :label="item.title"
-          :prop="item.value"
-          :width="item.width"
-          :align="item.align"
-        >
-          <template slot-scope="scope">
+  <div class="drugDictionaryCopy">
+    <a-tabs defaultActiveKey="1" size="small"  @change="changeKey">
+      <a-tab-pane tab="药品字典" key="1">
+        <div>
+          <!-- <a-button type="primary"  @click="addDictionary">新增药品</a-button> -->
+          <a-spin tip="加载中..." :spinning="loading">
+            <el-table
+              ref="table"
+              :data="dictionary.drugDictionaryData"
+              border
+              style="width:100%"
+              :highlight-current-row="true"
+            >
+              <el-table-column
+                :show-overflow-tooltip="true"
+                v-for="item in columns"
+                :key="item.value"
+                :label="item.title"
+                :prop="item.value"
+                :width="item.width"
+                :align="item.align"
+              >
+                <template slot-scope="scope">
             <span v-if="item.value == 'status'">
               <a-badge
                 :status="scope.row.status == 0? 'default':'processing'"
                 :text="scope.row.status==0?'停用':'启用'"
               />
             </span>
-            <span v-else-if="item.value=='drugName'">
+                  <span v-else-if="item.value=='drugName'">
               <a @click="lookDetail(scope.row)">{{scope.row.drugName}}</a>
             </span>
-            <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
-            <span v-else>{{scope.row[item.value]}}</span>
-          </template>
-        </el-table-column>
-      </el-table>
-      <a-pagination
-        showSizeChanger
-        showQuickJumper
-        :total="dictionary.total"
-        class="pnstyle"
-        :pageSize="pageSize"
-        :pageSizeOptions="['10', '20','50']"
-        @showSizeChange="pageChangeSize"
-        @change="pageChange"
-        size="small"
-        v-model="currents"
-      ></a-pagination>
-      <a-modal
-        :title="Modal.title"
-        :visible="Modal.visible"
-        @ok="handleOk"
-        :confirmLoading="Modal.confirmLoading"
-        @cancel="handleCancel"
-        width="680px"
-        :maskClosable="false"
-      >
-        <a-form :form="form">
-          <a-row>
-            <a-col :span="12">
-              <a-form-item
-                style="padding-top: 20px"
-                label="药品名称"
-                :label-col="{ span: 6 }"
-                :wrapper-col="{ span: 15 }"
-              >
-                <a-input
-                  v-decorator="[ 'drugName',{rules: [{ required: true, message: '请输入药品名称' }]} ]"
-                />
-              </a-form-item>
-            </a-col>
-            <a-col :span="12">
-              <a-form-item
-                style="padding-top: 20px"
-                label="拼音码"
-                :label-col="{ span: 6 }"
-                :wrapper-col="{ span: 15 }"
-              >
-                <a-input v-decorator="[ 'spellCode' ]"></a-input>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :span="12">
-              <a-form-item label="规格" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
-                <a-input v-decorator="[ 'spec',{rules: [{ required: true, message: '请输入规格' }]} ]" />
-              </a-form-item>
-            </a-col>
-            <a-col :span="12">
-              <a-form-item label="单位" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
-                <a-input v-decorator="[ 'unit',{rules: [{ required: true, message: '请输入单位' }]}  ]" />
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :span="12">
-              <a-form-item label="生产厂商" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
-                <a-input
-                  v-decorator="[ 'producedBy',{rules: [{ required: true, message: '请输入生产厂商' }]}  ]"
-                ></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :span="12">
-              <a-form-item label="剂型" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
-                <a-tree-select
-                  showSearch
-                  :treeData="dosageList"
-                  treeNodeFilterProp="title"
-                  v-decorator="[ 'dosageForms',{rules: [{ required: true, message: '请选择剂型' }]}  ]"
-                ></a-tree-select>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :span="24">
-              <a-form-item label="成分(主料)" :label-col="{ span: 3 }" :wrapper-col="{ span: 19 }">
-                <a-select
-                  mode="multiple"
-                  showSearch
-                  :filterOption="false"
-                  @search="mainComposition"
-                  @change="selectMain"
-                  v-decorator="[ 'main' ]"
-                >
-                  <a-select-option
-                    :value="op.compositionId"
-                    v-for="(op,index) in compositionList"
-                    :key="index"
-                  >{{op.compositionName}}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :span="24">
-              <a-form-item label="成分(辅料)" :label-col="{ span: 3 }" :wrapper-col="{ span: 19 }">
-                <a-select
-                  mode="multiple"
-                  showSearch
-                  :filterOption="false"
-                  @change="selectComposition"
-                  @search="handleComposition"
-                  v-decorator="[ 'auxiliary' ]"
-                >
-                  <a-select-option
-                    :value="op.compositionId"
-                    v-for="(op,index) in compositionList"
-                    :key="index"
-                  >{{op.compositionName}}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row>
-            <a-col :span="12">
-              <a-form-item label="状态" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
-                <a-radio-group v-decorator="[ 'status' ]">
-                  <a-radio
-                    :value="op.id"
-                    v-for="(op,index) in this.enum.status"
-                    :key="index"
-                  >{{op.text}}</a-radio>
-                </a-radio-group>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </a-form>
-      </a-modal>
-    </a-spin>
-  </div>
-    </a-tab-pane>
-    <a-tab-pane tab="分类关联" key="2">
-      <el-table
-        ref="table"
-        :data="dictionary.lineData"
-        border
-        style="width:100%"
-        :highlight-current-row="true"
-      >
-        <el-table-column
-          :show-overflow-tooltip="true"
-          v-for="item in columnl"
-          :key="item.value"
-          :label="item.title"
-          :prop="item.value"
-          :width="item.width"
-          :align="item.align"
+                  <span v-else-if="item.format !=null" v-html="item.format(scope.row)"></span>
+                  <span v-else>{{scope.row[item.value]}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+            <a-pagination
+              showSizeChanger
+              showQuickJumper
+              :total="dictionary.total"
+              class="pnstyle"
+              :pageSize="pageSize"
+              :pageSizeOptions="['10', '20','50']"
+              @showSizeChange="pageChangeSize"
+              @change="pageChange"
+              size="small"
+              v-model="currents"
+            ></a-pagination>
+            <a-modal
+              :title="Modal.title"
+              :visible="Modal.visible"
+              @ok="handleOk"
+              :confirmLoading="Modal.confirmLoading"
+              @cancel="handleCancel"
+              width="680px"
+              :maskClosable="false"
+            >
+              <a-form :form="form">
+                <a-row>
+                  <a-col :span="12">
+                    <a-form-item
+                      class="margin-top-10"
+                      label="药品名称"
+                      :label-col="{ span: 6 }"
+                      :wrapper-col="{ span: 15 }"
+                    >
+                      <a-input
+                        v-decorator="[ 'drugName',{rules: [{ required: true, message: '请输入药品名称' }]} ]"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12">
+                    <a-form-item
+                      style="padding-top: 20px"
+                      label="拼音码"
+                      :label-col="{ span: 6 }"
+                      :wrapper-col="{ span: 15 }"
+                    >
+                      <a-input v-decorator="[ 'spellCode' ]"></a-input>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :span="12">
+                    <a-form-item label="规格" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
+                      <a-input v-decorator="[ 'spec',{rules: [{ required: true, message: '请输入规格' }]} ]" />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12">
+                    <a-form-item label="单位" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
+                      <a-input v-decorator="[ 'unit',{rules: [{ required: true, message: '请输入单位' }]}  ]" />
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :span="12">
+                    <a-form-item label="生产厂商" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
+                      <a-input
+                        v-decorator="[ 'producedBy',{rules: [{ required: true, message: '请输入生产厂商' }]}  ]"
+                      ></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12">
+                    <a-form-item label="剂型" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
+                      <a-tree-select
+                        showSearch
+                        :treeData="dosageList"
+                        treeNodeFilterProp="title"
+                        v-decorator="[ 'dosageForms',{rules: [{ required: true, message: '请选择剂型' }]}  ]"
+                      ></a-tree-select>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :span="24">
+                    <a-form-item label="成分(主料)" :label-col="{ span: 3 }" :wrapper-col="{ span: 19 }">
+                      <a-select
+                        mode="multiple"
+                        showSearch
+                        :filterOption="false"
+                        @search="mainComposition"
+                        @change="selectMain"
+                        v-decorator="[ 'main' ]"
+                      >
+                        <a-select-option
+                          :value="op.compositionId"
+                          v-for="(op,index) in compositionList"
+                          :key="index"
+                        >{{op.compositionName}}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :span="24">
+                    <a-form-item label="成分(辅料)" :label-col="{ span: 3 }" :wrapper-col="{ span: 19 }">
+                      <a-select
+                        mode="multiple"
+                        showSearch
+                        :filterOption="false"
+                        @change="selectComposition"
+                        @search="handleComposition"
+                        v-decorator="[ 'auxiliary' ]"
+                      >
+                        <a-select-option
+                          :value="op.compositionId"
+                          v-for="(op,index) in compositionList"
+                          :key="index"
+                        >{{op.compositionName}}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :span="12">
+                    <a-form-item label="状态" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }">
+                      <a-radio-group v-decorator="[ 'status' ]">
+                        <a-radio
+                          :value="op.id"
+                          v-for="(op,index) in this.enum.status"
+                          :key="index"
+                        >{{op.text}}</a-radio>
+                      </a-radio-group>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+              </a-form>
+            </a-modal>
+          </a-spin>
+        </div>
+      </a-tab-pane>
+      <a-tab-pane tab="分类关联" key="2">
+        <el-table
+          ref="table"
+          :data="dictionary.lineData"
+          border
+          style="width:100%"
+          :highlight-current-row="true"
         >
-        </el-table-column>
-      </el-table>
-    </a-tab-pane>
-  </a-tabs>
-  
+          <el-table-column
+            :show-overflow-tooltip="true"
+            v-for="item in columnl"
+            :key="item.value"
+            :label="item.title"
+            :prop="item.value"
+            :width="item.width"
+            :align="item.align"
+          >
+          </el-table-column>
+        </el-table>
+      </a-tab-pane>
+    </a-tabs>
+  </div>
 </template>
 
 <script>
@@ -575,12 +576,12 @@ export default {
 </script>
 
 <style lang='less'>
-.ant-select-tree-dropdown {
+  .drugDictionaryCopy .ant-select-tree-dropdown {
   max-height: 300px !important;
 }
-.ant-tabs-bar {
+.drugDictionaryCopy .ant-tabs-bar {
+    margin: 0 5px 0 0;
     border-bottom: 1px solid #e8e8e8;
-    margin: 0 0 5px 0;
     outline: none;
     -webkit-transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
     transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);

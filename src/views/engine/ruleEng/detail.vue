@@ -13,6 +13,7 @@
             <a-tree-select
               v-if="isedit"
               :disabled='isedit'
+              :showArrow="false"
               class="readOnlyInput"
               :treeData="treedata"
               placeholder="请选择"

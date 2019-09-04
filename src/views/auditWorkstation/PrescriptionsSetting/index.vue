@@ -45,7 +45,7 @@
       >
       </a-pagination>
     </a-spin>
-    <a-button class="margin-top-10" type="primary" @click="addDoctor">新增</a-button>
+    <a-button class="margin-top-10" type="primary" @click="addDoctor" :disabled="doctorDisabled">新增</a-button>
     <assignDoctor :pageInPlanData="pageInPlanData" :loading="confirmLoading" :planId="planId" :totals='totals'  ></assignDoctor>
     <a-modal
       title="分配药师"
@@ -128,7 +128,8 @@
         },
         searchData:{},
         totals:[],
-        pages:1
+        pages:1,
+        doctorDisabled:true,
       }
     },
     computed: {
@@ -180,7 +181,10 @@
       },
       //重置
       resetForm() {
-           this.searchData={}
+        this.searchData={}
+        this.doctorListData={}
+        this.pageInPlanData = []
+        this.doctorDisabled = true;
         this.$refs.searchPanel.form.resetFields()
          this.pageSize=10
         this.getData({ pageSize:  this.pageSize, offset: 0 })
@@ -210,6 +214,8 @@
         })
       },
       pageChange(page, pageSize) {
+        this.doctorDisabled = true;
+        this.pageInPlanData = []
         this.current=page
         let params =this.searchData
         params.offset=(page - 1) * pageSize;
@@ -217,6 +223,8 @@
         this.getData(params)
       },
       pageChangeSize(page, pageSize){
+        this.doctorDisabled = true;
+        this.pageInPlanData = []
         this.pageSize = pageSize
         let params = this.searchData
         params.pageSize = pageSize;
@@ -268,6 +276,7 @@
 
       checkRol(data) {
         this.doctorListData = data;
+        this.doctorDisabled = false;
         this.planId = data.planId;
         this.getPersonsInPlan({offset:0,pageSize:10,planId:data.planId});
         this.getPersonsOutPlan({planId:data.planId});
@@ -292,11 +301,7 @@
       },
       addDoctor(){
         this.personsToData = [];
-        if (this.doctorListData.planId){
-          this.Modal.visible = true;
-        } else {
-          this.warn("请选择方案");
-        }
+        this.Modal.visible = true;
       },
       getPersonsOutPlan(params={}){
         this.$axios({
