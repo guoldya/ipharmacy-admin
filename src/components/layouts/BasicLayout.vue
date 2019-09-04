@@ -2,8 +2,9 @@
   <global-layout>
     <div class="tags-nav" v-if="multipage">
       <contextmenu :itemList="curtagName === homepath ? contextmenuListIndex : contextmenuList"  :visible.sync="menuVisible" @select="onMenuSelect" />
+      <!----  style="margin-top: -22px; margin-bottom: -7px; margin-left:0px;"------>
       <a-tabs
-        style="margin-top: -22px; margin-bottom: -7px; margin-left:0px;"
+      
         :active-key="current"
         hideAdd
         type="editable-card"
@@ -226,6 +227,14 @@
    */
     .tags-nav{
       position: relative;
+      
+      .ant-tabs-bar
+      {
+        margin: 0 0 5px 0;
+      }
+      .close-all-tag-con{
+        right: -14px;
+      }
     }
     .close-all-tag-con{
       position: absolute;
