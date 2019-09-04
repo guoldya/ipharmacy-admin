@@ -24,10 +24,10 @@
                         @click="buttonClick"
                         :type="buttonType"
                     >{{buttonText}}</a-button>
-<!--                    <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>-->
-<!--                    <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">-->
-<!--                        <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>-->
-<!--                    </a-popconfirm>-->
+                    <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
+                    <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
+                        <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
+                    </a-popconfirm>
                   <a-select
                     v-if="disable"
                     style="width: 120px"
@@ -175,7 +175,7 @@
                     <el-table-column prop="action" label="操作" width="140" align="center">
                         <template slot-scope="props">
                             <a @click="looks(props.row)">查看</a>
-                            <!-- <a-divider type="vertical" />
+                            <a-divider type="vertical" />
                             <a-popconfirm
                                 title="确定通过?"
                                 @confirm="passSingle(props.row)"
@@ -185,7 +185,7 @@
                                 <a href="javascript:;">通过</a>
                             </a-popconfirm>
                             <a-divider type="vertical" />
-                            <a @click="rejectedSingle(props)">驳回</a> -->
+                            <a @click="rejectedSingle(props)">驳回</a>
                         </template>
                     </el-table-column>
                 </el-table>
