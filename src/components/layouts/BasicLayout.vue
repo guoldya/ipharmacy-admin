@@ -230,7 +230,7 @@
       
       .ant-tabs-bar
       {
-        margin: 0 0 5px 0;
+        margin: 5px 0 5px 0;
       }
       .close-all-tag-con{
         right: -14px;

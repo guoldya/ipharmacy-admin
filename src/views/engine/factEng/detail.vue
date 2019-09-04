@@ -46,6 +46,7 @@
             <a-select
              class="readOnlyInput"
               :disabled="true"
+              :showArrow="false"
               v-decorator="[ 'colType',{
                   rules: [{
                     required: true,
