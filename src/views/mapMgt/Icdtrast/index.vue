@@ -1,5 +1,5 @@
 <template>
-  <a-Row class="testchks">
+  <a-Row class="icdtrast">
     <a-Col :span="13">
       <a-card :bodyStyle="{padding:'12px 16px'}">
         <Searchpanel ref="searchPanel" :list="list" :col="12">
@@ -465,6 +465,7 @@ export default {
     },
     //页码跳转
     similarPageChange(page, size) {
+      this.similarCurrent=page
       let params = {}
       params.icdName = this.icdnames
       params.offset = (page - 1) * size
@@ -476,6 +477,7 @@ export default {
       this.current = 1
       let params = {}
       params.icdName = this.icdnames
+        params.offset = ( this.similarCurrent - 1) * size
       params.pageSize = size
       this.getSimilarData(params)
     },
@@ -535,7 +537,7 @@ export default {
 }
 </script>
 <style lang='less'>
-.testchks {
+.icdtrast {
   .ant-card {
     padding-top: 1px;
   }
@@ -552,7 +554,7 @@ export default {
     font-weight: bold;
     color: rgba(0, 0, 0, 0.85);
   }
-}
+
 .headers {
   line-height: 36px;
 }
@@ -603,5 +605,6 @@ export default {
 }
 .pt {
   pointer-events: none;
+}
 }
 </style>

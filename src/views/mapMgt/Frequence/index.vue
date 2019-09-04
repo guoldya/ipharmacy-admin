@@ -1,5 +1,5 @@
 <template>
-  <a-Row class="testchk">
+  <a-Row class="Frequence">
     <a-Col :span="13">
       <a-card :bodyStyle="{padding:'12px 16px'}">
         <Searchpanel ref="searchPanel" :list="list" :col="12">
@@ -300,7 +300,7 @@ export default {
     },
     //点击第左边的table列事件
     clickLeftRow(row) {
-      this.pageSizes =10
+      this.pageSizes = 10
       this.remark = ''
       this.isShow = true
       this.isActive = false
@@ -471,10 +471,11 @@ export default {
     },
     //页码跳转
     similarPageChange(page, size) {
+      this.similarCurrent = page
       let params = {}
       params.frequenceName = this.frequenceName
       params.offset = (page - 1) * size
-      params.pageSize=this.pageSizes
+      params.pageSize = this.pageSizes
       this.getSimilarData(params)
     },
     //页码数的改变
@@ -484,6 +485,7 @@ export default {
       let params = {}
       params.frequenceName = this.frequenceName
       params.pageSize = size
+      params.offset = (this.similarCurrent - 1) * size
       this.getSimilarData(params)
     },
     // 机构选取
@@ -521,7 +523,7 @@ export default {
 }
 </script>
 <style lang='less'>
-.testchk {
+.Frequence {
   .headers {
     line-height: 35px;
   }
@@ -536,52 +538,52 @@ export default {
   .ant-card {
     padding-top: 1px;
   }
-}
 
-.details {
-  .ant-input-number {
-    margin-top: 3px;
-  }
-  padding: 0px 0px 0px 5px;
-  .td-content {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    border-left: 1px solid rgb(235, 238, 245);
-    height: 30px;
-    padding-left: 5px;
-  }
-  .table-th {
-    background: #fafafa;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.85);
-  }
-  .ant-row {
-    line-height: 30px;
-  }
-  .textRight {
-    text-align: right;
-    color: rgba(0, 0, 0, 0.85);
-  }
-  .box {
-    line-height: 35px;
-    border-bottom: 1px solid #ebeef5;
-    div {
+  .details {
+    .ant-input-number {
+      margin-top: 3px;
+    }
+    padding: 0px 0px 0px 5px;
+    .td-content {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      border-left: 1px solid rgb(235, 238, 245);
+      height: 30px;
+      padding-left: 5px;
+    }
+    .table-th {
+      background: #fafafa;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .ant-row {
+      line-height: 30px;
+    }
+    .textRight {
+      text-align: right;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .box {
+      line-height: 35px;
+      border-bottom: 1px solid #ebeef5;
+      div {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
     }
   }
-}
 
-.surea {
-  float: right;
-  margin-top: 10px;
-  margin-bottom: 5px;
-  margin-right: 10px;
-}
+  .surea {
+    float: right;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+  }
 
-.ant-input-number {
-  width: 100% !important;
+  .ant-input-number {
+    width: 100% !important;
+  }
 }
 </style>

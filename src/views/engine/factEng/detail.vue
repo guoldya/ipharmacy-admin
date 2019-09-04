@@ -282,10 +282,10 @@ export default {
               if(reqArr.colType==1){
                 this.ishiden=false
               }
-              let { id, pie, colType, colName, colZySql,colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
+              let { id, pid, colType, colName, colZySql,colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
                 formData = {
                   id,
-                  pie,
+                  pid,
                   colZySql,
                   colType,
                   colName,
@@ -297,6 +297,7 @@ export default {
                   status,
                   lo
                 }
+                pid&&(this.shows=false)
               this.form.setFieldsValue(formData)
             } else {
               this.loadingTable = false
