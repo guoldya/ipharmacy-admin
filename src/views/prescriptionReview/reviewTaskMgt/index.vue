@@ -102,6 +102,7 @@
                 <a-pagination
                     :total="total"
                     showSizeChanger
+                    showQuickJumper
                     v-model="current"
                     class="pnstyle"
                     :pageSize="pageSize"
@@ -143,6 +144,7 @@
                 <a-pagination
                     :total="bmTotal"
                     showSizeChanger
+                    showQuickJumper
                     v-model="bmCurrent"
                     class="pnstyle"
                     :pageSize="bmPageSize"
