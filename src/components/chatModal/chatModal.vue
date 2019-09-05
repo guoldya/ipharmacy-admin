@@ -69,12 +69,12 @@
                 </a-upload>
 
               <div class="chatInputBorder">
-                <a-textarea class="a_textarea" id="a_textarea" @keyup.enter="handleOk" v-if="previewImage.length===0" v-model="txtContent" autoFocus >
-                  </a-textarea>
-                <div class="textarea" id="textarea" @input="handleInput"  v-if="previewImage.length>0" 
-                 @keyup.enter="handleOk"  ref="divE1" contenteditable="true"
-                >  
-                  <span v-html="emoji"></span>
+                <!-- <a-textarea @click="aa" class="a_textarea" id="a_textarea" @keyup.enter="handleOk" v-model="emoji" autoFocus >
+                  </a-textarea> -->
+                <div class="textarea" id="textarea" @input="handleInput" 
+                 @keyup.enter="handleOk" @click="getCursor" ref="divE1" contenteditable="true"
+                > 
+                  <!-- <span v-html="emoji"></span> -->
                   <!-- <img class="img"  v-for="(url,i) in previewImage" :key="i" :src="url" /> -->
                 </div>
               </div>
@@ -123,7 +123,7 @@ export default {
       modalData:[],
       visible:true,
       pack: [],
-      txtContent:'',
+      emoji:'',
       chatContent:[],
       sendContent:[],
       acceptContent:[],
@@ -132,7 +132,10 @@ export default {
       selectEmojiStatus:false,
       el:null,
       emoji:"",
-      content: ''
+      content: '',
+      caretOffset:'',
+      txtlength:'',
+      startOffset:''
     }
   },
   computed: {
@@ -144,8 +147,11 @@ export default {
   mounted() {
       var _this = this;
       _this.pack=packData.splice(5,30);
-      // this.$refs.divE1.addEventListener('click',(e)=>{
-      // })
+      this.$refs.divE1.focus();
+      
+     this.$refs.divE1.addEventListener('paste', e=> {
+       this.paste(e)
+     })
       
   },
   watch: {
@@ -160,27 +166,95 @@ export default {
       },
     },
   methods: {
-     handleInput($event){
-      this.txtContent = $event.target.innerHTML;
-      // this.emoji= $event.target.innerHTML;
-      this.$nextTick(()=>{
-        // this.changeCursor($event.target,this.txtContent)
+    getBase641(img) {
+      return new Promise(function(resolve,reject){
+            const reader = new FileReader();
+            reader.addEventListener('load', () =>{resolve(reader.result)});
+            reader.readAsDataURL(img);
       })
     },
-      changeCursor(tId,tag){
-        // if (window.getSelection) { //ie11 10 9 ff safari
-        //     obj.focus(); //解决ff不获取焦点无法定位问题
-        //     var range = window.getSelection(); //创建range
-        //     range.selectAllChildren(obj); //range 选择obj下所有子内容
-        //     range.collapseToEnd(); //光标移至最后
-        // } else if (document.selection) { //ie10 9 8 7 6 5
-        //     var range = document.selection.createRange(); //创建选择对象
-        //     //var range = document.body.createTextRange();
-        //     range.moveToElementText(obj); //range定位到obj
-        //     range.collapse(false); //光标移至最后
-        //     range.select();
-        // }
-        //IE support
+    //粘贴
+    paste(e){
+      e.preventDefault()
+        
+        var clp = (e.originalEvent || e).clipboardData;
+        
+         if(clp.files && clp.files.length > 0){//图片
+            // this.mapFile(clp.files)
+              return ;
+        }  
+        if (clp.items && clp.items.length > 0) {//文字
+            var text
+            if (clp === undefined || clp === null) {
+              text = window.clipboardData.getData('text') || ''
+              if (text !== '') {
+                if (window.getSelection) {
+                  var newNode = document.createElement('span')
+                  newNode.innerHTML = text
+                  window.getSelection().getRangeAt(0).insertNode(newNode)
+                } else {
+                  document.selection.createRange().pasteHTML(text)
+                }
+              }
+            } else {
+              text = clp.getData('text/plain') || ''
+              if (text !== '') {
+                document.execCommand('insertText', false, text)
+              }
+            }
+            return ;
+        }
+    },
+    mapFile(files){
+      for(var i = 0; i < files.length; i++){
+          var c = files[i];
+          if(c.type && c.type.split("/")[0] == "image"){
+              this.getBase641(files[i]).then(function(ret){
+                  document.execCommand("insertImage",false,ret);
+              }).catch(function(ret){});
+          }
+      }
+    },
+  
+     handleInput($event){
+      this.emoji = $event.target.innerHTML;
+      // this.emoji= $event.target.innerHTML;
+      this.$nextTick(()=>{
+        // this.changeCursor($event.target,this.emoji)
+      })
+    },
+    getCursor(element){
+      var caretOffset = 0;
+      var doc = element.target.ownerDocument || element.target.document;
+      var win = doc.defaultView || doc.parentWindow;
+      var sel;
+      if (typeof win.getSelection != "undefined") {//谷歌、火狐
+        sel = win.getSelection();
+        if (sel.rangeCount > 0) {//选中的区域
+          var range = win.getSelection().getRangeAt(0);
+          var preCaretRange = range.cloneRange();//克隆一个选中区域
+          preCaretRange.selectNodeContents(element.target);//设置选中区域的节点内容为当前节点
+          preCaretRange.setEnd(range.endContainer, range.endOffset);  //重置选中区域的结束位置
+          caretOffset = preCaretRange.toString().length;
+          this.startOffset=range.startOffset;
+          // console.log(preCaretRange,'preCaretRange');
+          // console.log(range.endContainer,'range.endContainer');
+          // console.log(range.endOffset,'range.endOffset');
+          // console.log(range.startOffset)
+
+        }
+      } else if ((sel = doc.selection) && sel.type != "Control") {//IE
+        var textRange = sel.createRange();
+        var preCaretTextRange = doc.body.createTextRange();
+        preCaretTextRange.moveToElementText(element.target);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+      }
+      this.caretOffset=caretOffset;
+          console.log(this.caretOffset,'aa caretOffset') ;
+
+    },
+    changeCursor(tId,tag){
         var subst ;
         //IE  
         if(document.selection) {  
@@ -197,6 +271,7 @@ export default {
         }  
         // Mozilla  
         else if(tId.selectionStart || tId.selectionStart == '0'){  
+        console.log(tId,tId.selectionStart,tId.selectionEnd,'tId.selectionStart')
 
           var startPos = tId.selectionStart;  
           var endPos = tId.selectionEnd;  
@@ -212,28 +287,121 @@ export default {
           var cPos=startPos+(myText.length);  
           tId.selectionStart=cPos;  
           tId.selectionEnd=cPos;  
+          console.log(tId.innerHTML,'有innerHTML') ;
+
+
         }  
         // All others  
-        else{  
-          tId.value+=tag;  
-          tId.focus();  
-        }  
+        else if(this.caretOffset||this.caretOffset=='0'){  
+          console.log(this.caretOffset,'aa caretOffset') ;
+            console.log(this.$refs.img)
+
+          var startPos =this.startOffset;  
+          var endPos = this.caretOffset;
+
+          var myText = (tId.innerHTML).substring(startPos, endPos);  
+          if(!myText) { myText=tag;}  
+
+          if(myText.charAt(myText.length - 1) == " "){ // exclude ending space char, if any  
+            subst = myText.substring(0, (myText.length - 1))+ " "; 
+          } else {  
+            subst = myText;  
+          }  
+          this.txtlength= myText.length; 
+
+          tId.innerHTML = tId.innerHTML.substring(0, startPos) + tag + tId.innerHTML.substring(endPos, tId.innerHTML.length);  
+          console.log(tId.innerHTML,'无substring  innerHTML') ;
+
+         tId.focus();  
+          var cPos=startPos+(myText.length);  
+          this.startOffset=cPos;  
+          this.caretOffset=cPos;  
+        }  else{
+          tId.innerHTML+=tag;
+           tId.focus(); 
+          //  console.log(11111);
+            // this.txtlength= tag.length;
+            //   var selection= window.getSelection ? window.getSelection() : document.selection;
+            // var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
+            // if (!window.getSelection){
+            //     tId.focus();
+            //     var selection= window.getSelection ? window.getSelection() : document.selection;
+            //     var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
+            //     range.pasteHTML(tag);
+            //     range.collapse(false);
+            //     range.select();
+            // }else{
+            //   tId.focus();
+            //   range.collapse(false);
+            //   var hasR = range.createContextualFragment(tag);
+            //   var hasR_lastChild = hasR.lastChild;
+            //   while (hasR_lastChild && hasR_lastChild.nodeName.toLowerCase() == "br" && hasR_lastChild.previousSibling && hasR_lastChild.previousSibling.nodeName.toLowerCase() == "br") {
+            //   var e = hasR_lastChild;
+            //   hasR_lastChild = hasR_lastChild.previousSibling;
+            //   hasR.removeChild(e)
+            //   }
+            //   range.insertNode(hasR);
+            //   if (hasR_lastChild) {
+            //   range.setEndAfter(hasR_lastChild);
+            //   range.setStartAfter(hasR_lastChild)
+            //   }
+            //   selection.removeAllRanges();
+            //   selection.addRange(range);
+            // }
+        }
         if (tId.createTextRange) tId.caretPos = document.selection.createRange().duplicate(); 
-        this.txtContent=tId.value;
-        this.emoji = tId.value
+        // if (window.getSelection) { //ie11 10 9 ff safari
+        //     tId.focus(); //解决ff不获取焦点无法定位问题
+        //     var range = window.getSelection(); //创建range
+        //     range.selectAllChildren(tId); //range 选择obj下所有子内容
+        //     range.collapseToEnd(); //光标移至最后
+        // } else if (document.selection) { //ie10 9 8 7 6 5
+        //     var range = document.selection.createRange(); //创建选择对象
+        //     //var range = document.body.createTextRange();
+        //     range.moveToElementText(tId); //range定位到obj
+        //     range.collapse(false); //光标移至最后
+        //     range.select();
+        // }
+
+         if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(tId);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(tag);
+        textRange.collapse(false);
+        textRange.select();
+    }
+        this.emoji=tId.innerHTML;
+
+//  var selection = getSelection()
+//       var range = selection.getRangeAt(0)
+//         var img = document.createElement('img')
+//         img.src = 'aaaa';
+//         range.insertNode(img)
+//         selection.addRange(range)
+        // this.$refs.divE1.innerHTML=val
+        // this.emoji = tId.value
+        // console.log(tId.innerHTML,'innerHTML') ;
+        //   console.log(tId.value,'tId.value') ;
 
       },
     handleChange (info) {
         if (info.file.status === 'done') {
             getBase64(info.file.originFileObj, (imageUrl) => {
                 this.previewImage.push(imageUrl);
-                // this.emoji=this.txtContent;
-                // this.txtContent += `<img src="${imageUrl}"  class="img"/>`;
+                // this.emoji=this.emoji;
                 // this.emoji += `<img src="${imageUrl}"  class="img"/>`;
+                this.emoji = `<img src="${imageUrl}"  class="img"/>`;
+                this.chatContent.push({sendContent:this.emoji});
                 //在光标指定位置处插入图片
-                let img=`<img src="${imageUrl}"  class="img"/>`;
+                let img=`<img src="${imageUrl}" ref="img" class="img"/>`;
                 let el=document.getElementById('textarea')||document.getElementById('a_textarea');
-                this.changeCursor(el,img)
+                // this.changeCursor(el,img)
             })
         }
     },
@@ -247,8 +415,8 @@ export default {
     selectEmoji(emoji) {
         //选择表情之后关闭popover
        this.selectEmojiStatus=false;
-        // this.txtContent+=emoji.emoji; 
-        this.emoji=this.txtContent;
+        // this.emoji+=emoji.emoji; 
+        this.emoji+=emoji.emoji;
         //在光标指定位置处插入表情
         let el=document.getElementById('textarea')||document.getElementById('a_textarea');
         this.changeCursor(el,emoji.emoji)
@@ -265,20 +433,20 @@ export default {
     },
     handleOk(e) {
         this.selectEmojiStatus=false;
-        if(this.txtContent||this.txtContent!==""){
-          this.chatContent.push({sendContent:this.txtContent});
+        if(this.emoji||this.emoji!==""){
+          this.chatContent.push({sendContent:this.emoji});
           this.sendStatus=this.random(0, 5);
         }
         //有文字、表情、图片就发过来消息
-        if(this.txtContent || this.previewImage.length>0){
+        if(this.emoji || this.previewImage.length>0){
           this.chatContent.push({acceptContent:this.acceptChat[this.random(0, 5)]});
         }
         this.sendStatus=this.random(0, 5);
-        this.txtContent="";
+        this.emoji="";
         this.previewImage=[];
         this.emoji="";
         if(document.getElementsByClassName('textarea').length>0){
-          document.getElementsByClassName('textarea')[0].children[0].innerText="";
+          document.getElementsByClassName('textarea')[0].innerText="";
         }
         console.log(this.chatContent,'chatContent')
     //   this.visible = false
@@ -418,6 +586,3 @@ export default {
     
     
 </style>
-
-    
-
