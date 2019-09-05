@@ -16,7 +16,6 @@
       <a-col :xl="24" :xxl="24">
         <a-card title="药品品种">
           <drugVarieties
-            :variety="variety"
             :disable="disable"
             :clickRow="clickRow"
             @updateDisable="updateDisable"
@@ -54,11 +53,6 @@
         classification: {
           disable: false
         },
-        variety: {
-          drugVarietyData: [],
-          total: 0,
-          categoryId: null
-        },
         dictionary: {
           drugDictionaryData: [],
           total: 0,
@@ -73,7 +67,7 @@
     },
     mounted() {
       this.getDicBase()
-      this.getVarietiesData()
+      // this.getVarietiesData()
     },
  
     methods: {
@@ -99,8 +93,6 @@
         })
           .then(res => {
             if (res.code == '200') {
-              this.variety.drugVarietyData = res.rows
-              this.variety.total = res.total
             } else {
               this.warn(res.msg)
             }

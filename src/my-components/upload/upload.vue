@@ -38,16 +38,17 @@
                 this.previewVisible = false
             },
             handlePreview (file) {
+
                 this.previewImage = file.url || file.thumbUrl
                 this.previewVisible = true
             },
             handleChange ({file, fileList}) {
+              console.log(fileList)
                 this.fileList = fileList;
                 let imgUrls = []
                 fileList.forEach((file,index) => {
                     if (file.response && file.response.code === '200') {
                         imgUrls.push(file.response.fileInfo[0])
-
                     }
                     if(file.response && file.response.code != '200'&& file.status == 'done'){
                         this.warn('图片上传失败')

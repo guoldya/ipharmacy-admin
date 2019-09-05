@@ -1321,6 +1321,9 @@
           delete list[key].childNodes
           if (list[key].type == 'node') {
             list[key].pid = this.getNodePids(data.edges, list[key].id)
+            if (list[key].shape == "model-card-conclusion"){
+              list[key].label ='结束'
+            }
           } else {
             list[key].pid = list[key].source
           }

@@ -257,11 +257,11 @@
                 this.$store.dispatch('preference/save')
             },
             handleLayout(mode) {
-              if (mode =='sidemenu'){
-                $('.page-header[data-v-6740ec88]').css("padding","0 32px");
-              }else {
-                $('.page-header[data-v-6740ec88]').css("padding","16px 32px 0");
-              }
+              // if (mode =='sidemenu'){
+              //   $('.page-header[data-v-6740ec88]').css("padding","0 32px");
+              // }else {
+              //   $('.page-header[data-v-6740ec88]').css("padding","16px 32px 0");
+              // }
                 this.$store.dispatch('preference/ToggleLayoutMode', mode)
                 // 因为顶部菜单不能固定左侧菜单栏，所以强制关闭
               this.$store.dispatch('preference/save')

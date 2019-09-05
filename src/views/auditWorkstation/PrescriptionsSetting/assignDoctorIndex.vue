@@ -19,8 +19,6 @@
         </el-table-column>
       </el-table>
       <a-pagination
-        showSizeChanger
-        showQuickJumper
         :total="total"
         class="pnstyle"
         :pageSize="pageSize"

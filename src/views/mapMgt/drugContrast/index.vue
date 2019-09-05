@@ -1,5 +1,5 @@
 <template>
-  <a-Row class="testchk">
+  <a-Row class="drugContrast">
     <a-Col :span="14">
       <a-card :bodyStyle="{padding:'12px 16px'}">
         <Searchpanel ref="searchPanel" :list="list" :col="12">
@@ -546,6 +546,7 @@ export default {
     },
     //页码跳转
     similarPageChange(page, size) {
+      this.similarCurrent = page
       let params = {}
       params.drugName = this.MData.drugName
       params.producedBy = this.MData.producedBy
@@ -555,11 +556,12 @@ export default {
     },
     //页码数的改变
     similarSizeChange(current, size) {
-      //this.current = 1
+      // this.current = 1
       let params = {}
       params.drugName = this.MData.drugName
       params.producedBy = this.MData.producedBy
       params.pageSize = size
+      params.offset = (this.similarCurrent - 1) * size
       this.getSimilarData(params)
     },
     // 机构选取
@@ -597,7 +599,7 @@ export default {
 }
 </script>
 <style lang='less'>
-.testchk {
+.drugContrast {
   .ant-card {
     padding-top: 1px;
   }
@@ -672,13 +674,14 @@ export default {
   .zhishiku {
     padding-left: 5px;
   }
-}
-.hechengayaos {
-  //color: red!important;
-  opacity: 0.8;
-  font-size: 13px;
-}
-.pt {
-  pointer-events: none;
+
+  .hechengayaos {
+    //color: red!important;
+    opacity: 0.8;
+    font-size: 13px;
+  }
+  .pt {
+    pointer-events: none;
+  }
 }
 </style>

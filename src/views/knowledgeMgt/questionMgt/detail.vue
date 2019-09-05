@@ -159,7 +159,6 @@ export default {
             let params = {}
             this.getIdData = res.data
             params.parentId = res.data.parentId
-            params.id = res.data.id
             params.code = res.data.code
             params.name = res.data.name
             params.spellCode = res.data.spellCode

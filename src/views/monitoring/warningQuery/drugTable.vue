@@ -139,7 +139,7 @@
         }
         params.endDate = this.endDate;
         params.startDate = this.startDate;
-        if (this.$util.trim(this.moreThanNum)){
+        if (this.$util.trim(this.moreThanNum) ==null){
           params.total = ''+this.moreThanNum;
         this.$axios({
           url: this.api.selectPage,

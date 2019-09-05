@@ -129,6 +129,7 @@
                 :filterOption="false"
                 @search="mainComposition"
                 @change="selectMain"
+                @blur="blurComposition"
                 v-decorator="[ 'main' ]"
               >
                 <a-select-option
@@ -149,6 +150,7 @@
                 :filterOption="false"
                 @change="selectComposition"
                 @search="handleComposition"
+                @blur="blurComposition"
                 v-decorator="[ 'auxiliary' ]"
               >
                 <a-select-option
@@ -185,7 +187,8 @@ export default {
   name: 'drugDictionary',
   props: ['dictionary', 'defaultPage'],
   data() {
-    this.handleComposition = debounce(this.handleComposition, 500)
+    this.handleComposition = debounce(this.handleComposition, 800)
+    this.mainComposition = debounce(this.mainComposition, 800)
     return {
       api: {
         dicDrugSelectPage: 'sys/dicDrug/selectPage',
@@ -286,6 +289,7 @@ export default {
         })
     },
     addDictionary() {
+      this.selectCompositionList = []
       this.Modal.visible = true
       this.Modal.title = '新增药品'
       this.form.resetFields()
@@ -299,7 +303,7 @@ export default {
       this.editData = data
       let main = []
       let auxiliary = []
-      console.log(data)
+      this.selectCompositionList = []
       let composition = data.dicDrugcompositionVOList
       if (composition.length > 0) {
         let i = 0,
@@ -451,7 +455,7 @@ export default {
     },
     //获取成分列表
     getDrugComposition(params = {}) {
-      if (this.$util.trim(params.keyword)) {
+      if (this.$util.trim(params.keyword) == null) {
         params.keyword = ''
       }
       this.$axios({
@@ -478,12 +482,19 @@ export default {
     mainComposition(value) {
       this.getDrugComposition({ keyword: value })
     },
+    //失焦回调
+    blurComposition(){
+      if (this.compositionList.length<49){
+        this.getDrugComposition({ keyword: '' })
+      }
+    },
     //主料选择
     selectMain(value) {
       this.selectMainList = value
       for (let key in this.selectMainList) {
         for (let i in this.selectCompositionList) {
           if (this.selectMainList[key] == this.selectCompositionList[i]) {
+
             this.warn('主辅料中成分存在重复。')
             this.selectMainList.splice(key, 1)
           }

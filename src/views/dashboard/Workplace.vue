@@ -1,22 +1,22 @@
 <template>
-  <page-layout :avatar="avatar">
-    <div slot="headerContent">
-      <div class="title">{{ timeFix }}，{{ nickname() }}<span class="welcome-text">，{{ welcome() }}</span></div>
-      <div>用户角色</div>
-    </div>
-    <div slot="extra">
-      <a-row class="more-info">
-        <a-col :span="8">
-          <head-info title="项目数" content="56" :center="false" :bordered="false"/>
-        </a-col>
-        <a-col :span="8">
-          <head-info title="团队排名" content="8/24" :center="false" :bordered="false"/>
-        </a-col>
-        <a-col :span="8">
-          <head-info title="项目访问" content="2,223" :center="false" />
-        </a-col>
-      </a-row>
-    </div>
+  <div>
+<!--    <div slot="headerContent">-->
+<!--      <div class="title">{{ timeFix }}，{{ nickname() }}<span class="welcome-text">，{{ welcome() }}</span></div>-->
+<!--      <div>用户角色</div>-->
+<!--    </div>-->
+<!--    <div slot="extra">-->
+<!--      <a-row class="more-info">-->
+<!--        <a-col :span="8">-->
+<!--          <head-info title="项目数" content="56" :center="false" :bordered="false"/>-->
+<!--        </a-col>-->
+<!--        <a-col :span="8">-->
+<!--          <head-info title="团队排名" content="8/24" :center="false" :bordered="false"/>-->
+<!--        </a-col>-->
+<!--        <a-col :span="8">-->
+<!--          <head-info title="项目访问" content="2,223" :center="false" />-->
+<!--        </a-col>-->
+<!--      </a-row>-->
+<!--    </div>-->
 
     <div>
       <a-row :gutter="24">
@@ -106,7 +106,7 @@
         </a-col>
       </a-row>
     </div>
-  </page-layout>
+  </div>
 </template>
 
 <script>

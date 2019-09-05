@@ -24,10 +24,10 @@
                         @click="buttonClick"
                         :type="buttonType"
                     >{{buttonText}}</a-button>
-<!--                    <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>-->
-<!--                    <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">-->
-<!--                        <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>-->
-<!--                    </a-popconfirm>-->
+                    <a-button class="margin-left-5" @click="pass" :disabled="disable">批量通过</a-button>
+                    <a-popconfirm title="确定批量驳回?" placement="topLeft" @confirm="rejected">
+                        <a-button class="margin-left-5" :disabled="disable">批量驳回</a-button>
+                    </a-popconfirm>
                   <a-select
                     v-if="disable"
                     style="width: 120px"
@@ -1031,7 +1031,7 @@ export default {
             let params = {}
             params.auditType = '1'
             params.passType = '1'
-          if(this.$util.trim(this.templateText)){
+          if(this.$util.trim(this.templateText) ==null){
             params.reviewOpinion = this.templateText
           }else{
             params.reviewOpinion = '驳回'

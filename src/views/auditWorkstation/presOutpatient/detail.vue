@@ -688,7 +688,7 @@
         let params = {}
         params.auditType = '1'
         // params.passType = "1";
-        if (this.$util.trim(this.templateText)) {
+        if (this.$util.trim(this.templateText) ==null) {
           params.reviewOpinion = this.templateText
         } else {
           params.reviewOpinion = '驳回'
@@ -876,7 +876,7 @@
       },
       //存为模板
       saveTemplate() {
-        if (this.$util.trim(this.templateText)) {
+        if (this.$util.trim(this.templateText) ==null) {
           setTimeout(() => {
             this.form.setFieldsValue({
               titles: this.templateTitle,

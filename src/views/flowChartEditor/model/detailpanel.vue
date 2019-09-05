@@ -1011,7 +1011,7 @@
           if (res.code == '200') {
             _this.edgeInitialized.inputEdgeSelect = []
             for (let i in res.rows) {
-              if (this.$util.trim(value)) {
+              if (this.$util.trim(value) ==null) {
                 _this.edgeInitialized.inputEdgeSelect.push({
                   key: res.rows[i][_this.edgeInitialized.val],
                   title: res.rows[i][_this.edgeInitialized.display],
@@ -1123,7 +1123,7 @@
           if (res.code == '200') {
             _this.boxInitialized.inputSelectData = []
             for (let i in res.rows) {
-              if (this.$util.trim(value)) {
+              if (this.$util.trim(value) ==null) {
                 _this.boxInitialized.inputSelectData.push({
                   key: res.rows[i][_this.boxInitialized.val],
                   title: res.rows[i][_this.boxInitialized.display],

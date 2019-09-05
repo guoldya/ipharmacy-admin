@@ -396,7 +396,7 @@
                                 name:res.data.signPic,
                                 fileName:res.data.signPic
                               };
-                              if(res.data.signPic){
+                              if(this.$util.trim(res.data.signPic) ==null){
                                 setTimeout(()=>{
                                   that.$refs.upload.fileList = [obj];
                                   that.$refs.upload.imgArr = [obj];
@@ -452,6 +452,8 @@
                         params.birthday = values.birthday.format('YYYY-MM-DD');
                       if(this.$refs.upload.imgArr.length > 0){
                         params.signPic = this.$refs.upload.imgArr[0].fileName;
+                      }else{
+                        params.signPic = '';
                       }
                         this.$axios({
                             url: this.api.updateUrl,

@@ -13,6 +13,7 @@
             <a-tree-select
               v-if="isedit"
               :disabled='isedit'
+              :showArrow="false"
               class="readOnlyInput"
               :treeData="treedata"
               placeholder="请选择"
@@ -245,7 +246,6 @@
           })
             .then(res => {
               if (res.code == '200') {
-
                 let reqArr = res.data
                 let id = '' + reqArr.id
                 let { dsId, dsName, sqlText, val, display, status,parentId } = reqArr,
@@ -355,12 +355,9 @@
 </script>
 <style lang='less'>
   .ruleContent {
-
-
     .btn {
       margin: 0 5px;
     }
-
     .spanBtn {
       color: #1694fb;
     }
