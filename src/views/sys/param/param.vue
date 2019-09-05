@@ -55,8 +55,7 @@
             <a-input
              class="readOnlyInput"
               placeholder="<系统自动生成>"
-              :disabled="true"
-           
+              :disabled="true"   
               v-decorator="['paramId']"
             />
           </a-form-item>
