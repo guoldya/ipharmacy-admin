@@ -470,7 +470,7 @@ export default {
     },
     //获取成分列表
     getDrugComposition(params = {}) {
-      if (this.$util.trim(params.keyword)) {
+      if (this.$util.trim(params.keyword) ==null) {
         params.keyword = ''
       }
       this.$axios({

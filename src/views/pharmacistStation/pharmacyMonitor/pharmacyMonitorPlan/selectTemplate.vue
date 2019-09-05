@@ -360,7 +360,7 @@ export default {
     // 查找事件
     onChange(value) {
        this.loadedKeys = []
-        if (this.$util.trim(value)) {
+        if (this.$util.trim(value) ==null) {
           this.gData = []
           let params = { keyword: value }
           this.getTreeData(params)

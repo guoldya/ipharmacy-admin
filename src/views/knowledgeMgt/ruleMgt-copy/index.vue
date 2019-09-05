@@ -316,9 +316,17 @@
         dateRange[0] = moment(this.$route.params.startDate, 'YYYY-MM-DD')
         dateRange[1] = moment(this.$route.params.endDate, 'YYYY-MM-DD')
         this.$refs.searchPanel.form.setFieldsValue({ updateTime: dateRange })
+        let params = {}
+        params.id =  this.paramsData.id;
+        if (!params.updateTime){
+          params.updateTime=  [this.paramsData.startDate,this.paramsData.endDate];
+        }
+        this.getPageData(params)
+      }else{
+        this.getPageData()
       }
-      console.log(this.$route.params,'111')
-      this.getPageData()
+
+
       this.coreRuleSelect({ keyword: '' })
     },
     computed: {
@@ -577,12 +585,7 @@
           this.current = 1
         }
         this.loadingTable = true
-        if (this.paramsData.id){
-          params.id =  this.paramsData.id;
-          if (!params.updateTime){
-            params.updateTime=  [this.paramsData.startDate,this.paramsData.endDate];
-          }
-        }
+
         this.$axios({
           url:this.api.coreRuleTypePage,
           method: 'put',

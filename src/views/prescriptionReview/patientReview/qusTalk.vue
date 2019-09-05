@@ -261,7 +261,7 @@ export default {
     },
     //button点击事件模板的存储；
     saveTemplate() {
-      if (this.$util.trim(this.templateText)) {
+      if (this.$util.trim(this.templateText) ==null) {
         setTimeout(() => {
           this.form.setFieldsValue({ titles: this.templateTitle, reviewTemplate: this.templateText, templetType: '1' })
         }, 100)

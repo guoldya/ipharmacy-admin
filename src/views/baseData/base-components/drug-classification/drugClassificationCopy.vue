@@ -237,7 +237,7 @@
         this.gData = [];
 
         for (let i in data) {
-          if (this.$util.trim(params.keyword)){
+          if (this.$util.trim(params.keyword) ==null){
             data[i].isleaf = 0;
           }
           let isleaf = false
@@ -511,7 +511,7 @@
       },
       onChange(value) {
         this.loadedKeys = []
-        if (this.$util.trim(value)) {
+        if (this.$util.trim(value) ==null) {
           this.gData = []
           let params = { keyword: value }
           this.getData(params)
