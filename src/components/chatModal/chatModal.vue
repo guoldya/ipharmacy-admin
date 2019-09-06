@@ -27,24 +27,6 @@
                            <div>
                                  <img class="userPhoto" src="@/assets/testImg.png" alt="">
                            </div>
-
-                         <!-- <a-popover 
-                         :getPopupContainer="getPopupContainer" 
-                         :visible="true"
-                         :destroyTooltipOnHide='true'
-                         :arrowPointAtCenter='true'
-                          overlayClassName="chatWrapper"
-                          :placement="item.sendContent||item.sendImg?'left':'right'"
-                          >
-                             <template slot="content">
-                                <span v-if="!item.sendImg" v-html="item.sendContent"> </span>
-                                <span v-else class="img"  v-html="item.sendImg"></span>
-
-                                <span>{{item.acceptContent}}</span>
-                             </template>
-                                <img class="userPhoto" src="@/assets/testImg.png" alt="">
-                        </a-popover> -->
-                        
                     </div>
                 </div>
             <a-divider/>
@@ -54,6 +36,9 @@
             >
                 <template slot="content">
                     <VEmojiPicker :pack="pack" @select="selectEmoji" />
+                    <!-- <ul class="emoji-list" >
+                      <li v-for="(item,index) in pack" :key="index" >{{item}}</li>
+                    </ul> -->
                 </template>
                 <a-icon class="fontSize20" type="smile" />
             </a-popover>
@@ -78,6 +63,7 @@
                   <!-- <img class="img"  v-for="(url,i) in previewImage" :key="i" :src="url" /> -->
                 </div>
               </div>
+              
               <div :style="{'text-align':'right'}">
                 <a-button key="back" @click="handleCancel">关闭</a-button>
                 <a-button key="submit" type="primary" class="margin-left-5" :loading="loading" @click="handleOk">
@@ -99,13 +85,9 @@
 <script>
 //表情插件
 import VEmojiPicker from 'v-emoji-picker';
+//表情
 import packData from 'v-emoji-picker/data/emojis.json';
 //拖拽插件
-function getBase64 (img, callback) {
-  const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result))
-  reader.readAsDataURL(img)
-}
 export default {
     name:"selectDoctorAdvice",
     props: {
@@ -119,10 +101,63 @@ export default {
       action:'https://www.mocky.io/v2/5cc8019d300000980a055e76',///api/sys/upload/image
       previewImage: [],
       fileList: [],
-     acceptChat:['我不晓得','嗯要不得','ok','还钱','嗯不是不是不是不是不是不是不是不是不是不是不是不是不是不是很好很好'],
+      acceptChat:['我不晓得','嗯要不得','ok','还钱','嗯不是不是不是不是不是不是不是不是不是不是不是不是不是不是很好很好'],
       modalData:[],
       visible:true,
-      pack: [],
+      // pack: [],
+      pack: [
+            {emoji: "😀", description: "grinning face", category: "Peoples"},
+            {emoji: "😃", description: "smiling face with open mouth", category: "Peoples"},
+            {emoji: "😄", description: "smiling face with open mouth & smiling eyes", category: "Peoples"}, 
+            {emoji: "😁", description: "grinning face with smiling eyes", category: "Peoples"},
+            {emoji: "😆", description: "smiling face with open mouth & closed eyes", category: "Peoples"},
+            {emoji: "😅", description: "smiling face with open mouth & cold sweat", category: "Peoples",}, 
+            {emoji: "😂", description: "face with tears of joy", category: "Peoples"},
+            {emoji: "🤣", description: "rolling on the floor laughing", category: "Peoples"},
+            {emoji: "😌", description: "smiling face", category: "Peoples"}, 
+            {emoji: "😊", description: "smiling face with smiling eyes", category: "Peoples"}
+            , {emoji: "😇", description: "smiling face with halo", category: "Peoples",}
+            , {emoji: "🙂", description: "slightly smiling face", category: "Peoples"}
+            , {emoji: "🙃", description: "upside-down face", category: "Peoples"}
+            , {emoji: "😉", description: "winking face", category: "Peoples"}
+            , {emoji: "😌", description: "relieved face", category: "Peoples"}
+            , {emoji: "😍", description: "smiling face with heart-eyes", category: "Peoples"}
+            , {emoji: "😘", description: "face blowing a kiss", category: "Peoples"}
+            , {emoji: "😗", description: "kissing face", category: "Peoples"}
+            , {emoji: "😙", description: "kissing face with smiling eyes", category: "Peoples"}
+            , {emoji: "😚", description: "kissing face with closed eyes", category: "Peoples"}
+            , {emoji: "😋", description: "face savouring delicious food", category: "Peoples"}
+            , {emoji: "😜", description: "face with stuck-out tongue & winking eye", category: "Peoples"}
+            , {emoji: "😝", description: "face with stuck-out tongue & closed eyes", category: "Peoples"}
+            , {emoji: "😛", description: "face with stuck-out tongue", category: "Peoples"}
+            , {emoji: "🤑", description: "money-mouth face", category: "Peoples"}
+            , {emoji: "🤗", description: "hugging face", category: "Peoples"}
+            , {emoji: "🤓", description: "nerd face", category: "Peoples"}
+            , {emoji: "😎", description: "smiling face with sunglasses", category: "Peoples"}
+            , {emoji: "🤡", description: "clown face", category: "Peoples"}
+            , {emoji: "🤠", description: "cowboy hat face", category: "Peoples"}
+            , {emoji: "😏", description: "smirking face", category: "Peoples"}
+            , {emoji: "😒", description: "unamused face", category: "Peoples"}
+            , {emoji: "😞", description: "disappointed face", category: "Peoples"}
+            , {emoji: "😔", description: "pensive face", category: "Peoples"}
+            ,{emoji: "😟", description: "worried face", category: "Peoples"}
+            ,{emoji: "😕", dry: "Peoples"}
+            ,{emoji: "🙁", description: "slightly frowning face", category: "Peoples"}
+            ,{emoji: "☹️", description: "frowning face", category: "Peoples"}
+            ,{emoji: "😣", description: "persevering face", category: "Peoples"}
+            ,{emoji: "😖", description: "confounded face", category: "Peoples"}
+            ,{emoji: "😫", description: "tired face", category: "Peoples"}
+            ,{emoji: "😩", description: "weary face", category: "Peoples"}
+            ,{emoji: "😤", description: "face with steam from nose", category: "Peoples"}
+            ,{emoji: "😠", description: "angry face", category: "Peoples"}
+            ,{emoji: "😡", description: "pouting face", category: "Peoples"}
+            ,{emoji: "😶", description: "face without mouth", category: "Peoples"}
+            ,{emoji: "😐", description: "neutral face", category: "Peoples"}
+            ,{emoji: "😑", description: "expressionless face", category: "Peoples"}
+            ,{emoji: "😯", description: "hushed face", category: "Peoples"}
+            ,{emoji: "😦", description: "frowning face with open mouth", category: "Peoples"}
+            ,{emoji: "😧", description: "anguished face", category: "Peoples"}
+      ],
       emoji:'',
       chatContent:[],
       sendContent:[],
@@ -146,9 +181,7 @@ export default {
   },
   mounted() {
       var _this = this;
-      _this.pack=packData.splice(5,30);
       this.$refs.divE1.focus();
-      
      this.$refs.divE1.addEventListener('paste', e=> {
        this.paste(e)
      })
@@ -166,19 +199,15 @@ export default {
       },
     },
   methods: {
-    getBase641(img) {
-      return new Promise(function(resolve,reject){
-            const reader = new FileReader();
-            reader.addEventListener('load', () =>{resolve(reader.result)});
-            reader.readAsDataURL(img);
-      })
+    getBase64 (img, callback) {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => callback(reader.result))
+      reader.readAsDataURL(img)
     },
     //粘贴
     paste(e){
-      e.preventDefault()
-        
+        e.preventDefault()
         var clp = (e.originalEvent || e).clipboardData;
-        
          if(clp.files && clp.files.length > 0){//图片
             // this.mapFile(clp.files)
               return ;
@@ -205,20 +234,20 @@ export default {
             return ;
         }
     },
+    //粘贴的文件
     mapFile(files){
       for(var i = 0; i < files.length; i++){
           var c = files[i];
           if(c.type && c.type.split("/")[0] == "image"){
-              this.getBase641(files[i]).then(function(ret){
+              this.getBase64(files[i],(ret)=>{
                   document.execCommand("insertImage",false,ret);
-              }).catch(function(ret){});
+              });
           }
       }
     },
   
      handleInput($event){
       this.emoji = $event.target.innerHTML;
-      // this.emoji= $event.target.innerHTML;
       this.$nextTick(()=>{
         // this.changeCursor($event.target,this.emoji)
       })
@@ -241,7 +270,6 @@ export default {
           // console.log(range.endContainer,'range.endContainer');
           // console.log(range.endOffset,'range.endOffset');
           // console.log(range.startOffset)
-
         }
       } else if ((sel = doc.selection) && sel.type != "Control") {//IE
         var textRange = sel.createRange();
@@ -251,7 +279,7 @@ export default {
         caretOffset = preCaretTextRange.text.length;
       }
       this.caretOffset=caretOffset;
-          console.log(this.caretOffset,'aa caretOffset') ;
+      console.log(this.caretOffset,'aa caretOffset') ;
 
     },
     changeCursor(tId,tag){
@@ -260,42 +288,16 @@ export default {
         if(document.selection) {  
           var theSelection = document.selection.createRange().text;  
           if(!theSelection) { theSelection=tag}  
-          tId.focus();  
-          if(theSelection.charAt(theSelection.length - 1) == " "){  
-          theSelection = theSelection.substring(0, theSelection.length - 1);  
-          document.selection.createRange().text = theSelection+ " ";  
-        } else {  
-          document.selection.createRange().text = theSelection;  
-        }  
-  
-        }  
-        // Mozilla  
-        else if(tId.selectionStart || tId.selectionStart == '0'){  
-        console.log(tId,tId.selectionStart,tId.selectionEnd,'tId.selectionStart')
-
-          var startPos = tId.selectionStart;  
-          var endPos = tId.selectionEnd;  
-          var myText = (tId.value).substring(startPos, endPos);  
-          if(!myText) { myText=tag;}  
-          if(myText.charAt(myText.length - 1) == " "){ // exclude ending space char, if any  
-          subst = myText.substring(0, (myText.length - 1))+ " ";  
-        } else {  
-          subst = myText;  
-        }  
-          tId.value = tId.value.substring(0, startPos) + subst + tId.value.substring(endPos, tId.value.length);  
-          tId.focus();  
-          var cPos=startPos+(myText.length);  
-          tId.selectionStart=cPos;  
-          tId.selectionEnd=cPos;  
-          console.log(tId.innerHTML,'有innerHTML') ;
-
-
-        }  
+            tId.focus();  
+            if(theSelection.charAt(theSelection.length - 1) == " "){  
+            theSelection = theSelection.substring(0, theSelection.length - 1);  
+            document.selection.createRange().text = theSelection+ " ";  
+          } else {  
+            document.selection.createRange().text = theSelection;  
+          }  
+        } 
         // All others  
         else if(this.caretOffset||this.caretOffset=='0'){  
-          console.log(this.caretOffset,'aa caretOffset') ;
-            console.log(this.$refs.img)
-
           var startPos =this.startOffset;  
           var endPos = this.caretOffset;
 
@@ -312,42 +314,13 @@ export default {
           tId.innerHTML = tId.innerHTML.substring(0, startPos) + tag + tId.innerHTML.substring(endPos, tId.innerHTML.length);  
           console.log(tId.innerHTML,'无substring  innerHTML') ;
 
-         tId.focus();  
+          tId.focus();  
           var cPos=startPos+(myText.length);  
           this.startOffset=cPos;  
           this.caretOffset=cPos;  
         }  else{
           tId.innerHTML+=tag;
-           tId.focus(); 
-          //  console.log(11111);
-            // this.txtlength= tag.length;
-            //   var selection= window.getSelection ? window.getSelection() : document.selection;
-            // var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
-            // if (!window.getSelection){
-            //     tId.focus();
-            //     var selection= window.getSelection ? window.getSelection() : document.selection;
-            //     var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
-            //     range.pasteHTML(tag);
-            //     range.collapse(false);
-            //     range.select();
-            // }else{
-            //   tId.focus();
-            //   range.collapse(false);
-            //   var hasR = range.createContextualFragment(tag);
-            //   var hasR_lastChild = hasR.lastChild;
-            //   while (hasR_lastChild && hasR_lastChild.nodeName.toLowerCase() == "br" && hasR_lastChild.previousSibling && hasR_lastChild.previousSibling.nodeName.toLowerCase() == "br") {
-            //   var e = hasR_lastChild;
-            //   hasR_lastChild = hasR_lastChild.previousSibling;
-            //   hasR.removeChild(e)
-            //   }
-            //   range.insertNode(hasR);
-            //   if (hasR_lastChild) {
-            //   range.setEndAfter(hasR_lastChild);
-            //   range.setStartAfter(hasR_lastChild)
-            //   }
-            //   selection.removeAllRanges();
-            //   selection.addRange(range);
-            // }
+           tId.focus();
         }
         if (tId.createTextRange) tId.caretPos = document.selection.createRange().duplicate(); 
         // if (window.getSelection) { //ie11 10 9 ff safari
@@ -364,50 +337,38 @@ export default {
         // }
 
          if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
-        var range = document.createRange();
-        range.selectNodeContents(tId);
-        range.collapse(false);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (typeof document.body.createTextRange != "undefined") {
-        var textRange = document.body.createTextRange();
-        textRange.moveToElementText(tag);
-        textRange.collapse(false);
-        textRange.select();
-    }
+              var range = document.createRange();
+              range.selectNodeContents(tId);
+              range.collapse(false);
+              var sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+          } else if (typeof document.body.createTextRange != "undefined") {
+              var textRange = document.body.createTextRange();
+              textRange.moveToElementText(tag);
+              textRange.collapse(false);
+              textRange.select();
+          }
         this.emoji=tId.innerHTML;
-
-//  var selection = getSelection()
-//       var range = selection.getRangeAt(0)
-//         var img = document.createElement('img')
-//         img.src = 'aaaa';
-//         range.insertNode(img)
-//         selection.addRange(range)
-        // this.$refs.divE1.innerHTML=val
-        // this.emoji = tId.value
-        // console.log(tId.innerHTML,'innerHTML') ;
-        //   console.log(tId.value,'tId.value') ;
-
       },
     handleChange (info) {
         if (info.file.status === 'done') {
-            getBase64(info.file.originFileObj, (imageUrl) => {
+            this.getBase64(info.file.originFileObj, (imageUrl) => {
                 this.previewImage.push(imageUrl);
-                // this.emoji=this.emoji;
-                // this.emoji += `<img src="${imageUrl}"  class="img"/>`;
                 this.emoji = `<img src="${imageUrl}"  class="img"/>`;
-                this.chatContent.push({sendContent:this.emoji});
                 //在光标指定位置处插入图片
                 let img=`<img src="${imageUrl}" ref="img" class="img"/>`;
                 let el=document.getElementById('textarea')||document.getElementById('a_textarea');
                 // this.changeCursor(el,img)
+                this.chatContent.push({sendContent:this.emoji});
+
             })
         }
     },
+    //表情popover显示隐藏
     visibleChange(val){
         this.selectEmojiStatus=val;
-      },
+    },
       //随机整数
     random(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
@@ -421,21 +382,22 @@ export default {
         let el=document.getElementById('textarea')||document.getElementById('a_textarea');
         this.changeCursor(el,emoji.emoji)
     },
-   showModal() {
+    showModal() {
       this.visible = true;
-       this.$nextTick(()=>{
-      })
     },
     
     handleCancel(e) {
-    //   this.visible = false;
-    this.$emit('search',true)
+      //   this.visible = false;
+      this.$emit('search',true)
     },
     handleOk(e) {
+        if (!this.emoji) {
+        this.$message.error('请输入消息')
+          return;
+        }
         this.selectEmojiStatus=false;
         if(this.emoji||this.emoji!==""){
           this.chatContent.push({sendContent:this.emoji});
-          this.sendStatus=this.random(0, 5);
         }
         //有文字、表情、图片就发过来消息
         if(this.emoji || this.previewImage.length>0){
@@ -444,10 +406,7 @@ export default {
         this.sendStatus=this.random(0, 5);
         this.emoji="";
         this.previewImage=[];
-        this.emoji="";
-        if(document.getElementsByClassName('textarea').length>0){
-          document.getElementsByClassName('textarea')[0].innerText="";
-        }
+        this.$refs.divE1.innerHTML="";
         console.log(this.chatContent,'chatContent')
     //   this.visible = false
     },
@@ -455,7 +414,14 @@ export default {
 }
 </script>
 <style scoped lang='less'>
-    
+    .emoji-list {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px;
+    li {
+      margin: 10px;
+    }
+  }
 
      .chatModal{
          .margin-left-16{
