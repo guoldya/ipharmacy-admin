@@ -627,6 +627,12 @@ export const asyncRouterMap = [
             meta: { title: '测试页面二', hiddenHeaderContent: true, permission: ['result'] }
           },
           {
+            path: '/testPage/combineTwo',
+            name: 'combineTwo',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
+            meta: { title: '合并测试2', permission: ['result'] }
+          },
+          {
             path: '/testPage/gridLayOut',
             name: 'gridLayOut',
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/gridLayOut'),
@@ -638,12 +644,7 @@ export const asyncRouterMap = [
             component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTest'),
             meta: { title: '合并测试', permission: ['result'] }
           },
-          {
-            path: '/testPage/combineTwo',
-            name: 'combineTwo',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/test/combineTwo'),
-            meta: { title: '合并测试2', permission: ['result'] }
-          },
+
           {
             path: '/testPage/combineThree',
             name: 'combineThree',

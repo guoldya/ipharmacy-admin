@@ -81,7 +81,7 @@ Vue.directive('modalDrag', {
 
     dialogHeaderEl.onmousedown = moveDown;
     
-    chatContent.onmousedown = moveDown;
+    // chatContent.onmousedown = moveDown;
 
     rightCol.onmousedown = moveDown;
 

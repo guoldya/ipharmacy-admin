@@ -235,9 +235,8 @@
       },
       dealData(data,params) {
         this.gData = [];
-
         for (let i in data) {
-          if (this.$util.trim(params.keyword) ==null){
+          if (this.$util.trim(params.keyword) !=null){
             data[i].isleaf = 0;
           }
           let isleaf = false
@@ -415,7 +414,7 @@
                   }
                   this.Modal.visible = false
                  this.success('保存成功!')
-                 
+
                 } else {
                   this.warn(res.msg)
                 }
@@ -513,12 +512,12 @@
         this.loadedKeys = []
         if (this.$util.trim(value) ==null) {
           this.gData = []
-          let params = { keyword: value }
-          this.getData(params)
+          let data = { pid: -1, }
+          this.getData(data)
         } else {
           this.gData = []
-          let data = { pid: -1 }
-          this.getData(data)
+          let params = { keyword: value }
+          this.getData(params)
         }
       },
       expandTree(loadedKeys, expanded) {

@@ -577,7 +577,7 @@
           }).catch(err => {
             this.error(err)
           })
-        } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
+        } else if (params.lo == 3 && this.$util.trim(params.parentId) !=null) {
           this.boxInitialized.inputType = 'treeSelect'
           this.boxInitialized.itemId = params.id
           this.boxInitialized.val = params.val
@@ -692,7 +692,7 @@
           this.edgeInitialized.inputEdge = 'select'
           this.edgeId = params.id
           this.edgeInitialized.itemId = params.id
-        } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
+        } else if (params.lo == 3 && this.$util.trim(params.parentId) !=null) {
           this.edgeInitialized.inputEdge = 'treeSelect'
           this.edgeId = params.id
           this.edgeInitialized.itemId = params.id
@@ -1011,7 +1011,7 @@
           if (res.code == '200') {
             _this.edgeInitialized.inputEdgeSelect = []
             for (let i in res.rows) {
-              if (this.$util.trim(value) ==null) {
+              if (this.$util.trim(value) !=null) {
                 _this.edgeInitialized.inputEdgeSelect.push({
                   key: res.rows[i][_this.edgeInitialized.val],
                   title: res.rows[i][_this.edgeInitialized.display],
@@ -1123,7 +1123,7 @@
           if (res.code == '200') {
             _this.boxInitialized.inputSelectData = []
             for (let i in res.rows) {
-              if (this.$util.trim(value) ==null) {
+              if (this.$util.trim(value) !=null) {
                 _this.boxInitialized.inputSelectData.push({
                   key: res.rows[i][_this.boxInitialized.val],
                   title: res.rows[i][_this.boxInitialized.display],
