@@ -150,8 +150,8 @@ export default {
         search() {
             let params = this.$refs.searchPanel.form.getFieldsValue()
             this.searchData = this.$refs.searchPanel.form.getFieldsValue()
-            params.pageSize = this.pageSize;
-            params.offset = (this.current-1)*this.pageSize;
+             params.pageSize = this.pageSize;
+            // params.offset = (this.current-1)*this.pageSize;
             this.getData(params)
         },
         //重置
