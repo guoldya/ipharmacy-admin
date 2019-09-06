@@ -675,9 +675,6 @@ export default {
         buttonClick() {
             let _this = this
             if (this.buttonText == '开始审方') {
-                this.buttonText = '停止审方'
-                this.buttonType = 'danger'
-                this.disable = false
                 let params = { status: '1', planScope: 1, planType: 1 }
                 this.$axios({
                     url: this.api.reviewUpdateStatus,
@@ -686,6 +683,9 @@ export default {
                 })
                     .then(res => {
                         if (res.code == '200') {
+                          this.buttonText = '停止审方'
+                          this.buttonType = 'danger'
+                          this.disable = false
                             setTimeout(() => {
                                 this.fetchYJSMapData()
                                 this.getCountText()
@@ -1031,7 +1031,7 @@ export default {
             let params = {}
             params.auditType = '1'
             params.passType = '1'
-          if(this.$util.trim(this.templateText) ==null){
+          if(this.$util.trim(this.templateText) !=null){
             params.reviewOpinion = this.templateText
           }else{
             params.reviewOpinion = '驳回'

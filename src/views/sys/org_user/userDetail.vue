@@ -396,7 +396,7 @@
                                 name:res.data.signPic,
                                 fileName:res.data.signPic
                               };
-                              if(this.$util.trim(res.data.signPic) ==null){
+                              if(this.$util.trim(res.data.signPic) !=null){
                                 setTimeout(()=>{
                                   that.$refs.upload.fileList = [obj];
                                   that.$refs.upload.imgArr = [obj];

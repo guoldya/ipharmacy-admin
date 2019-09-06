@@ -50,7 +50,7 @@
                           <el-table class="margin-top-15"
                                 :data="list.dataSource"
                                 border
-                                :highlight-current-row="true" 
+                                :highlight-current-row="true"
                                  @selection-change="e => handleSelectionChange(e,list.value)"
                                 style="width: 100%"
                               >
@@ -108,7 +108,7 @@
                   </div>
                 <!-- </a-tab-pane>
             </a-tabs> -->
-            
+
         </a-form>
         </a-card>
         <a-form-item :wrapper-col="{ span: 24, offset: 21 }">
@@ -117,7 +117,7 @@
         </a-form-item>
       </a-col>
     </a-row>
-    
+
   </a-card>
 </template>
 
@@ -282,7 +282,7 @@ export default {
       callback (val) {
         console.log(val)
       },
-    
+
     handleSubmit(e){
         e.preventDefault();
          this.form.validateFields((err, values) => {
@@ -360,7 +360,7 @@ export default {
     // 查找事件
     onChange(value) {
        this.loadedKeys = []
-        if (this.$util.trim(value) ==null) {
+        if (this.$util.trim(value) !=null) {
           this.gData = []
           let params = { keyword: value }
           this.getTreeData(params)

@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+
       <div class="dealRight">
         <a-tabs defaultActiveKey="1" size="small" class="width-100">
           <a-tab-pane tab="预判情况" key="1">
@@ -124,7 +124,7 @@
           </a-tab-pane>
         </a-tabs>
       </div>
-   
+
      <a-modal
       title="另存为模板"
       :visible="Modal.visible"
@@ -325,7 +325,7 @@ console.log(value)
     },
     //button点击事件模板的存储；
     saveTemplate() {
-      if (this.$util.trim(this.templateText) ==null) {
+      if (this.$util.trim(this.templateText) !=null) {
         setTimeout(() => {
           this.form.setFieldsValue({ titles: this.templateTitle, reviewTemplate: this.templateText, templetType: '1' })
         }, 100)
@@ -435,5 +435,5 @@ console.log(value)
 }
 </style>
 
-    
+
 
