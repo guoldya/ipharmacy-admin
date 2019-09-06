@@ -205,4 +205,4 @@ var $root = ($protobuf.roots["default"] || ($protobuf.roots["default"] = new $pr
   }
 });
 
-module.exports = $root;
+export default $root
