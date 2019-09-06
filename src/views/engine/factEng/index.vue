@@ -42,12 +42,12 @@ export default {
 
       columns: [
         { text: '编码', value: 'id', width: 150, align: 'left' },
-        { text: '类型', value: 'colType', width: 150, align: 'left',format: this.coltypeFormat },
+        { text: '类型', value: 'colType', width: 150, align: 'left', format: this.coltypeFormat },
         { text: '名称', value: 'colName', width: 200, align: 'left' },
-        { text: '属性对应类型', value: 'colDbType', width: 120, align: 'left' ,format:this.colDtypeFormat},
+        { text: '属性对应类型', value: 'colDbType', width: 120, align: 'left', format: this.colDtypeFormat },
         { text: '显示顺序', value: 'colNo', align: 'left' },
         { text: '更新人', value: 'updatorName', align: 'left' },
-        { text: '更新时间', value: 'updateTime', align: 'left', format: this.timeFormat,width:140 },
+        { text: '更新时间', value: 'updateTime', align: 'left', format: this.timeFormat, width: 140 },
         { text: '状态', value: 'status', align: 'center', width: 80 }
       ],
       items: [
@@ -58,7 +58,7 @@ export default {
       colors: '#ffffff',
       dataSource: [],
       parentId: '',
-      searchData:{},
+      searchData: {}
     }
   },
   computed: {
@@ -94,15 +94,15 @@ export default {
     }
   },
   mounted() {
-    //console.log(this.items)
+   
     this.getTreeList()
   },
   methods: {
     // 按条件搜索
     search() {
       //TODO:枚举值回来以后在调用分页查询
-      let params = this.$refs.searchPanel.form.getFieldsValue();
-      this.searchData = this.$refs.searchPanel.form.getFieldsValue();
+      let params = this.$refs.searchPanel.form.getFieldsValue()
+      this.searchData = this.$refs.searchPanel.form.getFieldsValue()
       for (let item in params) {
         if (typeof params[item] == 'string') {
           let arr = this.delSpace(params[item])
@@ -121,8 +121,8 @@ export default {
     // 添加数据
     adds() {
       this.$router.push({
-       name: 'factEngDetail',
-        params: { id:'new' }
+        name: 'factEngDetail',
+        params: { id: 'new' }
       })
     },
     // 编辑修改数据
@@ -133,8 +133,7 @@ export default {
       })
     },
     // 组件绑定函数
-    clicks() {
-      console.log('xxxx')
+    clicks() {  console.log('xxxx')
     },
     // 构造树状结构
     getDataChildren(bdata, pid) {
@@ -159,8 +158,10 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-           this.dataSource = this.getDataChildren(res.rows, undefined)
-           console.log(this.dataSource)
+            let newarr=this.checkSort(res.rows)
+         
+            this.dataSource = this.getDataChildren(res.rows, undefined)
+       
             this.loading = false
           } else {
             this.loadingTable = false
@@ -171,6 +172,15 @@ export default {
           this.loadingTable = false
           this.error(err)
         })
+    },
+    //判断等级高低
+    checkSort(arr) {
+      if (arr) {
+        arr.sort((a, b) => {
+          return a.id - b.id
+        })
+        return arr
+      }
     },
     changeStatus(data) {
       let params = {}
@@ -223,34 +233,34 @@ export default {
     currentChange() {},
     // 时间过滤
     timeFormat(data) {
-        if (data.updateTime) {
-          return data.updateTime.replace(/(:\d{2})$/, '')
-        }
-      },
-      // 类型过滤
-      coltypeFormat(data){
-           if (data.colType) {
-            let levelText
-          this.enum.coltype.forEach(item => {
-            if (data.colType == item.id) {
-              levelText = item.text
-            }
-          })
-          return levelText
-        }
-      },
-      // 属性类型过滤
-      colDtypeFormat(data){
-           if (data.colDbType) {
-            let levelText
-          this.enum.attributeType.forEach(item => {
-            if (data.colDbType == item.id) {
-              levelText = item.text
-            }
-          })
-          return levelText
-        }
-      },
+      if (data.updateTime) {
+        return data.updateTime.replace(/(:\d{2})$/, '')
+      }
+    },
+    // 类型过滤
+    coltypeFormat(data) {
+      if (data.colType) {
+        let levelText
+        this.enum.coltype.forEach(item => {
+          if (data.colType == item.id) {
+            levelText = item.text
+          }
+        })
+        return levelText
+      }
+    },
+    // 属性类型过滤
+    colDtypeFormat(data) {
+      if (data.colDbType) {
+        let levelText
+        this.enum.attributeType.forEach(item => {
+          if (data.colDbType == item.id) {
+            levelText = item.text
+          }
+        })
+        return levelText
+      }
+    }
   }
 }
 </script>

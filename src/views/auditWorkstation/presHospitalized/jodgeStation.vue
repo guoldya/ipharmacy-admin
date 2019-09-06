@@ -281,7 +281,7 @@ export default {
             this.leftData.clinicPrescVOList.forEach((item, index) => {
               if (item.auditingStatus !== '1') {
                 this.auditStatus = false
-              }        
+              }
             })
              this.$emit('saveStatus', this.auditStatus)
           } else {
@@ -316,7 +316,7 @@ export default {
     },
     // 右边预判情况树形结构数据
     getTemplate(params={}) {
-      
+
       this.$axios({
         url: this.api.selectWithReviewId,
         method: 'put',
@@ -377,7 +377,7 @@ export default {
     },
     //button点击事件模板的存储；
     saveTemplate() {
-      if (this.$util.trim(this.templateText) ==null) {
+      if (this.$util.trim(this.templateText) !=null) {
         setTimeout(() => {
           this.form.setFieldsValue({ titles: this.templateTitle, reviewTemplate: this.templateText, templetType: '1' })
         }, 100)
@@ -461,7 +461,7 @@ export default {
     },
     // 右边干预记录
     getRecord(params={}) {
-     
+
       this.$axios({
         url: this.api.selectWithVisId,
         method: 'put',
@@ -507,5 +507,5 @@ export default {
 }
 </style>
 
-    
+
 

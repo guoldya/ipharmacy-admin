@@ -743,7 +743,7 @@
                     } else if (params.lo == 2) {
                       this.boxInitialized.inputType = 'scopeInput'
                       console.log(params,'params')
-                    } else if (params.lo == 3 && !this.$util.trim(params.parentId)) {
+                    } else if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
                       this.boxInitialized.val = params.val
@@ -774,7 +774,7 @@
                       }).catch(err => {
                         this.error(err)
                       })
-                    } else if (params.lo == 3 && this.$util.trim(params.parentId)) {
+                    } else if (params.lo == 3 && this.$util.trim(params.parentId) != null) {
                       console.log(params,'params')
                       this.boxInitialized.inputType = 'treeSelect'
                       this.boxInitialized.itemId = params.itemId
@@ -894,7 +894,7 @@
                 } else if (sourceP.lo == 2) {
                   _this.edgeInitialized.inputEdge = 'scopeInput'
                   _this.edgeInitialized.lo = 2
-                } else if (sourceP.lo == 3 && !this.$util.trim(sourceP.parentId)) {
+                } else if (sourceP.lo == 3 && this.$util.trim(sourceP.parentId) == null) {
                   _this.edgeInitialized.lo = 3
                   _this.edgeInitialized.inputEdge = 'select'
                   _this.edgeInitialized.itemId = sourceP.itemId
@@ -926,7 +926,7 @@
                   }).catch(err => {
                     this.error(err)
                   })
-                } else if (sourceP.lo == 3 && this.$util.trim(sourceP.parentId)) {
+                } else if (sourceP.lo == 3 && this.$util.trim(sourceP.parentId) != null ) {
                   _this.edgeInitialized.lo = 3
                   _this.edgeInitialized.inputEdge = 'treeSelect'
                   _this.edgeInitialized.itemId = sourceP.itemId

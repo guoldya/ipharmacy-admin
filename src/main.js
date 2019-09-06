@@ -16,7 +16,7 @@ import { VueAxios } from '@/utils/request'
 import util from '@/utils/util'
 import './core/use'
 import '@/permission' // vue 权限控制
-import '@/utils/filter' // vue 全局 filter  
+import '@/utils/filter' // vue 全局 filter
 import 'babel-polyfill' // polyfill
 import '@/directives'
 
@@ -46,11 +46,13 @@ import { Icon } from 'ant-design-vue'
 import opcol from '@/my-components/opcol/opcol.vue'
 import api from '@/api/index'
 import gante from "@/components/gante/gante"
+import ganteGraph from "@/components/ganteGraph/gante"
 //proto
 import protoRoot from '@/my-components/proto/proto'
 import uuid from 'uuid'
 
 Vue.use(gante)
+Vue.use(ganteGraph)
 //引入一个表格
 
 // 核心插件

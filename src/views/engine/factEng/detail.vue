@@ -17,18 +17,21 @@
             />
           </a-form-item>
           <a-form-item label="上级编号" :label-col="labelCol" :wrapper-col="wrapperCol">
-            <!-- <a-tree-select
-              @change="onchange"
-              allowClear
-              :treeData="treedata"
-              placeholder="请选择"
-              v-decorator="[
+            <div class="partents">
+              <a-tree-select
+                @change="onchange"
+                :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+                allowClear
+                :treeData="treedata"
+                placeholder="请选择"
+                v-decorator="[
                 'pid',
                 {   
                 }
               ]"
-            ></a-tree-select>-->
-            <a-select
+              ></a-tree-select>
+            </div>
+            <!-- <a-select
               allowClear
               @change="onchange"
               v-decorator="[ 'pid',]"
@@ -40,11 +43,11 @@
                 v-for="(op,index) in treedata"
                 :key="index"
               >{{op.colName}}</a-select-option>
-            </a-select>
+            </a-select>-->
           </a-form-item>
-          <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol" >
+          <a-form-item label="类型" :label-col="labelCol" :wrapper-col="wrapperCol">
             <a-select
-             class="readOnlyInput"
+              class="readOnlyInput"
               :disabled="true"
               :showArrow="false"
               v-decorator="[ 'colType',{
@@ -99,7 +102,22 @@
               v-decorator="['colZySql',{rules:[{message:'请输入数据库',required:true},{ max:2500,message:'最多2500个字符' }]}]"
             />
           </a-form-item>
-
+          <a-form-item label="关联字段" :label-col="labelCol" :wrapper-col="wrapperCol" v-if="shows">
+            <div class="asscota">
+              <a-tree-select
+                :dropdownStyle="{ maxHeight: '250px', overflow: 'auto' }"
+                @change="onchanges"
+                allowClear
+                :treeData="treedatas"
+                placeholder="请选择"
+                v-decorator="[
+                'associatedField',
+                {   
+                }
+              ]"
+              ></a-tree-select>
+            </div>
+          </a-form-item>
           <a-form-item label="属性类型" :label-col="labelCol" :wrapper-col="wrapperCol">
             <a-select
               v-decorator="[ 'colDbType',{
@@ -180,7 +198,8 @@ export default {
       lists: [],
       onlyRead: false,
       shows: true,
-      ishiden:true
+      ishiden: true,
+      treedatas: []
     }
   },
   created() {
@@ -202,10 +221,9 @@ export default {
     }
   },
   methods: {
+    onchanges() {},
     // 取消选中
-    search() {
-      console.log('ddd')
-    },
+    search() {},
     // 选择框事件 有上级编号，隐藏下面三个输入框
     onchange(value) {
       this.shows = value == undefined ? true : false
@@ -241,7 +259,8 @@ export default {
       })
         .then(res => {
           if (res.code == '200') {
-            this.treedata = res.rows
+            this.treedata = this.getDataChildren(res.rows, undefined)
+            this.treedatas = this.getDataChildren(res.rows, undefined)
           } else {
             this.loadingTable = false
             this.warn(res.msg)
@@ -257,11 +276,10 @@ export default {
       var items = []
       for (var key in bdata) {
         var item = bdata[key]
-        if (pid == item.parents) {
+        if (pid == item.pid) {
           items.push({
             title: item.colName,
-            value: item.id,
-            key: item.id,
+            value: item.id + '',
             children: this.getDataChildren(bdata, item.id)
           })
         }
@@ -279,10 +297,28 @@ export default {
           .then(res => {
             if (res.code == '200') {
               let reqArr = res.data
-              if(reqArr.colType==1){
-                this.ishiden=false
+              if (reqArr.colType == 1) {
+                this.ishiden = false
               }
-              let { id, pid, colType, colName, colZySql,colCode, colDbType, colNo, colSql, dbId, status, lo } = reqArr,
+              if (reqArr.pid) {
+               reqArr.pid=reqArr.pid.toString()
+              }
+              console.log( reqArr)
+              let {
+                  id,
+                  pid,
+                  colType,
+                  colName,
+                  colZySql,
+                  colCode,
+                  colDbType,
+                  colNo,
+                  colSql,
+                  dbId,
+                  status,
+                  lo,
+                  associatedField
+                } = reqArr,
                 formData = {
                   id,
                   pid,
@@ -295,9 +331,10 @@ export default {
                   colSql,
                   dbId,
                   status,
-                  lo
+                  lo,
+                  associatedField
                 }
-                pid&&(this.shows=false)
+              pid && (this.shows = false)
               this.form.setFieldsValue(formData)
             } else {
               this.loadingTable = false
@@ -350,9 +387,6 @@ export default {
 }
 </script>
 <style lang='less'>
-.ant-select-tree {
-  height: 500px;
-}
 // .ant-select-disabled .ant-select-selection {
 //   border: 1px solid #c4c4c4;
 //   background-color: #ffff;
