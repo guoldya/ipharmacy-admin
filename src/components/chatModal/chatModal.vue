@@ -18,7 +18,7 @@
                 <div class="chatContent"  ref="box">
                     <div v-for="(item,i) in chatContent" :class="item.sendContent||item.sendImg?'sendContent':'acceptContent'" :key="i">
                            <div class="send" :class="item.sendContent||item.sendImg?'':'margin-left-16'"> 
-                               <span v-if="!item.sendImg" v-html="item.sendContent"> </span>
+                               <span class="sendImg" v-if="!item.sendImg" v-html="item.sendContent"> </span>
                                 <span v-else class="img"  v-html="item.sendImg"></span>
 
                                 <span>{{item.acceptContent}}</span>
@@ -52,12 +52,12 @@
                 >
                     <a-icon class="fontSize20" type="picture" />
                 </a-upload>
-
               <div class="chatInputBorder">
-                <!-- <a-textarea @click="aa" class="a_textarea" id="a_textarea" @keyup.enter="handleOk" v-model="emoji" autoFocus >
-                  </a-textarea> -->
                 <div class="textarea" id="textarea" @input="handleInput" 
-                 @keyup.enter="handleOk" @click="getCursor" ref="divE1" contenteditable="true"
+                 @keyup.enter="handleOk" 
+                 @keyup.left="getCursor" 
+                  @keyup.right="getCursor"
+                   @click="getCursor" ref="divE1" contenteditable="true"
                 > 
                   <!-- <span v-html="emoji"></span> -->
                   <!-- <img class="img"  v-for="(url,i) in previewImage" :key="i" :src="url" /> -->
@@ -73,7 +73,7 @@
           </a-col>
           <a-col :span="7" class="rightCol">
               <div >
-                <p>性别：男</p>
+                <p @click="aa($refs.divE1)">性别：男</p>
                 <p>年龄：23</p>
                 <p>专业：经济学</p>
               </div>
@@ -104,8 +104,32 @@ export default {
       acceptChat:['我不晓得','嗯要不得','ok','还钱','嗯不是不是不是不是不是不是不是不是不是不是不是不是不是不是很好很好'],
       modalData:[],
       visible:true,
-      // pack: [],
-      pack: [
+      pack: [],
+      emoji:'',
+      chatContent:[],
+      sendContent:[],
+      acceptContent:[],
+      //监听是否发送消息
+      sendStatus:'',
+      selectEmojiStatus:false,
+      el:null,
+      emoji:"",
+      content: '',
+      caretOffset:0,
+      txtlength:'',
+      startOffset:''
+    }
+  },
+  computed: {
+    
+    },
+  components: {
+    VEmojiPicker,
+  },
+  mounted() {
+      var _this = this;
+
+      this.pack=[
             {emoji: "😀", description: "grinning face", category: "Peoples"},
             {emoji: "😃", description: "smiling face with open mouth", category: "Peoples"},
             {emoji: "😄", description: "smiling face with open mouth & smiling eyes", category: "Peoples"}, 
@@ -157,34 +181,11 @@ export default {
             ,{emoji: "😯", description: "hushed face", category: "Peoples"}
             ,{emoji: "😦", description: "frowning face with open mouth", category: "Peoples"}
             ,{emoji: "😧", description: "anguished face", category: "Peoples"}
-      ],
-      emoji:'',
-      chatContent:[],
-      sendContent:[],
-      acceptContent:[],
-      //监听是否发送消息
-      sendStatus:'',
-      selectEmojiStatus:false,
-      el:null,
-      emoji:"",
-      content: '',
-      caretOffset:'',
-      txtlength:'',
-      startOffset:''
-    }
-  },
-  computed: {
-    
-    },
-  components: {
-    VEmojiPicker,
-  },
-  mounted() {
-      var _this = this;
+      ];
       this.$refs.divE1.focus();
-     this.$refs.divE1.addEventListener('paste', e=> {
-       this.paste(e)
-     })
+      this.$refs.divE1.addEventListener('paste', e=> {
+        this.paste(e)
+      })
       
   },
   watch: {
@@ -199,6 +200,58 @@ export default {
       },
     },
   methods: {
+    insertCursor(chars,tag,status){ 
+      var range;
+      if (chars >0||chars=== 0) {
+        var selection = window.getSelection();
+
+        range =this. createRange(this.$refs.divE1.parentNode, { count: this.caretOffset });
+
+        if (range) {
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            if(status){
+              this.$refs.divE1.focus();
+              document.execCommand("insertImage",false,tag);
+            }else{
+              this.$refs.divE1.focus();
+              document.execCommand("insertText",false,tag);
+              
+            }
+        }
+      }
+    },
+     createRange(node, chars, range) {
+            if (!range) {
+                range = document.createRange()
+                range.selectNode(node);
+                range.setStart(node, 0);
+            }
+            if (chars.count === 0) {
+                range.setEnd(node, chars.count);
+            } else if (node && chars.count >0) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    if (node.textContent.length < chars.count) {
+                        chars.count -= node.textContent.length;
+                    } else {
+                        range.setEnd(node, chars.count);
+                        chars.count = 0;
+                    }
+                } else {
+                    for (var lp = 0; lp < node.childNodes.length; lp++) {
+                        range =this. createRange(node.childNodes[lp], chars, range);
+
+                        if (chars.count === 0) {
+                          break;
+                        }
+                    }
+                }
+          } 
+
+          return range;
+    },
+
     getBase64 (img, callback) {
       const reader = new FileReader()
       reader.addEventListener('load', () => callback(reader.result))
@@ -209,8 +262,8 @@ export default {
         e.preventDefault()
         var clp = (e.originalEvent || e).clipboardData;
          if(clp.files && clp.files.length > 0){//图片
-            // this.mapFile(clp.files)
-              return ;
+            this.mapFile(clp.files)
+            return ;
         }  
         if (clp.items && clp.items.length > 0) {//文字
             var text
@@ -246,11 +299,8 @@ export default {
       }
     },
   
-     handleInput($event){
+    handleInput($event){
       this.emoji = $event.target.innerHTML;
-      this.$nextTick(()=>{
-        // this.changeCursor($event.target,this.emoji)
-      })
     },
     getCursor(element){
       var caretOffset = 0;
@@ -310,7 +360,6 @@ export default {
             subst = myText;  
           }  
           this.txtlength= myText.length; 
-
           tId.innerHTML = tId.innerHTML.substring(0, startPos) + tag + tId.innerHTML.substring(endPos, tId.innerHTML.length);  
           console.log(tId.innerHTML,'无substring  innerHTML') ;
 
@@ -323,19 +372,6 @@ export default {
            tId.focus();
         }
         if (tId.createTextRange) tId.caretPos = document.selection.createRange().duplicate(); 
-        // if (window.getSelection) { //ie11 10 9 ff safari
-        //     tId.focus(); //解决ff不获取焦点无法定位问题
-        //     var range = window.getSelection(); //创建range
-        //     range.selectAllChildren(tId); //range 选择obj下所有子内容
-        //     range.collapseToEnd(); //光标移至最后
-        // } else if (document.selection) { //ie10 9 8 7 6 5
-        //     var range = document.selection.createRange(); //创建选择对象
-        //     //var range = document.body.createTextRange();
-        //     range.moveToElementText(tId); //range定位到obj
-        //     range.collapse(false); //光标移至最后
-        //     range.select();
-        // }
-
          if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
               var range = document.createRange();
               range.selectNodeContents(tId);
@@ -350,7 +386,7 @@ export default {
               textRange.select();
           }
         this.emoji=tId.innerHTML;
-      },
+    }, 
     handleChange (info) {
         if (info.file.status === 'done') {
             this.getBase64(info.file.originFileObj, (imageUrl) => {
@@ -358,11 +394,13 @@ export default {
                 this.emoji = `<img src="${imageUrl}"  class="img"/>`;
                 //在光标指定位置处插入图片
                 let img=`<img src="${imageUrl}" ref="img" class="img"/>`;
-                let el=document.getElementById('textarea')||document.getElementById('a_textarea');
+                let el=document.getElementById('textarea');
                 // this.changeCursor(el,img)
-                this.chatContent.push({sendContent:this.emoji});
-
+                // this.chatContent.push({sendContent:this.emoji});
+                this.insertCursor(this.caretOffset,imageUrl,status=true)
             })
+        }else if (info.file.status === 'error') {
+            this.warn('图片上传失败')
         }
     },
     //表情popover显示隐藏
@@ -379,8 +417,9 @@ export default {
         // this.emoji+=emoji.emoji; 
         this.emoji+=emoji.emoji;
         //在光标指定位置处插入表情
-        let el=document.getElementById('textarea')||document.getElementById('a_textarea');
-        this.changeCursor(el,emoji.emoji)
+        let el=document.getElementById('textarea');
+        // this.changeCursor(el,emoji.emoji);
+        this.insertCursor(this.caretOffset,emoji.emoji,status=false)
     },
     showModal() {
       this.visible = true;
@@ -414,18 +453,14 @@ export default {
 }
 </script>
 <style scoped lang='less'>
-    .emoji-list {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 20px;
-    li {
-      margin: 10px;
-    }
-  }
 
      .chatModal{
          .margin-left-16{
              margin-left: 16px;
+         }
+         .sendImg{
+           text-align: justify;
+          display: contents;
          }
          .send {
             position:relative;
@@ -463,9 +498,6 @@ export default {
                 -o-transform: rotate(-135deg);
                 -ms-transform: rotate(-135deg);
             }
-         }
-         .a_textarea{
-             height:113px
          }
          .textarea {
                 box-sizing: border-box;
