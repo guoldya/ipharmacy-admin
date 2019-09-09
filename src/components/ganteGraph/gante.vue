@@ -5,14 +5,6 @@
         :style="{width: Number(tabe_width)? tabe_width+'px' : tabe_width }"
         class="gante-table-box"
       >
-<!--        <gante-table-->
-<!--        @change-calendar="change_calendar"-->
-<!--        @on-click="onclick"-->
-<!--        @change="change"-->
-<!--        :th_data="th_data"-->
-<!--        :data="ganteData"-->
-<!--        :lowData='lowDatas'-->
-<!--      ></gante-table>-->
         <div class="headerTitle"/>
         <div class="bodyText fontText">手术天数</div>
         <div class="bodyText fontText">住院天数</div>
@@ -74,7 +66,7 @@ export default {
       time_mode: 1, //时间刻度 1:日,2周,3月,4季,5年
       th_data: {}, //表格头部数据
       ganteData: [],
-      height: 300,
+      height: 600,
       open: true,
       calendar_left: 0, //日期选择的位置
       calendar_top: 0, //日期选择的位置
@@ -98,7 +90,9 @@ export default {
         document.getElementsByClassName('gante-gc-box')[0].style.width =
           gante_box.offsetWidth - document.getElementsByClassName('gante-table-box')[0].offsetWidth + 'px'
       })
-    })
+    });
+
+    console.log(this.ganteData,'ganteData')
   },
   methods: {
     // 监听子组件数据
@@ -357,7 +351,7 @@ li {
 .gante-box ::-webkit-scrollbar-thumb {
   /*滚动条里面轨道*/
   border-radius: 10px;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+
   background-color: #ccc;
   border-style: dashed;
   border-color: transparent;
@@ -369,6 +363,7 @@ li {
 }
 .gante-box {
   width: 100%;
+  height: 600px;
   border: 1px solid #ccc;
   overflow: hidden;
   box-sizing: border-box;

@@ -100,7 +100,7 @@
                 v-model="selectNode.rearCondition"
                 @change="rearChange"
                 placeholder="默认按当前数据行">
-                <a-select-option  v-for="(item,index) in judgePreDetailData" :value="item.key"
+                <a-select-option  v-for="(item,index) in judgeAllPreDetailData" :value="item.key"
                                  :title="item.title" :key="index">
                   {{item.title}}
                 </a-select-option>
@@ -301,7 +301,7 @@
               @change="nodeRearChange"
               placeholder="默认按当前数据行"
               treeDefaultExpandAll>
-              <a-select-option  v-for="(item,index) in preDetailData" :value="item.key"
+              <a-select-option  v-for="(item,index) in allPreDetailData" :value="item.key"
                                 :title="item.title" :key="index">
                 {{item.title}}
               </a-select-option>
@@ -412,7 +412,7 @@
   import valueListModal from './valueListModal'
 
   export default {
-    props: ['graphAPI', 'selectNode', 'selectEdge', 'boxInitialized', 'edgeInitialized', 'preData', 'judgePreData'],
+    props: ['graphAPI', 'selectNode', 'selectEdge', 'boxInitialized', 'edgeInitialized', 'preData','allPreData', 'judgePreData','judgeAllPreData'],
     components: {
       'valueListModal': valueListModal
     },
@@ -438,7 +438,9 @@
         edgeConditionValue: '',
         edgeConditionValue1: '',
         preDetailData: [],
+        allPreDetailData:[],
         judgePreDetailData: [],
+        judgeAllPreDetailData:[],
         vModel: [],
         treeData: [],
         nodeSelectedKeys: [],
@@ -464,6 +466,20 @@
           this.judgePreDetailData = this.judgePreData
         } else {
           this.judgePreDetailData = []
+        }
+      },
+      allPreData(newValue) {
+        if (newValue.length > 0) {
+          this.allPreDetailData = this.allPreData
+        } else {
+          this.allPreDetailData = []
+        }
+      },
+      judgeAllPreData(newValue) {
+        if (newValue.length > 0) {
+          this.judgeAllPreDetailData = this.judgeAllPreData
+        } else {
+          this.judgeAllPreDetailData = []
         }
       }
     },
@@ -629,10 +645,15 @@
         _this.selectNode.parentId = params.parentId
         this.judgePreDetailData = []
         this.preDetailData = []
+        this.judgeAllPreDetailData = []
+        this.allPreDetailData = []
         //处理节点上计算条件数据
         for (let key in this.CoreFactAllTree) {
           if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
             this.judgePreDetailData=this.CoreFactAllTree[key].children
+          }
+          if (this.$util.trim(params.pid) != null &&  this.$util.trim( this.CoreFactAllTree[key]) != null) {
+            this.judgeAllPreDetailData=this.CoreFactAllTree[key].children
           }
         }
       },
@@ -699,9 +720,13 @@
         }
         //线上计算条件处理
         this.preDetailData = []
+        this.allPreDetailData = []
         for (let key in this.CoreFactAllTree) {
           if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
             this.preDetailData =this.CoreFactAllTree[key].children
+          }
+          if (this.$util.trim(params.pid) != null && this.$util.trim(this.CoreFactAllTree[key].id) != null) {
+            this.allPreDetailData =this.CoreFactAllTree[key].children
           }
         }
       },
