@@ -5,20 +5,17 @@
       v-for="(item,index) in gante_data"
       :key="index"
     >
-      <div
-        class="ganteview-ones"
-        :style="{width:item.width+'%'}"
-      >
-        <div  class="ganteview-column"     >
+      <div class="ganteview-ones" :style="{width:item.width+'%'}">
+        <div  class="ganteview-column"   :style="{borderRight:rightBorder(index)}"  >
           {{item.params.title}}
         </div>
-        <div  class="ganteview-column"    >
+        <div  class="ganteview-column"  :style="{borderRight:rightBorder(index)}">
           {{item.params.startTime}}
         </div>
-        <div  class="ganteview-column"   >
+        <div  class="ganteview-column" :style="{borderRight:rightBorder(index)}">
           {{item.params.number}}
         </div>
-        <div  class="ganteChart-column">
+        <div  class="ganteChart-column" :style="{borderRight:rightBorder(index)}">
           <div v-if="item.xxx == 1"  >
             <template>
               <div id="ganteChart"   style="width: 100%;height: 95px;position: absolute;z-index: 2;" ref="ganteChart" />
@@ -319,7 +316,7 @@ export default {
           left: 85.68,
           width: 14.28,
         }
-      ]
+      ],
     }
   },
   props: {
@@ -337,6 +334,13 @@ export default {
     }
   },
   methods: {
+    rightBorder(index) {
+      if (index >5) {
+        return "0px"
+      }else{
+        return "1px solid #CFCFCF"
+      }
+    },
     initChart() {
       this.chart = echarts.init(document.getElementById('ganteChart'));
       this.chart.setOption(this.option, true);
@@ -411,7 +415,7 @@ export default {
 .ganteview-content-one {
   height: 44px;
   line-height: 44px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid #CFCFCF;
 }
 .ganteview-item {
   position: absolute;
@@ -458,14 +462,14 @@ export default {
     width: 100%;
     height: 35px;
     line-height: 35px;
-    border-right: 1px solid #ebeef5;
-    border-bottom: 1px solid #ebeef5;
+    border-right: 1px solid #CFCFCF;
+    border-bottom: 1px solid #CFCFCF;
   }
   .ganteChart-column{
     width: 100%;
     height: 100px;
-    border-right: 1px solid #ebeef5;
-    border-bottom: 1px solid #ebeef5;
+    border-right: 1px solid #CFCFCF;
+    border-bottom: 1px solid #CFCFCF;
   }
   .ganteview-ones{
     float: left;

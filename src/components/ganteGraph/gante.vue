@@ -14,7 +14,7 @@
         <div class="bodyText fontText">手术天数</div>
         <div>
           <a-col :span="12">
-            <div class="bodyText fontBig">护理项目</div>
+            <div class="bodyText fontBig" >护理项目</div>
           </a-col>
           <a-col  :span="12">
             <div class="bodyText fontText">小便量(ml)</div>
@@ -382,7 +382,7 @@ li {
   width: 50%;
   position: absolute;
   top: 0;
-  border-left: 5px solid transparent;
+  border-left: 1px #CFCFCF solid;
   height: 100%;
   box-sizing: border-box;
   padding-right: 2px;
@@ -422,9 +422,9 @@ li {
 .headerTitle {
   height: 45px;
   width: 100%;
-  border-left: 1px #EBEEF5 solid;
-  border-top: 1px #EBEEF5 solid;
-  background-color: #fafafa;
+  /*border-right: 1px #CFCFCF solid;*/
+  border-bottom: 1px #CFCFCF solid;
+  background-color: #E3F0FC;
 }
 .bodyText{
   width: 100%;
@@ -432,13 +432,12 @@ li {
   text-align: center;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.85);
-  border-left: 1px #EBEEF5 solid;
-  border-top: 1px #EBEEF5 solid;
-  background-color: #fafafa;
+  border-bottom: 1px #CFCFCF solid;
+  background-color: #F3F8FC;
 }
 .fontText{
-  height:34px;
-  line-height: 34px;
+  height:35px;
+  line-height: 35px;
 }
 .canvasP{
   height:100px;
@@ -447,5 +446,6 @@ li {
 .fontBig{
   height:306px;
   line-height: 306px;
+  border-right: 1px #CFCFCF solid;
 }
 </style>

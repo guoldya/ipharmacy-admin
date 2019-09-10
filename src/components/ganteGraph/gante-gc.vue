@@ -3,8 +3,8 @@
     <div @scroll="ganteview_scroll" class="ganteview">
       <div  class="ganteview-header">
         <div class="ganteview-bottomtime">
-          <div class="ganteview-headercell" :title="item.title" v-for="item in bottom_time_data"
-               :style="{width:item.width+'%',left:item.left+'%'}">{{item.title}}
+          <div class="ganteview-headercell" :title="item.title" v-for="(item,index) in bottom_time_data"
+               :style="{width:item.width+'%',left:item.left+'%',borderRight:rightBorder(index)}">{{item.title}}
           </div>
         </div>
       </div>
@@ -52,6 +52,13 @@
       end_time: {}
     },
     methods: {
+      rightBorder(index) {
+        if (index >5) {
+          return "0px"
+        }else{
+          return "1px solid #CFCFCF"
+        }
+      },
       // 接收子组件
       updateColor(data) {
         this.$emit('listFunc', data)
@@ -240,7 +247,7 @@
   .ganteview-column {
     position: absolute;
     top: 44px;
-    border-right: 1px solid #ebeef5;
+    border-right: 1px solid #CFCFCF;
     height: calc(100% - 44px);
     z-index: 0;
     box-sizing: border-box;
@@ -248,17 +255,16 @@
 
   .ganteview-headercell {
     box-sizing: border-box;
-    border-right: 1px solid #ebeef5;
-    border-bottom: 1px solid #ebeef5;
+    border-bottom: 1px solid #CFCFCF;
     overflow: hidden;
     font-weight: bold;
     position: absolute;
     line-height: 45px;
     height: 45px;
-    background-color: #ffff;
+    background-color: #E3F0FF;
   }
 
   .ganteview-content-box {
-    padding-top: 44px;
+    padding-top: 45px;
   }
 </style>

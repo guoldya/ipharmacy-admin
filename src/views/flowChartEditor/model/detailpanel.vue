@@ -570,9 +570,11 @@
         this.selectNode.display = params.display
         this.selectNode.parentId = params.parentId
         if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
-
           this.boxInitialized.inputType = 'select'
           this.boxInitialized.itemId = params.id
+          this.boxInitialized.val = params.val
+          this.boxInitialized.display = params.display
+          this.boxInitialized.parentId = params.parentId
           this.$axios({
             url: this.api.coreRuleNodeSelectColId,
             method: 'put',
@@ -648,15 +650,38 @@
         this.judgeAllPreDetailData = []
         this.allPreDetailData = []
         //处理节点上计算条件数据
-        for (let key in this.CoreFactAllTree) {
-          if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
-            this.judgePreDetailData = this.CoreFactAllTree[key].children
+        this.searchJudgePre(params.pid,this.CoreFactAllTree);
+        this.searchJudgeAllPre(params.pid,this.CoreFactAllTree)
+      },
+      searchJudgePre(pid,data,preData){
+        for (let key in data){
+          if (this.$util.trim(preData) !=null){
+            break;
           }
-          if (this.$util.trim(params.pid) != null && this.$util.trim(this.CoreFactAllTree[key]) != null) {
-            this.judgeAllPreDetailData = this.CoreFactAllTree[key].children
+          if (pid== '15' && data[key].id == '15'){
+            preData = data[key].children
+            this.judgePreDetailData =  data[key].children
+            return;
+          }else {
+            this.searchJudgePre(pid,data[key].children,preData)
           }
         }
       },
+      searchJudgeAllPre(pid,data,preData){
+        for (let key in data){
+          if (this.$util.trim(preData) !=null){
+            break;
+          }
+         if (this.$util.trim(pid) != null && pid == data[key].id){
+           preData = data[key].children
+           this.judgeAllPreDetailData =  data[key].children
+           return;
+          }else {
+            this.searchJudgeAllPre(pid,data[key].children,preData)
+          }
+        }
+      },
+
       //判断节点条件选择事件
       selectNodeRo(value, option) {
         this.selectNode.ro = value
@@ -665,10 +690,12 @@
       searchNodeSelect(value) {
         let _this = this
         let params = {}
+        console.log(value,'value')
+        console.log(this.boxInitialized,'this.boxInitialized')
         params.keyword = value
-        params.val = _this.boxInitialized.val
-        params.display = _this.boxInitialized.display
-        params.parentId = _this.boxInitialized.parentId
+        params.id = this.boxInitialized.itemId
+        params.val = this.boxInitialized.val
+        params.name = this.boxInitialized.display
         this.$axios({
           url: this.api.coreRuleNodeSelectColId,
           method: 'put',
@@ -721,12 +748,35 @@
         //线上计算条件处理
         this.preDetailData = []
         this.allPreDetailData = []
-        for (let key in this.CoreFactAllTree) {
-          if (params.pid == '15' && this.CoreFactAllTree[key].id == '15') {
-            this.preDetailData = this.CoreFactAllTree[key].children
+        this.searchPre(params.pid,this.CoreFactAllTree,[]);
+        this.searchAllPre(params.pid,this.CoreFactAllTree,[]);
+      },
+
+      searchPre(pid,data,preData){
+        for (let key in data){
+          if (this.$util.trim(preData) !=null){
+            break;
           }
-          if (this.$util.trim(params.pid) != null && this.$util.trim(this.CoreFactAllTree[key].id) != null) {
-            this.allPreDetailData = this.CoreFactAllTree[key].children
+          if (pid== '15' && data[key].id == '15'){
+            preData=  data[key].children
+            this.preDetailData =  data[key].children
+            return;
+          }else {
+            this.searchPre(pid,data[key].children,preData)
+          }
+        }
+      },
+      searchAllPre(pid,data,preData){
+        for (let key in data){
+          if (this.$util.trim(preData) !=null){
+            break;
+          }
+          if (this.$util.trim(pid) != null && pid == data[key].id){
+            preData=  data[key].children
+            this.allPreDetailData =  data[key].children
+            return;
+          }else {
+            this.searchAllPre(pid,data[key].children,preData)
           }
         }
       },
