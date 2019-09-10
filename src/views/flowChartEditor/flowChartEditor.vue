@@ -23,7 +23,10 @@
           v-bind:boxInitialized="boxInitialized"
           v-bind:edgeInitialized="edgeInitialized"
           v-bind:preData="preData"
+          v-bind:allPreData="allPreData"
           v-bind:judgePreData="judgePreData"
+          v-bind:judgeAllPreData="judgeAllPreData"
+
         ></a-detailpanel>
         <!-- 缩略图 -->
         <a-navigator ref="navigator" v-bind:graphAPI="graph"></a-navigator>
@@ -213,7 +216,9 @@
         CoreFactAllTree: [],
         prePid: null,
         preData: [],
+        allPreData:[],
         judgePreData: [],
+        judgeAllPreData: [],
         isCopy:'0',
       }
     },
@@ -735,6 +740,12 @@
                     } else {
                         _this.preData = this.getPreData(this.prePid, this.CoreFactAllTree)
                     }
+
+                    if (this.getAllPreData(this.prePid, this.CoreFactAllTree).length == 0){
+                      _this.allPreData =[]
+                    } else{
+                      _this.allPreData = this.getAllPreData(this.prePid, this.CoreFactAllTree)
+                    }
                     break
                   case 'flow-rhombus-if':
                     let params = ev.item.model
@@ -879,6 +890,11 @@
                 _this.judgePreData = []
               } else {
                   _this.judgePreData = this.getPreData(this.prePid, this.CoreFactAllTree)
+              }
+              if (this.getAllPreData(this.prePid, this.CoreFactAllTree).length == 0){
+                _this.judgeAllPreData =[]
+              } else{
+                _this.judgeAllPreData = this.getAllPreData(this.prePid, this.CoreFactAllTree)
               }
               break
             case 'edge':
@@ -1897,6 +1913,18 @@
       },
       getPreData(pid, data) {
         if (this.$util.trim(pid) && pid == 15) {
+          for (let key in data) {
+            if (pid == data[key].id ) {
+              return data[key].children
+            }
+          }
+        } else {
+          return []
+        }
+      },
+
+      getAllPreData(pid, data) {
+        if (this.$util.trim(pid) != null) {
           for (let key in data) {
             if (pid == data[key].id ) {
               return data[key].children

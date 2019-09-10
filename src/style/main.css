@@ -13,11 +13,12 @@
 #Categories .category:nth-of-type(n+3){
   display: none
 }
-.chatModal .img{
+#textarea img,
+.sendImg img{
   height: 80px;
-  width: 80px;
-  margin-right: 5px;
-}
+   width: 80px;
+   margin: 0 2px;
+} 
 .chatModal .ant-popover{
   max-width: 400px !important;
   /* top: 14px !important; */

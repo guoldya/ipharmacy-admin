@@ -97,6 +97,38 @@
             }
           ]
         },
+        {
+          gunter_id:2,
+          params:{orderClass:2,title:'阿里巴巴',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2018,11,19).getTime(),
+          end_time:new Date(2019,0,1).getTime(),
+          bg_color:'#00B1F1',
+          level:2
+        },
+        {
+          gunter_id:3,
+          params:{orderClass:2,title:'莫夕夕',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2019,0,2).getTime(),
+          end_time:new Date(2019,0,2).getTime(),
+          bg_color:'#00B1F1',
+          level:2
+        },
+        {
+          gunter_id:3,
+          params:{orderClass:2,title:'丙烯醯',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2019,0,2).getTime(),
+          end_time:new Date(2019,0,2).getTime(),
+          bg_color:'#00B1F1',
+          level:2
+        },
+        {
+          gunter_id:3,
+          params:{orderClass:2,title:'饿极了',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2019,0,2).getTime(),
+          end_time:new Date(2019,0,2).getTime(),
+          bg_color:'#00B1F1',
+          level:2
+        }
       ]
 
       let th_data = {
