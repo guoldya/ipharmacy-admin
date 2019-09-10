@@ -1,12 +1,12 @@
 <template>
-	<div @mousedown="down"  ref="split_liu" :style="{left:Number(left)?left+'px':left}" class="gante-split-liu">
-		<!-- <div class="gante-split-column">
+	<!-- <div @mousedown="down"  ref="split_liu" :style="{left:Number(left)?left+'px':left}" class="gante-split-liu">
+		<div class="gante-split-column">
 			<div></div>
 			<div></div>
 			<div></div>
-		</div> -->
+		</div>
 		<div v-show="show_split" :style="{left:split_resize_left+'px'}" class="gante-split-liu-resize"></div>
-	</div>
+	</div> -->
 </template>
 <script>
 	export default{
