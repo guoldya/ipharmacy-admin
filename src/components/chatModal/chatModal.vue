@@ -2,7 +2,7 @@
   <div  ref="chatBox" v-modalDrag>
     <a-modal
       
-      title="张三"
+      :title="title"
       :visible.sync="visible"
       :maskClosable="false"
       :width="900"
@@ -36,11 +36,8 @@
             >
                 <template slot="content">
                     <VEmojiPicker :pack="pack" @select="selectEmoji" />
-                    <!-- <ul class="emoji-list" >
-                      <li v-for="(item,index) in pack" :key="index" >{{item}}</li>
-                    </ul> -->
                 </template>
-                <a-icon class="fontSize20" type="smile" />
+                <a-icon class="fontSize20 selectNone" type="smile" />
             </a-popover>
 
              <a-upload  class="margin-left-5"
@@ -50,17 +47,12 @@
             
                     @change="handleChange"
                 >
-                    <a-icon class="fontSize20" type="picture" />
+                    <a-icon class="fontSize20 selectNone" type="picture" />
                 </a-upload>
               <div class="chatInputBorder">
                 <div class="textarea" id="textarea" @input="handleInput" 
-                 @keyup.enter="handleOk" 
-                 @keyup.left="getCursor" 
-                  @keyup.right="getCursor"
-                   @click="getCursor" ref="divE1" contenteditable="true"
-                > 
-                  <!-- <span v-html="emoji"></span> -->
-                  <!-- <img class="img"  v-for="(url,i) in previewImage" :key="i" :src="url" /> -->
+                 @keyup.enter="handleOk"  ref="divE1" contenteditable="true"
+                >  
                 </div>
               </div>
               
@@ -73,7 +65,7 @@
           </a-col>
           <a-col :span="7" class="rightCol">
               <div >
-                <p @click="aa($refs.divE1)">性别：男</p>
+                <p>性别：男</p>
                 <p>年龄：23</p>
                 <p>专业：经济学</p>
               </div>
@@ -95,29 +87,17 @@ export default {
     },
   data() {
     return {
-      inputLock:true,
+      title:'张三',
       loading:false,
-      imageUrl: [],
-      action:'https://www.mocky.io/v2/5cc8019d300000980a055e76',///api/sys/upload/image
-      previewImage: [],
-      fileList: [],
+      action:'/api/sys/upload/image', 
       acceptChat:['我不晓得','嗯要不得','ok','还钱','嗯不是不是不是不是不是不是不是不是不是不是不是不是不是不是很好很好'],
-      modalData:[],
       visible:true,
       pack: [],
       emoji:'',
       chatContent:[],
-      sendContent:[],
-      acceptContent:[],
       //监听是否发送消息
       sendStatus:'',
       selectEmojiStatus:false,
-      el:null,
-      emoji:"",
-      content: '',
-      caretOffset:0,
-      txtlength:'',
-      startOffset:''
     }
   },
   computed: {
@@ -128,7 +108,7 @@ export default {
   },
   mounted() {
       var _this = this;
-
+      // this.title='<img src="../../assets/testImg.png"  class="img"/>'+'张三';
       this.pack=[
             {emoji: "😀", description: "grinning face", category: "Peoples"},
             {emoji: "😃", description: "smiling face with open mouth", category: "Peoples"},
@@ -198,70 +178,14 @@ export default {
         //加setTimeout的原因：由于vue采用虚拟dom，
         //每次生成新的消息时获取到的div的scrollHeight的值是生成新消息之前的值，所以造成每次都是最新的那条消息被隐藏掉了
       },
-    },
+  },
   methods: {
-    insertCursor(chars,tag,status){ 
-      var range;
-      if (chars >0||chars=== 0) {
-        var selection = window.getSelection();
-
-        range =this. createRange(this.$refs.divE1.parentNode, { count: this.caretOffset });
-
-        if (range) {
-            range.collapse(false);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            if(status){
-              this.$refs.divE1.focus();
-              document.execCommand("insertImage",false,tag);
-            }else{
-              this.$refs.divE1.focus();
-              document.execCommand("insertText",false,tag);
-              
-            }
-        }
-      }
-    },
-     createRange(node, chars, range) {
-            if (!range) {
-                range = document.createRange()
-                range.selectNode(node);
-                range.setStart(node, 0);
-            }
-            if (chars.count === 0) {
-                range.setEnd(node, chars.count);
-            } else if (node && chars.count >0) {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    if (node.textContent.length < chars.count) {
-                        chars.count -= node.textContent.length;
-                    } else {
-                        range.setEnd(node, chars.count);
-                        chars.count = 0;
-                    }
-                } else {
-                    for (var lp = 0; lp < node.childNodes.length; lp++) {
-                        range =this. createRange(node.childNodes[lp], chars, range);
-
-                        if (chars.count === 0) {
-                          break;
-                        }
-                    }
-                }
-          } 
-
-          return range;
-    },
-
-    getBase64 (img, callback) {
-      const reader = new FileReader()
-      reader.addEventListener('load', () => callback(reader.result))
-      reader.readAsDataURL(img)
-    },
     //粘贴
     paste(e){
-        e.preventDefault()
+        e.preventDefault();
+        console.log(e)
         var clp = (e.originalEvent || e).clipboardData;
-         if(clp.files && clp.files.length > 0){//图片
+        if(clp.files && clp.files.length > 0){//图片
             this.mapFile(clp.files)
             return ;
         }  
@@ -289,12 +213,27 @@ export default {
     },
     //粘贴的文件
     mapFile(files){
+      let param = new FormData(); //创建form对象
       for(var i = 0; i < files.length; i++){
           var c = files[i];
+          var index1 = c.name.lastIndexOf(".");
+          var index2 = c.name.length;
+          var suffix = c.name.substring(index1 + 1, index2);//后缀名
+          param.append('photo0', c, "photo0." + suffix);//通过append向form对象添加数据
+          let config = {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            }
+          };
           if(c.type && c.type.split("/")[0] == "image"){
-              this.getBase64(files[i],(ret)=>{
-                  document.execCommand("insertImage",false,ret);
-              });
+             this.$axios.post('/sys/upload/image',param, config).then(res => {
+              if (res.code === '200') {
+                let imgUrl=this.$config.img_base_url+res.fileInfo[0].fileName;
+                document.execCommand("insertImage",false,imgUrl);              
+              }else{
+                  this.warn('图片上传失败')
+              }
+            })
           }
       }
     },
@@ -302,103 +241,17 @@ export default {
     handleInput($event){
       this.emoji = $event.target.innerHTML;
     },
-    getCursor(element){
-      var caretOffset = 0;
-      var doc = element.target.ownerDocument || element.target.document;
-      var win = doc.defaultView || doc.parentWindow;
-      var sel;
-      if (typeof win.getSelection != "undefined") {//谷歌、火狐
-        sel = win.getSelection();
-        if (sel.rangeCount > 0) {//选中的区域
-          var range = win.getSelection().getRangeAt(0);
-          var preCaretRange = range.cloneRange();//克隆一个选中区域
-          preCaretRange.selectNodeContents(element.target);//设置选中区域的节点内容为当前节点
-          preCaretRange.setEnd(range.endContainer, range.endOffset);  //重置选中区域的结束位置
-          caretOffset = preCaretRange.toString().length;
-          this.startOffset=range.startOffset;
-          // console.log(preCaretRange,'preCaretRange');
-          // console.log(range.endContainer,'range.endContainer');
-          // console.log(range.endOffset,'range.endOffset');
-          // console.log(range.startOffset)
-        }
-      } else if ((sel = doc.selection) && sel.type != "Control") {//IE
-        var textRange = sel.createRange();
-        var preCaretTextRange = doc.body.createTextRange();
-        preCaretTextRange.moveToElementText(element.target);
-        preCaretTextRange.setEndPoint("EndToEnd", textRange);
-        caretOffset = preCaretTextRange.text.length;
-      }
-      this.caretOffset=caretOffset;
-      console.log(this.caretOffset,'aa caretOffset') ;
-
-    },
-    changeCursor(tId,tag){
-        var subst ;
-        //IE  
-        if(document.selection) {  
-          var theSelection = document.selection.createRange().text;  
-          if(!theSelection) { theSelection=tag}  
-            tId.focus();  
-            if(theSelection.charAt(theSelection.length - 1) == " "){  
-            theSelection = theSelection.substring(0, theSelection.length - 1);  
-            document.selection.createRange().text = theSelection+ " ";  
-          } else {  
-            document.selection.createRange().text = theSelection;  
-          }  
-        } 
-        // All others  
-        else if(this.caretOffset||this.caretOffset=='0'){  
-          var startPos =this.startOffset;  
-          var endPos = this.caretOffset;
-
-          var myText = (tId.innerHTML).substring(startPos, endPos);  
-          if(!myText) { myText=tag;}  
-
-          if(myText.charAt(myText.length - 1) == " "){ // exclude ending space char, if any  
-            subst = myText.substring(0, (myText.length - 1))+ " "; 
-          } else {  
-            subst = myText;  
-          }  
-          this.txtlength= myText.length; 
-          tId.innerHTML = tId.innerHTML.substring(0, startPos) + tag + tId.innerHTML.substring(endPos, tId.innerHTML.length);  
-          console.log(tId.innerHTML,'无substring  innerHTML') ;
-
-          tId.focus();  
-          var cPos=startPos+(myText.length);  
-          this.startOffset=cPos;  
-          this.caretOffset=cPos;  
-        }  else{
-          tId.innerHTML+=tag;
-           tId.focus();
-        }
-        if (tId.createTextRange) tId.caretPos = document.selection.createRange().duplicate(); 
-         if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
-              var range = document.createRange();
-              range.selectNodeContents(tId);
-              range.collapse(false);
-              var sel = window.getSelection();
-              sel.removeAllRanges();
-              sel.addRange(range);
-          } else if (typeof document.body.createTextRange != "undefined") {
-              var textRange = document.body.createTextRange();
-              textRange.moveToElementText(tag);
-              textRange.collapse(false);
-              textRange.select();
-          }
-        this.emoji=tId.innerHTML;
-    }, 
+    //图片upload
     handleChange (info) {
         if (info.file.status === 'done') {
-            this.getBase64(info.file.originFileObj, (imageUrl) => {
-                this.previewImage.push(imageUrl);
-                this.emoji = `<img src="${imageUrl}"  class="img"/>`;
-                //在光标指定位置处插入图片
-                let img=`<img src="${imageUrl}" ref="img" class="img"/>`;
-                let el=document.getElementById('textarea');
-                // this.changeCursor(el,img)
-                // this.chatContent.push({sendContent:this.emoji});
-                this.insertCursor(this.caretOffset,imageUrl,status=true)
-            })
+            if (info.file.response && info.file.response.code === '200') {
+              let imgUrl=this.$config.img_base_url+info.file.response.fileInfo[0].fileName;
+              this.emoji = `<img src="${imgUrl}"  class="img"/>`;
+              document.execCommand("insertImage",false,imgUrl);                
+            }
+            if(info.file.response &&info. file.response.code != '200'&& info.file.status == 'done'){
+              this.warn('图片上传失败')
+            }
         }else if (info.file.status === 'error') {
             this.warn('图片上传失败')
         }
@@ -413,25 +266,21 @@ export default {
     },
     selectEmoji(emoji) {
         //选择表情之后关闭popover
-       this.selectEmojiStatus=false;
-        // this.emoji+=emoji.emoji; 
+        this.selectEmojiStatus=false;
         this.emoji+=emoji.emoji;
-        //在光标指定位置处插入表情
-        let el=document.getElementById('textarea');
-        // this.changeCursor(el,emoji.emoji);
-        this.insertCursor(this.caretOffset,emoji.emoji,status=false)
+        document.execCommand("insertText",false,emoji.emoji);
     },
+    //chatModal显示
     showModal() {
       this.visible = true;
     },
     
     handleCancel(e) {
-      //   this.visible = false;
       this.$emit('search',true)
     },
     handleOk(e) {
         if (!this.emoji) {
-        this.$message.error('请输入消息')
+          this.warn('请输入消息')
           return;
         }
         this.selectEmojiStatus=false;
@@ -439,28 +288,27 @@ export default {
           this.chatContent.push({sendContent:this.emoji});
         }
         //有文字、表情、图片就发过来消息
-        if(this.emoji || this.previewImage.length>0){
+        if(this.emoji){
           this.chatContent.push({acceptContent:this.acceptChat[this.random(0, 5)]});
         }
         this.sendStatus=this.random(0, 5);
         this.emoji="";
-        this.previewImage=[];
         this.$refs.divE1.innerHTML="";
-        console.log(this.chatContent,'chatContent')
-    //   this.visible = false
     },
   }
 }
 </script>
 <style scoped lang='less'>
-
      .chatModal{
+        .selectNone{
+          user-select:none;
+        }
          .margin-left-16{
              margin-left: 16px;
          }
          .sendImg{
            text-align: justify;
-          display: contents;
+           display: contents;
          }
          .send {
             position:relative;
