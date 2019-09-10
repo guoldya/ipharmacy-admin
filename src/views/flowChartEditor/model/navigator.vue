@@ -59,20 +59,35 @@ export default {
 
 #navigator {
   width: 350px;
-  height: 276px;
+  height:100%;
   position: absolute;
   bottom: 0px;
   right: 0px;
   z-index: 3;
 }
+
 #navigator .slider {
   margin: 7px 10px 10px;
-  float: left;
   width: 220px;
+}
+
+#navigator::-webkit-scrollbar{
+  width: 5px;
+  height:10px;
+}
+#navigator::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+#navigator::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px #b5b1b1;
+  background-color: #b5b1b1;
 }
 #navigator #minimap {
   width: 350px;
-  height: 220px;
+  height: 200px;
 }
 .zoom-dropdown-btn {
   color: rgba(0, 0, 0, 0.45);

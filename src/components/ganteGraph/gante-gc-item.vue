@@ -9,15 +9,6 @@
         class="ganteview-ones"
         :style="{width:item.width+'%'}"
       >
-        <div  class="ganteview-column">
-          <div v-if="item.xxx == 1"  >
-            <template>
-              <div id="ganteChart"   style="width: 100%;height: 100px;position: absolute;z-index: 2;" ref="ganteChart" />
-            </template>
-          </div>
-          <div v-else  >
-          </div>
-        </div>
         <div  class="ganteview-column"     >
           {{item.params.title}}
         </div>
@@ -27,6 +18,16 @@
         <div  class="ganteview-column"   >
           {{item.params.number}}
         </div>
+        <div  class="ganteChart-column">
+          <div v-if="item.xxx == 1"  >
+            <template>
+              <div id="ganteChart"   style="width: 100%;height: 95px;position: absolute;z-index: 2;" ref="ganteChart" />
+            </template>
+          </div>
+          <div v-else  >
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -47,9 +48,10 @@ export default {
     return {
       option: {
         grid: {
-          left: "20",
-          right: "30",
-          bottom: "20",
+          left: "0%",
+          right: "0%",
+          bottom: "0%",
+          top:"0",
           containLabel: true
         },
         tooltip: {
@@ -189,6 +191,41 @@ export default {
             name: "新增报告数",
             // animation: true,
             data: [100, 120, 110, 114, 112, 105, 120]
+          },
+          {
+            type: "line",
+            showSymbol: false, //显示折线拐点
+            itemStyle: {
+              //点样式
+              color: "pink"
+            }, //线条样式
+            lineStyle: {
+              //折线样式
+              color: "pink"
+            },
+            areaStyle: {
+              //区域样式
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [{
+                  offset: 0,
+                  color: "#d1d5fe" // 0% 处的颜色
+                },
+                  {
+                    offset: 1,
+                    color: "#fff" // 100% 处的颜色
+                  }
+                ],
+                globalCoord: false // 缺省为 false
+              }
+            },
+            name: "测试",
+            // animation: true,
+            data: [99, 120, 120, 105, 115, 104, 110]
           }
         ]
       },
@@ -289,16 +326,21 @@ export default {
     th_data: Object,
   },
   mounted(){
+    let _this = this
     setTimeout(()=>{
       this.initChart();
     },500);
+    window.onresize = function() {
+      setTimeout(() => {
+        _this.chart.resize()
+      }, 500)
+    }
   },
   methods: {
     initChart() {
       this.chart = echarts.init(document.getElementById('ganteChart'));
       this.chart.setOption(this.option, true);
       this.chart.resize();
-
     },
     showToast(e) {
       let target = e.target
@@ -418,7 +460,12 @@ export default {
     line-height: 35px;
     border-right: 1px solid #ebeef5;
     border-bottom: 1px solid #ebeef5;
-
+  }
+  .ganteChart-column{
+    width: 100%;
+    height: 100px;
+    border-right: 1px solid #ebeef5;
+    border-bottom: 1px solid #ebeef5;
   }
   .ganteview-ones{
     float: left;

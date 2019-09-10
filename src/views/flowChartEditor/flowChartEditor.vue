@@ -26,10 +26,10 @@
           v-bind:allPreData="allPreData"
           v-bind:judgePreData="judgePreData"
           v-bind:judgeAllPreData="judgeAllPreData"
-
+          style="height: 70%;overflow-y: auto;"
         ></a-detailpanel>
         <!-- 缩略图 -->
-        <a-navigator ref="navigator" v-bind:graphAPI="graph"></a-navigator>
+        <a-navigator ref="navigator" style="height: 30%" v-bind:graphAPI="graph"></a-navigator>
         <!-- 右键菜单 -->
         <a-contextmenu ref="contextmenu"></a-contextmenu>
 

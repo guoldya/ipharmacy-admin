@@ -9,7 +9,7 @@
         <div class="bodyText fontText">手术天数</div>
         <div class="bodyText fontText">住院天数</div>
         <div class="bodyText fontText">时刻</div>
-        <div class="bodyText fontText">体温|脉搏|血压|呼吸</div>
+        <div class="bodyText canvasP ">体温|脉搏|血压|呼吸</div>
         <div class="bodyText fontText">汇总次数</div>
         <div class="bodyText fontText">手术天数</div>
         <div>
@@ -439,6 +439,10 @@ li {
 .fontText{
   height:34px;
   line-height: 34px;
+}
+.canvasP{
+  height:100px;
+  line-height: 100px;
 }
 .fontBig{
   height:306px;
