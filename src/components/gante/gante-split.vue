@@ -75,13 +75,13 @@
 </script>
 <style>
 	.gante-split-liu{
-		/* width: 5px; */
+		width: 5px;
 		background: #ebeef5;
 		height: 100%;
 		position: absolute;
 		border-left: 1px solid #ccc;
-		/* border-right: 1px solid #ccc;
-		box-shadow: 0 0 5px #cccccc; */
+		border-right: 1px solid #ccc;
+		box-shadow: 0 0 5px #cccccc;
 		cursor: e-resize;
 		z-index:5;
 		transition: background .1s ease;

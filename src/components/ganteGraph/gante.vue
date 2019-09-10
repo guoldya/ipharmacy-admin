@@ -376,6 +376,7 @@ li {
   top: 0;
   height: 100%;
   position: absolute;
+ border-right: 1px solid;
 }
 .gante-gc-box {
   overflow: auto;
