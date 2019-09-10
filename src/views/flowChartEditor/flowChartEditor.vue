@@ -23,10 +23,13 @@
           v-bind:boxInitialized="boxInitialized"
           v-bind:edgeInitialized="edgeInitialized"
           v-bind:preData="preData"
+          v-bind:allPreData="allPreData"
           v-bind:judgePreData="judgePreData"
+          v-bind:judgeAllPreData="judgeAllPreData"
+          style="height: 70%;overflow-y: auto;"
         ></a-detailpanel>
         <!-- 缩略图 -->
-        <a-navigator ref="navigator" v-bind:graphAPI="graph"></a-navigator>
+        <a-navigator ref="navigator" style="height: 30%" v-bind:graphAPI="graph"></a-navigator>
         <!-- 右键菜单 -->
         <a-contextmenu ref="contextmenu"></a-contextmenu>
 
@@ -213,7 +216,9 @@
         CoreFactAllTree: [],
         prePid: null,
         preData: [],
+        allPreData:[],
         judgePreData: [],
+        judgeAllPreData: [],
         isCopy:'0',
       }
     },
@@ -517,8 +522,6 @@
         }
       },
       selectNodeRoParentId(newValue, oldValue) {
-        console.log(newValue)
-        console.log(oldValue)
         if (newValue != oldValue) {
           this.flow.update(this.selectNode.id, { parentId: newValue })
         }
@@ -730,10 +733,13 @@
                     _this.prePid = []
                     _this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
                     _this.preData = []
-                    if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
+                   this.getPreData(this.prePid, this.CoreFactAllTree,[])
+                    if (this.$util.trim(_this.preData) == null){
                       _this.preData = []
-                    } else {
-                        _this.preData = this.getPreData(this.prePid, this.CoreFactAllTree)
+                    }
+                    this.getAllPreData(this.prePid, this.CoreFactAllTree,[])
+                    if (this.$util.trim(_this.allPreData) == null){
+                      _this.allPreData = []
                     }
                     break
                   case 'flow-rhombus-if':
@@ -742,7 +748,6 @@
                       this.boxInitialized.inputType = 'input'
                     } else if (params.lo == 2) {
                       this.boxInitialized.inputType = 'scopeInput'
-                      console.log(params,'params')
                     } else if (params.lo == 3 && this.$util.trim(params.parentId) == null) {
                       this.boxInitialized.inputType = 'select'
                       this.boxInitialized.itemId = params.itemId
@@ -775,7 +780,6 @@
                         this.error(err)
                       })
                     } else if (params.lo == 3 && this.$util.trim(params.parentId) != null) {
-                      console.log(params,'params')
                       this.boxInitialized.inputType = 'treeSelect'
                       this.boxInitialized.itemId = params.itemId
                       this.boxInitialized.val = params.val
@@ -875,10 +879,13 @@
               this.prePid = []
               this.getPrePidData(this.selectNode.itemId, this.CoreFactAllTree)
               _this.judgePreData = []
-              if (this.getPreData(this.prePid, this.CoreFactAllTree).length == 0) {
+              this.getJudgePreData(this.prePid, this.CoreFactAllTree,[]);
+              if (this.$util.trim(_this.judgePreData) == null){
                 _this.judgePreData = []
-              } else {
-                  _this.judgePreData = this.getPreData(this.prePid, this.CoreFactAllTree)
+              }
+               this.getJudgeAllPreData(this.prePid, this.CoreFactAllTree,[])
+              if (this.$util.trim(_this.judgeAllPreData) == null){
+                _this.judgeAllPreData = []
               }
               break
             case 'edge':
@@ -1880,7 +1887,7 @@
         if (children != null && children != undefined) {
           for (let ckey in children) {
             let cnode = children[ckey]
-            children[ckey].children = this.recursiveNodeTree(indexData, cnode.id)
+            children[ckey].children = this.dealNodeTree(indexData, cnode.id)
           }
         }
         return children
@@ -1895,17 +1902,64 @@
           }
         }
       },
-      getPreData(pid, data) {
-        if (this.$util.trim(pid) && pid == 15) {
-          for (let key in data) {
-            if (pid == data[key].id ) {
-              return data[key].children
-            }
+      getPreData(pid, data,preData) {
+        for (let key in data){
+          if (preData.length>0){
+            return;
           }
-        } else {
-          return []
+          if (pid== '15' && data[key].id == pid){
+            preData=  data[key].children
+            this.preData =  data[key].children
+            return;
+          }else {
+            this.getPreData(pid,data[key].children,preData)
+          }
         }
       },
+
+      getJudgePreData(pid, data,preData) {
+        for (let key in data){
+          if (preData.length>0){
+            return;
+          }
+          if (pid== '15' && data[key].id == pid){
+            preData=  data[key].children
+            this.judgePreData =  data[key].children
+            return
+          }else {
+            this.getPreData(pid,data[key].children,preData)
+          }
+        }
+      },
+
+      getAllPreData(pid, data,preData) {
+        for (let key in data){
+          if (preData.length>0){
+            return;
+          }
+          if (pid == data[key].id){
+            preData=  data[key].children
+            this.allPreData =  data[key].children
+            return;
+          }else {
+            this.getAllPreData(pid,data[key].children,preData)
+          }
+        }
+      },
+      getJudgeAllPreData(pid, data,preData){
+        for (let key in data){
+          if (preData.length>0){
+            return;
+          }
+          if (pid == data[key].id){
+            preData=  data[key].children
+            this.judgeAllPreData =  data[key].children
+            return;
+          }else {
+            this.getAllPreData(pid,data[key].children,preData)
+          }
+        }
+      }
 
     }
   }

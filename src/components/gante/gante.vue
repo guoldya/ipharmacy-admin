@@ -360,7 +360,7 @@ li {
   position: absolute;
 }
 .gante-gc-box {
-  overflow: auto;
+  /* overflow: auto; */
   width: 50%;
   position: absolute;
   top: 0;

@@ -5,24 +5,16 @@
         :style="{width: Number(tabe_width)? tabe_width+'px' : tabe_width }"
         class="gante-table-box"
       >
-<!--        <gante-table-->
-<!--        @change-calendar="change_calendar"-->
-<!--        @on-click="onclick"-->
-<!--        @change="change"-->
-<!--        :th_data="th_data"-->
-<!--        :data="ganteData"-->
-<!--        :lowData='lowDatas'-->
-<!--      ></gante-table>-->
         <div class="headerTitle"/>
         <div class="bodyText fontText">手术天数</div>
         <div class="bodyText fontText">住院天数</div>
         <div class="bodyText fontText">时刻</div>
-        <div class="bodyText fontText">体温|脉搏|血压|呼吸</div>
+        <div class="bodyText canvasP ">体温|脉搏|血压|呼吸</div>
         <div class="bodyText fontText">汇总次数</div>
         <div class="bodyText fontText">手术天数</div>
         <div>
           <a-col :span="12">
-            <div class="bodyText fontBig">护理项目</div>
+            <div class="bodyText fontBig" >护理项目</div>
           </a-col>
           <a-col  :span="12">
             <div class="bodyText fontText">小便量(ml)</div>
@@ -74,7 +66,7 @@ export default {
       time_mode: 1, //时间刻度 1:日,2周,3月,4季,5年
       th_data: {}, //表格头部数据
       ganteData: [],
-      height: 300,
+      height: 600,
       open: true,
       calendar_left: 0, //日期选择的位置
       calendar_top: 0, //日期选择的位置
@@ -98,7 +90,9 @@ export default {
         document.getElementsByClassName('gante-gc-box')[0].style.width =
           gante_box.offsetWidth - document.getElementsByClassName('gante-table-box')[0].offsetWidth + 'px'
       })
-    })
+    });
+
+    console.log(this.ganteData,'ganteData')
   },
   methods: {
     // 监听子组件数据
@@ -357,7 +351,7 @@ li {
 .gante-box ::-webkit-scrollbar-thumb {
   /*滚动条里面轨道*/
   border-radius: 10px;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+
   background-color: #ccc;
   border-style: dashed;
   border-color: transparent;
@@ -369,6 +363,7 @@ li {
 }
 .gante-box {
   width: 100%;
+  height: 600px;
   border: 1px solid #ccc;
   overflow: hidden;
   box-sizing: border-box;
@@ -381,13 +376,14 @@ li {
   top: 0;
   height: 100%;
   position: absolute;
+ border-right: 1px solid;
 }
 .gante-gc-box {
   overflow: auto;
   width: 50%;
   position: absolute;
   top: 0;
-  border-left: 5px solid transparent;
+  border-left: 1px #CFCFCF solid;
   height: 100%;
   box-sizing: border-box;
   padding-right: 2px;
@@ -427,9 +423,9 @@ li {
 .headerTitle {
   height: 45px;
   width: 100%;
-  border-left: 1px #EBEEF5 solid;
-  border-top: 1px #EBEEF5 solid;
-  background-color: #fafafa;
+  /*border-right: 1px #CFCFCF solid;*/
+  border-bottom: 1px #CFCFCF solid;
+  background-color: #E3F0FC;
 }
 .bodyText{
   width: 100%;
@@ -437,16 +433,20 @@ li {
   text-align: center;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.85);
-  border-left: 1px #EBEEF5 solid;
-  border-top: 1px #EBEEF5 solid;
-  background-color: #fafafa;
+  border-bottom: 1px #CFCFCF solid;
+  background-color: #F3F8FC;
 }
 .fontText{
-  height:34px;
-  line-height: 34px;
+  height:35px;
+  line-height: 35px;
+}
+.canvasP{
+  height:100px;
+  line-height: 100px;
 }
 .fontBig{
   height:306px;
   line-height: 306px;
+  border-right: 1px #CFCFCF solid;
 }
 </style>

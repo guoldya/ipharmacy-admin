@@ -4,84 +4,348 @@
     <div
       v-for="(item,index) in gante_data"
       :key="index"
-      class="ganteview-ones"
-      @click="onclick(item)"
     >
-      <div class="ganteview-content-one">
-        <!-- |ones cont-one =>(无层级关系子集,直接两个div,)|ones一级 cont-one(一个没内容的子集)2 content(ones, 这下是无层级的的div)2 -->
-        <template v-if="item.items">
-          <div
-            v-for="(temp,tempindex) in item.items"
-            :data-toast="index"
-            :data-itemstoast="tempindex"
-            @mousemove="showToast"
-            @mouseleave="hideToast"
-            :style="{
-            width:temp.width?temp.width+'px':0,
-            left:temp.left?temp.left+'px':0,
-            background:temp.bg_color?temp.bg_color:'#00b0ff'}"
-            class="ganteview-item"
-          >
-            <a-tag v-if="temp.params.orderClass==1" color="orange">临时</a-tag>
-            <a-tag v-else color="blue">长期</a-tag>
-            {{temp.params.biaoti}}
+      <div class="ganteview-ones" :style="{width:item.width+'%'}">
+        <div  class="ganteview-column"   :style="{borderRight:rightBorder(index)}"  >
+          {{item.params.title}}
+        </div>
+        <div  class="ganteview-column"  :style="{borderRight:rightBorder(index)}">
+          {{item.params.startTime}}
+        </div>
+        <div  class="ganteview-column" :style="{borderRight:rightBorder(index)}">
+          {{item.params.number}}
+        </div>
+        <div  class="ganteChart-column" :style="{borderRight:rightBorder(index)}">
+          <div v-if="item.xxx == 1"  >
+            <template>
+              <div id="ganteChart"   style="width: 100%;height: 95px;position: absolute;z-index: 2;" ref="ganteChart" />
+            </template>
           </div>
-        </template>
-        <div
-          v-else-if="!item.children"
-          @mousemove="showToast"
-          @mouseleave="hideToast"
-          :data-toast="index"
-          :style="{width:item.width?item.width+'px':0,left:item.left?item.left+'px':0,background:item.bg_color?item.bg_color:'#00b0ff'}"
-          class="ganteview-item"
-           @click="onclicks(item.children)"
-        >
-          <a-tag v-if="item.params.orderClass==1" color="orange">临时</a-tag>
-          <a-tag v-else color="blue">长期</a-tag>
-          {{item.params.biaoti}}
+          <div v-else  >
+          </div>
         </div>
 
-        <!-- @mousemove="showToast" @mouseleave="hideToast" -->
-        <div
-          v-else
-          :data-toast="index"
-          :style="{width:item.width?item.width+'px':0,left:item.left?item.left+'px':0,background:item.bg_color?item.bg_color:'#00b0ff'}"
-          class="ganteview-item has-child"
-           @click="onclicks(item.children)"
-        >
-          <span
-            :style="{borderLeftColor:item.bg_color?item.bg_color:'#00b0ff'}"
-            class="sanjiao-left"
-          ></span>
-          <span
-            :style="{borderRightColor:item.bg_color?item.bg_color:'#00b0ff'}"
-            class="sanjiao-right"
-          ></span>
-        </div>
       </div>
-      <ganteview-item
-        v-show="item.open"
-        v-if="item.children"
-        :th_data="th_data"
-        :gante_data="item.children"
-      >
-        <span style="display: none">1</span>
-      </ganteview-item>
     </div>
-    <slot></slot>
+
+
+
+    <div style="width: 100%;height: 500px;">
+
+    </div>
   </div>
+
+
 </template>
 <script>
+  import echarts from 'echarts'
 export default {
   name: 'ganteview-item',
   data() {
-    return {}
+    return {
+      option: {
+        grid: {
+          left: "0%",
+          right: "0%",
+          bottom: "0%",
+          top:"0",
+          containLabel: true
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: "line" // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        xAxis: {
+          boundaryGap: false, //x轴从0开始到结束显示
+          data: ["12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7"],
+          splitLine: {
+            show: false
+          }, //去除网格线
+          splitArea: {
+            show: false
+          }, //保留网格区域
+          axisTick: {
+            show: false
+          },
+          axisLine: {
+            onZero: false,
+            show: false,
+            lineStyle: {
+              color: "#979797",
+              width: 0.6 //这里是为了突出显示加上的
+            }
+            // symbol: ['none', 'arrow'],
+            // symbolSize: [6, 12],
+            // symbolOffset: [0, 8]
+          },
+          axisLabel: {
+            show:false,
+            interval: 0, //隔几个显示
+            rotate: 30,
+            showMinLabel: false,
+            color: "#393C40"
+          }
+        },
+        yAxis: {
+          min: function(value) {
+            return value.min - 0;
+          },
+          splitLine: {
+            show: false
+          }, //去除网格线
+          splitArea: {
+            show: false
+          }, //保留网格区域
+          axisLine: {
+            show: false,
+            lineStyle: {
+              //轴上的线样式
+              color: "#979797",
+              width: 0.6 //这里是为了突出显示加上的
+            }
+            // symbol: ['none', 'arrow'],
+            // symbolSize: [6, 12],
+            // symbolOffset: [0, 8]
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show:false,
+            //轴上的数据样式
+            color: "#393C40"
+          }
+        },
+        series: [
+          // For shadow
+          {
+            type: "line",
+            showSymbol: false, //显示折线拐点
+            itemStyle: {
+              color: "#2390FF"
+            }, //线条样式
+            lineStyle: {
+              color: "#2390FF"
+            },
+            areaStyle: {
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [{
+                  offset: 0,
+                  color: "#cae4ff" // 0% 处的颜色
+                },
+                  {
+                    offset: 1,
+                    color: "#fff" // 100% 处的颜色
+                  }
+                ],
+                globalCoord: false // 缺省为 false
+              }
+            },
+            name: "患者数",
+            z: 10,
+            // animation: true,
+            data: [105, 102, 117, 114, 90, 100, 102]
+          },
+          {
+            type: "line",
+            showSymbol: false, //显示折线拐点
+            itemStyle: {
+              //点样式
+              color: "#3143FE"
+            }, //线条样式
+            lineStyle: {
+              //折线样式
+              color: "#3143FE"
+            },
+            areaStyle: {
+              //区域样式
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [{
+                  offset: 0,
+                  color: "#d1d5fe" // 0% 处的颜色
+                },
+                  {
+                    offset: 1,
+                    color: "#fff" // 100% 处的颜色
+                  }
+                ],
+                globalCoord: false // 缺省为 false
+              }
+            },
+            name: "新增报告数",
+            // animation: true,
+            data: [100, 120, 110, 114, 112, 105, 120]
+          },
+          {
+            type: "line",
+            showSymbol: false, //显示折线拐点
+            itemStyle: {
+              //点样式
+              color: "pink"
+            }, //线条样式
+            lineStyle: {
+              //折线样式
+              color: "pink"
+            },
+            areaStyle: {
+              //区域样式
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [{
+                  offset: 0,
+                  color: "#d1d5fe" // 0% 处的颜色
+                },
+                  {
+                    offset: 1,
+                    color: "#fff" // 100% 处的颜色
+                  }
+                ],
+                globalCoord: false // 缺省为 false
+              }
+            },
+            name: "测试",
+            // animation: true,
+            data: [99, 120, 120, 105, 115, 104, 110]
+          }
+        ]
+      },
+      gante_data:[
+        {
+          gunter_id:1,
+          params:{title:'藿香正气液',startTime:'2018-12-19',endTime:'2019-1-4',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2018,11,19).getTime(),
+          end_time:new Date(2019,0,3).getTime(),
+          bg_color:'#00B1F1',
+          left: 0,
+          width: 14.28,
+          level:1,
+          xxx:1,
+          items:[
+            {
+              gunter_id:5,
+              params:{orderClass:1,title:'藿香正气液',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次3吨'},
+              start_time:new Date(2018,11,19).getTime(),
+              end_time:new Date(2019,0,2).getTime(),
+              bg_color:'#FFC100',
+              level:2
+            },
+            {
+              gunter_id:6,
+              params:{orderClass:1,title:'藿香正气液',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次4g'},
+              start_time:new Date(2019,0,3).getTime(),
+              end_time:new Date(2019,0,4).getTime(),
+              bg_color:'#FFC100',
+              level:2
+            }
+          ]
+        },
+        {
+          gunter_id:2,
+          params:{title:'阿莫西林',startTime:'2018-12-19',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2018,11,19).getTime(),
+          end_time:new Date(2019,0,3).getTime(),
+          bg_color:'#00B1F1',
+          level:1,
+          left: 14.28,
+          width: 14.28,
+        },
+        {
+          gunter_id:3,
+          params:{orderClass:2,title:'2019-01-01 11:11',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2018,11,19).getTime(),
+          end_time:new Date(2019,0,1).getTime(),
+          bg_color:'#00B1F1',
+          level:2,
+          left: 28.56,
+          width: 14.28,
+        },
+        {
+          gunter_id:4,
+          params:{orderClass:2,title:'阿里巴巴',startTime:'2018-12-19',endTime:'2019-1-1',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2018,11,19).getTime(),
+          end_time:new Date(2019,0,1).getTime(),
+          bg_color:'#00B1F1',
+          level:2,
+          left: 42.84,
+          width: 14.28,
+        },
+        {
+          gunter_id:5,
+          params:{orderClass:2,title:'莫夕夕',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2019,0,2).getTime(),
+          end_time:new Date(2019,0,2).getTime(),
+          bg_color:'#00B1F1',
+          level:2,
+          left: 57.12,
+          width: 14.28,
+        },
+        {
+          gunter_id:6,
+          params:{orderClass:2,title:'丙烯醯',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2019,0,2).getTime(),
+          end_time:new Date(2019,0,2).getTime(),
+          bg_color:'#00B1F1',
+          level:2,
+          left: 71.4,
+          width: 14.28,
+        },
+        {
+          gunter_id:7,
+          params:{orderClass:2,title:'饿极了',startTime:'2019-1-2',endTime:'2019-1-3',biaoti:'[口服]  每天异常  每次2毫克'},
+          start_time:new Date(2019,0,2).getTime(),
+          end_time:new Date(2019,0,2).getTime(),
+          bg_color:'#00B1F1',
+          level:2,
+          left: 85.68,
+          width: 14.28,
+        }
+      ],
+    }
   },
   props: {
-    gante_data: Array,
-    th_data: Object
+    th_data: Object,
+  },
+  mounted(){
+    let _this = this
+    setTimeout(()=>{
+      this.initChart();
+    },500);
+    window.onresize = function() {
+      setTimeout(() => {
+        _this.chart.resize()
+      }, 500)
+    }
   },
   methods: {
+    rightBorder(index) {
+      if (index >5) {
+        return "0px"
+      }else{
+        return "1px solid #CFCFCF"
+      }
+    },
+    initChart() {
+      this.chart = echarts.init(document.getElementById('ganteChart'));
+      this.chart.setOption(this.option, true);
+      this.chart.resize();
+    },
     showToast(e) {
       let target = e.target
       if (e.target.nodeName == 'SPAN') {
@@ -150,14 +414,8 @@ export default {
 }
 .ganteview-content-one {
   height: 44px;
-  box-sizing: border-box;
   line-height: 44px;
-  border-bottom: 1px solid #ebeef5;
-  /* 设置定位 处理z_index 不生效BUG */
-  z-index: 1;
-  position: relative;
-  top: 0;
-  left: 0;
+  border-bottom: 1px solid #CFCFCF;
 }
 .ganteview-item {
   position: absolute;
@@ -200,4 +458,33 @@ export default {
   border-right: 12px solid #00b0ff;
   border-bottom: 23px solid transparent;
 }
+  .ganteview-column{
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    border-right: 1px solid #CFCFCF;
+    border-bottom: 1px solid #CFCFCF;
+  }
+  .ganteChart-column{
+    width: 100%;
+    height: 100px;
+    border-right: 1px solid #CFCFCF;
+    border-bottom: 1px solid #CFCFCF;
+  }
+  .ganteview-ones{
+    float: left;
+    /*box-sizing: border-box;*/
+    /*border-right: 1px solid #ebeef5;*/
+    /*border-bottom: 1px solid #ebeef5;*/
+    /*overflow: hidden;*/
+    /*font-weight: bold;*/
+    /*position: absolute;*/
+    /*line-height: 45px;*/
+    /*height: 45px;*/
+    /*background-color: #ffff;*/
+    /*text-align: center;*/
+    width: 100%;
+    text-align: center;
+    height: 35px;
+  }
 </style>
