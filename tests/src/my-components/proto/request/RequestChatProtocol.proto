@@ -1,0 +1,13 @@
+option java_package = "com.lianggzone.netty.proto.request";
+option java_outer_classname = "RequestChatProtocols";
+
+ message RequestChatProtocol {
+     message CommonHeader {
+ 		required uint32 Command = 1;//协议命令 1鉴权 2心跳 3订阅 4消息
+ 		required string SeqId = 2;//序列ID
+ 		required string Version = 3;//版本
+ 		required string FromUid = 4;//当前用户ID
+ 	}
+ 	required CommonHeader Header = 1;//协议头
+ 	optional bytes Body = 2;//协议内容
+ }

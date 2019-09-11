@@ -1,0 +1,10 @@
+option java_package = "com.lianggzone.netty.proto.request";
+option java_outer_classname = "RequestMessageProtocols";
+
+ message RequestMessageProtocol {
+     required string From = 1;//来源ID
+     required string To = 2;//目标ID
+     required uint32 Type = 3;//消息类型 1IM消息 2推送消息
+     required uint32 BusinessType = 4;//业务消息类型  业务系统自行定义
+     required string Content = 5;//消息内容
+ }

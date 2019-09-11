@@ -1,0 +1,6 @@
+option java_package = "com.lianggzone.netty.proto.request";
+option java_outer_classname = "RequestAuthenticationProtocols";
+
+ message RequestAuthenticationProtocol {
+     required string Token = 1;//鉴权
+ }
