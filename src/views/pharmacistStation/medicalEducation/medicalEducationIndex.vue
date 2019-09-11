@@ -50,7 +50,6 @@
         :pageSize="pageSize"
       ></a-pagination>
     </a-spin>
-    <chatModal  ref="chatModal" ></chatModal> 
   </a-card>
 </template>
 
